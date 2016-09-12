@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.chono.yopper.view.ResizeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res/cn.chono.yopper"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include layout="@layout/error_no_data_remove_layout" />
+
+    <include layout="@layout/error_message_layout" />
+
+    <RelativeLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8" >
+
+        <cn.chono.zxb.xrefreshview.XRefreshView
+            android:id="@+id/xrefreshview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bubbling_layout_bg"
+            app:isHeightMatchParent="false"
+            app:isWidthMatchParent="false" >
+
+            <cn.chono.zxb.xrefreshview.XScrollView
+                android:id="@+id/srcollViewLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+                    <include layout="@layout/discover_bubbling_content_layout" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="70dp"
+                        android:orientation="horizontal" >
+
+                        <ImageView
+                            android:id="@+id/info_praise_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="15dp"
+                            android:src="@drawable/praise_number_icon" />
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.8" >
+
+                            <cn.chono.yopper.view.vewgroup.YPGridView
+                                android:id="@+id/praise_grid"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_centerVertical="true"
+                                android:layout_gravity="center_vertical"
+                                android:layout_margin="10dp"
+                                android:listSelector="@android:color/transparent"
+                                android:numColumns="6" >
+                            </cn.chono.yopper.view.vewgroup.YPGridView>
+
+                            <TextView
+                                android:id="@+id/praise_no"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="25dp"
+                                android:text="还没有点赞哦"
+                                android:textColor="@color/text_color_999999"
+                                android:visibility="gone" />
+                        </RelativeLayout>
+
+                        <ImageView
+                            android:id="@+id/praise_but"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp"
+                            android:src="@drawable/arrow_right_grey" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/part_bg_color" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="20dp" >
+
+                        <TextView
+                            android:id="@+id/evaluate_no"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:minHeight="50dp"
+                            android:text="路过发现还没有评论"
+                            android:textColor="@color/text_color_999999"
+                            android:visibility="visible" />
+
+                        <cn.chono.yopper.view.vewgroup.YPListView
+                            android:id="@+id/evaluate_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:listSelector="@android:color/transparent" >
+                        </cn.chono.yopper.view.vewgroup.YPListView>
+                    </RelativeLayout>
+                </LinearLayout>
+            </cn.chono.zxb.xrefreshview.XScrollView>
+        </cn.chono.zxb.xrefreshview.XRefreshView>
+    </RelativeLayout>
+    <!-- 输入框 -->
+
+    <LinearLayout
+        android:id="@+id/editLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/chat_bg"
+            android:orientation="vertical" >
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/text_color_e3e3e3" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/chat_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp" >
+
+                <RelativeLayout
+                    android:id="@+id/input_et_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:background="@drawable/chat_input_bg"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="2dp" >
+
+                    <EditText
+                        android:id="@+id/input_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@null"
+                        android:gravity="center_vertical"
+                        android:hint="输入评论内容"
+                        android:inputType="textMultiLine"
+                        android:maxLength="100"
+                        android:maxLines="4"
+                        android:paddingLeft="32dp"
+                        android:paddingRight="10dp"
+                        android:scrollbarSize="1dp"
+                        android:scrollbarStyle="insideInset"
+                        android:scrollbars="vertical"
+                        android:text=""
+                        android:textColor="@color/text_color_black"
+                        android:textColorHint="@color/text_color_999999"
+                        android:textSize="16.0sp" />
+
+                    <Button
+                        android:id="@+id/expresion_btn"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/chat_expresion_btn_bg"
+                        android:visibility="visible" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/send_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="发 送"
+                    android:textColor="@color/text_color_818fb7"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/more_face_layout"
+            android:layout_width="match_parent"
+            android:layout_height="185dp"
+            android:background="@color/chat_bg"
+            android:orientation="vertical"
+            android:visibility="visible" >
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/more_face_view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/more_face_indicator"
+                android:layout_width="fill_parent"
+                android:layout_height="15dp"
+                android:layout_marginTop="3dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginBottom="3dp" >
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/text_color_cfcfcf"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:orientation="horizontal" >
+
+                <HorizontalScrollView
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@color/text_color_f5f5f5"
+                    android:scrollbars="none" >
+
+                    <LinearLayout
+                        android:id="@+id/more_face_type_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="left"
+                        android:orientation="horizontal" >
+
+                        <LinearLayout
+                            android:layout_width="50dp"
+                            android:layout_height="35dp"
+                            android:gravity="center" >
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/chat_expression_option_elected"
+                                android:scaleType="fitCenter" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:background="@color/text_color_cfcfcf"/>
+
+                <TextView
+                    android:id="@+id/more_face_send_layout"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/text_color_efefef"
+                    android:gravity="center"
+                    android:text="发 送"
+                    android:textColor="@color/text_color_9a9a9a" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</cn.chono.yopper.view.ResizeLayout>

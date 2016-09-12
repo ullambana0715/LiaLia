@@ -1,0 +1,263 @@
+package cn.chono.yopper.activity.appointment;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ViewFlipper;
+
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.utils.ActivityUtil;
+
+public class AppointPublishTypeSelectActivity extends Activity implements OnGestureListener {
+	private ViewFlipper flipper;
+	private GestureDetector detector;
+	private LayoutInflater mInflater;
+	private LinearLayout appoint_publish_type_select_layout;
+	
+	/** Called when the activity is first created. */
+
+	private String frompage;
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.appoint_pulish_type_select_activity);
+
+		mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		frompage=this.getIntent().getExtras().getString(YpSettings.FROM_PAGE);
+		detector = new GestureDetector(this);
+		flipper = (ViewFlipper) this.findViewById(R.id.ViewFlipper1);
+		appoint_publish_type_select_layout=(LinearLayout) this.findViewById(R.id.appoint_publish_type_select_layout);
+
+		flipper.addView(addOnePageView());
+
+		flipper.addView(addTwoPageView());
+		
+		appoint_publish_type_select_layout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+	}
+
+	private View addOnePageView() {
+
+		View one_layoutView=mInflater.inflate(R.layout.appoint_publish_type_one_page_layout, null);
+
+		ImageView appoint_publish_type_more_iv= (ImageView) one_layoutView.findViewById(R.id.appoint_publish_type_more_iv);
+		ImageView appoint_publish_type_eat_iv= (ImageView) one_layoutView.findViewById(R.id.appoint_publish_type_eat_iv);
+		ImageView appoint_publish_type_movice_iv= (ImageView) one_layoutView.findViewById(R.id.appoint_publish_type_movice_iv);
+		ImageView appoint_publish_type_ktv_iv= (ImageView) one_layoutView.findViewById(R.id.appoint_publish_type_ktv_iv);
+		ImageView appoint_publish_type_bar_iv= (ImageView) one_layoutView.findViewById(R.id.appoint_publish_type_bar_iv);
+		ImageView appoint_publish_type_coffee_iv= (ImageView) one_layoutView.findViewById(R.id.appoint_publish_type_coffee_iv);
+		LinearLayout appoint_publish_type_one_page_layout=(LinearLayout) one_layoutView.findViewById(R.id.appoint_publish_type_one_page_layout);
+		
+		appoint_publish_type_one_page_layout.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		
+		appoint_publish_type_eat_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("typeId", Constant.APPOINT_TYPE_EAT + "");
+				MobclickAgent.onEvent(AppointPublishTypeSelectActivity.this, "date_selected", map);
+				Bundle bundle = new Bundle();
+				bundle.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, Constant.APPOINT_TYPE_EAT);
+				bundle.putString(YpSettings.FROM_PAGE,frompage);
+				ActivityUtil.jump(AppointPublishTypeSelectActivity.this, ReleaseMealActivity.class, bundle, 0, 100);
+				finish();
+			}
+		});
+		
+		appoint_publish_type_movice_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("typeId", Constant.APPOINT_TYPE_MOVIE + "");
+				MobclickAgent.onEvent(AppointPublishTypeSelectActivity.this, "date_selected", map);
+
+				Bundle bundle = new Bundle();
+				bundle.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, Constant.APPOINT_TYPE_MOVIE);
+				bundle.putString(YpSettings.FROM_PAGE,frompage);
+				ActivityUtil.jump(AppointPublishTypeSelectActivity.this, ReleaseMovieActivity.class, bundle, 0, 100);
+				finish();
+			}
+		});
+		
+		appoint_publish_type_ktv_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("typeId", Constant.APPOINT_TYPE_KTV + "");
+				MobclickAgent.onEvent(AppointPublishTypeSelectActivity.this, "date_selected", map);
+				Bundle bundle = new Bundle();
+				bundle.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, Constant.APPOINT_TYPE_KTV);
+				bundle.putString(YpSettings.FROM_PAGE,frompage);
+				ActivityUtil.jump(AppointPublishTypeSelectActivity.this, ReleaseMealActivity.class, bundle, 0, 100);
+				finish();
+			}
+		});
+		
+		appoint_publish_type_bar_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("typeId", Constant.APPOINT_TYPE_BAR + "");
+				MobclickAgent.onEvent(AppointPublishTypeSelectActivity.this, "date_selected", map);
+				Bundle bundle = new Bundle();
+				bundle.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, Constant.APPOINT_TYPE_BAR);
+				bundle.putString(YpSettings.FROM_PAGE,frompage);
+				ActivityUtil.jump(AppointPublishTypeSelectActivity.this, ReleaseMealActivity.class, bundle, 0, 100);
+				finish();
+			}
+		});
+		
+		appoint_publish_type_coffee_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("typeId", Constant.APPOINT_TYPE_COFFEE + "");
+				MobclickAgent.onEvent(AppointPublishTypeSelectActivity.this, "date_selected", map);
+				Bundle bundle = new Bundle();
+				bundle.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, Constant.APPOINT_TYPE_COFFEE);
+				bundle.putString(YpSettings.FROM_PAGE,frompage);
+				ActivityUtil.jump(AppointPublishTypeSelectActivity.this, ReleaseMealActivity.class, bundle, 0, 100);
+				finish();
+			}
+		});
+		
+		appoint_publish_type_more_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				flipper.setInAnimation(AnimationUtils.loadAnimation(AppointPublishTypeSelectActivity.this, R.anim.push_left_in));
+				flipper.setOutAnimation(AnimationUtils.loadAnimation(AppointPublishTypeSelectActivity.this, R.anim.push_left_out));
+				flipper.showNext();
+			}
+		});
+		return one_layoutView;
+	}
+
+	private View addTwoPageView() {
+
+		View two_layoutView=mInflater.inflate(R.layout.appoint_publish_type_two_page_layout, null);
+
+		LinearLayout appoint_publish_type_two_page_layout=(LinearLayout) two_layoutView.findViewById(R.id.appoint_publish_type_two_page_layout);
+		ImageView appoint_publish_type_back_iv= (ImageView) two_layoutView.findViewById(R.id.appoint_publish_type_back_iv);
+		ImageView appoint_publish_type_fitness_iv= (ImageView) two_layoutView.findViewById(R.id.appoint_publish_type_fitness_iv);
+		ImageView appoint_publish_type_dog_iv= (ImageView) two_layoutView.findViewById(R.id.appoint_publish_type_dog_iv);
+		
+		appoint_publish_type_two_page_layout.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		
+		appoint_publish_type_back_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				flipper.setInAnimation(AnimationUtils.loadAnimation(AppointPublishTypeSelectActivity.this, R.anim.push_right_in));
+				flipper.setOutAnimation(AnimationUtils.loadAnimation(AppointPublishTypeSelectActivity.this, R.anim.push_right_out));
+				flipper.showPrevious();
+			}
+		});
+		
+		appoint_publish_type_fitness_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("typeId", Constant.APPOINT_TYPE_FITNESS + "");
+				MobclickAgent.onEvent(AppointPublishTypeSelectActivity.this, "date_selected", map);
+				Bundle bundle = new Bundle();
+				bundle.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, Constant.APPOINT_TYPE_FITNESS);
+				bundle.putString(YpSettings.FROM_PAGE,frompage);
+				ActivityUtil.jump(AppointPublishTypeSelectActivity.this, PublishSportsDatingActivity.class, bundle, 0, 100);
+				finish();
+			}
+		});
+		
+		appoint_publish_type_dog_iv.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("typeId", Constant.APPOINT_TYPE_DOG + "");
+				MobclickAgent.onEvent(AppointPublishTypeSelectActivity.this, "date_selected", map);
+				Bundle bundle = new Bundle();
+				bundle.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, Constant.APPOINT_TYPE_DOG);
+				bundle.putString(YpSettings.FROM_PAGE,frompage);
+				ActivityUtil.jump(AppointPublishTypeSelectActivity.this, PublishDogDatingActivity.class, bundle, 0, 100);
+				finish();
+			}
+		});
+		
+		return two_layoutView;
+	}
+
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		return this.detector.onTouchEvent(event);
+	}
+
+	@Override
+	public boolean onDown(MotionEvent e) {
+		return false;
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,float velocityY) {
+		
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,float distanceY) {
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		return false;
+	}
+}

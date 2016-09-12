@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/chat_appoint_dialog_bg"
+    android:minWidth="220dp"
+    android:paddingBottom="25dp"
+    android:orientation="vertical" >
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:singleLine="true"
+        android:gravity="center"
+        android:layout_marginTop="6dp"
+        android:text="邀请Ta报名我的约会"
+        android:textColor="@color/text_color_ff7462"
+        android:textSize="14sp" />
+
+
+
+    <LinearLayout
+        android:id="@+id/chat_send_dating_one_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp">
+
+        <ImageView
+            android:id="@+id/chat_send_dating_type_img_one_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/chat_appoint_eat" />
+
+        <TextView
+            android:id="@+id/chat_send_dating_content_one_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginLeft="7dp"
+            android:text=""
+            android:textColor="@color/text_color_333333"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/chat_send_dating_one_view"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#eeeeee"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/chat_send_dating_two_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        >
+
+        <ImageView
+            android:id="@+id/chat_send_dating_type_img_two_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/chat_appoint_eat" />
+
+        <TextView
+            android:id="@+id/chat_send_dating_content_two_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginLeft="7dp"
+            android:text=""
+            android:textColor="@color/text_color_333333"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/chat_send_dating_two_view"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#eeeeee"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/chat_send_dating_three_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        >
+
+        <ImageView
+            android:id="@+id/chat_send_dating_type_img_three_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/chat_appoint_eat" />
+
+        <TextView
+            android:id="@+id/chat_send_dating_content_three_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginLeft="7dp"
+            android:text=""
+            android:textColor="@color/text_color_333333"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</LinearLayout>

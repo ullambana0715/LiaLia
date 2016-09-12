@@ -1,0 +1,607 @@
+package cn.chono.yopper.activity.appointment;
+
+import android.app.Dialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsBean;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsRespBean;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsService;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoRespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.base.SimpleWebViewActivity;
+import cn.chono.yopper.data.AppointMovieWebData;
+import cn.chono.yopper.data.AppointWebData;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.MoviceDto;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.TimeUtil;
+
+/**
+ * Created by zxb on 2016/1/4.
+ */
+public class ReleaseMovieActivity extends MainFrameActivity {
+
+    private TextView movie_tv;
+    private TextView cinema_tv;
+
+    private RadioGroup appoint_date_radio_group;
+    private RadioGroup appoint_tiem_radio_group;
+    private RadioGroup appoint_sex_radio_group;
+    private RadioGroup appoint_money_radio_group;
+    private Button release_but;
+
+    private RadioButton movie_video_button;
+
+    private RadioButton sex_man_radiobutton;
+    private RadioButton sex_women_radiobutton;
+
+    private RadioButton date_seven_radiobutton;
+    private RadioButton time_nolimit_radiobutton;
+    private RadioButton money_my_radiobutton;
+
+    private String webData;
+
+
+    private int costType;
+    private int sexRequired;
+    private int availableTime;
+    private int activityType;//活动类型
+    private int day_type = 6;
+    private boolean videoRequired = false;
+
+
+    private double longtitude = 121.478844;
+    private double latitude = 31.240517;
+
+    private String city = "上海";
+
+    private int userid;
+
+    private int user_sex;
+
+    private Dialog loadingDiaog;
+
+    private boolean isButClick = true;
+
+    private int APPOINTMENT_YTPE;
+
+
+    private AppointMovieWebData appointMovieWebData;
+
+    private String frompage;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("发布约会（电影）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("发布约会（电影）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+        setContentLayout(R.layout.release_movie_activity);
+
+        APPOINTMENT_YTPE = getIntent().getExtras().getInt(YpSettings.APPOINTMENT_INTENT_YTPE);
+        frompage=getIntent().getExtras().getString(YpSettings.FROM_PAGE);
+
+        userid = YPApplication.getInstance().loginUser.getUserId();
+        user_sex = DbHelperUtils.getDbUserSex(userid);
+
+        activityType = Constant.APPOINT_TYPE_MOVIE;
+
+        initView();
+
+        LocInfo myLoc = Loc.getLoc();
+        if (myLoc != null && !CheckUtil.isEmpty(myLoc.getCity())) {
+            city = myLoc.getCity();
+
+            LogUtils.e("myLoc=" + myLoc.toString());
+        }
+        loadingDiaog = DialogUtil.LoadingDialog(ReleaseMovieActivity.this, null);
+
+    }
+
+    private void initView() {
+
+        getBtnGoBack().setVisibility(View.GONE);
+        gettvBack().setVisibility(View.VISIBLE);
+        gettvBack().setText("取消");
+        getTvTitle().setText("电影");
+
+
+        movie_tv = (TextView) findViewById(R.id.movie_tv);
+        cinema_tv = (TextView) findViewById(R.id.cinema_tv);
+
+
+        appoint_date_radio_group = (RadioGroup) findViewById(R.id.appoint_date_radio_group);
+        appoint_tiem_radio_group = (RadioGroup) findViewById(R.id.appoint_tiem_radio_group);
+        appoint_sex_radio_group = (RadioGroup) findViewById(R.id.appoint_sex_radio_group);
+        appoint_money_radio_group = (RadioGroup) findViewById(R.id.appoint_money_radio_group);
+        release_but = (Button) findViewById(R.id.release_but);
+
+        movie_video_button = (RadioButton) findViewById(R.id.movie_video_button);
+        movie_video_button.setChecked(false);
+
+
+        sex_women_radiobutton = (RadioButton) findViewById(R.id.sex_women_radiobutton);
+        sex_man_radiobutton = (RadioButton) findViewById(R.id.sex_man_radiobutton);
+
+        date_seven_radiobutton = (RadioButton) findViewById(R.id.date_seven_radiobutton);
+        date_seven_radiobutton.setChecked(true);
+        day_type = 6;
+
+        time_nolimit_radiobutton = (RadioButton) findViewById(R.id.time_nolimit_radiobutton);
+        time_nolimit_radiobutton.setChecked(true);
+        availableTime = 0;
+
+
+        money_my_radiobutton = (RadioButton) findViewById(R.id.money_my_radiobutton);
+        money_my_radiobutton.setChecked(true);
+        costType = 0;
+
+        switch (user_sex) {
+            case 1:
+                sex_women_radiobutton.setChecked(true);
+                sexRequired = 2;
+                break;
+            case 2:
+                sex_man_radiobutton.setChecked(true);
+                sexRequired = 1;
+                break;
+
+        }
+
+
+        appoint_date_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.date_seven_radiobutton://七天内
+                        day_type = 6;
+                        break;
+                    case R.id.date_today_radiobutton://今天
+                        day_type = 0;
+                        break;
+                    case R.id.date_tomorrow_radiobutton://明天
+                        day_type = 1;
+                        break;
+
+                }
+
+
+            }
+        });
+        appoint_tiem_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                //约会时间，Unknown = 0, Morning = 1, Noon = 2, Afternoon = 3, Night = 4
+                switch (checkedId) {
+                    case R.id.time_nolimit_radiobutton://无限
+                        availableTime = 0;
+                        break;
+                    case R.id.time_midday_radiobutton://中午
+                        availableTime = 1;
+                        break;
+                    case R.id.time_pm_radiobutton://下午
+                        availableTime = 2;
+                        break;
+                    case R.id.time_night_radiobutton://晚上
+                        availableTime = 3;
+                        break;
+                }
+
+            }
+        });
+        appoint_sex_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.sex_man_radiobutton://1男
+                        sexRequired = 1;
+                        break;
+                    case R.id.sex_women_radiobutton://2女
+                        sexRequired = 2;
+                        break;
+                    case R.id.sex_nolimit_radiobutton://0无限
+                        sexRequired = 0;
+                        break;
+                }
+
+            }
+        });
+        appoint_money_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.money_my_radiobutton://0 我请
+                        costType = 0;
+                        break;
+                    case R.id.money_aa_radiobutton://1 AA
+                        costType = 1;
+                        break;
+                    case R.id.money_you_radiobutton:// 2 他请
+                        costType = 2;
+                        break;
+                }
+
+
+            }
+        });
+
+
+        movie_video_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoRequired) {
+                    videoRequired = false;
+                } else {
+                    videoRequired = true;
+                }
+                movie_video_button.setChecked(videoRequired);
+
+            }
+        });
+
+
+        release_but.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!isButClick) {
+                    return;
+                }
+
+                if (null == appointMovieWebData) {
+                    DialogUtil.showDisCoverNetToast(ReleaseMovieActivity.this, "选择想看的电影");
+                } else {
+                    isButClick = false;
+                    loadingDiaog.show();
+                    getBaiduCity(appointMovieWebData);
+
+                }
+
+
+            }
+        });
+
+        getGoBackLayout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                finish();
+
+            }
+        });
+
+        movie_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //跳转到web 查看帮助
+                Bundle bd = new Bundle();
+                bd.putString(YpSettings.BUNDLE_KEY_WEB_URL, "app/loader.html");
+                bd.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "电影");
+                bd.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                bd.putBoolean(YpSettings.BUNDLE_KEY_WEB_NEED_HOST, true);
+
+                bd.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, APPOINTMENT_YTPE);
+                bd.putInt(YpSettings.SOURCE_YTPE_KEY, 100);
+
+
+                Intent it = new Intent(ReleaseMovieActivity.this, SimpleWebViewActivity.class);
+                it.putExtras(bd);
+
+                startActivityForResult(it, YpSettings.WEB_CODE);
+            }
+        });
+
+        cinema_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (null == appointMovieWebData) {
+                    DialogUtil.showDisCoverNetToast(ReleaseMovieActivity.this, "选择想看的电影");
+                } else {
+                    //跳转到web 查看帮助
+                    Bundle bd = new Bundle();
+                    bd.putString(YpSettings.BUNDLE_KEY_WEB_URL, "app/loader.html");
+                    bd.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "电影");
+                    bd.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                    bd.putBoolean(YpSettings.BUNDLE_KEY_WEB_NEED_HOST, true);
+
+                    bd.putInt(YpSettings.APPOINTMENT_INTENT_YTPE, APPOINTMENT_YTPE);
+                    bd.putInt(YpSettings.SOURCE_YTPE_KEY, 100);
+
+
+                    Intent it = new Intent(ReleaseMovieActivity.this, SimpleWebViewActivity.class);
+                    it.putExtras(bd);
+
+                    startActivityForResult(it, YpSettings.WEB_CODE);
+                }
+
+
+            }
+        });
+
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case YpSettings.WEB_CODE:
+                if (null != data) {
+                    webData = data.getExtras().getString(YpSettings.WEB_DATA_KEY);
+                    appointMovieWebData = JsonUtils.fromJson(webData, AppointMovieWebData.class);
+                    if (null != appointMovieWebData) {
+                        if (!TextUtils.isEmpty(appointMovieWebData.getName())) {
+                            movie_tv.setText(appointMovieWebData.getName());
+                        }
+                        if (!TextUtils.isEmpty(appointMovieWebData.getCinema())) {
+                            cinema_tv.setText(appointMovieWebData.getCinema());
+
+                        }
+                    }
+
+
+                    LogUtils.e("--webData---=" + webData);
+                } else {
+                    LogUtils.e("--webData=");
+                }
+
+                break;
+        }
+    }
+
+
+    private void getBaiduCity(final AppointMovieWebData appointWebData) {
+
+
+        if (!TextUtils.isEmpty(appointWebData.getLat()) && !TextUtils.isEmpty(appointWebData.getLng()) ){
+            ReverseGeoCodeOption option = new ReverseGeoCodeOption();
+
+            final double lat=Double.valueOf(appointWebData.getLat());
+            final  double lng=Double.valueOf(appointWebData.getLng());
+
+
+            LatLng latLng = new LatLng(lat,lng);
+            option.location(latLng);
+
+            GeoCoder geoCoder = GeoCoder.newInstance();
+            geoCoder.reverseGeoCode(option);
+
+
+            geoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
+                @Override
+                public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
+
+                    LatLng pt = new LatLng(latitude, longtitude);
+                    pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+                    publish_dating(appointWebData, city, pt.latitude, pt.longitude);
+
+
+                }
+
+                @Override
+                public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
+
+                    LogUtils.e("onGetReverseGeoCodeResult=" + reverseGeoCodeResult.getAddress());
+
+                    publish_dating(appointWebData, reverseGeoCodeResult.getAddressDetail().city, lat, lng);
+                }
+            });
+
+
+
+        }else{
+            LatLng pt = new LatLng(latitude, longtitude);
+            pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+            publish_dating(appointWebData, city, pt.latitude, pt.longitude);
+        }
+
+
+
+
+    }
+
+
+    private void publish_dating(AppointMovieWebData appointWebData,String city, double latitude, double longtitude) {
+
+        LatLng pt = new LatLng(latitude, longtitude);
+        pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+
+        ReleaseAppointmentsBean releaseAppointmentsBean = new ReleaseAppointmentsBean();
+        releaseAppointmentsBean.setCity(city);
+        releaseAppointmentsBean.setActivityType(activityType);
+        releaseAppointmentsBean.setCostType(costType);
+        releaseAppointmentsBean.setSexRequired(sexRequired);
+        releaseAppointmentsBean.setAvailableTime(availableTime);
+        releaseAppointmentsBean.setVideoRequired(videoRequired);
+        releaseAppointmentsBean.setLat(latitude);
+        releaseAppointmentsBean.setLng(longtitude);
+        releaseAppointmentsBean.setEndTime(TimeUtil.timeWithSettingDay(day_type));
+        LogUtils.e("结束时间=" + TimeUtil.timeWithSettingDay(day_type));
+
+
+        MoviceDto moviceDto = new MoviceDto();
+        moviceDto.setUrl(appointWebData.getUrl());
+        moviceDto.setName(appointWebData.getName());
+
+        if (!TextUtils.isEmpty(appointWebData.getLat())) {
+            moviceDto.setLat(Double.valueOf(appointWebData.getLat()));
+        }
+        if (!TextUtils.isEmpty(appointWebData.getLng())) {
+            moviceDto.setLng(Double.valueOf(appointWebData.getLng()));
+        }
+
+
+        moviceDto.setImg(appointWebData.getImg());
+        moviceDto.setAddress(appointWebData.getAddress());
+        moviceDto.setCinema(appointWebData.getCinema());
+
+        String distance = appointWebData.getDistance();
+
+
+        Double distan = 0.0;
+
+        if (!TextUtils.isEmpty(distance)) {
+            Pattern p = Pattern.compile("[0-9]");
+            Matcher m = p.matcher(distance);
+
+            while (m.find()) {
+                distan = Double.valueOf(m.group());
+
+            }
+        }
+
+        moviceDto.setDistance(distan);
+
+
+        releaseAppointmentsBean.setMovie(moviceDto);
+
+
+        ReleaseAppointmentsService releaseAppointmentsService = new ReleaseAppointmentsService(this);
+        releaseAppointmentsService.parameter(releaseAppointmentsBean);
+        releaseAppointmentsService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                isButClick = true;
+                ReleaseAppointmentsRespBean releaseAppointmentsRespBean = (ReleaseAppointmentsRespBean) respBean;
+                if (releaseAppointmentsRespBean.getResp() != null) {
+                    getUserInfo();
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                isButClick = true;
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(ReleaseMovieActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(ReleaseMovieActivity.this, msg);
+
+                }
+
+            }
+        });
+
+        releaseAppointmentsService.enqueue();
+    }
+
+    /***
+     * 获取用户信息及相册信息
+     */
+    private void getUserInfo() {
+
+        UserInfoBean userInfoBean = new UserInfoBean();
+        userInfoBean.setUserId(userid);
+        userInfoBean.setAlbum(true);
+        userInfoBean.setBubble(true);
+        userInfoBean.setBump(true);
+        userInfoBean.setForDating(false);
+        userInfoBean.setWish(true);
+        userInfoBean.setVerification(true);
+        userInfoBean.setAppointment(true);
+
+        UserInfoService userInfoService = new UserInfoService(this);
+        userInfoService.parameter(userInfoBean);
+        userInfoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UserInfoRespBean userInfoRespBean = (UserInfoRespBean) respBean;
+                UserDto userInfo = userInfoRespBean.getResp();
+                String jsonstr = JsonUtils.toJson(userInfo);
+                if (null != userInfo) {
+                    // 保存数据
+                    DbHelperUtils.saveUserInfo(userid, jsonstr);
+                    // 保存数据
+                    DbHelperUtils.saveBaseUser(userid, userInfo);
+                }
+                loadingDiaog.dismiss();
+
+                DialogUtil.showDisCoverNetToast(ReleaseMovieActivity.this, "发布成功");
+                if(frompage.equals("UserAppointListActivity")){
+                    ReleaseMovieActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(2);
+                }else{
+                    ReleaseMovieActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(1);
+                }
+                finish();
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+                DialogUtil.showDisCoverNetToast(ReleaseMovieActivity.this, "发布成功");
+                if(frompage.equals("UserAppointListActivity")){
+                    ReleaseMovieActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(2);
+                }else{
+                    ReleaseMovieActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(1);
+                }
+                finish();
+            }
+        });
+        userInfoService.enqueue();
+    }
+}

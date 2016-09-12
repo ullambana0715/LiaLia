@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:background="@color/color_f8f8f7"
+              android:orientation="vertical">
+
+    <include layout="@layout/commont_top_title" />
+
+    <LinearLayout
+        android:id="@+id/atrrack_info_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/white_bg_5_corners"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="我的魅力:"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/atrrack_info_charm_num_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:text="0"
+                        android:textColor="@color/color_ff7462"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="共可兑现:"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/atrrack_info_account_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:text="0"
+                        android:textColor="@color/color_ff7462"
+                        android:textSize="17sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/atrrack_info_withdraw_tv"
+                android:layout_width="80dp"
+                android:layout_height="28dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/shape_bg_ff7462_corners_5px"
+                android:gravity="center"
+                android:text="提现"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="15dp"
+            android:lineSpacingExtra="5dp"
+            android:text="收到礼物，签收后立即获得魅力值"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="5dp"
+            android:lineSpacingExtra="5dp"
+            android:text="如果您两周内不处理，系统将视为无效会还给对方"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="5dp"
+            android:lineSpacingExtra="5dp"
+            android:text="魅力值大于或等于100才可以提现"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/no_data_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="暂无礼物"
+            android:textColor="@color/color_b2b2b2"
+            android:gravity="center_horizontal"
+            android:paddingTop="20dp"
+            android:visibility="gone"/>
+
+        <com.andview.refreshview.XRefreshView
+
+            app:isHeightMatchParent="false"
+            app:isWidthMatchParent="false"
+
+            android:id="@+id/attract_info_xrefreshview"
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_ffffff">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/attract_info_gift_rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </com.andview.refreshview.XRefreshView>
+
+    </LinearLayout>
+
+
+    <ViewStub
+        android:id="@+id/error_network_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_network_layout" />
+
+</LinearLayout>

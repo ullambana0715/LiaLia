@@ -1,0 +1,46 @@
+package cn.chono.yopper.view.ScoreCord;
+
+import android.graphics.Rect;
+import android.media.Image;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+
+/**
+ * Created by zxb on 2015/12/3.
+ */
+public class ScoreCordBean {
+    public Rect CordLayoutRect = new Rect();
+    public LinearLayout CordLinearLayout;
+    public float CordLayoutAlpha;
+    public int CordLayoutTop;
+
+    public int CordLayoutWidth;
+    public int CordLayoutHight;
+
+    public ImageView CordLayoutLevelClownIV;
+    public ImageView CordLayoutLevelGeneralIV;
+    public ImageView CordLayoutLevelHandsomeIV;
+    public ImageView CordLayoutLevelVeryHandsomeIV;
+
+    public ImageView CordLayoutPhotoAlbumOneIV;
+    public ImageView CordLayoutPhotoAlbumTwoIV;
+    public ImageView CordLayoutPhotoAlbumThreeIV;
+
+    public RelativeLayout CordLayoutTopLayout;
+    public LinearLayout CordLayoutLeveLLayout;
+
+    public LinearLayout CordLayoutLevelPhotoAlbumLatout;
+
+    public DaillyFaceratingCandidatesDto CordLayoutDaillyFaceratingCandidatesDto;
+
+    public int CordLayoutPhotoAlbumSize;
+    public int CordLayoutPhotoAlbumWH;
+
+
+
+
+
+}

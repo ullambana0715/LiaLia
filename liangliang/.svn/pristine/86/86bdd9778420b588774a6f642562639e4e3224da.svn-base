@@ -1,0 +1,49 @@
+package cn.chono.yopper.Service.Http.DaillyFaceratingCandidates;
+
+import com.lidroid.xutils.db.annotation.Column;
+import com.lidroid.xutils.db.annotation.NoAutoIncrement;
+import com.lidroid.xutils.db.annotation.Table;
+
+import java.io.Serializable;
+
+import cn.chono.yopper.data.EntityBase;
+
+/**
+ * Created by zxb on 2015/12/7.
+ */
+@Table(name ="DaillyFaceratingCandidatesDB")
+public class DaillyFaceratingCandidatesDB extends EntityBase implements Serializable {
+
+    @Column(column = "data")
+    private String data;
+
+    @Column(column = "userId")
+    private int userId;
+
+    @Column(column = "time")
+    private long time;
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+}

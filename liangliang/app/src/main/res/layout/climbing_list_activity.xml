@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ff7462"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/climbing_list_titlelayout"
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:background="@color/color_ffffff"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <!-- 返回按钮 -->
+
+        <LinearLayout
+            android:id="@+id/climbing_list_btnGoBack_container"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:gravity="left|center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp">
+
+            <ImageView
+                android:id="@+id/main_frame_btnGoBack"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/icon_go_back" />
+
+        </LinearLayout>
+
+
+        <!-- 页面标题 -->
+
+        <TextView
+            android:id="@+id/main_frame_tvTitle"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="爬行榜"
+            android:textColor="@color/color_000000"
+            android:textSize="18sp" />
+
+        <RelativeLayout
+            android:id="@+id/climbing_list_btnOption_containers"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/climbing_list_tvOption_prize_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="2dp"
+                android:layout_toRightOf="@+id/climbing_list_tvOption"
+                android:background="@drawable/bg_bubble"
+                android:gravity="center"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/climbing_list_tvOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="奖品兑换"
+                android:textColor="@color/color_ff7462"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/my_climbing_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/climbing_list_titlelayout">
+
+        <TextView
+            android:id="@+id/myplace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="12dp"
+
+            android:text="@string/text_my_place"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/climbing_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/myplace"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:drawableLeft="@drawable/icon_climbing_info"
+            android:drawablePadding="3dp"
+            android:gravity="center"
+            android:text="@string/text_climbing_info"
+            android:textColor="#ffd4d8"
+            android:textSize="12sp" />
+
+        <RelativeLayout
+            android:id="@+id/climbing_cort_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/myplace"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/my_climbing_no"
+            android:paddingBottom="30dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+
+            <TextView
+                android:id="@+id/my_climbing_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="22dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="暂未上榜"
+                android:textColor="@color/color_ff7462"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/climbing_sort_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/my_climbing_no"
+                android:layout_toRightOf="@id/my_climbing_no"
+                android:includeFontPadding="false"
+                android:paddingTop="5dp"
+                android:text="名"
+                android:textColor="@color/color_ff7462"
+                android:textSize="10sp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/climbing_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/climbing_cort_layout"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="15dp"
+            android:textSize="13sp" />
+    </RelativeLayout>
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/climbing_list_xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/my_climbing_info"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_corner">
+
+        <ListView
+            android:id="@+id/climbing_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:listSelector="@android:color/transparent" />
+
+
+    </com.andview.refreshview.XRefreshView>
+
+    <LinearLayout
+        android:id="@+id/error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/my_climbing_info"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_corner"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <include layout="@layout/error_network_layout" />
+
+        <TextView
+            android:id="@+id/error_no_climblist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:textColor="@color/color_999999"
+            android:textSize="26sp" />
+    </LinearLayout>
+
+    <cn.chono.yopper.view.CircleEnergy
+        android:id="@+id/my_energy_circle"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="50dp"
+        android:layout_marginRight="20dp" />
+
+</RelativeLayout>

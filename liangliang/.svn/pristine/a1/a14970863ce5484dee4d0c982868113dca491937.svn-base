@@ -1,0 +1,260 @@
+package cn.chono.yopper.utils;
+
+import android.text.TextUtils;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.data.BumpDataBD;
+import cn.chono.yopper.data.BumpFriends;
+import cn.chono.yopper.data.BumpResults;
+import cn.chono.yopper.data.MessageDto;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.NotificationMsg;
+import cn.chono.yopper.smack.entity.ChatDto;
+
+public class ChatUtils {
+
+	/*
+     * 保存聊天记录
+	 * 
+	 */
+
+    public static void SaveOrUpdateChatMsgToDB(String jid, String message, long date, int r_s_type, int rend_status, String packetId, int send_status) {
+        //今日星碰消息只有且仅有一条，所以对其我们查找不用根据packetId 因为packetId变化，而星碰jid则不会变化
+        // 处理乱码乱码
+        String mid = YPApplication.loginUser.getUserId() + "@chono";
+        String messages2 = null;
+        try {
+            messages2 = new String(message.getBytes(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        ChatDto dto;
+        try {
+
+            if (jid.equals("system_dailly_match@chono")) {
+                dto = YPApplication.getInstance().db.findFirst(Selector.from(ChatDto.class).where("jid", " =", "system_dailly_match@chono").and("mid", " =", mid));
+            } else {
+                dto = YPApplication.getInstance().db.findFirst(Selector.from(ChatDto.class).where("packetid", " =", packetId));
+            }
+
+            if (jid.equals("system_today_lucky@chono")) {
+                dto = YPApplication.getInstance().db.findFirst(Selector.from(ChatDto.class).where("jid", " =", "system_today_lucky@chono").and("mid", " =", mid));
+            } else {
+                dto = YPApplication.getInstance().db.findFirst(Selector.from(ChatDto.class).where("packetid", " =", packetId));
+            }
+
+
+            if (dto != null) {
+                dto.setDate(date);
+                dto.setMid(mid);
+                dto.setJid(jid);
+                dto.setMessage(messages2);
+                dto.setPacketid(packetId);
+                dto.setR_s_type(r_s_type);
+                dto.setStatus(rend_status);
+                dto.setSend_status(send_status);
+                YPApplication.getInstance().db.update(dto);
+            } else {
+                dto = new ChatDto(mid, jid, messages2, date, r_s_type, rend_status, packetId, send_status);
+                YPApplication.getInstance().db.save(dto);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void SaveOrUpdateChatMsgToDB(String packetId, int send_status) {
+        //今日星碰消息只有且仅有一条，所以对其我们查找不用根据packetId 因为packetId变化，而星碰jid则不会变化
+
+        try {
+            ChatDto dto = YPApplication.getInstance().db.findFirst(Selector.from(ChatDto.class).where("packetid", " =", packetId));
+
+            if (dto != null) {
+                dto.setSend_status(send_status);
+                YPApplication.getInstance().db.update(dto);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 保存消息记录
+     *
+     * @param chatMessage
+     * @param JID
+     * @param is_success
+     * @param is_strange
+     */
+    public static void saveMessageRecord(String chatMessage, String JID, int is_success, int is_strange, int s_r_type, long time) {
+        String mid = YPApplication.loginUser.getUserId() + "@chono";
+
+        try {
+            MessageDto messageDto = YPApplication.getInstance().db.findFirst(Selector.from(MessageDto.class).where(" mid", " =", mid).and(" jid", " =", JID));
+
+            if (messageDto == null) {
+                String messages2 = null;
+                messages2 = new String(chatMessage.getBytes(), "UTF-8");
+                messageDto = new MessageDto(messages2, time, mid, JID, is_success, is_strange, 0, s_r_type);
+                YPApplication.getInstance().db.save(messageDto);
+
+            } else {
+                messageDto.setLastmessage(chatMessage);
+                messageDto.setLasttime(time);
+                messageDto.setSend_state(is_success);
+
+                if (messageDto.getIs_strange() == 1) {
+                    messageDto.setIs_strange(is_strange);
+                }
+
+                YPApplication.getInstance().db.update(messageDto);
+            }
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    /**
+     * 对接受的消息进行处理 不符合消息类型的消息将丢掉 符合条件的则保存至数据库
+     */
+    public static ChatDto ReceiveMsgDeal(String message, String msgType, String mid, String jid, String packetId, long date, String resource) {
+
+        ChatDto chatDto = null;
+
+        if (CheckUtil.isEmpty(msgType)) {
+            return null;
+        }
+
+        if (TextUtils.equals(msgType, MessageType.ChattingNotification)) {
+            return null;
+        }
+
+        if (TextUtils.equals(msgType, MessageType.AccpetChattingRequest)) {
+            return null;
+        }
+
+        if (TextUtils.equals(msgType, MessageType.ChattingRequest)) {
+            return null;
+        }
+
+        NotificationMsg notificationMsg = JsonUtils.fromJson(message, NotificationMsg.class);
+
+        int notifytype=0;
+
+        if(notificationMsg!=null){
+
+            notifytype = notificationMsg.getNotifytype();
+
+        }
+
+
+
+        try {
+            chatDto = new ChatDto(mid, jid, message, date, ChatDto.r_type, ChatDto.no_read_status, packetId, ChatDto.succeed);
+
+            ChatUtils.SaveOrUpdateChatMsgToDB(jid, message, date, ChatDto.r_type, ChatDto.no_read_status, packetId, ChatDto.succeed);
+
+            if(notifytype!=9){
+
+                // 加过滤判断 如果是碰友 则直接是存熟悉人 不存陌生人，如果不是朋友也不是聊友 则存陌生人
+                boolean is_bump = isBump(jid);
+
+                if (is_bump) {
+                    ChatUtils.saveMessageRecord(message, jid, ChatDto.succeed, MessageDto.no_strange, ChatDto.r_type, date);
+                } else {
+                    if (resource.equals("system")) {
+                        ChatUtils.saveMessageRecord(message, jid, ChatDto.succeed, MessageDto.no_strange, ChatDto.r_type, date);
+                    } else {
+                        ChatUtils.saveMessageRecord(message, jid, ChatDto.succeed, MessageDto.strange, ChatDto.r_type, date);
+                    }
+                }
+
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+        return chatDto;
+    }
+
+    /**
+     * 根据jid判断是否是自己的碰友
+     *
+     * @param jid
+     * @return
+     */
+
+    public static boolean isBump(String jid) {
+
+        List<BumpResults> dblist = new ArrayList<BumpResults>();
+
+        boolean is_bump = false;
+        // 进来先取本地数据
+        try {
+            BumpDataBD children = YPApplication.db.findFirst(Selector.from(BumpDataBD.class).where("UserId", " =", YPApplication.loginUser.getUserId()));
+
+            if (children != null) {
+
+                BumpFriends nearest = new BumpFriends();
+                nearest = JsonUtils.fromJson(children.getData(), BumpFriends.class);
+                if (nearest != null) {
+                    dblist.addAll(nearest.getResults());
+
+                }
+            }
+
+            if (dblist != null && dblist.size() > 0) {
+                int size = dblist.size();
+                for (int i = 0; i < size; i++) {
+                    BumpResults bumpResults = dblist.get(i);
+
+                    if (jid.equals(bumpResults.getId() + "@chono")) {
+                        //是碰友
+                        is_bump = true;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return is_bump;
+    }
+
+    /**
+     * 根据消息内容获取消息类型
+     *
+     * @param msg
+     * @return
+     */
+    public static String getMsgType(String msg) {
+        String type = "";
+        try {
+            JSONObject json = new JSONObject(msg);
+            if (json != null) {
+
+                type = json.getString("type");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return type;
+    }
+
+
+}

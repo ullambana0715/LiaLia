@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+
+    <solid android:color="@android:color/white" />
+
+    <size
+        android:height="20dp"
+        android:width="20dp" />
+
+</shape><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/qupai_common_overscroll_edge.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/qupai_common_overscroll_edge.xml -->

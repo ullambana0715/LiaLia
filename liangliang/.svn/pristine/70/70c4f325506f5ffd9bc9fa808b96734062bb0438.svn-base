@@ -1,0 +1,430 @@
+package cn.chono.yopper.activity.base;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.util.LogUtils;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.DiscoverScreenService.DiscoverScreenServiceTask;
+import cn.chono.yopper.Service.Http.BubbleLimit.BubbleLimitBean;
+import cn.chono.yopper.Service.Http.BubbleLimit.BubbleLimitRespBean;
+import cn.chono.yopper.Service.Http.BubbleLimit.BubbleLimitService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YpBaseFragment;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.near.BubblingAddressActivity;
+import cn.chono.yopper.activity.near.DiscoverBubblingFragment;
+import cn.chono.yopper.activity.near.DiscoverPeopleFragment;
+import cn.chono.yopper.data.ChatAttamptRespDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.BackCallSex;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.DiscoverPeopleScreenListener;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.TabFragmentIndicator;
+import cn.chono.yopper.view.TabFragmentIndicator.OnDiscoverTabSelecterdListener;
+import cn.chono.yopper.view.TabFragmentIndicator.OnTabClickListener;
+
+public class DiscoverListFragment extends YpBaseFragment implements
+        OnTabClickListener, OnDiscoverTabSelecterdListener, OnClickListener, DiscoverPeopleScreenListener {
+
+    private Context mContext;
+    private LinearLayout discover_root_layout;
+
+    private ViewPager mViewPager;
+    private TabFragmentIndicator tabFragmentIndicator;
+    /**
+     * 筛选
+     */
+    private TextView discover_fragment_filter_tv;
+    /**
+     * 冒个泡
+     */
+    private ImageView discover_fragment_bubbling_tv;
+
+    private Dialog sexDialog;
+
+    private Dialog loadingDiaog;
+
+    private Dialog limitdialog;
+    private boolean isPostLimit = false;
+
+    public DiscoverListFragment() {
+
+    }
+
+    private int tab_Id = 0;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View convertView = inflater.inflate(R.layout.discover_fragment_layout, container, false);
+
+        initView(convertView);
+
+        setDiscoverPeopleScreenListener(this);
+
+        int screen = DiscoverScreenServiceTask.getInstance().getDBScreen();
+
+        setScreenTv(screen);
+
+        return convertView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LogUtils.e("-------------附近列表------------");
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+    }
+
+    /**
+     * 实现实位回调监听
+     */
+
+    /**
+     * 初始化
+     */
+    private void initView(View view) {
+
+        tab_Id = SharedprefUtil.getInt(getActivity(),
+                YpSettings.DISCOVER_TAB_ID, 0);
+        discover_root_layout = (LinearLayout) view.findViewById(R.id.discover_root_layout);
+        discover_root_layout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        mViewPager = (ViewPager) view.findViewById(R.id.discover_viewPager);
+        tabFragmentIndicator = (TabFragmentIndicator) view
+                .findViewById(R.id.discover_tabFragmentIndicator);
+        tabFragmentIndicator.addFragment(0, DiscoverPeopleFragment.class);
+        tabFragmentIndicator.addFragment(1, DiscoverBubblingFragment.class);
+
+        tabFragmentIndicator.setTabContainerView(1,
+                R.layout.tab_indicator_layout);
+
+        tabFragmentIndicator.setTabSliderView(1, R.layout.tab_slider);
+        tabFragmentIndicator.setOnTabClickListener(this);
+        tabFragmentIndicator.setOnDiscoverTabSelecterdListener(this);
+        tabFragmentIndicator
+                .setViewPager(mViewPager, getChildFragmentManager());
+
+        discover_fragment_filter_tv = (TextView) view
+                .findViewById(R.id.discover_fragment_filter_tv);
+        discover_fragment_filter_tv.setOnClickListener(this);
+        discover_fragment_bubbling_tv = (ImageView) view
+                .findViewById(R.id.discover_fragment_bubbling_tv);
+        discover_fragment_bubbling_tv.setOnClickListener(this);
+        discover_fragment_bubbling_tv.setVisibility(View.INVISIBLE);
+
+        mViewPager.setCurrentItem(tab_Id);
+
+
+        if (tab_Id == 0) {
+            YpBaseFragment.isItmePeople = true;
+            YpBaseFragment.isItmeBubbling = false;
+            tabFragmentIndicator.setTabSelected(tab_Id, 1);
+
+
+        } else {
+
+            YpBaseFragment.isItmePeople = false;
+            YpBaseFragment.isItmeBubbling = true;
+            tabFragmentIndicator.setTabSelected(tab_Id, 0);
+
+
+        }
+
+
+    }
+
+
+    @Override
+    public void onTabClick(View v) {
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.discover_fragment_filter_tv:// 筛选
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+                if (!isScreenAvailable) {
+                    return;
+                }
+                sexDialog = DialogUtil.createSexDialog(getActivity(), "筛选", "全部", "只看男", "只看优质男", "只看女", new BackCallSex() {
+                    @Override
+                    public void onOneLayout(View view, Object... obj) {
+                        //全部
+
+                        if (!getActivity().isFinishing()) {
+                            sexDialog.dismiss();
+                        }
+                        setScreenTv(0);
+                        DiscoverScreenServiceTask.getInstance().saveDBScreen(0);
+
+                        getOnScreenSelectedFreshListener().onScreenSelectedFresh(1, 0);
+                    }
+
+                    @Override
+                    public void onTwoLayout(View view, Object... obj) {
+                        //只看男
+                        if (!getActivity().isFinishing()) {
+                            sexDialog.dismiss();
+                        }
+                        setScreenTv(1);
+                        DiscoverScreenServiceTask.getInstance().saveDBScreen(1);
+
+                        getOnScreenSelectedFreshListener().onScreenSelectedFresh(1, 1);
+
+                    }
+
+                    @Override
+                    public void onThreeLayout(View view, Object... obj) {
+                        //优质男
+                        if (!getActivity().isFinishing()) {
+                            sexDialog.dismiss();
+                        }
+                        setScreenTv(3);
+                        DiscoverScreenServiceTask.getInstance().saveDBScreen(3);
+
+                        getOnScreenSelectedFreshListener().onScreenSelectedFresh(1, 3);
+
+                    }
+
+                    @Override
+                    public void onFourLayout(View view, Object... obj) {
+
+
+                        //只看女
+                        if (!getActivity().isFinishing()) {
+                            sexDialog.dismiss();
+                        }
+                        setScreenTv(2);
+                        DiscoverScreenServiceTask.getInstance().saveDBScreen(2);
+
+                        getOnScreenSelectedFreshListener().onScreenSelectedFresh(1, 2);
+
+                    }
+                });
+                if (!getActivity().isFinishing()) {
+                    sexDialog.show();
+                }
+
+                break;
+            case R.id.discover_fragment_bubbling_tv:// 冒个泡
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+
+                if (!isPostLimit) {
+                    isPostLimit = true;
+                    loadingDiaog = DialogUtil.LoadingDialog(getActivity(), null);
+                    if (!getActivity().isFinishing()) {
+                        loadingDiaog.show();
+                    }
+                    getBubbleLimit();
+                }
+
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+
+    private void setScreenTv(int screen) {
+        switch (screen) {
+            case 0:
+                discover_fragment_filter_tv.setText("(全部)");
+                break;
+            case 1:
+                discover_fragment_filter_tv.setText("(男)");
+                break;
+            case 2:
+                discover_fragment_filter_tv.setText("(女)");
+                break;
+            case 3:
+                discover_fragment_filter_tv.setText("(优质男)");
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void OnScreenSelectedBackStatus(int screen) {
+
+        setScreenTv(screen);
+        DiscoverScreenServiceTask.getInstance().saveDBScreen(screen);
+    }
+
+
+    //
+    public interface OnScreenSelectedFreshListener {
+        /**
+         * @param appointType 标记是否需要请求网络。0--不需要 ，1--需要
+         * @param sexType     筛选的性别，0--无限 ;1--男;2--女
+         */
+        public void onScreenSelectedFresh(int appointType, int sexType);
+    }
+
+    @Override
+    public void onDiscoverTabSelected(int tabId) {
+        tab_Id = tabId;
+        int selected_tab_Id = SharedprefUtil.getInt(getActivity(), YpSettings.DISCOVER_TAB_ID, 0);
+
+        SharedprefUtil.saveInt(getActivity(), YpSettings.DISCOVER_TAB_ID, tab_Id);
+        switch (tabId) {
+            case 0:
+                discover_fragment_filter_tv.setVisibility(View.VISIBLE);
+                discover_fragment_bubbling_tv.setVisibility(View.INVISIBLE);
+
+                if (null != YpBaseFragment.getOnDiscoverItmePeopleListener()) {
+                    YpBaseFragment.getOnDiscoverItmePeopleListener().onDiscoverItmePeople();
+                }
+
+
+                break;
+            case 1:
+                discover_fragment_filter_tv.setVisibility(View.GONE);
+                discover_fragment_bubbling_tv.setVisibility(View.VISIBLE);
+
+                if (null != YpBaseFragment.getOnDiscoverItmeBubblingListener()) {
+                    YpBaseFragment.getOnDiscoverItmeBubblingListener().onDiscoverItmeBubbling();
+                }
+
+
+                break;
+
+            default:
+                break;
+        }
+
+
+        if (selected_tab_Id == tabId && selected_tab_Id == 0 && IndexActivity.getOnPeopleBackToTopListener() != null) {
+            IndexActivity.getOnPeopleBackToTopListener().onPeopleBackToTop();
+
+
+        } else if (selected_tab_Id == tabId && selected_tab_Id == 1 && IndexActivity.getOnBubbleBackToTopListener() != null) {
+            IndexActivity.getOnBubbleBackToTopListener().onBubbleBackToTop();
+
+        }
+
+    }
+
+
+    private void getBubbleLimit() {
+
+        BubbleLimitBean bubbleLimitBean = new BubbleLimitBean();
+        BubbleLimitService bubbleLimitService = new BubbleLimitService(getActivity());
+        bubbleLimitService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                loadingDiaog.dismiss();
+                isPostLimit = false;
+                BubbleLimitRespBean bubbleLimitRespBean = (BubbleLimitRespBean) respBean;
+                ChatAttamptRespDto dto = bubbleLimitRespBean.getResp();
+                if (dto != null) {
+                    if (dto.isSuccess() == true) {
+                        SharedprefUtil.saveBoolean(getActivity(), YpSettings.BUBBLING_ADDRESS_STR, false);
+                        Bundle bundle = new Bundle();
+                        SharedprefUtil.save(getActivity(), YpSettings.BUBBLING_FROM_TAG_KEY, YpSettings.BUBBLING_FROM_TAG_DISCOVER);
+                        ActivityUtil.jump(getActivity(), BubblingAddressActivity.class, bundle, 0, 200);
+                    } else {
+                        limitdialog = DialogUtil.createHintOperateDialog(getActivity(), "", dto.getMessage(), "查看帮助", "确定", backCallListener);
+                        if (!getActivity().isFinishing()) {
+                            limitdialog.show();
+                        }
+                    }
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+                isPostLimit = false;
+                // 没有网络的场合，去提示页
+                DialogUtil.showDisCoverNetToast(getActivity());
+            }
+        });
+        bubbleLimitService.enqueue();
+    }
+
+
+    private BackCallListener backCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!getActivity().isFinishing()) {
+                limitdialog.dismiss();
+            }
+
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!getActivity().isFinishing()) {
+                limitdialog.dismiss();
+            }
+            //跳转到web 查看帮助
+
+            Bundle bundle = new Bundle();
+            bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Standard/AvatarAudit");
+            bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "头像审核规范");
+            bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+
+            ActivityUtil.jump(getActivity(), SimpleWebViewActivity.class, bundle, 0, 100);
+
+        }
+    };
+
+
+    public interface OnPeopleBackToTopListener {
+        public void onPeopleBackToTop();
+    }
+
+    public interface OnBubbleBackToTopListener {
+        public void onBubbleBackToTop();
+    }
+
+    public interface OnDiscoverItmePeopleListener {
+        public void onDiscoverItmePeople();
+    }
+
+    public interface OnDiscoverItmeBubblingListener {
+        public void onDiscoverItmeBubbling();
+    }
+}

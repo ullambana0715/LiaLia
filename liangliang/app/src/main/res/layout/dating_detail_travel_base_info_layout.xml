@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:id="@+id/dating_detail_travel_content_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text=""
+            android:textColor="@color/color_333333"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/dating_detail_travel_img_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text="邀约对象"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_travel_obj_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/dating_detail_travel_obj_iv"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+             />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text="出发时间"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_travel_time_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text=""
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text="预计时间"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_travel_plan_time_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text=""
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:layout_width="52sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text="出行方式"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_travel_trip_mode_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text=""
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:layout_width="52sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:gravity="left"
+            android:text="费用"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_travel_cost_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text=""
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

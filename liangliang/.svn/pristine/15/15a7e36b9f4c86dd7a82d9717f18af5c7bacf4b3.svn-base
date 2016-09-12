@@ -1,0 +1,727 @@
+package cn.chono.yopper;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.os.AsyncTask;
+import android.support.multidex.MultiDexApplication;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+
+import com.alibaba.sdk.android.AlibabaSDK;
+import com.alibaba.sdk.android.media.MediaService;
+import com.baidu.mapapi.SDKInitializer;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.duanqu.qupai.engine.session.VideoSessionCreateInfo;
+import com.duanqu.qupai.sdk.android.QupaiService;
+import com.lidroid.xutils.DbUtils;
+import com.lidroid.xutils.DbUtils.DbUpgradeListener;
+import com.lidroid.xutils.util.LogUtils;
+import com.taobao.tae.sdk.callback.InitResultCallback;
+import com.tendcloud.appcpa.TalkingDataAppCpa;
+import com.umeng.analytics.AnalyticsConfig;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import cn.chono.yopper.activity.video.VideoMusicActivity;
+import cn.chono.yopper.data.LoginUser;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocBaidu;
+import cn.chono.yopper.tencent.TencentShareUtil;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ContextUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.utils.UUIDGenerator;
+import cn.chono.yopper.utils.video.VideoContant;
+import cn.chono.yopper.utils.video.VideoFileUtils;
+import cn.chono.yopper.weibo.SinaWeiBoUtil;
+import cn.chono.yopper.wxapi.WeixinUtils;
+
+public class YPApplication extends MultiDexApplication {
+
+    public static boolean isActive = false;//全局变量isActive = false 记录当前已经进入后台
+
+    /**
+     *
+     *
+     */
+
+
+    public static String StartCode = "versionName";
+    //Application对象
+    public static YPApplication instance;
+    public static File cacheDir;
+
+
+    /**
+     * 单例模式中获取唯一的YPApplication实例
+     */
+    public synchronized static YPApplication getInstance() {
+        if (null == instance) {
+            instance = new YPApplication();
+        }
+        return instance;
+
+    }
+
+
+    public YPApplication() {
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        ContextUtil.init(this);
+        setupGlide(this);// 配制图片加载属性
+        pkName = getAppInfo_pkName();// 获取应用程序包信息
+        versionName = getAppInfo_versionName();// 获取应用程序包信息
+        versionCode = getAppInfo_versionCode();// 获取应用程序包信息
+        ClientId = getMacAddress(this);// 获取唯一设备号
+        VERSION_RELEASE = getPhoneInfo(this);// 获取手机版本信息
+        application_Market = getChannelFromApk(this, "channelId");
+        // 友盟设置渠道来源
+        if (CheckUtil.isEmpty(application_Market)) {
+            //如果没有拿到渠道号则用官方
+            AnalyticsConfig.setChannel("official");
+        } else {
+            AnalyticsConfig.setChannel(application_Market);
+        }
+
+        isMzMoble = isMeiZu(this);// 判断是否魅族手机
+        db = setDbUitls();// Sqlist
+        getUserInfo(this);
+
+        YpSettings.gBaiduAvailable = true;
+        try {
+            // 初始化百度地图
+            initBaidu();
+        } catch (Exception e) {
+            YpSettings.gBaiduAvailable = false;
+        }
+
+        if (YpSettings.gBaiduAvailable) {
+            // 初始化百度地图定位
+            try {
+                LocBaidu.init(this);
+            } catch (Exception e) {
+                try {
+                    LocBaidu.init(this);
+                } catch (Exception e2) {
+                    YpSettings.gBaiduAvailable = false;
+                }
+            }
+        }
+
+        // 位置服务
+        Loc.ini(this);
+        DialogUtil.setContext(getApplicationContext());
+
+        try {
+            //
+            SinaWeiBoUtil.initweibo(this);
+            SinaWeiBoUtil.registerWeibo();
+
+            TencentShareUtil.initTencent(this);
+            // 微信
+            WeixinUtils.initWeixin(this);
+            WeixinUtils.regWeixin();
+
+        } catch (Exception e) {
+
+        }
+
+        // TalkingData的统计
+        TalkingDataAppCpa.init(this.getApplicationContext(), "f4e091d7984441ae8a5568b5d64855f3", application_Market);
+        // // 趣拍初始化和配制
+        initVideoQupaiService(this);
+//        ActivityManagerTasks.getInstance().enqueue(getApplicationContext());
+//        DaillyTask.getInstance().enqueue();
+
+
+    }
+
+    public static String versionName;
+    public static String pkName;
+    public static int versionCode;
+
+    /**
+     * 获取应用程序包信息
+     *
+     * @param @return 设定文件
+     * @return String 返回类型
+     * @throws
+     * @Title: getAppInfo
+     */
+    private String getAppInfo_pkName() {
+        String pkName = null;
+        try {
+            pkName = this.getPackageName();
+        } catch (Exception e) {
+        }
+        return pkName;
+    }
+
+    private String getAppInfo_versionName() {
+        String versionName = null;
+        try {
+            versionName = this.getPackageManager().getPackageInfo(pkName, 0).versionName;
+        } catch (Exception e) {
+        }
+        return versionName;
+    }
+
+    private int getAppInfo_versionCode() {
+        int versionCode = 0;
+        try {
+            versionCode = this.getPackageManager().getPackageInfo(pkName, 0).versionCode;
+
+        } catch (Exception e) {
+        }
+        return versionCode;
+    }
+
+    public static String VERSION_RELEASE;
+    private static String VERSION_RELEASE_str = "VERSION_RELEASE_str";
+
+    /**
+     * 获取手机版本信息
+     *
+     * @param context
+     * @return
+     */
+    private String getPhoneInfo(Context context) {
+        String VERSION_RELEASE = SharedprefUtil.get(context, VERSION_RELEASE_str, "");
+
+        if (TextUtils.isEmpty(VERSION_RELEASE)) {
+            VERSION_RELEASE = android.os.Build.VERSION.RELEASE;
+            SharedprefUtil.save(context, VERSION_RELEASE_str, VERSION_RELEASE);
+        }
+
+        return VERSION_RELEASE;
+    }
+
+    /**
+     * 投放到应用平台的市场
+     */
+    public static String application_Market = "official";
+
+    /**
+     * 获取渠道名
+     *
+     * @param ctx 此处习惯性的设置为activity，实际上context就可以
+     * @return 如果没有获取成功，那么返回值为空
+     */
+    public String getChannelName(Context ctx) {
+
+        if (ctx == null) {
+            return null;
+        }
+
+        String channelName = null;
+        try {
+            PackageManager packageManager = ctx.getPackageManager();
+            if (packageManager != null) {
+                //注意此处为ApplicationInfo 而不是 ActivityInfo,因为友盟设置的meta-data是在application标签中，而不是某activity标签中，所以用ApplicationInfo
+                ApplicationInfo applicationInfo = packageManager.getApplicationInfo(ctx.getPackageName(), PackageManager.GET_META_DATA);
+                if (applicationInfo != null) {
+                    if (applicationInfo.metaData != null) {
+                        //key换成说需要的key
+                        channelName = applicationInfo.metaData.getString("UMENG_CHANNEL");
+                    }
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return channelName;
+    }
+
+    /**
+     * 获取唯一设备号
+     */
+
+    public static String ClientId;
+    private static String clientID_str = "clientID_str";
+
+    /**
+     * 获取唯一设备号
+     *
+     * @param @return 设定文件
+     * @return String 返回类型
+     * @throws
+     * @Title: getMacAddress
+     */
+    @SuppressLint("NewApi")
+    private String getMacAddress(Context context) {
+        String ClientId = SharedprefUtil.get(context, clientID_str, "");
+        if (TextUtils.isEmpty(ClientId)) {
+            final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+
+            final String tmDevice, tmSerial, androidId;
+            tmDevice = "" + tm.getDeviceId();
+            tmSerial = "" + tm.getSimSerialNumber();
+            androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+            UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
+            ClientId = deviceUuid.toString();
+            SharedprefUtil.save(this, clientID_str, UUIDGenerator.getUUIDForm(ClientId));
+        }
+        return UUIDGenerator.getUUIDForm(ClientId);
+    }
+
+
+    /**
+     * 图片加载配制（自定义缓存路径）
+     */
+    private void setupGlide(Context context) {
+        GlideBuilder builder = new GlideBuilder(context);
+
+        cacheDir = Glide.getPhotoCacheDir(context);
+    }
+
+    public static boolean isMzMoble = false;
+
+    /**
+     * 判断手机是不是魅族手机
+     *
+     * @param @param  ctx
+     * @param @return 设定文件
+     * @return boolean 返回类型
+     * @throws
+     * @Title: getDrawable
+     */
+    public boolean isMeiZu(Context ctx) {
+
+        boolean isMeizu = false;
+        String manufacturer = android.os.Build.MANUFACTURER;
+        String str = manufacturer.toLowerCase();
+
+        if (str.contains("meizu")) {
+            isMeizu = true;
+        } else {
+            isMeizu = false;
+        }
+        return isMeizu;
+    }
+
+    public static DbUtils db;
+
+    /**
+     * Sqlist工具
+     *
+     * @return
+     */
+    private DbUtils setDbUitls() {
+        String sdPath = this.getFilesDir().getPath() + "/Yopper/database/";
+        DbUtils db = DbUtils.create(this, sdPath, "yopper.db", 3,
+                new DbUpgradeListener() {
+
+                    @Override
+                    public void onUpgrade(DbUtils arg0, int oldVersion,
+                                          int newVersion) {
+
+                    }
+                });
+        return db;
+    }
+
+
+    /**
+     * 登陆成功后返回信息保存的字段
+     */
+
+    public static LoginUser loginUser;
+
+    private void getUserInfo(Context context) {
+        String login_info_Path = context.getFilesDir().getPath() + "/Yopper/logininfo";
+        String responseInfo = "";
+        File file = new File(login_info_Path);
+        if (file.exists()) {
+
+            BufferedReader br = null;
+            InputStreamReader read=null;
+            try {
+                StringBuilder sb = new StringBuilder();
+
+
+                read = new InputStreamReader(new FileInputStream(file), "utf-8");//考虑到编码格式
+                String s = "";
+                br = new BufferedReader(read);
+                while ((s = br.readLine()) != null) {
+                    sb.append(s + "\n");
+
+                }
+                responseInfo = sb.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+
+                    try {
+
+                        if (br!=null){
+                            br.close();
+                        }
+                        if (read !=null){
+                            read.close();
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+            }
+        }
+        if (!TextUtils.isEmpty(responseInfo)) {
+            try {
+                loginUser = (LoginUser) deSerialization(responseInfo);
+            } catch (ClassNotFoundException e) {
+                loginUser = setLoginUserData(context, new LoginUser());
+                e.printStackTrace();
+
+            } catch (IOException e) {
+                loginUser = setLoginUserData(context, new LoginUser());
+                e.printStackTrace();
+
+            }
+        } else {
+            loginUser = setLoginUserData(context, new LoginUser());
+
+        }
+
+    }
+
+    /**
+     * 保存登录后的用户信息
+     *
+     * @param context
+     * @param
+     */
+    public void saveUserInfo(Context context, LoginUser loginUserdto) {
+        try {
+            if (loginUserdto != null) {
+                loginUser = loginUserdto;
+                String responseInfo = serialize(loginUserdto);
+
+                wirteLoginInfo(context, responseInfo);
+//                SharedprefUtil.save(context, UserInfoStr, responseInfo);
+                setrefreshTokenExpiration(this, loginUserdto.getExpiration());
+
+            } else {
+                loginUser = setLoginUserData(context, new LoginUser());
+            }
+
+        } catch (IOException e) {
+            loginUser = setLoginUserData(context, new LoginUser());
+            e.printStackTrace();
+        }
+
+    }
+
+    private void wirteLoginInfo(Context context, String info) {
+
+        String login_info_Path = context.getFilesDir().getPath() + "/Yopper/logininfo";
+
+        File f = new File(login_info_Path);
+        if (f.exists()) {
+            f.delete();
+        }
+
+
+        OutputStream out = null;
+        try {
+
+            out = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+
+            e.printStackTrace();
+        }
+        // 将字符串转成字节数组
+
+        try {
+            byte b[] = info.getBytes("utf-8");
+            // 将byte数组写入到文件之中
+            out.write(b);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e2) {
+                    e2.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 序列化对象
+     *
+     * @param loginUser
+     * @return
+     * @throws IOException
+     */
+    private String serialize(LoginUser loginUser) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+                byteArrayOutputStream);
+        objectOutputStream.writeObject(loginUser);
+        String serStr = byteArrayOutputStream.toString("ISO-8859-1");
+        serStr = java.net.URLEncoder.encode(serStr, "UTF-8");
+        objectOutputStream.close();
+        byteArrayOutputStream.close();
+        return serStr;
+    }
+
+    /**
+     * 反序列化对象
+     *
+     * @param str
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private LoginUser deSerialization(String str) throws IOException,
+            ClassNotFoundException {
+        String redStr = java.net.URLDecoder.decode(str, "UTF-8");
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+                redStr.getBytes("ISO-8859-1"));
+        ObjectInputStream objectInputStream = new ObjectInputStream(
+                byteArrayInputStream);
+        LoginUser person = (LoginUser) objectInputStream.readObject();
+        objectInputStream.close();
+        byteArrayInputStream.close();
+
+        return (LoginUser) person;
+    }
+
+    private LoginUser setLoginUserData(Context context, LoginUser loginUser) {
+
+        loginUser.setAuthToken("");
+        loginUser.setExpiration(-1);
+        loginUser.setMsg("");
+        loginUser.setRefreshToken("");
+        loginUser.setUserId(0);
+        wirteLoginInfo(context, "");
+        return loginUser;
+
+    }
+
+    /**
+     * 登陆成功后返回信息保存的字段
+     */
+    public static String refreshTokenExpiration = "refreshTokenExpiration";
+
+    /**
+     * 获取保存过期时间
+     */
+    public static long getrefreshTokenExpiration(Context context) {
+        return SharedprefUtil.getLong(context, refreshTokenExpiration, 0);
+
+    }
+
+    /**
+     * 保存登陆成功后过期的时间
+     *
+     * @param context
+     * @param expiration
+     */
+    public void setrefreshTokenExpiration(Context context, long expiration) {
+        long currentTime = TimeUtil.getCurrentTimeMillis();// 当前时间
+        long totalTime = (long) (currentTime + expiration - (1 * 1000 * 60 * 60 * 24 * 10));// 过期前的时间
+        // 保存过期时间
+        SharedprefUtil.saveLong(context, refreshTokenExpiration, totalTime);
+    }
+
+    /**
+     * 初始化百度地图api
+     */
+    public void initBaidu() {
+        // 初始化百度地图管理器
+        SDKInitializer.initialize(getApplicationContext());
+    }
+
+    /**
+     * 趣拍对象（只有初始化成功后对象才存在）；使用时必须自我判断对象是否存在。 qupaiService ！=null;
+     */
+
+    public static QupaiService qupaiService;
+
+    public static MediaService mediaService;
+
+    /**
+     * 趣拍的初始化和配制
+     *
+     * @param context
+     * @return
+     */
+    private void initVideoQupaiService(Context context) {
+        AlibabaSDK.asyncInit(context, new InitResultCallback() {
+
+            @Override
+            public void onFailure(int arg0, String arg1) {// 初始化失败时
+                LogUtils.e("趣拍初始化失败" + arg0);
+
+                qupaiService = null;
+            }
+
+            @Override
+            public void onSuccess() {// 初始化成功时
+                LogUtils.e("趣拍初始化成功");
+                qupaiService = AlibabaSDK.getService(QupaiService.class);
+                mediaService = AlibabaSDK.getService(MediaService.class);
+
+                VideoSessionCreateInfo info = new VideoSessionCreateInfo.Builder()
+                        .setOutputDurationLimit(VideoContant.DEFAULT_DURATION_LIMIT)// 视频的时长为8秒
+                        .setOutputVideoBitrate(VideoContant.DEFAULT_BITRATE)// 码率为2M，码率越小质量越差，合成更快
+                        .setHasImporter(false)// 开启导入
+                        .setWaterMarkPath("")// 水印本地路径，文件必须为rgba格式的PNG图片
+                        .setWaterMarkPosition(0)// (水印)传1和2，分别代表右上，右下
+                        .setHasEditorPage(true)// 是否需要编辑界面
+                        .setCameraFacing(Camera.CameraInfo.CAMERA_FACING_FRONT)// 摄像头方向
+                        .setBeautyProgress(80)// 美颜参数设置,默认为80
+                        .setBeautySkinOn(true)// 美颜是否开启
+                        .build();
+
+                qupaiService.initRecord(info);
+
+                Intent moreMusic = new Intent();// //是否需要更多音乐页面--如果不需要填空
+                moreMusic.setClass(YPApplication.this, VideoMusicActivity.class);
+
+                qupaiService.hasMroeMusic(moreMusic);
+
+                qupaiService.addMusic(99999999, "情窦初开", "assets://Qupai/music/99999999");
+                qupaiService.addMusic(99999998, "快乐女生", "assets://Qupai/music/99999998");
+
+//                qupaiServiceAddMusic(qupaiService);
+                //通过thread操作比task效率高,速度快
+                if (null != qupaiService){
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            LogUtils.d("Start thread to AddMusic"+System.currentTimeMillis());
+                            super.run();
+                            List<VideoFileUtils.VideoMuiscData> muiscFileList = VideoFileUtils.saveMuiscFile(VideoFileUtils.getVideoMuiscRoot().listFiles());
+                            for (VideoFileUtils.VideoMuiscData data : muiscFileList) {
+                                qupaiService.addMusic(data.id, data.name, "file://" + data.muiscPath);
+                            }
+                            LogUtils.d("End thread to AddMusic" + System.currentTimeMillis());
+                        }
+                    }.start();
+                }
+
+//                qupaiService.addMusic(99999999, "情窦初开", "assets://Qupai/music/99999999");
+//                qupaiService.addMusic(99999998, "快乐女生", "assets://Qupai/music/99999998");
+//
+//                List<VideoFileUtils.VideoMuiscData> muiscFileList = VideoFileUtils.saveMuiscFile(VideoFileUtils.getVideoMuiscRoot().listFiles());
+//
+//                for (VideoFileUtils.VideoMuiscData data : muiscFileList) {
+//                    qupaiService.addMusic(data.id, data.name, "file://" + data.muiscPath);
+//                }
+
+            }
+        });
+    }
+
+    /**
+     * 开启异步线程获取保存在本地的音乐文件
+     * @param qupaiService
+     */
+    private void qupaiServiceAddMusic(final QupaiService qupaiService){
+        LogUtils.d("Start task to AddMusic"+System.currentTimeMillis()+"");
+        if (null == qupaiService){
+            return;
+        }
+        AsyncTask<Void, Void, List<VideoFileUtils.VideoMuiscData>> asyncTask=new AsyncTask<Void, Void, List<VideoFileUtils.VideoMuiscData>>() {
+            @Override
+            protected List<VideoFileUtils.VideoMuiscData> doInBackground(Void... params) {
+
+
+
+
+                List<VideoFileUtils.VideoMuiscData> muiscFileList = VideoFileUtils.saveMuiscFile(VideoFileUtils.getVideoMuiscRoot().listFiles());
+
+
+
+
+
+                return muiscFileList;
+            }
+
+            @Override
+            protected void onPostExecute(List<VideoFileUtils.VideoMuiscData> videoMuiscDatas) {
+                super.onPostExecute(videoMuiscDatas);
+
+
+                for (VideoFileUtils.VideoMuiscData data : videoMuiscDatas) {
+                    qupaiService.addMusic(data.id, data.name, "file://" + data.muiscPath);
+                }
+                LogUtils.d("End task to AddMusic"+System.currentTimeMillis()+"");
+            }
+        };
+        asyncTask.execute();
+    }
+
+    private static String getChannelFromApk(Context context, String channelKey) {
+        //从apk包中获取
+        ApplicationInfo appinfo = context.getApplicationInfo();
+        String sourceDir = appinfo.sourceDir;
+        //注意这里：默认放在meta-inf/里， 所以需要再拼接一下
+        String key = "META-INF/" + channelKey;
+        String ret = "";
+        ZipFile zipfile = null;
+        try {
+            zipfile = new ZipFile(sourceDir);
+            Enumeration<?> entries = zipfile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = ((ZipEntry) entries.nextElement());
+                String entryName = entry.getName();
+                if (entryName.startsWith(key)) {
+                    ret = entryName;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (zipfile != null) {
+                try {
+                    zipfile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        String[] split = ret.split("_");
+        String channel = "";
+        if (split != null && split.length >= 2) {
+            channel = ret.substring(split[0].length() + 1);
+        }
+        return channel;
+    }
+
+
+}

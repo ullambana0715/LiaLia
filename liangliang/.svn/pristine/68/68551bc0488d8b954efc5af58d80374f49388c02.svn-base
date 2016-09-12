@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape android:shape="rectangle" xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="80dp"/>
+    <size android:width="28dp" android:height="16dp"/>
+    <solid android:color="#ff5252"/>
+</shape><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/guide_qupai_diy_new_bg.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/guide_qupai_diy_new_bg.xml -->

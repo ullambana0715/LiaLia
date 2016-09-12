@@ -1,0 +1,59 @@
+package cn.chono.yopper.Service.Http.SignUpManagement;
+
+import java.io.Serializable;
+
+import cn.chono.yopper.Service.Http.SignUpManagementMore.SignUpManagementMoreService;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementData implements Serializable {
+
+
+
+    private String mobile;
+    private SignUpManagementUser user;
+    private String joinTime;
+    private boolean isChoosen;
+    private SignUpManagementMatchScore matchScore;
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public SignUpManagementUser getUser() {
+        return user;
+    }
+
+    public void setUser(SignUpManagementUser user) {
+        this.user = user;
+    }
+
+    public String getJoinTime() {
+        return joinTime;
+    }
+
+    public void setJoinTime(String joinTime) {
+        this.joinTime = joinTime;
+    }
+
+    public boolean isChoosen() {
+        return isChoosen;
+    }
+
+    public void setChoosen(boolean choosen) {
+        isChoosen = choosen;
+    }
+
+    public SignUpManagementMatchScore getMatchScore() {
+        return matchScore;
+    }
+
+    public void setMatchScore(SignUpManagementMatchScore matchScore) {
+        this.matchScore = matchScore;
+    }
+}

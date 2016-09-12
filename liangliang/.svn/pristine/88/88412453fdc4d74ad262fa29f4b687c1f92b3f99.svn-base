@@ -1,0 +1,748 @@
+package cn.chono.yopper.smack;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.text.TextUtils;
+
+import com.lidroid.xutils.util.LogUtils;
+
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Mode;
+import org.jivesoftware.smack.provider.ProviderManager;
+import org.jivesoftware.smackx.OfflineMessageHeader;
+import org.jivesoftware.smackx.OfflineMessageManager;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.carbons.Carbon;
+import org.jivesoftware.smackx.carbons.CarbonManager;
+import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
+import org.jivesoftware.smackx.forward.Forwarded;
+import org.jivesoftware.smackx.packet.DelayInfo;
+import org.jivesoftware.smackx.ping.PingManager;
+import org.jivesoftware.smackx.ping.packet.Ping;
+import org.jivesoftware.smackx.ping.provider.PingProvider;
+import org.jivesoftware.smackx.provider.DelayInfoProvider;
+import org.jivesoftware.smackx.provider.DiscoverInfoProvider;
+import org.jivesoftware.smackx.receipts.DeliveryReceipt;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.MessageDto;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.NotificationMsg;
+import cn.chono.yopper.data.TextMsg;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.exception.XXException;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.smack.service.XXService;
+import cn.chono.yopper.utils.ChatUtils;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.Constants;
+import cn.chono.yopper.utils.ContextUtil;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.UUIDGenerator;
+
+public class SmackImpl implements Smack {
+
+    private static OutgoingFileTransfer fileTransfer;
+
+    // 客户端名称和类型。主要是向服务器登记，有点类似QQ显示iphone或者Android手机在线的功能
+    public static final String XMPP_IDENTITY_NAME = "XMPP";// 客户端名称
+    public static final String XMPP_IDENTITY_TYPE = "phone";// 客户端类型
+
+    private static final int PACKET_TIMEOUT = 30000;// 超时时间
+    private static final int Ping_TIMEOUT = 30000;// 超时时间
+
+    static {
+        registerSmackProviders();
+    }
+
+    // 做一些基本的配置
+    static void registerSmackProviders() {
+        ProviderManager pm = ProviderManager.getInstance();
+        // add IQ handling
+        pm.addIQProvider("query", "http://jabber.org/protocol/disco#info", new DiscoverInfoProvider());
+        // add delayed delivery notifications
+        pm.addExtensionProvider("delay", "urn:xmpp:delay", new DelayInfoProvider());
+        pm.addExtensionProvider("x", "jabber:x:delay", new DelayInfoProvider());
+        // add carbons and forwarding
+        pm.addExtensionProvider("forwarded", Forwarded.NAMESPACE, new Forwarded.Provider());
+        pm.addExtensionProvider("sent", Carbon.NAMESPACE, new Carbon.Provider());
+        pm.addExtensionProvider("received", Carbon.NAMESPACE, new Carbon.Provider());
+        // add delivery receipts
+        pm.addExtensionProvider(DeliveryReceipt.ELEMENT, DeliveryReceipt.NAMESPACE, new DeliveryReceipt.Provider());
+        pm.addExtensionProvider(DeliveryReceiptRequest.ELEMENT, DeliveryReceipt.NAMESPACE, new DeliveryReceiptRequest.Provider());
+        // add XMPP Ping (XEP-0199)
+        pm.addIQProvider("ping", "urn:xmpp:ping", new PingProvider());
+
+    }
+
+    private static XMPPConnection mXMPPConnection;// 连接对象
+    private static XXService mService;// 主服务
+
+    private PacketListener receivermPacketListener;// 消息动态监听
+    private PacketListener sendPacketListener;// 消息动态监听
+    private PacketListener mSendFailureListener;// 消息发送失败动态监听
+    private PacketListener mPongListener;// ping pong服务器动态监听
+    private PacketListener mSendingListener;// 消息发送失败动态监听
+
+
+    // ping-pong服务器
+    private String mPingID;// ping服务器的id
+    private long mPingTimestamp;// 时间戳
+    private PendingIntent mPingAlarmPendIntent;// 是通过闹钟来控制ping服务器的时间间隔
+    private PendingIntent mPongTimeoutAlarmPendIntent;// 判断服务器连接超时的闹钟
+    private static final String PING_ALARM = "cn.chono.yopper.PING_ALARM";// ping服务器闹钟BroadcastReceiver的Action
+    private static final String PONG_TIMEOUT_ALARM = "cn.chono.yopper.PONG_TIMEOUT_ALARM";// 判断连接超时的闹钟BroadcastReceiver的Action
+    private Intent mPingAlarmIntent = new Intent(PING_ALARM);
+    private Intent mPongTimeoutAlarmIntent = new Intent(PONG_TIMEOUT_ALARM);
+    private PongTimeoutAlarmReceiver mPongTimeoutAlarmReceiver = new PongTimeoutAlarmReceiver();// 注册连接超时广播接收者
+    private BroadcastReceiver mPingAlarmReceiver = new PingAlarmReceiver();// 注册定时ping服务器广播接收者
+
+    private IConnectionStatusCallback Callback;
+
+
+    private XmppConnectionStateListence connectionListener;
+
+
+    // ping-pong服务器
+
+    public SmackImpl(XXService service) {
+
+        this.mXMPPConnection = XmppConnection.getConnection();
+        this.mService = service;
+
+    }
+
+    @Override
+    public boolean login(String account, String password) throws XXException {// 登陆实现
+        try {
+            if (mXMPPConnection.isConnected()) {// 首先判断是否还连接着服务器，需要先断开
+                try {
+                    mXMPPConnection.disconnect();
+                } catch (Exception e) {
+                }
+            }
+            SmackConfiguration.setPacketReplyTimeout(PACKET_TIMEOUT);// 设置超时时间
+
+            SmackConfiguration.setDefaultPingInterval(0);
+
+
+            mXMPPConnection.connect();
+
+            if (!mXMPPConnection.isConnected()) {
+
+                throw new XXException("SMACK connect failed without exception!");
+            }
+
+//			mXMPPConnection.addConnectionListener(new ConnectionListener() {
+//
+//				public void connectionClosedOnError(Exception e) {
+//					mService.postConnectionFailed(e.getMessage());// 连接关闭时，动态反馈给服务
+//				}
+//
+//				public void connectionClosed() {
+//				}
+//
+//				public void reconnectingIn(int seconds) {
+//				}
+//
+//				public void reconnectionFailed(Exception e) {
+//				}
+//
+//				public void reconnectionSuccessful() {
+//				}
+//			});
+
+            initServiceDiscovery();// 与服务器交互消息监听,发送消息需要回执，改变消息状态,判断是否发送成功
+            // SMACK auto-logins if we were authenticated before
+
+            connectionListener = new XmppConnectionStateListence(mService);
+            mXMPPConnection.addConnectionListener(connectionListener);
+
+
+            if (!mXMPPConnection.isAuthenticated()) {
+                String ressource = SharedprefUtil.get(mService, Constants.RESSOURCE, XMPP_IDENTITY_TYPE);
+                mXMPPConnection.login(account, password, ressource);
+
+            }
+
+            OfflineMessageManager offlineManager = new OfflineMessageManager(mXMPPConnection);
+
+            Iterator<OfflineMessageHeader> its = offlineManager.getHeaders();
+
+
+            //设置上线
+            setStatusFromConfig();// 更新在线状态
+
+            registerAllListener();// 注册监听其他的事件，比如新消息
+
+            Intent intent = new Intent();
+            intent.setAction("cn.yopper.chono.connect.state");
+            Bundle bundle = new Bundle();
+            bundle.putString(YpSettings.CONNECT_STATE, "消息");
+            intent.putExtras(bundle);
+            ContextUtil.getContext().sendBroadcast(intent);
+
+            getOfflineMsg(offlineManager);
+
+        } catch (Exception e) {
+            // actually we just care for IllegalState or NullPointer or XMPPEx.
+            LogUtils.e("异常=" + e.getMessage());
+//			if(e!=null){
+//				if(!CheckUtil.isEmpty(e.getMessage())){
+//					if(e.getMessage().contains("not-authorized")){
+//						LogUtils.e("退出not-authorized");
+//						RemoveAliasAsyncTask loginAsyncTask = new RemoveAliasAsyncTask();
+//						loginAsyncTask.execute("账号在另外一台设备登录了");
+//					}
+//				}
+//			}
+            throw new XXException(e.getLocalizedMessage(), e.getCause());
+        }
+
+        return mXMPPConnection.isAuthenticated();
+    }
+
+    private void getOfflineMsg(OfflineMessageManager offlineManager) {
+        try {
+            Iterator<org.jivesoftware.smack.packet.Message> it = offlineManager.getMessages();
+
+            //			Map<String, ArrayList<Message>> offlineMsgs = new HashMap<String, ArrayList<Message>>();
+            //
+            //			while (it.hasNext()) {
+            //				org.jivesoftware.smack.packet.Message message = it.next();
+            //				System.out.println("收到离线消息, Received from 【" + message.getFrom()
+            //						+ "】 message: " + message.getBody());
+            //				String fromUser = message.getFrom().split("/")[0];
+            //
+            //				if (offlineMsgs.containsKey(fromUser)) {
+            //					offlineMsgs.get(fromUser).add(message);
+            //				} else {
+            //					ArrayList<Message> temp = new ArrayList<Message>();
+            //					temp.add(message);
+            //					offlineMsgs.put(fromUser, temp);
+            //				}
+            //			}
+            //
+            //			// 在这里进行处理离线消息集合......
+            //			Set<String> keys = offlineMsgs.keySet();
+            //			Iterator<String> offIt = keys.iterator();
+            //			while (offIt.hasNext()) {
+            //				String key = offIt.next();
+            //				ArrayList<Message> ms = offlineMsgs.get(key);
+            //
+            //				for (int i = 0; i < ms.size(); i++) {
+            //					System.out.println("-->" + ms.get(i));
+            //				}
+            //			}
+
+            offlineManager.deleteMessages();
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                //删除所有离线消息
+                offlineManager.deleteMessages();
+            } catch (XMPPException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
+     * 注册所有的监听
+     */
+    private void registerAllListener() {
+        // actually, authenticated must be true now, or an exception must have
+        // been thrown.
+        if (isAuthenticated()) {
+
+            registerReceiveNewMessageListener();// 注册收到消息监听
+
+            registerMessageSendFailureListener();// 注册消息发送失败监听
+            registerPongListener();// 注册服务器回应ping消息监听
+//			registerMessageSendingListener();
+
+            if (mService == null) {
+                mXMPPConnection.disconnect();
+                return;
+            }
+            // we need to "ping" the service to let it know we are actually
+            // connected, even when no roster entries will come in
+            mService.rosterChanged();// 处理服务器连接上但是连接mSmackable失败处理方法
+        }
+    }
+
+
+    /************
+     * 收到新消息处理
+     ********************/
+    private synchronized void registerReceiveNewMessageListener() {
+        // do not register multiple packet listeners
+        if (receivermPacketListener != null) {
+            // 如果监听存在就删除监听
+            mXMPPConnection.removePacketListener(receivermPacketListener);
+        }
+        // 对消息进行过滤
+        PacketTypeFilter filter = new PacketTypeFilter(Message.class);
+        if (receivermPacketListener == null) {
+            // 消息监听方法
+            receivermPacketListener = new PacketListener() {
+                public void processPacket(Packet packet) {
+
+                    LogUtils.e(packet.toXML());
+
+                    if (packet instanceof Message) {// 如果是消息类型
+
+                        Message msg = (Message) packet;
+
+                        if (CheckUtil.isEmpty(msg.getPacketID())) {
+                            msg.setPacketID(UUIDGenerator.getUUID());
+                        }
+
+                        // 获取消息内容
+                        String chatMessage = msg.getBody();
+
+                        if (CheckUtil.isEmpty(chatMessage)) {
+                            return;// 如果消息为空，直接返回了
+                        }
+
+                        // 监听消息类型是发送还是收到
+                        Carbon cc = CarbonManager.getCarbon(msg);
+
+                        if (cc != null && cc.getDirection() == Carbon.Direction.received) {// 收到的消息
+
+                            msg = (Message) cc.getForwarded().getForwardedPacket();
+                            chatMessage = msg.getBody();
+                        } else if (cc != null && cc.getDirection() == Carbon.Direction.sent) {//自己发送的
+                            return;
+                        }
+
+                        if (msg.getType() == Message.Type.error) {
+                            LogUtils.e("我自己发送的----------=" + msg.getPacketID());
+                            return;
+                        }
+
+                        String jid = getJabberID(msg.getFrom());// 消息来自对象
+
+                        LogUtils.e("jid"+jid);
+
+                        if(CheckUtil.isEmpty(jid)){
+                            return;
+                        }
+
+                        if(jid.equals("chono")){
+
+                            NotificationMsg notificationMsg = JsonUtils.fromJson(chatMessage, NotificationMsg.class);
+                            if (notificationMsg != null) {
+                                int notifytype = notificationMsg.getNotifytype();
+                                if (notifytype == 1) {
+                                    String bannerId = notificationMsg.getExtra().get("bannerId").toString();
+                                    SharedprefUtil.saveBoolean(ContextUtil.getContext(), bannerId, true);
+
+                                    Intent intent = new Intent();
+                                    intent.setAction("cn.yopper.chono.public.msg");
+                                    Bundle bundle=new Bundle();
+                                    bundle.putString("message",chatMessage);
+                                    intent.putExtras(bundle);
+                                    ContextUtil.getContext().sendBroadcast(intent);
+                                }
+                            }
+
+
+                            return;
+                        }
+
+
+                        String mid = YPApplication.loginUser.getUserId() + "@chono";
+
+
+
+                        if ( jid.equals(mid)) {
+                            return;
+                        }
+
+                        String resource = getJabberResource(msg.getFrom());
+                        LogUtils.e("resource"+resource);
+
+                        if(CheckUtil.isEmpty(resource)){
+                            return;
+                        }
+
+                        int postion=jid.indexOf("@");
+
+                        if(postion>=jid.length()||postion==-1){
+                            return;
+                        }
+
+                        String fromuserid = jid.substring(0,postion);
+
+                        String type = ChatUtils.getMsgType(chatMessage);
+
+                        if (!CheckUtil.isNumeric(fromuserid)) {
+                            //不是数字
+                            if (!resource.equals("system")) {
+                                return;
+                            }
+                            if (!TextUtils.equals(type, MessageType.Notification)) {
+                                return;
+                            } else {
+                                NotificationMsg notificationMsg = JsonUtils.fromJson(chatMessage, NotificationMsg.class);
+                                int notifytype = notificationMsg.getNotifytype();
+                                if (!isSupportNotify(notifytype)) {
+                                    return;
+                                }
+                            }
+                        }
+
+                        long ts;// 消息时间戳
+                        DelayInfo timestamp = (DelayInfo) msg.getExtension("delay", "urn:xmpp:delay");
+
+                        if (timestamp != null) {
+                            ts = timestamp.getStamp().getTime();
+                        } else {
+                            ts = System.currentTimeMillis();
+                        }
+
+
+                        if (TextUtils.equals(type, MessageType.DatingRequest) || TextUtils.equals(type, MessageType.DatingResult) || TextUtils.equals(type, MessageType.DatingAttampt)) {
+                            TextMsg textmsg = new TextMsg();
+                            textmsg.setType("text");
+                            textmsg.setText("暂时不支持该消息");
+                            chatMessage = JsonUtils.toJson(textmsg);
+                            msg.setBody(chatMessage);
+                        }
+
+                        ChatDto dto = ChatUtils.ReceiveMsgDeal(chatMessage, type, mid, jid, msg.getPacketID(), ts, resource);
+                        if (dto != null) {
+                            mService.newMessage(dto);// 通知service，处理是否需要显示通知栏，
+                        }
+
+                    }
+                }
+            };
+        }
+        mXMPPConnection.addPacketListener(receivermPacketListener, filter);// 这是最关健的了，少了这句，前面的都是白费功夫
+    }
+
+
+    private boolean isSupportNotify(int notifytype) {
+        boolean isSupport = false;
+        if (notifytype == 1 || notifytype == 2 || notifytype == 3) {
+            isSupport = true;
+            return isSupport;
+        }
+
+        if (notifytype == 4 || notifytype == 5 || notifytype == 6 || notifytype == 7 || notifytype == 8 || notifytype == 9) {
+            isSupport = true;
+            return isSupport;
+        }
+
+        if (notifytype == 20 || notifytype == 21 || notifytype == 22 || notifytype == 23 || notifytype == 24 || notifytype == 25) {
+            isSupport = true;
+            return isSupport;
+        }
+        return isSupport;
+    }
+
+    /*****************
+     * start 处理消息发送失败状态
+     ***********************/
+    private synchronized void registerMessageSendFailureListener() {
+        // do not register multiple packet listeners
+        if (mSendFailureListener != null)
+            mXMPPConnection.removePacketSendFailureListener(mSendFailureListener);
+
+        PacketTypeFilter filter = new PacketTypeFilter(Message.class);
+
+        mSendFailureListener = new PacketListener() {
+            public void processPacket(Packet packet) {
+                try {
+
+                    if (packet instanceof Message) {
+                        Message msg = (Message) packet;
+                        ChatUtils.SaveOrUpdateChatMsgToDB(msg.getPacketID(), ChatDto.no_succeed);
+                        mService.MessageSendStatus(ChatDto.no_succeed, msg.getPacketID());
+                    }
+                } catch (Exception e) {
+                    // SMACK silently discards exceptions dropped from
+                    // processPacket :(
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        mXMPPConnection.addPacketSendFailureListener(mSendFailureListener, filter);// 这句也是关键啦！
+    }
+
+    @Override
+    public void sendServerPing() {
+        if (mPingID != null) {// 此时说明上一次ping服务器还未回应，直接返回，直到连接超时
+            return; // a ping is still on its way
+        }
+        Ping ping = new Ping();
+        ping.setType(Type.GET);
+        ping.setTo(SharedprefUtil.get(mService, Constants.Server, Constants.GMAIL_SERVER));
+        mPingID = ping.getPacketID();// 此id其实是随机生成，但是唯一的
+        mPingTimestamp = System.currentTimeMillis();
+        mXMPPConnection.sendPacket(ping);// 发送ping消息
+
+        // register ping timeout handler: Ping_TIMEOUT(30s) + 3s
+        ((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE)).set(
+                AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
+                        + Ping_TIMEOUT + 3000, mPongTimeoutAlarmPendIntent);// 此时需要启动超时判断的闹钟了，时间间隔为30+3秒
+    }
+
+
+    /*****************
+     * start 处理ping服务器消息
+     ***********************/
+    private void registerPongListener() {
+        // reset ping expectation on new connection
+        mPingID = null;// 初始化ping的id
+
+        if (mPongListener != null) {
+            mXMPPConnection.removePacketListener(mPongListener);// 先移除之前监听对象
+        }
+
+        mPongListener = new PacketListener() {
+
+            @Override
+            public void processPacket(Packet packet) {
+                if (packet == null)
+                    return;
+
+                if (packet.getPacketID().equals(mPingID)) {// 如果服务器返回的消息为ping服务器时的消息，说明没有掉线
+                    mPingID = null;
+                    ((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE)).cancel(mPongTimeoutAlarmPendIntent);// 取消超时闹钟
+                }
+            }
+
+        };
+
+        mXMPPConnection.addPacketListener(mPongListener, new PacketTypeFilter(IQ.class));// 正式开始监听
+
+        mPingAlarmPendIntent = PendingIntent.getBroadcast(mService.getApplicationContext(), 0, mPingAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);// 定时ping服务器，以此来确定是否掉线
+
+        mPongTimeoutAlarmPendIntent = PendingIntent.getBroadcast(mService.getApplicationContext(), 0, mPongTimeoutAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);// 超时闹钟
+
+        mService.registerReceiver(mPingAlarmReceiver, new IntentFilter(PING_ALARM));// 注册定时ping服务器广播接收者
+
+        mService.registerReceiver(mPongTimeoutAlarmReceiver, new IntentFilter(PONG_TIMEOUT_ALARM));// 注册连接超时广播接收者
+
+        ((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE)).
+
+                setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + AlarmManager.INTERVAL_FIFTEEN_MINUTES, AlarmManager.INTERVAL_FIFTEEN_MINUTES, mPingAlarmPendIntent);//ping以此服务器
+    }
+
+
+    /**
+     * BroadcastReceiver to trigger reconnect on pong timeout.
+     */
+    private class PongTimeoutAlarmReceiver extends BroadcastReceiver {
+        public void onReceive(Context ctx, Intent i) {
+            LogUtils.e("===ping超时");
+            mService.postConnectionFailed(XXService.PONG_TIMEOUT);
+//			logout();// 超时就断开连接
+        }
+    }
+
+    /**
+     * BroadcastReceiver to trigger sending pings to the server
+     */
+    private class PingAlarmReceiver extends BroadcastReceiver {
+        public void onReceive(Context ctx, Intent i) {
+            if (mXMPPConnection.isAuthenticated()) {
+                LogUtils.e("===ping");
+                sendServerPing();// 收到ping服务器的闹钟，即ping一下服务器
+            } else {
+                LogUtils.e("===不ping");
+            }
+        }
+    }
+
+    private String getJabberID(String from) {
+        String[] res = from.split("/");
+        if(res!=null&&res.length>=1) {
+            return res[0].toLowerCase();
+        }
+        return null;
+    }
+
+    private String getJabberResource(String from) {
+        String[] res = from.split("/");
+        if(res!=null&&res.length>=2){
+            return res[1].toLowerCase();
+        }
+        return null;
+    }
+
+
+    /**
+     * 与服务器交互消息监听,发送消息需要回执，判断对方是否已读此消息
+     */
+    private void initServiceDiscovery() {
+        // register connection features
+        ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(mXMPPConnection);
+        if (sdm == null) {
+            sdm = new ServiceDiscoveryManager(mXMPPConnection);
+        }
+
+        sdm.addFeature("http://jabber.org/protocol/disco#info");
+
+        // reference PingManager, set ping flood protection to 10s
+        PingManager.getInstanceFor(mXMPPConnection).setPingMinimumInterval(10 * 1000);
+        // reference DeliveryReceiptManager, add listener
+
+        DeliveryReceiptManager dm = DeliveryReceiptManager.getInstanceFor(mXMPPConnection);
+        dm.enableAutoReceipts();
+        dm.registerReceiptReceivedListener(new DeliveryReceiptManager.ReceiptReceivedListener() {
+            public void onReceiptReceived(String fromJid, String toJid, String receiptId) {
+                // changeMessageDeliveryStatus(receiptId,
+                // ChatDto.no_succeed);// 标记为对方已读，实际上遇到了点问题，所以其实没有用上此状态
+            }
+        });
+    }
+
+    /**
+     * 设置自己的状态
+     */
+    @Override
+    public void setStatusFromConfig() {// 设置自己的当前状态，供外部服务调用
+        boolean messageCarbons = SharedprefUtil.getBoolean(ContextUtil.getContext(), Constants.MESSAGE_CARBONS, true);
+        String statusMode = SharedprefUtil.get(ContextUtil.getContext(), Constants.STATUS_MODE, Constants.AVAILABLE);
+
+        String statusMessage = SharedprefUtil.get(ContextUtil.getContext(), Constants.STATUS_MESSAGE, mService.getString(R.string.status_online));
+        int priority = SharedprefUtil.getInt(ContextUtil.getContext(), Constants.PRIORITY, 0);
+        if (messageCarbons) {
+            CarbonManager.getInstanceFor(mXMPPConnection).sendCarbonsEnabled(true);
+        }
+
+        // Presence改版自己当前状态
+        Presence presence = new Presence(Presence.Type.available);
+        Mode mode = Mode.valueOf(statusMode);
+        presence.setMode(mode);
+        presence.setStatus(statusMessage);
+        presence.setPriority(priority);
+        mXMPPConnection.sendPacket(presence);
+    }
+
+
+    /**
+     * 是否与服务器连接上，供本类和外部服务调用
+     */
+    @Override
+    public boolean isAuthenticated() {
+        if (mXMPPConnection != null) {
+            return (mXMPPConnection.isConnected() && mXMPPConnection.isAuthenticated());
+        }
+        return false;
+    }
+
+
+    /**
+     * 注销登录
+     */
+    @Override
+    public boolean logout() {
+
+        mXMPPConnection.removeConnectionListener(connectionListener);
+        try {
+            if (receivermPacketListener != null) {
+                LogUtils.e("退出移除接收消息监听");
+                mXMPPConnection.removePacketListener(receivermPacketListener);
+            }
+            if (mSendFailureListener != null) {
+                LogUtils.e("退出移除发送消息监听");
+                mXMPPConnection.removePacketSendFailureListener(mSendFailureListener);
+            }
+
+            if (mPongListener != null) {
+                LogUtils.e("退出移除ping消息监听");
+                mXMPPConnection.removePacketListener(mPongListener);
+            }
+
+            ((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE)).cancel(mPingAlarmPendIntent);
+            ((AlarmManager) mService.getSystemService(Context.ALARM_SERVICE)).cancel(mPongTimeoutAlarmPendIntent);
+            mService.unregisterReceiver(mPingAlarmReceiver);
+            mService.unregisterReceiver(mPongTimeoutAlarmReceiver);
+
+        } catch (Exception e) {
+            return false;
+        }
+
+        if (mXMPPConnection.isConnected()) {
+            new Thread() {
+                public void run() {
+                    mXMPPConnection.disconnect();
+                }
+            }.start();
+        }
+
+        this.mService = null;
+        return true;
+    }
+
+
+    /**
+     * 发送消息
+     */
+    @Override
+    public void sendMessage(String toJID, String message, long date, String packetId, IConnectionStatusCallback mConnectionStatusCallback) {
+
+        Callback = mConnectionStatusCallback;
+        final Message newMessage = new Message(toJID, Message.Type.chat);
+        newMessage.setBody(message);
+        newMessage.addExtension(new DeliveryReceiptRequest());
+        newMessage.setPacketID(packetId);
+        // 处理乱码乱码
+        String messages2 = null;
+        try {
+            messages2 = new String(message.getBytes(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        int send_status;
+        if (isAuthenticated()) {
+            //发送成功
+            // 存到数据库中
+            send_status = ChatDto.succeed;
+            ChatUtils.SaveOrUpdateChatMsgToDB(toJID, messages2, date, ChatDto.s_type, ChatDto.readed_status, packetId, ChatDto.succeed);
+            mXMPPConnection.sendPacket(newMessage);
+
+        } else {
+            //失败
+            send_status = ChatDto.no_succeed;
+            ChatUtils.SaveOrUpdateChatMsgToDB(toJID, messages2, date, ChatDto.s_type, ChatDto.readed_status, packetId, ChatDto.no_succeed);
+        }
+        if (mConnectionStatusCallback != null) {
+            mConnectionStatusCallback.ListenSendStatus(send_status, packetId);
+        }
+
+        ChatUtils.saveMessageRecord(messages2, toJID, send_status, MessageDto.no_strange, ChatDto.s_type, date);
+    }
+
+
+}

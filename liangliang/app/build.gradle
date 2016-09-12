@@ -1,0 +1,162 @@
+apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'android-apt'
+android {
+
+//    useLibrary 'org.apche.http.legacy'
+    compileSdkVersion 23
+    buildToolsVersion '22.0.1'
+    defaultConfig {
+        multiDexEnabled true
+        applicationId "cn.chono.yopper"
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 3102
+        versionName '3.1.2'
+
+        // 默认是umeng的渠道
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "official"]
+        aaptOptions.setProperty("cruncherEnabled", false)
+
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java']
+//            resources.srcDirs = ['src']
+//            aidl.srcDirs = ['src']
+//            renderscript.srcDirs = ['src']
+            res.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+        // Move the tests to tests/java, tests/res, etc...
+        instrumentTest.setRoot('tests')
+        // Move the build types to build-types/<type>
+        // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
+        // This moves them out of them default location under src/<type>/... which would
+        // conflict with src/ being used by the main source set.
+        // Adding new build types or product flavors should be accompanied
+        // by a similar customization.
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+
+    //配置keystore签名
+    signingConfigs {
+        release {
+            storeFile file("yopper-release-key.keystore")
+            storePassword "123456"
+            keyAlias "yopper"
+            keyPassword "123456"
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            signingConfig signingConfigs.release
+        }
+
+        release {
+            // 不显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+
+            //移除无用的 resource文件
+            shrinkResources true
+
+            //混淆
+//            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //Zipalign优化
+            zipAlignEnabled true
+            //移除无用的 resource文件
+            shrinkResources true
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        // 输出apk名称为yopper_v1.0_2015-01-15_wandoujia.apk
+                        def fileName = "YuePeng_${defaultConfig.versionName}.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
+        }
+
+        //这个是解决lint报错的代码
+        lintOptions {
+            abortOnError false
+            // 防止在发布的时候出现因MissingTranslation导致Build Failed!
+            disable 'MissingTranslation'
+        }
+
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/license.txt'
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+    }
+
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "2048m"
+//        jumboMode true
+        preDexLibraries = false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    retrolambda {
+        javaVersion JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile project(':autolayout')
+    compile project(':OkHttp')
+    compile project(':carousel')
+    compile fileTree(dir: 'libs', include: '*.jar')
+    compile files('libs/locSDK_6.22.jar')
+    compile files('libs/alipaySdk-20160223.jar')
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.github.bumptech.glide:okhttp-integration:1.4.0'
+    compile 'com.squareup.okhttp:okhttp:2.7.5'
+    compile 'com.huxq17.xrefreshview:xrefreshview:3.1.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.hwangjr.rxbus:rxbus:1.0.3'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxandroid:1.2.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.jakewharton:butterknife:8.1.0'
+    apt 'com.jakewharton:butterknife-compiler:8.0.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'
+    compile 'com.orhanobut:logger:1.11'
+    compile project(':MultiImageSelector')
+    compile files('libs/imsdk.jar')
+    compile 'com.android.support:support-v13:23.4.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.4'
+    compile 'com.google.dagger:dagger-compiler:2.0.1'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
+    compile 'com.google.code.findbugs:jsr305:3.0.0'
+    compile project(':Qupaisdk-release')
+    compile files('libs/soload.jar')
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_eeeeee">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/circle_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_ffffff"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="20dp"
+                android:layout_marginTop="9dp"
+                android:background="@color/color_eeeeee"
+                />
+
+            <cn.chono.yopper.view.CircleEnergy
+                android:id="@+id/my_energy"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="9dp"
+                android:background="@color/qupai_transparent"/>
+
+            <TextView
+                android:id="@+id/energy_info"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="能量满100后是不会继续增长的哦,记得及时用来爬榜"
+                android:textColor="@color/color_000000"
+                android:textSize="13sp"/>
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/color_eeeeee"
+                />
+
+            <TextView
+                android:id="@+id/goto_climbing"
+                android:layout_width="200dp"
+                android:layout_height="44dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/shape_defalut_corner"
+                android:gravity="center"
+                android:text="去爬榜"
+                android:textSize="20sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/circle_layout"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:gravity="center_vertical">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:layout_weight="1"
+                    android:background="@color/color_b2b2b2"
+                    />
+
+                <TextView
+                    android:id="@+id/miji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:gravity="center"
+                    android:text="能量获取秘籍"
+                    android:textColor="@color/color_000000"
+                    android:textSize="15sp"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:layout_weight="1"
+                    android:background="@color/color_b2b2b2"
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="一般人我不告诉他"
+                android:textColor="@color/color_9a9a9a"
+                android:textSize="11sp"/>
+
+            <LinearLayout
+                android:id="@+id/getEnergy_introduct_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

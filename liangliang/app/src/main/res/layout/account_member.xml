@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+
+              android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/account_member_bg"
+        >
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+
+
+                android:layout_marginRight="24dp">
+
+                <ImageView
+                    android:id="@+id/account_member_iv_icon"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerCrop"
+
+                    />
+
+                <ImageView
+                    android:id="@+id/account_member_iv_bg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/member_bg"
+
+                    />
+
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/account_member_tv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="35dp"
+
+
+            android:textColor="@color/color_ffffff"
+            android:textSize="17sp"/>
+
+
+        <TextView
+            android:id="@+id/account_member_tv_data_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/account_member_tv_status"
+            android:layout_alignStart="@+id/account_member_tv_status"
+            android:layout_below="@+id/account_member_tv_status"
+            android:layout_marginBottom="35dp"
+            android:layout_marginTop="14dp"
+
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="14sp"/>
+
+
+        <TextView
+            android:id="@+id/account_member_tv_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/account_member_tv_data_title"
+            android:layout_toEndOf="@+id/account_member_tv_data_title"
+
+            android:layout_toRightOf="@+id/account_member_tv_data_title"
+
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="14sp"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bg_5_bottom_corners"
+        android:paddingBottom="3dp"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp"
+        android:paddingTop="15dp"
+        >
+
+
+        <LinearLayout
+            android:id="@+id/account_member_ll_competence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/account_member_tv_but"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/ff7462_bg_10_corners"
+            android:gravity="center"
+            android:minWidth="80dp"
+
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+
+            android:text="续费"
+            android:textColor="@color/color_ffffff"
+            android:textSize="14sp"/>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

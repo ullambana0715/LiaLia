@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_f8f8f7"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/margin_chat_top" >
+
+    <TextView
+        android:id="@+id/chat_item_time_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/chat_item_time_bg"
+        android:gravity="center"
+        android:padding="2dp"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/color_ffffff"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:paddingRight="60dp"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp"
+        android:layout_marginTop="@dimen/margin_chat_top" >
+
+        <ImageView
+            android:id="@+id/chat_item_user_img_iv"
+            android:layout_width="@dimen/chat_head_img"
+            android:layout_height="@dimen/chat_head_img"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/message_head_default_icon"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_chat_top"
+            android:layout_toRightOf="@id/chat_item_user_img_iv"
+            android:background="@drawable/chat_item_text_receive_bg"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/chat_item_text_message_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical|left"
+                android:text="暂时不支持该消息"
+                android:textColor="#ff000000"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

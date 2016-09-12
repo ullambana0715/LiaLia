@@ -1,0 +1,64 @@
+package cn.chono.yopper;
+
+import android.support.v4.app.Fragment;
+
+import cn.chono.yopper.activity.base.DiscoverListFragment;
+import cn.chono.yopper.activity.base.DiscoverListFragment.OnScreenSelectedFreshListener;
+import cn.chono.yopper.utils.DiscoverPeopleScreenListener;
+
+public class YpBaseFragment extends Fragment {
+
+	public boolean isScreenAvailable = true;
+
+
+	public static OnScreenSelectedFreshListener onScreenSelectedFreshListener;
+
+	public static OnScreenSelectedFreshListener getOnScreenSelectedFreshListener() {
+		return onScreenSelectedFreshListener;
+	}
+
+	public static void setOnScreenSelectedFreshListener(
+			OnScreenSelectedFreshListener onScreenSelectedFreshListener) {
+		YpBaseFragment.onScreenSelectedFreshListener = onScreenSelectedFreshListener;
+	}
+
+
+	public static DiscoverPeopleScreenListener discoverPeopleScreenListener;
+
+	public static DiscoverPeopleScreenListener getDiscoverPeopleScreenListener() {
+		return discoverPeopleScreenListener;
+	}
+
+	public static void setDiscoverPeopleScreenListener(DiscoverPeopleScreenListener discoverPeopleScreenListener) {
+		YpBaseFragment.discoverPeopleScreenListener = discoverPeopleScreenListener;
+	}
+
+	public static DiscoverListFragment.OnDiscoverItmePeopleListener onDiscoverItmePeopleListener;
+	public static DiscoverListFragment.OnDiscoverItmeBubblingListener onDiscoverItmeBubblingListener;
+
+
+	public static  boolean isItmePeople=false;
+	public static  boolean isItmeBubbling=false;
+
+
+	public static DiscoverListFragment.OnDiscoverItmePeopleListener getOnDiscoverItmePeopleListener() {
+		return onDiscoverItmePeopleListener;
+	}
+
+	public static void setOnDiscoverItmePeopleListener(DiscoverListFragment.OnDiscoverItmePeopleListener onDiscoverItmePeopleListener) {
+		YpBaseFragment.onDiscoverItmePeopleListener = onDiscoverItmePeopleListener;
+	}
+
+	public static DiscoverListFragment.OnDiscoverItmeBubblingListener getOnDiscoverItmeBubblingListener() {
+		return onDiscoverItmeBubblingListener;
+	}
+
+	public static void setOnDiscoverItmeBubblingListener(DiscoverListFragment.OnDiscoverItmeBubblingListener onDiscoverItmeBubblingListener) {
+		YpBaseFragment.onDiscoverItmeBubblingListener = onDiscoverItmeBubblingListener;
+	}
+}
+
+
+
+
+

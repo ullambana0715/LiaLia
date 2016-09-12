@@ -1,0 +1,36 @@
+package cn.chono.yopper.Service.Http.Facerating;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+/**
+ * Created by zxb on 2015/12/7.
+ */
+public class FaceratingService extends HttpService {
+    public FaceratingService(Context context) {
+        super(context);
+    }
+
+    private FaceratingBean faceratingBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = FaceratingRespBean.class;
+        HashMap<String, Object> objectHashMap = new HashMap<>();
+        objectHashMap.put("targetUserId", faceratingBean.getTargetUserId());
+        objectHashMap.put("level", faceratingBean.getLevel());
+        callWrap = OKHttpUtils.post(context, HttpURL.facerating, objectHashMap, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        faceratingBean = (FaceratingBean) iBean;
+    }
+}

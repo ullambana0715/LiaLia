@@ -1,0 +1,74 @@
+package cn.chono.yopper.utils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.Profile;
+import cn.chono.yopper.data.UserDto;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+public class CompileInfoUtils {
+
+	public static ArrayList<String> isNeedCompile(int userid) {
+
+		UserDto dto =  DbHelperUtils.getUserDto(userid);
+
+		ArrayList<String> typelist = new ArrayList<String>();
+
+		if (dto != null) {
+			Profile pdto = dto.getProfile();
+			if (pdto != null) {
+
+				typelist = whichisEmpty(pdto);
+			}
+		}
+
+		return typelist;
+
+	}
+
+	public static ArrayList<String> whichisEmpty(Profile pdto) {
+		ArrayList<String> typelist = new ArrayList<String>();
+
+		if (pdto.getAge() == null) {
+			typelist.add("age");
+		}
+
+		if (pdto.getRelationship() == null) {
+
+			typelist.add("relationship");
+		}
+
+		if (pdto.getHeight() == null) {
+
+			typelist.add("height");
+		}
+
+		if (pdto.getWeight() == null) {
+
+			typelist.add("weight");
+		}
+
+		if (CheckUtil.isEmpty(pdto.getCareer())) {
+
+			typelist.add("career");
+		}
+
+		if (pdto.getIncomeLevel() == null) {
+
+			typelist.add("income");
+		}
+
+		if (CheckUtil.isEmpty(pdto.getTags())) {
+
+			typelist.add("lable");
+		}
+		return typelist;
+	}
+
+}

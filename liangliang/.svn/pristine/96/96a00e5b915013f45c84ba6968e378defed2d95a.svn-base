@@ -1,0 +1,19 @@
+package cn.chono.yopper.Service.Http.AppointMentsComment;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/12/29.
+ */
+public class AppointMentsCommentRespBean extends RespBean {
+
+    private AppointMentsCommentData resp;
+
+    public AppointMentsCommentData getResp() {
+        return resp;
+    }
+
+    public void setResp(AppointMentsCommentData resp) {
+        this.resp = resp;
+    }
+}

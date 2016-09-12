@@ -1,0 +1,33 @@
+package cn.chono.yopper.Service.Http.FaceratingListNext;
+
+import android.content.Context;
+
+import cn.chono.yopper.Service.Http.FaceratingList.FaceratingListRespBean;
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * Created by zxb on 2015/12/10.
+ */
+public class FaceratingListNextService extends HttpService {
+    public FaceratingListNextService(Context context) {
+        super(context);
+    }
+
+    private FaceratingListNextBean listBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = FaceratingListRespBean.class;
+        String url=listBean.getNextQuery();
+
+        callWrap = OKHttpUtils.get(context, listBean.getNextQuery(), okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        listBean = (FaceratingListNextBean) iBean;
+    }
+}

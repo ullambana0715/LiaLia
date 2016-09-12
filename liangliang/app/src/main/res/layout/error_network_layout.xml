@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/error_network_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:visibility="gone"
+    >
+
+    <ImageView
+        android:layout_width="300px"
+        android:layout_height="300px"
+        android:layout_marginTop="250px"
+        android:src="@drawable/ic_error_network"
+        app:layout_auto_baseheight="width" />
+
+    <TextView
+        android:id="@+id/error_network_tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20px"
+        android:text="咦？数据加载失败了"
+        android:textColor="@color/color_999999"
+        android:textSize="32px" />
+
+    <TextView
+        android:id="@+id/error_network_tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20px"
+        android:text="请检查一下你的网络，重新加载吧"
+        android:textColor="@color/color_999999"
+        android:textSize="32px" />
+
+
+    <TextView
+        android:id="@+id/error_network_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_view_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30px"
+        android:background="@drawable/ff7462_border_corners_ffffff_selected_style"
+        android:paddingBottom="20px"
+        android:paddingLeft="20px"
+        android:paddingRight="20px"
+        android:paddingTop="20px"
+        android:text="@string/on_net_load"
+        android:textColor="@color/color_ff7462"
+        android:textSize="32px" />
+
+</com.zhy.autolayout.AutoLinearLayout>

@@ -1,0 +1,132 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import cn.chono.yopper.R;
+import cn.chono.yopper.photo.OneImageItem;
+import cn.chono.yopper.photo.OneImageSelectedDto;
+import cn.chono.yopper.utils.UnitUtil;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+public class SelectOneAlbumAdapter extends BaseAdapter {
+	final String TAG = getClass().getSimpleName();
+
+	public interface OnItemClickLitener {
+
+
+		void onItemClick(View view, String imagepath,int w,int h);
+
+	}
+
+	private OnItemClickLitener mOnItemClickLitener;
+
+	public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+		this.mOnItemClickLitener = mOnItemClickLitener;
+	}
+
+	public static interface TextCallback {
+		public void onListen(int count);
+	}
+
+	private Context context;
+
+	public SelectOneAlbumAdapter(Context context) {
+		this.context = context;
+	}
+
+	public class NewViewHolder {
+		private ImageView imageView;
+		private LinearLayout isselectedLayout;
+		private RelativeLayout relativeLayout;
+
+	}
+
+	@Override
+	public int getCount() {
+		return OneImageSelectedDto.imageList == null ? 0: OneImageSelectedDto.imageList.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return OneImageSelectedDto.imageList.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	private NewViewHolder newViewHolder;
+
+	@SuppressWarnings("unused")
+	@Override
+	public View getView(final int position, View convertView, ViewGroup parent) {
+		View v = null;
+		if (v == null) {
+			newViewHolder = new NewViewHolder();
+			v = LayoutInflater.from(context).inflate(
+					R.layout.album_item_layout, null);
+
+			newViewHolder.imageView = (ImageView) v.findViewById(R.id.image);
+			newViewHolder.isselectedLayout = (LinearLayout) v
+					.findViewById(R.id.isselectedLayout);
+
+			newViewHolder.relativeLayout = (RelativeLayout) v
+					.findViewById(R.id.relativeLayout);
+
+			int weight = UnitUtil.getScreenWidthPixels(context);
+
+			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newViewHolder.imageView
+					.getLayoutParams();
+			params.width = weight / 4;
+			params.height = weight / 4;
+
+			newViewHolder.imageView.setLayoutParams(params);
+
+			v.setTag(newViewHolder);
+
+		} else {
+			newViewHolder = (NewViewHolder) v.getTag();
+		}
+
+		newViewHolder.isselectedLayout.setVisibility(View.GONE);
+
+		String imagepath = OneImageSelectedDto.imageList.get(position).imagePath;
+
+		OneImageItem iamgeItem = OneImageSelectedDto.imageList.get(position);
+
+
+
+		Glide.with(context).load(imagepath)
+				.error(R.drawable.error_default_icon)
+				.diskCacheStrategy(DiskCacheStrategy.NONE)
+				.into(newViewHolder.imageView);
+
+		// 如果设置了回调，则设置点击事件
+		if (mOnItemClickLitener != null) {
+
+			newViewHolder.relativeLayout.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					OneImageItem dto=OneImageSelectedDto.imageList.get(position);
+					String imagepath = dto.imagePath;
+					mOnItemClickLitener.onItemClick(newViewHolder.relativeLayout, imagepath,dto.w,dto.h);
+
+				}
+			});
+		}
+
+		return v;
+	}
+
+}

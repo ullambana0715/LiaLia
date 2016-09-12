@@ -1,0 +1,59 @@
+package cn.chono.yopper.Service.Http.DaillyFaceratingCandidates;
+
+import android.content.Context;
+import android.os.AsyncTask;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import java.util.HashMap;
+import java.util.List;
+
+import cn.chono.yopper.Service.DaillyTask.DaillyFaceratingCandidatesDBTask;
+import cn.chono.yopper.Service.DaillyTaskService.DaillyBean;
+import cn.chono.yopper.Service.DaillyTaskService.DaillyTaskService;
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.DailyTouchDto;
+import cn.chono.yopper.data.DiscoverPeopleLocalDto;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.utils.JsonUtils;
+
+/**
+ * Created by zxb on 2015/12/4.
+ */
+public class DaillyFaceratingCandidatesService extends HttpService {
+    public DaillyFaceratingCandidatesService(Context context) {
+        super(context);
+    }
+
+
+    private DaillyFaceratingCandidatesBean candidatesBean;
+
+    @Override
+    public void enqueue() {
+
+        OutDataClass = DaillyFaceratingCandidatesRespBean.class;
+        HashMap<String, Object> objectHashMap = new HashMap<>();
+        objectHashMap.put("lat", candidatesBean.getLat());
+        objectHashMap.put("lng", candidatesBean.getLng());
+        objectHashMap.put("userId", candidatesBean.getUserId());
+        objectHashMap.put("rows", candidatesBean.getRows());
+
+        callWrap = OKHttpUtils.get(context, HttpURL.facerating_candidates_dailly, objectHashMap, okHttpListener);
+
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        candidatesBean = (DaillyFaceratingCandidatesBean) iBean;
+    }
+
+
+
+}

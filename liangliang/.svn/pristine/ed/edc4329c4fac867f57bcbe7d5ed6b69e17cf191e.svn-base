@@ -1,0 +1,18 @@
+package cn.chono.yopper.Service.Http.SigUpTarget;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/31.
+ */
+public class SigUpTargetResp implements Serializable {
+    private  int targetUserId;
+
+    public int getTargetUserId() {
+        return targetUserId;
+    }
+
+    public void setTargetUserId(int targetUserId) {
+        this.targetUserId = targetUserId;
+    }
+}

@@ -1,0 +1,237 @@
+package cn.chono.zxb.xrefreshview;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+
+import cn.chono.zxb.xrefreshview.callback.IHeaderCallBack;
+
+/**
+ * Created by zxb on 2015/11/9.
+ */
+public class CustomHeaderAnim extends View implements IHeaderCallBack {
+
+    private String TAG = CustomHeaderAnim.class.getName();
+
+    private Drawable mDrawable;
+
+    private float mScale = 1f;
+    private RotateAnimation mRotateAnimation;
+
+    public CustomHeaderAnim(Context context) {
+        super(context);
+        initView();
+    }
+
+    public CustomHeaderAnim(Context context, int drawableId) {
+        super(context);
+        initView();
+        if (-1 != drawableId)
+            mDrawable = getContext().getResources().getDrawable(drawableId);
+
+    }
+
+    public CustomHeaderAnim(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView();
+    }
+
+    public CustomHeaderAnim(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initView();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public CustomHeaderAnim(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        initView();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int height = mDrawable.getIntrinsicHeight() + getPaddingTop()
+                + getPaddingBottom();
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(height,
+                MeasureSpec.EXACTLY);
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+
+
+
+
+    Rect rect ;
+    int drawable_intrinsic_width;
+
+    int paddingLeft;
+    int paddingTop;
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+
+
+
+
+
+
+        final int saveCount = canvas.save();
+
+        int l = paddingLeft
+                + (getMeasuredWidth() - drawable_intrinsic_width) / 2;
+        canvas.translate(l, paddingTop);
+        canvas.scale(mScale, mScale, rect.exactCenterX(), rect.exactCenterY());
+        mDrawable.draw(canvas);
+        canvas.restoreToCount(saveCount);
+
+        PaintFlagsDrawFilter mSetfil = new PaintFlagsDrawFilter(0, Paint.FILTER_BITMAP_FLAG);
+        canvas.setDrawFilter(mSetfil);
+
+
+
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right,
+                            int bottom) {
+        final int size = mDrawable.getIntrinsicHeight();
+        mDrawable.setBounds(0, 0, size, size);
+
+        rect = mDrawable.getBounds();
+        drawable_intrinsic_width=mDrawable.getIntrinsicWidth();
+        paddingLeft=getPaddingLeft();
+        paddingTop=getPaddingTop();
+    }
+
+    private void initView() {
+        mDrawable = getContext().getResources().getDrawable(R.drawable.header_icon);
+        int padding = DensityUtil.dip2px(getContext(), 10);
+        this.setPadding(0, padding, 0, padding);
+
+
+
+//        initRotateAnimation();
+
+    }
+
+    @Override
+    public void invalidateDrawable(Drawable dr) {
+        if (dr == mDrawable) {
+            invalidate();
+        } else {
+            super.invalidateDrawable(dr);
+        }
+    }
+
+    /**
+     * 正常状态
+     */
+    @Override
+    public void onStateNormal() {
+        mScale = 1f;
+//        mDrawable.stop();
+        removeRotateAnimation();
+    }
+
+    /**
+     * 准备刷新
+     */
+    @Override
+    public void onStateReady() {
+        removeRotateAnimation();
+        initRotateAnimation();
+    }
+
+    /**
+     * 正在刷新
+     */
+    @Override
+    public void onStateRefreshing() {
+        if (null !=mRotateAnimation){
+            mRotateAnimation.reset();
+            this.clearAnimation();
+            this.startAnimation(mRotateAnimation);
+            mRotateAnimation.start();
+        }
+
+    }
+
+    /**
+     * 刷新结束
+     */
+    @Override
+    public void onStateFinish() {
+        removeRotateAnimation();
+    }
+
+    @Override
+    public void onHeaderMove(double offset, int offsetY) {
+        invalidate();
+
+    }
+
+    @Override
+    public void setRefreshTime(long lastRefreshTime) {
+
+    }
+
+    @Override
+    public void hide() {
+        removeRotateAnimation();
+        setVisibility(View.GONE);
+    }
+
+    @Override
+    public void show() {
+
+        setVisibility(View.VISIBLE);
+
+        if (null !=mRotateAnimation){
+            mRotateAnimation.reset();
+            this.clearAnimation();
+            this.startAnimation(mRotateAnimation);
+            mRotateAnimation.start();
+        }
+    }
+
+    @Override
+    public int getHeaderHeight() {
+        return getMeasuredHeight();
+    }
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        this.clearAnimation();
+        this.setAnimation(mRotateAnimation);
+
+    }
+
+    /**
+     * 正在加载动画回收
+     */
+    private void removeRotateAnimation() {
+        // 动画回收
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            this.clearAnimation();
+        }
+    }
+}

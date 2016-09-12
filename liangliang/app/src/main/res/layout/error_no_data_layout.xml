@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/error_no_data_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/error_no_data_img"
+        android:layout_width="300px"
+        android:layout_height="300px"
+        android:layout_marginTop="250px"
+        android:src="@drawable/ic_error_no_data"
+        app:layout_auto_baseheight="width" />
+
+    <TextView
+        android:id="@+id/error_no_data_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20px"
+        android:text="最近没有约会呢"
+        android:textColor="@color/color_999999"
+        android:textSize="32px" />
+
+</com.zhy.autolayout.AutoLinearLayout>

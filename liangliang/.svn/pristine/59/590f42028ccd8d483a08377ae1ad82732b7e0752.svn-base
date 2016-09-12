@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_white"
+    android:gravity="center_horizontal"
+    android:id="@+id/score_already_unfinished_layout"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/error_no_data_img"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/score_already_hini_icon" />
+
+    <TextView
+        android:id="@+id/error_no_data_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="今天还没有打分"
+        android:textColor="@color/text_color_999999"
+        android:textSize="18sp" />
+
+
+
+
+
+    <Button
+        android:id="@+id/score_already_layout_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35px"
+        android:layout_marginRight="35px"
+        android:layout_marginTop="50px"
+        android:background="@drawable/corners_orange_selected_style"
+        android:gravity="center"
+        android:text="@string/again_already_str"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="32px" />
+
+
+</com.zhy.autolayout.AutoLinearLayout>

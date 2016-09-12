@@ -1,0 +1,18 @@
+package cn.chono.yopper.data;
+
+import java.util.List;
+
+/**
+ * Created by SQ on 2016/1/7.
+ */
+public class DatingRequirementListDto {
+    private List<DatingRequirment> requirements;
+
+    public List<DatingRequirment> getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(List<DatingRequirment> requirements) {
+        this.requirements = requirements;
+    }
+}

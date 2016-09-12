@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/invite_dating_layout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <ImageView
+            android:id="@+id/invite_dating_type_img_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/dating_eat_icon" />
+
+        <TextView
+            android:id="@+id/invite_dating_content_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="7dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/color_666666"
+            android:textSize="15sp" />
+
+
+        <ImageView
+            android:id="@+id/invite_dating_have_chat_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="7dp"
+            android:background="@drawable/ic_have_chat" />
+
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/invite_dating_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#eeeeee" />
+
+</LinearLayout>

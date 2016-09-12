@@ -1,0 +1,297 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+public class AppointDetailDto implements Serializable{
+
+	private static final transient  long serialVersionUID = 1L;
+
+	//约会对象性别
+	private int 	sexRequired;
+	//videoRequired
+	private boolean videoRequired;
+
+	//当前访问者是否是已报名
+	private boolean	visitorIsCandidate;
+
+	//当前访问者是否是约会对象
+	private boolean	visitorIsTargetUser;
+
+	private AppointComment myComment;
+
+	private AppointComment targetUserComment;
+
+	//发布者电话
+	private String ownerMobile;
+
+	//商家数据
+	private ShopDto shop;
+
+	//电影的数据，没有不传
+	private MoviceDto movie;
+
+	//遛狗的数据，没有不传
+	private walkADogDto walkADog;
+
+	//运动的数据没有不传
+	private SportsDto sports;
+
+	//与发起者达成约会的用户
+	private TargetUserDto targetUser;
+
+	private String id;
+
+	private AppointOwner owner;
+
+	private String city;
+	private int activityType;
+	private String  title;
+	private String   content;
+	//消费类型，0 我请， 1 AA， 2 他请
+	private int costType;
+
+	private double lat;
+	private double lng;
+	private String endTime;
+	//约会时间，Unknown = 0, Morning = 1, Noon = 2, Afternoon = 3, Night = 4
+	private int availableTime;
+
+	private String createTime;
+	//查看总数
+	private int pageView;
+	//参与总数
+
+	private int totalCandidates;
+
+	// Closed = 0 关闭;1报名中; 2成功; 3过期; ;4审核中;  5禁用违规
+	private int status;
+
+	//两两匹配分数
+	private MatchScore matchScore;
+
+	public int getSexRequired() {
+		return sexRequired;
+	}
+
+	public void setSexRequired(int sexRequired) {
+		this.sexRequired = sexRequired;
+	}
+
+	public boolean isVideoRequired() {
+		return videoRequired;
+	}
+
+	public void setVideoRequired(boolean videoRequired) {
+		this.videoRequired = videoRequired;
+	}
+
+	public boolean isVisitorIsCandidate() {
+		return visitorIsCandidate;
+	}
+
+	public void setVisitorIsCandidate(boolean visitorIsCandidate) {
+		this.visitorIsCandidate = visitorIsCandidate;
+	}
+
+	public AppointComment getMyComment() {
+		return myComment;
+	}
+
+	public void setMyComment(AppointComment myComment) {
+		this.myComment = myComment;
+	}
+
+	public boolean isVisitorIsTargetUser() {
+		return visitorIsTargetUser;
+	}
+
+	public void setVisitorIsTargetUser(boolean visitorIsTargetUser) {
+		this.visitorIsTargetUser = visitorIsTargetUser;
+	}
+
+	public AppointComment getTargetUserComment() {
+		return targetUserComment;
+	}
+
+	public void setTargetUserComment(AppointComment targetUserComment) {
+		this.targetUserComment = targetUserComment;
+	}
+
+	public MoviceDto getMovie() {
+		return movie;
+	}
+
+	public void setMovie(MoviceDto movie) {
+		this.movie = movie;
+	}
+
+	public String getOwnerMobile() {
+		return ownerMobile;
+	}
+
+	public void setOwnerMobile(String ownerMobile) {
+		this.ownerMobile = ownerMobile;
+	}
+
+	public ShopDto getShop() {
+		return shop;
+	}
+
+	public void setShop(ShopDto shop) {
+		this.shop = shop;
+	}
+
+	public walkADogDto getWalkADog() {
+		return walkADog;
+	}
+
+	public void setWalkADog(walkADogDto walkADog) {
+		this.walkADog = walkADog;
+	}
+
+	public SportsDto getSports() {
+		return sports;
+	}
+
+	public void setSports(SportsDto sports) {
+		this.sports = sports;
+	}
+
+	public TargetUserDto getTargetUser() {
+		return targetUser;
+	}
+
+	public void setTargetUser(TargetUserDto targetUser) {
+		this.targetUser = targetUser;
+	}
+
+
+	public AppointOwner getOwner() {
+		return owner;
+	}
+
+	public void setOwner(AppointOwner owner) {
+		this.owner = owner;
+	}
+
+	public int getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(int activityType) {
+		this.activityType = activityType;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public int getCostType() {
+		return costType;
+	}
+
+	public void setCostType(int costType) {
+		this.costType = costType;
+	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public double getLng() {
+		return lng;
+	}
+
+	public void setLng(double lng) {
+		this.lng = lng;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public int getAvailableTime() {
+		return availableTime;
+	}
+
+	public void setAvailableTime(int availableTime) {
+		this.availableTime = availableTime;
+	}
+
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
+	public int getPageView() {
+		return pageView;
+	}
+
+	public void setPageView(int pageView) {
+		this.pageView = pageView;
+	}
+
+	public int getTotalCandidates() {
+		return totalCandidates;
+	}
+
+	public void setTotalCandidates(int totalCandidates) {
+		this.totalCandidates = totalCandidates;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public MatchScore getMatchScore() {
+		return matchScore;
+	}
+
+	public void setMatchScore(MatchScore matchScore) {
+		this.matchScore = matchScore;
+	}
+
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+}

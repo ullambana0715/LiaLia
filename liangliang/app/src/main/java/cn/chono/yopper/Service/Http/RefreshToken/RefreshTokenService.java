@@ -1,0 +1,38 @@
+package cn.chono.yopper.Service.Http.RefreshToken;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * 刷新 token
+ * Created by zxb on 2015/11/20.
+ */
+public class RefreshTokenService extends HttpService {
+    public RefreshTokenService(Context context) {
+        super(context);
+    }
+
+    private RefreshTokenBean iBean;
+
+    @Override
+    public void enqueue() {
+
+        OutDataClass=RefreshTokenRespBean.class;
+
+        HashMap<String,Object> HashMap=new HashMap<>();
+
+        HashMap.put("refreshToken",iBean.getRefreshToken());
+        callWrap= OKHttpUtils.post(context, HttpURL.refresh,HashMap,okHttpListener);
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        this.iBean = (RefreshTokenBean) iBean;
+    }
+}

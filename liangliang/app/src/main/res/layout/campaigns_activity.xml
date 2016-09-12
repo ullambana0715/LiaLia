@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+
+    <cn.chono.yopper.view.WebView.PragressWebView
+        android:id="@+id/campaigns_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </cn.chono.yopper.view.WebView.PragressWebView>
+
+
+    <ViewStub
+        android:id="@+id/error_network_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_network_layout" />
+
+</LinearLayout>

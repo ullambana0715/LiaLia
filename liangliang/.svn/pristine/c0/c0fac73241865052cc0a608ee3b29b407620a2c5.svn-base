@@ -1,0 +1,57 @@
+package cn.chono.yopper.data;
+
+public class UserAppointDto {
+
+
+
+	private int datingId;
+
+	private String meetingDate;
+	private String content;
+
+	private String address;
+
+	private int[] rewardIds;
+	private FriendDto friend;
+	
+	
+	public int getDatingId() {
+		return datingId;
+	}
+	public void setDatingId(int datingId) {
+		this.datingId = datingId;
+	}
+	public String getMeetingDate() {
+		return meetingDate;
+	}
+	public void setMeetingDate(String meetingDate) {
+		this.meetingDate = meetingDate;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public int[] getRewardIds() {
+		return rewardIds;
+	}
+	public void setRewardIds(int[] rewardIds) {
+		this.rewardIds = rewardIds;
+	}
+	public FriendDto getFriend() {
+		return friend;
+	}
+	public void setFriend(FriendDto friend) {
+		this.friend = friend;
+	}
+	
+	
+	
+}

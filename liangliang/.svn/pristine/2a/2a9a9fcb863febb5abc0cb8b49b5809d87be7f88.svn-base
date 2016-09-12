@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/score_layout_bg"
+    >
+
+    <cn.chono.yopper.view.ScoreCord.ScoreCordLayout
+        android:id="@+id/score_cord_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+    </cn.chono.yopper.view.ScoreCord.ScoreCordLayout>
+
+    <TextView
+        android:id="@+id/score_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="45dip"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="@string/score_text"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/score_back_tv"
+        android:layout_width="80dip"
+        android:layout_height="45dip"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="@string/cancel"
+        android:textSize="14sp" />
+
+
+</FrameLayout>

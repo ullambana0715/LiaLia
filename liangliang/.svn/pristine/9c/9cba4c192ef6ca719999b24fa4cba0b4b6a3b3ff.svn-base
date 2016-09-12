@@ -1,0 +1,573 @@
+package cn.chono.yopper.activity.base;
+
+
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.Banners.BannersData;
+import cn.chono.yopper.Service.Http.Banners.BannersDto;
+import cn.chono.yopper.Service.Http.Banners.BannersRespBean;
+import cn.chono.yopper.Service.Http.Banners.BannersService;
+import cn.chono.yopper.Service.Http.Banners.BannersSubBanners;
+import cn.chono.yopper.Service.Http.Campaigns.CampaignsDate;
+import cn.chono.yopper.Service.Http.Campaigns.CampaignsDto;
+import cn.chono.yopper.Service.Http.Campaigns.CampaignsRespBean;
+import cn.chono.yopper.Service.Http.Campaigns.CampaignsService;
+import cn.chono.yopper.Service.Http.GainVersionInfo.GainVersionInfoRespBean;
+import cn.chono.yopper.Service.Http.GainVersionInfo.GainVersionInfoService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.find.ArticleContentDetailActivity;
+import cn.chono.yopper.activity.find.ArticleListActivity;
+import cn.chono.yopper.activity.find.CampaignsActivity;
+import cn.chono.yopper.activity.find.FindMessageActivity;
+import cn.chono.yopper.adapter.FindAdapter;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.NotificationMsg;
+import cn.chono.yopper.data.VersionChkDTO;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.ChatUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.UnitUtil;
+import cn.chono.yopper.view.CycleViewPager.CycleLayout;
+
+/**
+ * Created by cc on 16/2/19.
+ */
+public class FindFragment extends Fragment implements FindAdapter.OnItemGridViewClickListener {
+
+    private LinearLayout find_message_layout;
+    private ImageView find_message_iv;
+
+    private CycleLayout banner_cycle_layout;
+
+    private RecyclerView find_context_recyclerView;
+
+    private FindAdapter findAdapter;
+
+    private LinearLayout  find_root_layout;
+
+    private LinearLayout error_network_layout;
+
+    private TextView error_network_tv;
+
+    private List<BannersData> newlist;
+    private List<CampaignsDate> campaignslist;
+
+    private LinearLayout find_context_error_layout;
+
+
+    private Dialog campaigns_dialog;
+
+    private PublicMessageReceiver publicMessageReceiver;
+
+    private CommentReplyReceiver  commentReplyReceiver;
+
+    private boolean isBannersService = false, isCampaignsService = false, isBanners = false, isCampaigns = false;
+
+
+    private String mid;
+
+    private RelativeLayout find_context_recyclerView_layout;
+
+    private ImageView find_context_recyclerView_bg_iv;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View convertView = inflater.inflate(R.layout.find_activity, container, false);
+        initView(convertView);
+
+        mid = YPApplication.loginUser.getUserId() + "@chono";
+        getData();
+
+        getCampaigns();
+
+        // 生成广播处理
+        publicMessageReceiver = new PublicMessageReceiver();
+        // 实例化过滤器并设置要过滤的广播
+        IntentFilter intentFilter = new IntentFilter("cn.yopper.chono.public.msg");
+        // 注册广播
+        getActivity().registerReceiver(publicMessageReceiver, intentFilter);
+
+        commentReplyReceiver = new CommentReplyReceiver();
+        // 实例化过滤器并设置要过滤的广播
+        IntentFilter connintentFilter = new IntentFilter("cn.yopper.chono.article.comment.reply");
+        // 注册广播
+        getActivity().registerReceiver(commentReplyReceiver, connintentFilter);
+
+        return convertView;
+    }
+
+    private void initView(View convertView) {
+
+        find_root_layout= (LinearLayout) convertView.findViewById(R.id.find_root_layout);
+        find_root_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        find_message_layout = (LinearLayout) convertView.findViewById(R.id.find_message_layout);
+
+        find_message_iv = (ImageView) convertView.findViewById(R.id.find_message_iv);
+
+        find_context_recyclerView = (RecyclerView) convertView.findViewById(R.id.find_context_recyclerView);
+
+        error_network_layout = (LinearLayout) convertView.findViewById(R.id.error_network_layout);
+
+        find_context_error_layout = (LinearLayout) convertView.findViewById(R.id.find_context_error_layout);
+
+        error_network_tv = (TextView) convertView.findViewById(R.id.error_network_tv);
+
+        find_context_recyclerView_layout= (RelativeLayout) convertView.findViewById(R.id.find_context_recyclerView_layout);
+
+        find_context_recyclerView_bg_iv= (ImageView) convertView.findViewById(R.id.find_context_recyclerView_bg_iv);
+
+        Glide.with(getActivity()).load(R.drawable.find_bg).centerCrop().diskCacheStrategy(DiskCacheStrategy.NONE).into(find_context_recyclerView_bg_iv);
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+
+
+        find_context_recyclerView.setLayoutManager(layoutManager);
+        find_context_recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        findAdapter = new FindAdapter(getActivity());
+        findAdapter.setOnItemGridViewClickListener(this);
+        find_context_recyclerView.setAdapter(findAdapter);
+
+
+        error_network_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCampaigns();
+                getData();
+            }
+        });
+
+        find_message_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityUtil.jump(getActivity(), FindMessageActivity.class, null, 0, 100);
+            }
+        });
+
+
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (IndexActivity.selected_menu_type == 3) {
+            if (findAdapter != null) {
+                findAdapter.setData(newlist);
+                findAdapter.notifyDataSetChanged();
+            }
+
+            initNoReadNum();
+
+        }
+
+
+    }
+
+
+    private void getData() {
+
+        BannersService bannersService = new BannersService(getActivity());
+
+        bannersService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                isBannersService = true;
+
+                BannersRespBean bannersRespBean = (BannersRespBean) respBean;
+                if (null == bannersRespBean) {
+                    return;
+                }
+
+
+                BannersDto bannersDto = bannersRespBean.getResp();
+
+
+                if (null == bannersDto) {
+                    return;
+                }
+
+                List<BannersData> list = bannersDto.getList();
+                newlist = new ArrayList<BannersData>();
+
+                if (list != null && list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        BannersData dto = list.get(i);
+                        if (dto != null && dto.getSubBanners() != null && dto.getSubBanners().size() > 0) {
+                            newlist.add(dto);
+                        }
+                    }
+
+                    if (newlist.size() > 0) {
+                        isBanners = true;
+                    }
+                    isMessage();
+
+                    findAdapter.setData(newlist);
+                    findAdapter.notifyDataSetChanged();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                isBannersService = true;
+
+                isMessage();
+
+            }
+        });
+
+        bannersService.enqueue();
+
+
+    }
+
+
+    private void getCampaigns() {
+        CampaignsService campaignsService = new CampaignsService(getActivity());
+
+        campaignsService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                isCampaignsService = true;
+
+                CampaignsRespBean campaignsRespBean = (CampaignsRespBean) respBean;
+
+                if (null == campaignsRespBean) {
+                    return;
+                }
+
+                CampaignsDto campaignsDto = campaignsRespBean.getResp();
+                if (null == campaignsDto) {
+                    return;
+                }
+                campaignslist = campaignsDto.getList();
+
+                setHeader(campaignslist);
+
+                if (null != campaignslist && campaignslist.size() > 0) {
+                    isCampaigns = true;
+                }
+
+                isMessage();
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                isCampaignsService = true;
+
+                isMessage();
+            }
+        });
+
+        campaignsService.enqueue();
+    }
+
+
+    private void isMessage() {
+
+
+        if (!isBannersService && !isCampaignsService) return;
+
+
+        if (isBanners || isCampaigns) {
+            find_context_recyclerView_layout.setVisibility(View.VISIBLE);
+            find_context_error_layout.setVisibility(View.GONE);
+            error_network_layout.setVisibility(View.GONE);
+            return;
+        }
+        find_context_error_layout.setVisibility(View.VISIBLE);
+        find_context_recyclerView_layout.setVisibility(View.GONE);
+        error_network_layout.setVisibility(View.VISIBLE);
+
+    }
+
+    private void setHeader(final List<CampaignsDate> list) {
+
+
+
+
+        final View header = LayoutInflater.from(getActivity()).inflate(R.layout.find_header_layout, find_context_recyclerView, false);
+
+
+        banner_cycle_layout = (CycleLayout) header.findViewById(R.id.banner_cycle_layout);
+
+
+        int width = UnitUtil.getScreenWidthPixels(getActivity());
+
+        int h = (2 * (width + 24)) / 7;
+
+        FrameLayout banner_cycle_frame_layout = (FrameLayout) header.findViewById(R.id.banner_cycle_frame_layout);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.width = width;
+        params.height = h;
+
+        banner_cycle_frame_layout.setLayoutParams(params);
+
+
+        banner_cycle_layout.setCycle(true);
+
+
+        //设置轮播
+        banner_cycle_layout.setWheel(true);
+
+        // 设置轮播时间，默认5000ms
+        banner_cycle_layout.setTime(3000);
+
+        banner_cycle_layout.setData(list, new CycleLayout.ImageCycleViewListener() {
+            @Override
+            public void onImageClick(int postion, View imageView) {
+                CampaignsDate campaignsDate = list.get(postion);
+                String type = campaignsDate.getType();
+
+                LogUtils.e(type);
+
+                if (!TextUtils.isEmpty(type) && TextUtils.equals("Default", type)) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("TITLE", campaignsDate.getTitle());
+                    bundle.putString("URL", campaignsDate.getRedirectUrl());
+
+                    ActivityUtil.jump(getActivity(), CampaignsActivity.class, bundle, 0, 100);
+
+
+                } else if (!TextUtils.isEmpty(type) && TextUtils.equals("Article", type)) {
+
+                    Bundle bd = new Bundle();
+                    bd.putString(YpSettings.BUNDLE_KEY_WEB_URL, campaignsDate.getRedirectUrl());
+                    bd.putString(YpSettings.BUNDLE_KEY_WEB_URL_TYPE, type);
+
+                    bd.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+
+                    ActivityUtil.jump(getActivity(), ArticleContentDetailActivity.class, bd, 0, 100);
+
+                } else {
+
+                    campaigns_dialog = DialogUtil.createHintOperateDialog(getActivity(), "", "使用此功能需要升级到最新版，现在去更新？", "取消", "确认", new BackCallListener() {
+                        @Override
+                        public void onEnsure(View view, Object... obj) {
+                            campaigns_dialog.dismiss();
+                        }
+
+                        @Override
+                        public void onCancel(View view, Object... obj) {
+                            getVersionInfo();
+                            campaigns_dialog.dismiss();
+                        }
+
+                    });
+
+                    campaigns_dialog.show();
+                }
+
+            }
+        });
+
+
+        findAdapter.setHeaderView(header);
+    }
+
+    @Override
+    public void onItemGridViewClick(int position, Object data) {
+        BannersSubBanners banners = (BannersSubBanners) data;
+
+
+        if (!TextUtils.isEmpty(banners.getRedirectUrl())) {//游戏中心栏目
+
+            Bundle bundle = new Bundle();
+
+            bundle.putString("TITLE", banners.getName());
+            bundle.putString("URL", banners.getRedirectUrl());
+
+            ActivityUtil.jump(getActivity(), CampaignsActivity.class, bundle, 0, 100);
+            return;
+        }
+
+
+        Bundle bundle = new Bundle();
+        String bannerId = banners.getBannerId();
+
+        SharedprefUtil.saveBoolean(getActivity(), bannerId, false);
+
+        String name = banners.getName();
+        bundle.putString(YpSettings.BannerId, bannerId);
+        bundle.putString(YpSettings.BannerName, name);
+        bundle.putBoolean("allowUserDefine", banners.isAllowUserDefine());
+        bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Article/index/" + bannerId);
+        ActivityUtil.jump(getActivity(), ArticleListActivity.class, bundle, 0, 100);
+
+    }
+
+
+    /**
+     * 获取版本信息
+     */
+    private void getVersionInfo() {
+
+        GainVersionInfoService gainVersionInfoService = new GainVersionInfoService(getActivity());
+        gainVersionInfoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                GainVersionInfoRespBean gainVersionInfoRespBean = (GainVersionInfoRespBean) respBean;
+                VersionChkDTO dto = gainVersionInfoRespBean.getResp();
+
+                if (dto != null) {
+                    Intent intent = new Intent();
+                    intent.setAction("android.intent.action.VIEW");
+                    Uri content_url = Uri.parse(dto.getDownloadLink());
+                    intent.setData(content_url);
+                    startActivity(intent);
+
+                }
+            }
+        });
+
+        gainVersionInfoService.enqueue();
+    }
+
+
+    public class PublicMessageReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (findAdapter != null) {
+                findAdapter.setData(newlist);
+                findAdapter.notifyDataSetChanged();
+            }
+
+
+        }
+    }
+
+
+    public class CommentReplyReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle=intent.getExtras();
+            String message= bundle.getString("message");
+            NotificationMsg notificationMsg = JsonUtils.fromJson(message, NotificationMsg.class);
+            if (notificationMsg != null) {
+                int type = notificationMsg.getNotifytype();
+
+                if (type == 9) {
+                    initNoReadNum();
+                }
+            }
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (publicMessageReceiver != null) {
+            getActivity().unregisterReceiver(publicMessageReceiver);
+        }
+
+        if (commentReplyReceiver != null) {
+            getActivity().unregisterReceiver(commentReplyReceiver);
+        }
+
+    }
+
+
+
+    private void initNoReadNum() {
+
+        int no_read_num = 0;
+        try {
+            List<ChatDto> list = YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("mid", " =", mid).and("jid", " =", "system_airtcle_comment_reply_notify@chono").and("status", "=", 0));
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    ChatDto dto = list.get(i);
+                    String message = dto.getMessage();
+                    String type = ChatUtils.getMsgType(message);
+                    if (TextUtils.equals(type, MessageType.Notification)) {
+                        NotificationMsg notificationMsg = JsonUtils.fromJson(message, NotificationMsg.class);
+                        if (notificationMsg.getNotifytype() == 9) {
+                            int badge = notificationMsg.getBadge();
+                            if (badge >= 0) {
+                                if (badge == 0) {
+                                    badge = 1;
+                                }
+                                no_read_num = no_read_num + badge;
+                            }
+                        }
+
+                    } else {
+                        no_read_num = no_read_num + 1;
+                    }
+                }
+            }
+
+            if (no_read_num > 0) {
+                find_message_iv.setBackgroundResource(R.drawable.find_message_elected);
+            } else {
+                find_message_iv.setBackgroundResource(R.drawable.find_message_normal);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+}

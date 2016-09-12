@@ -1,0 +1,22 @@
+package cn.chono.yopper.Service.Http.BiZarea;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class BiZareaRespBean extends RespBean {
+
+    private Map<String,ArrayList<String>> resp;
+
+    public Map<String, ArrayList<String>> getResp() {
+        return resp;
+    }
+
+    public void setResp(Map<String, ArrayList<String>> resp) {
+        this.resp = resp;
+    }
+}

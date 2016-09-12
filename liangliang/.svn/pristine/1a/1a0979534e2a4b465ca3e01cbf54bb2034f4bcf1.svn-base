@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.chono.yopper.view.ResizeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chat_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/chat_bottom_operate_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="45dip"
+                android:layout_gravity="top"
+                android:background="@color/text_color_white"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <!-- 返回按钮 -->
+
+                <LinearLayout
+                    android:id="@+id/chat_goback_layout"
+                    android:layout_width="80dip"
+                    android:layout_height="30dip"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="10dip"
+                    android:layout_marginRight="0dip"
+                    android:gravity="left|center_vertical"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:gravity="center"
+                        android:paddingLeft="0dip"
+                        android:paddingRight="10dip"
+                        android:src="@drawable/icon_go_back"
+                        android:textColor="@color/text_color_white"
+                        android:textSize="14dip" />
+                </LinearLayout>
+
+                <!-- 页面标题 -->
+                <RelativeLayout
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                    <TextView
+                        android:id="@+id/chat_title_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textColor="@color/text_color_333333"
+                        android:textSize="18sp" />
+                    <ImageView
+                        android:id="@+id/chat_lable_status_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/lable_open_icon"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="3dp"/>
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/chat_option_layout"
+                    android:layout_width="80dip"
+                    android:layout_height="30dip"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="10dip"
+                    android:layout_marginRight="10dip"
+                    android:gravity="center_vertical|right"
+                    android:orientation="horizontal"
+                    android:visibility="visible" >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/option_more_icon" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/net_hint_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#fd7128"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:visibility="gone" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/chat_net_warn_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="当前网络不可用，请检查"
+                    android:textColor="@color/text_color_white" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/chat_lable_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/text_color_cbd6d8"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/chat_lable_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/text_color_white"
+                    android:textSize="13sp"
+                    android:text=""
+                    android:textStyle="bold"
+                    android:gravity="left"/>
+
+                <cn.chono.yopper.view.FlowLeftLayout
+                    android:id="@+id/chat_lable_flowlayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp">
+
+                </cn.chono.yopper.view.FlowLeftLayout>
+
+            </LinearLayout>
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dip"
+                android:layout_weight="1.0"
+                android:background="@color/chat_bg" >
+
+                <cn.chono.yopper.view.DragListView
+                    android:id="@+id/chat_msg_listView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:divider="@null"
+                    android:fadingEdge="none"
+                    android:listSelector="@android:color/transparent"
+                    android:paddingBottom="0dp"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollingCache="false"
+                    android:transcriptMode="normal"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:id="@+id/chat_receive_fruit_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="150dp"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:onClick="onClick"
+                    android:orientation="vertical"
+                    android:visibility="gone" >
+
+                    <RelativeLayout
+                        android:layout_width="80dp"
+                        android:layout_height="80dp" >
+
+                        <ImageView
+                            android:layout_width="75dp"
+                            android:layout_height="75dp"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/chat_icon_pfruit"
+                            android:scaleType="fitCenter" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="#F3D635"
+                        android:gravity="center"
+                        android:paddingBottom="3dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="3dp"
+                        android:text="Ta赠送你一个P果"
+                        android:textColor="@color/text_color_white" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/chat_bottom_hint_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/chat_bottom_operate_layout"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:visibility="gone"
+            android:background="@drawable/chat_bottom_hint_bg"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="请保持社交礼仪"
+                android:textColor="@color/text_color_white"
+                android:textSize="14sp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="认识新朋友需要话题、缘分、更需要尊重。"
+                android:textColor="@color/text_color_white"
+                android:textSize="12sp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="广告、欺骗和粗鲁的行为将会受到处罚。"
+                android:textColor="@color/text_color_white"
+                android:textSize="12sp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/chat_bottom_operate_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/chat_bg"
+                android:orientation="vertical"
+                android:paddingBottom="5dp" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1px"
+                    android:background="@color/text_color_999999" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/chat_bg"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:id="@+id/chat_more_btn_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:gravity="center_vertical" >
+
+                        <ImageView
+                            android:id="@+id/chat_more_btn"
+                            android:layout_width="20dip"
+                            android:layout_height="20dip"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/chat_more_bg" />
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/chat_input_bg"
+                        android:paddingBottom="2dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="2dp" >
+
+                        <EditText
+                            android:id="@+id/chat_input_et"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:background="@null"
+                            android:gravity="center_vertical"
+                            android:inputType="textMultiLine"
+                            android:maxLines="4"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="32dp"
+                            android:scrollbarSize="1dp"
+                            android:scrollbarStyle="insideInset"
+                            android:scrollbars="vertical"
+                            android:text=""
+                            android:textColor="@color/text_color_black"
+                            android:textSize="16.0sp" />
+
+                        <Button
+                            android:id="@+id/chat_expresion_btn"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/chat_expresion_btn_bg"
+                            android:visibility="visible" />
+                    </RelativeLayout>
+
+                    <Button
+                        android:id="@+id/chat_cannot_send_btn"
+                        android:layout_width="45dip"
+                        android:layout_height="30dip"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:background="@null"
+                        android:gravity="center"
+                        android:text="发 送"
+                        android:textColor="@color/text_color_949494"
+                        android:visibility="visible" />
+
+                    <Button
+                        android:id="@+id/chat_send_btn"
+                        android:layout_width="45dip"
+                        android:layout_height="30dip"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:background="@null"
+                        android:gravity="center"
+                        android:text="发 送"
+                        android:textColor="@color/text_color_ff7462"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/chat_more_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#EFEFF4"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <!-- 表情图片 -->
+
+                <LinearLayout
+                    android:id="@+id/chat_more_face_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="181dp"
+                    android:background="@color/chat_bg"
+                    android:orientation="vertical"
+                    android:visibility="visible" >
+
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/chat_more_face_view_pager"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/chat_more_face_indicator"
+                        android:layout_width="fill_parent"
+                        android:layout_height="15dp"
+                        android:layout_marginTop="3dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="3dp" >
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/text_color_cfcfcf"/>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="35dp"
+                        android:orientation="horizontal" >
+
+                        <HorizontalScrollView
+                            android:layout_width="0dp"
+                            android:layout_height="35dp"
+                            android:layout_weight="1"
+                            android:background="@color/text_color_f5f5f5"
+                            android:scrollbars="none" >
+
+                            <LinearLayout
+                                android:id="@+id/chat_more_face_type_layout"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:gravity="left"
+                                android:orientation="horizontal" >
+
+                                <LinearLayout
+                                    android:layout_width="50dp"
+                                    android:layout_height="35dp"
+                                    android:background="@color/text_color_f5f5f5"
+                                    android:gravity="center" >
+
+                                    <ImageView
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:background="@drawable/chat_expression_option_elected"
+                                        android:scaleType="fitCenter" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </HorizontalScrollView>
+
+                        <View
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"
+                            android:background="@color/text_color_cfcfcf"/>
+                        <LinearLayout
+                            android:id="@+id/chat_more_face_send_layout"
+                            android:layout_width="50dp"
+                            android:layout_height="fill_parent"
+                            android:background="@color/text_color_efefef"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="发 送"
+                                android:background="@color/text_color_efefef"
+                                android:textColor="@color/text_color_9a9a9a" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- 图片，表情，名片等按钮 -->
+
+                <LinearLayout
+                    android:id="@+id/chat_more_others_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/chat_bg"
+                    android:orientation="vertical"
+                    android:visibility="gone" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="25dp"
+                        android:layout_marginTop="10dp"
+                        android:weightSum="4" >
+
+                        <LinearLayout
+                            android:id="@+id/chat_photo_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:onClick="onClick"
+                            android:orientation="vertical" >
+
+                            <RelativeLayout
+                                android:layout_width="64dp"
+                                android:layout_height="64dp" >
+
+                                <ImageView
+                                    android:layout_width="56dp"
+                                    android:layout_height="56dp"
+                                    android:layout_centerInParent="true"
+                                    android:background="@drawable/chat_icon_photo"
+                                    android:scaleType="fitCenter" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="照片"
+                                android:textColor="#727171" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/chat_camera_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:onClick="onClick"
+                            android:orientation="vertical"
+                            android:visibility="visible" >
+
+                            <RelativeLayout
+                                android:layout_width="64dp"
+                                android:layout_height="64dp" >
+
+                                <ImageView
+                                    android:layout_width="56dp"
+                                    android:layout_height="56dp"
+                                    android:layout_centerInParent="true"
+                                    android:background="@drawable/chat_icon_camera"
+                                    android:scaleType="fitCenter" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="相机"
+                                android:textColor="#727171" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/chat_give_fruit_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:onClick="onClick"
+                            android:orientation="vertical"
+                            android:visibility="visible" >
+
+                            <RelativeLayout
+                                android:layout_width="64dp"
+                                android:layout_height="64dp" >
+
+                                <ImageView
+                                    android:layout_width="56dp"
+                                    android:layout_height="56dp"
+                                    android:layout_centerInParent="true"
+                                    android:background="@drawable/chat_icon_pfruit"
+                                    android:scaleType="fitCenter" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="送P果"
+                                android:textColor="#727171" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/chat_send_date_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:onClick="onClick"
+                            android:orientation="vertical"
+                            android:visibility="visible" >
+
+                            <RelativeLayout
+                                android:layout_width="64dp"
+                                android:layout_height="64dp" >
+
+                                <ImageView
+                                    android:layout_width="56dp"
+                                    android:layout_height="56dp"
+                                    android:layout_centerInParent="true"
+                                    android:background="@drawable/chat_icon_date"
+                                    android:scaleType="fitCenter" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="约会"
+                                android:textColor="#727171" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</cn.chono.yopper.view.ResizeLayout>

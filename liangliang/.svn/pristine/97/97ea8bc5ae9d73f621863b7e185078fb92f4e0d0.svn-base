@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/placeicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/no1" />
+
+    <ImageView
+        android:id="@+id/portraiticon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/placeicon"
+        android:scaleType="fitCenter"
+        android:src="@drawable/score_update_user_hear_default_icon" />
+
+    <ImageView
+        android:id="@+id/bonus"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/share_weixin_image" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/portraiticon"
+        android:layout_toLeftOf="@+id/bonus"
+        android:layout_toRightOf="@+id/portraiticon"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="帅哥帅哥帅哥帅哥帅哥帅哥帅哥帅哥帅哥帅哥帅哥"
+        android:textColor="@color/text_color_333333"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/userconstellation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/username"
+        android:layout_toRightOf="@+id/portraiticon"
+        android:background="@drawable/discover_male_bg"
+        android:gravity="center"
+        android:text="狮子"
+        android:textColor="@android:color/white"
+        android:textSize="8sp" />
+
+
+    <SeekBar
+        android:id="@+id/energy_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/portraiticon"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/bonus"
+        android:layout_toRightOf="@+id/portraiticon"
+        android:indeterminate="false"
+        android:max="100"
+        android:maxHeight="3dp"
+        android:minHeight="3dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:progressDrawable="@drawable/bar_drawable"
+        android:thumb="@drawable/energy_thumb"
+        />
+
+    <TextView
+        android:id="@+id/energy_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/energy_bar"
+        android:layout_alignRight="@+id/energy_bar"
+        android:text="888"
+        android:textColor="@color/text_color_ff7462"
+        android:textSize="8sp" />
+</RelativeLayout>

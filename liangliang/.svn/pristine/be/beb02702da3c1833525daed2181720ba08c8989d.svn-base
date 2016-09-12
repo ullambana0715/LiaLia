@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/view_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true" />
+<!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/layout/activity_qupai_video.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/layout/activity_qupai_video.xml -->

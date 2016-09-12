@@ -1,0 +1,42 @@
+package cn.chono.yopper.Service.Http.BiZarea;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class BiZareaService extends HttpService {
+    public BiZareaService(Context context) {
+        super(context);
+    }
+
+    private BiZareaBean biZareaBean;
+
+    @Override
+    public void enqueue() {
+
+        OutDataClass = BiZareaRespBean.class;
+
+        String url = HttpURL.get_bizarea_city;
+
+        HashMap<String, Object> HashMap = new HashMap<>();
+        HashMap.put("city", biZareaBean.getCity());
+
+        callWrap = OKHttpUtils.get(context, url,HashMap ,okHttpListener);
+
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        biZareaBean = (BiZareaBean) iBean;
+    }
+
+}

@@ -1,0 +1,404 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.util.LogUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementData;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementMatchScore;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementResp;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementUser;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.TimeUtil;
+
+public class SignUpManagementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private final int Group_Target = 1001;
+    private final int Group_Title = 1002;
+    private final int Group_Context = 0;
+
+
+    private Context mContext;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    private List<SignUpManagementData> list;
+    private SignUpManagementData targetUser;
+
+
+    public interface OnSignUpItemClickLitener {
+        void onItemTargetClick(View view, int position, SignUpManagementData targetUser);
+
+        void onItemContextClick(View view, int position, SignUpManagementData managementData);
+
+        void onItemUserIconClick(View view, int position, SignUpManagementUser user);
+
+    }
+
+    private OnSignUpItemClickLitener onSignUpItemClickLitener;
+
+    public void setOnItemClickLitener(OnSignUpItemClickLitener onSignUpItemClickLitener) {
+        this.onSignUpItemClickLitener = onSignUpItemClickLitener;
+    }
+
+    public SignUpManagementAdapter(Context context) {
+        this.mContext = context;
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+
+    }
+
+    @Override
+    public int getItemCount() {
+
+        int itemSize = 0;
+
+
+        if (null != targetUser) {
+            itemSize = itemSize + 2;
+        }
+        if (null != list && list.size() > 0) {
+            itemSize = itemSize + list.size() + 1;
+        }
+
+
+        LogUtils.e("getItemCount=" + itemSize);
+
+        // 返回数据总数
+        return itemSize;
+    }
+
+
+    @Override
+    public int getItemViewType(int position) {
+
+        int viewType = 0;
+
+        if (null != targetUser) {
+
+            if (position == 0) {
+                viewType = Group_Title;
+            } else if (position == 1) {
+                viewType = Group_Target;
+            } else if (position == 2) {
+                viewType = Group_Title;
+            } else {
+                viewType = Group_Context;
+            }
+
+        } else {
+            if (position == 0) {
+                viewType = Group_Title;
+            } else {
+                viewType = Group_Context;
+            }
+
+
+        }
+
+
+        return viewType;
+    }
+
+
+    public void setData(SignUpManagementResp managementResp) {
+        this.list = managementResp.getList();
+        this.targetUser = managementResp.getTargetUser();
+
+
+    }
+
+    public void addData(SignUpManagementResp managementResp) {
+        if (null == list) {
+            list = new ArrayList<>();
+        }
+
+        if (null == managementResp) {
+            return;
+        }
+
+        if (null != managementResp.getList() && managementResp.getList().size() > 0) {
+            this.list.addAll(managementResp.getList());
+            notifyDataSetChanged();
+        }
+
+
+    }
+
+    public List<SignUpManagementData> getDatas() {
+        return list;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // 给ViewHolder设置布局文件
+        if (viewType == Group_Target) {
+
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.sign_up_management_group_target_layout, parent, false);
+
+            return new TargetHolder(v);
+
+        } else if (viewType == Group_Title) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.sign_up_management_group_title_layout, parent, false);
+            return new TitleHolder(v);
+
+        } else {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.sign_up_management_group_context_layout, parent, false);
+            return new ContextHolder(v);
+
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
+        LogUtils.e("getItemCount=" + position);
+
+
+        if (holder instanceof TitleHolder) {
+
+            if (null != targetUser) {
+
+                if (0 == position) {
+                    ((TitleHolder) holder).sign_up_management_group_title_tv.setText("已经选择");
+                } else {
+                    ((TitleHolder) holder).sign_up_management_group_title_tv.setText("共有" + list.size() + "人报名");
+                }
+
+
+            } else {
+                ((TitleHolder) holder).sign_up_management_group_title_tv.setText("共有" + list.size() + "人报名");
+            }
+
+
+        } else if (holder instanceof TargetHolder) {
+            if (null != targetUser) {
+                final SignUpManagementUser user = targetUser.getUser();
+
+                if (null == user) {
+                    return;
+                }
+
+                String imageurl = ImgUtils.DealImageUrl(user.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+                Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(((TargetHolder) holder).sign_up_management_group_target_user_icon_iv);
+                ((TargetHolder) holder).sign_up_management_group_target_user_name_tv.setText(user.getName());
+
+                int sex = user.getSex();
+                if (sex == 1) {// 男
+                    ((TargetHolder) holder).sign_up_management_group_target_user_constellation_tv.setBackgroundResource(R.drawable.discover_male_bg);
+                } else if (sex == 2) {
+                    ((TargetHolder) holder).sign_up_management_group_target_user_constellation_tv.setBackgroundResource(R.drawable.discover_female_bg);
+                }
+
+                ((TargetHolder) holder).sign_up_management_group_target_user_constellation_tv.setText(CheckUtil.ConstellationMatching(user.getHoroscope()));
+
+                long time = ISO8601.getTime(targetUser.getJoinTime());
+                String timeStr = TimeUtil.normalTimeFormat(time);
+                ((TargetHolder) holder).sign_up_management_group_target_time_tv.setText(timeStr);
+
+
+                SignUpManagementMatchScore matchScore = targetUser.getMatchScore();
+
+                String tatalMatch;
+
+                if (null == matchScore) {
+                    tatalMatch = "匹配度：" + 0 + "%";
+                } else {
+                    tatalMatch = "匹配度：" + matchScore.getTotalMatch() + "%";
+                }
+
+                ((TargetHolder) holder).sign_up_management_group_target_user_similarity_tv.setText(tatalMatch);
+
+
+                if (null != onSignUpItemClickLitener) {
+                    ((TargetHolder) holder).sign_up_management_group_target_contact_but.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onSignUpItemClickLitener.onItemTargetClick(v, position, targetUser);
+                        }
+                    });
+
+
+                    ((TargetHolder) holder).sign_up_management_group_target_user_icon_iv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onSignUpItemClickLitener.onItemUserIconClick(v, position, user);
+                        }
+                    });
+                }
+
+
+            }
+
+
+        } else if (holder instanceof ContextHolder) {
+
+            int list_location = 0;
+            if (null != targetUser) {
+                list_location = position - 3;
+                ((ContextHolder) holder).sign_up_management_group_context_contact_but.setVisibility(View.INVISIBLE);
+
+            } else {
+                list_location = position - 1;
+                ((ContextHolder) holder).sign_up_management_group_context_contact_but.setVisibility(View.VISIBLE);
+            }
+
+
+            final SignUpManagementData managementData = list.get(list_location);
+            if (null == managementData) {
+                return;
+            }
+            LogUtils.e("长度="+list.size()+"=="+position+"---"+list_location);
+            if(list_location==list.size()-1){
+                ((ContextHolder) holder).sign_up_management_group_context_line.setVisibility(View.GONE);
+            }else{
+                ((ContextHolder) holder).sign_up_management_group_context_line.setVisibility(View.VISIBLE);
+            }
+
+            final SignUpManagementUser managementUser = managementData.getUser();
+
+            String imageurl = ImgUtils.DealImageUrl(managementUser.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+            Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(((ContextHolder) holder).sign_up_management_group_context_user_icon_iv);
+
+            int cotext_tv = list_location + 1;
+
+            ((ContextHolder) holder).sign_up_management_group_context_tv.setText(cotext_tv + "");
+
+            ((ContextHolder) holder).sign_up_management_group_context_user_name_tv.setText(managementUser.getName());
+
+            int sex = managementUser.getSex();
+            if (sex == 1) {// 男
+                ((ContextHolder) holder).sign_up_management_group_context_user_constellation_tv.setBackgroundResource(R.drawable.discover_male_bg);
+            } else if (sex == 2) {
+                ((ContextHolder) holder).sign_up_management_group_context_user_constellation_tv.setBackgroundResource(R.drawable.discover_female_bg);
+            }
+
+            ((ContextHolder) holder).sign_up_management_group_context_user_constellation_tv.setText(CheckUtil.ConstellationMatching(managementUser.getHoroscope()));
+
+
+            long time = ISO8601.getTime(managementData.getJoinTime());
+            String timeStr = TimeUtil.normalTimeFormat(time);
+            ((ContextHolder) holder).sign_up_management_group_context_time_tv.setText(timeStr);
+
+
+            SignUpManagementMatchScore matchScore = managementData.getMatchScore();
+
+            String tatalMatch;
+
+            if (null == matchScore) {
+                tatalMatch = "匹配度：" + 0 + "%";
+            } else {
+                tatalMatch = "匹配度：" + matchScore.getTotalMatch() + "%";
+            }
+
+            ((ContextHolder) holder).sign_up_management_group_context_user_similarity_tv.setText(tatalMatch);
+
+
+            if (null != onSignUpItemClickLitener) {
+                ((ContextHolder) holder).sign_up_management_group_context_contact_but.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onSignUpItemClickLitener.onItemContextClick(v, position, managementData);
+                    }
+                });
+
+
+                ((ContextHolder) holder).sign_up_management_group_context_user_icon_iv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onSignUpItemClickLitener.onItemUserIconClick(v, position, managementUser);
+                    }
+                });
+            }
+
+
+        }
+
+
+    }
+
+
+    // 重写的自定义ViewHolder
+    public static class ContextHolder extends RecyclerView.ViewHolder {
+        public TextView sign_up_management_group_context_tv;
+        public ImageView sign_up_management_group_context_user_icon_iv;
+        public TextView sign_up_management_group_context_user_name_tv;
+        public TextView sign_up_management_group_context_user_constellation_tv;
+        public TextView sign_up_management_group_context_user_similarity_tv;
+        public TextView sign_up_management_group_context_time_tv;
+        public TextView sign_up_management_group_context_contact_but;
+        public View sign_up_management_group_context_line;
+
+
+        public ContextHolder(View v) {
+            super(v);
+
+            sign_up_management_group_context_tv = (TextView) v.findViewById(R.id.sign_up_management_group_context_tv);
+            sign_up_management_group_context_user_icon_iv = (ImageView) v.findViewById(R.id.sign_up_management_group_context_user_icon_iv);
+            sign_up_management_group_context_user_name_tv = (TextView) v.findViewById(R.id.sign_up_management_group_context_user_name_tv);
+            sign_up_management_group_context_user_constellation_tv = (TextView) v.findViewById(R.id.sign_up_management_group_context_user_constellation_tv);
+            sign_up_management_group_context_user_similarity_tv = (TextView) v.findViewById(R.id.sign_up_management_group_context_user_similarity_tv);
+            sign_up_management_group_context_time_tv = (TextView) v.findViewById(R.id.sign_up_management_group_context_time_tv);
+            sign_up_management_group_context_contact_but = (TextView) v.findViewById(R.id.sign_up_management_group_context_contact_but);
+            sign_up_management_group_context_line= v.findViewById(R.id.sign_up_management_group_context_line);
+        }
+    }
+
+    // 重写的自定义ViewHolder
+    public static class TargetHolder extends RecyclerView.ViewHolder {
+
+
+        public ImageView sign_up_management_group_target_user_icon_iv;
+        public TextView sign_up_management_group_target_user_name_tv;
+        public TextView sign_up_management_group_target_user_constellation_tv;
+        public TextView sign_up_management_group_target_user_similarity_tv;
+        public TextView sign_up_management_group_target_time_tv;
+        public TextView sign_up_management_group_target_contact_but;
+
+
+        public TargetHolder(View v) {
+            super(v);
+
+
+            sign_up_management_group_target_user_icon_iv = (ImageView) v.findViewById(R.id.sign_up_management_group_target_user_icon_iv);
+            sign_up_management_group_target_user_name_tv = (TextView) v.findViewById(R.id.sign_up_management_group_target_user_name_tv);
+            sign_up_management_group_target_user_constellation_tv = (TextView) v.findViewById(R.id.sign_up_management_group_target_user_constellation_tv);
+            sign_up_management_group_target_user_similarity_tv = (TextView) v.findViewById(R.id.sign_up_management_group_target_user_similarity_tv);
+            sign_up_management_group_target_time_tv = (TextView) v.findViewById(R.id.sign_up_management_group_target_time_tv);
+            sign_up_management_group_target_contact_but = (TextView) v.findViewById(R.id.sign_up_management_group_target_contact_but);
+
+        }
+    }
+
+    // 重写的自定义ViewHolder
+    public static class TitleHolder extends RecyclerView.ViewHolder {
+
+        public TextView sign_up_management_group_title_tv;
+
+
+        public TitleHolder(View v) {
+            super(v);
+            sign_up_management_group_title_tv = (TextView) v.findViewById(R.id.sign_up_management_group_title_tv);
+
+        }
+    }
+
+}

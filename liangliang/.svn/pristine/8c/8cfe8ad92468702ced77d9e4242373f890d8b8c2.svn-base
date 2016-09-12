@@ -1,0 +1,235 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UserInfoID.UserInfoIDBean;
+import cn.chono.yopper.Service.Http.UserInfoID.UserInfoIDRespBean;
+import cn.chono.yopper.Service.Http.UserInfoID.UserInfoIDService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.BaseUser;
+import cn.chono.yopper.data.BubbleMsgDto;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.TimeUtil;
+
+public class BubbleMessageAdapter extends BaseAdapter {
+    /**
+     * 这个用来填充list
+     */
+    private List<ChatDto> list;
+    /**
+     * context上下文,用来获得convertView
+     */
+    private Context mContext;
+
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    public BubbleMessageAdapter(Context context) {
+        // 初始化
+        mContext = context;
+
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+    }
+
+    public List<ChatDto> getList() {
+        return list;
+    }
+
+    public void setList(List<ChatDto> list) {
+        if (list == null) {
+            list = new ArrayList<ChatDto>();
+        }
+        this.list = list;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        if (list != null) {
+            return list.size();
+        } else {
+            return 0;
+        }
+
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        final ViewHolder holder;
+        // 如果没有设置过,初始化convertView
+        if (convertView == null) {
+            // 获得设置的view
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.message_list_item, parent, false);
+
+            // 初始化holder
+            holder = new ViewHolder();
+
+            holder.icon_img_iv = (ImageView) convertView.findViewById(R.id.message_item_icon_img_iv);
+
+            holder.name_tv = (TextView) convertView.findViewById(R.id.message_item_name_tv);
+
+            holder.time_tv = (TextView) convertView.findViewById(R.id.message_item_time_tv);
+
+            holder.content_tv = (TextView) convertView.findViewById(R.id.message_item_content_tv);
+
+            holder.num_tv = (TextView) convertView.findViewById(R.id.message_item_num_tv);
+            holder.message_item_badge_tv = (TextView) convertView.findViewById(R.id.message_item_badge_tv);
+
+            convertView.setTag(holder);
+
+        } else {
+            // 有直接获得ViewHolder
+            holder = (ViewHolder) convertView.getTag();
+
+        }
+
+
+        ChatDto dto = list.get(position);
+        holder.num_tv.setVisibility(View.GONE);
+
+        if(dto.getStatus()==0){
+            holder.message_item_badge_tv.setVisibility(View.VISIBLE);
+        }else{
+            holder.message_item_badge_tv.setVisibility(View.GONE);
+        }
+
+        BubbleMsgDto bubbleMsgDto = JsonUtils.fromJson(dto.getMessage(), BubbleMsgDto.class);
+
+        int userid = bubbleMsgDto.getFromUserId();
+
+        try {
+            BaseUser baseUser = YPApplication.getInstance().db.findFirst(Selector.from(BaseUser.class).where("id", " =", userid));
+
+            if (baseUser != null) {
+
+                holder.name_tv.setText(baseUser.getName() + "");
+
+                String imageurl = ImgUtils.DealImageUrl(baseUser.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+
+                Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(holder.icon_img_iv);
+
+            } else {
+                getUserWithID(userid, holder.icon_img_iv);
+            }
+
+        } catch (DbException e1) {
+            e1.printStackTrace();
+        }
+
+
+        holder.content_tv.setText(bubbleMsgDto.getContent() + "");
+
+        // 时间设置
+
+        long time = ISO8601.getTime(bubbleMsgDto.getCreateTime());
+
+        holder.time_tv.setText(TimeUtil.normalTimeFormat(time) + "");
+
+        return convertView;
+
+    }
+
+    /**
+     * ViewHolder
+     *
+     * @Title:
+     * @Description:主要是避免了不断的view获取初始化.
+     * @Since:2015-3-22
+     * @Version:
+     */
+    class ViewHolder {
+
+        public ImageView icon_img_iv;
+        public TextView name_tv;
+
+        public TextView time_tv;
+        public TextView content_tv;
+        public TextView num_tv;
+        public TextView message_item_badge_tv;
+
+    }
+
+
+    private void getUserWithID(final int id, final ImageView icon_img_iv) {
+
+
+        UserInfoIDBean infoIDBean = new UserInfoIDBean();
+        infoIDBean.setUserId(Integer.valueOf(id));
+
+        UserInfoIDService infoIDService = new UserInfoIDService(mContext);
+
+        infoIDService.parameter(infoIDBean);
+
+        infoIDService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UserInfoIDRespBean idRespBean = (UserInfoIDRespBean) respBean;
+
+                BaseUser baseUser = idRespBean.getResp();
+                try {
+                    // 绑定数据
+                    if (!CheckUtil.isEmpty(baseUser.getHeadImg())) {
+                        String imageurl = ImgUtils.DealImageUrl(baseUser.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+                        Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(icon_img_iv);
+                    }
+                    YPApplication.getInstance().db.save(baseUser);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+
+            }
+        });
+
+        infoIDService.enqueue();
+
+
+    }
+}

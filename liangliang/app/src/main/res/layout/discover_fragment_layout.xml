@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e7e7e7"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_ffffff">
+
+        <TextView
+            android:id="@+id/discover_fragment_filter_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:drawableLeft="@drawable/filter_icon"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="20dp"
+            android:text=""
+            android:textColor="@color/color_000000"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/appoint_fragment_filter_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/app_top_clik_bg"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/appoint_fragment_filter_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/filter_icon" />
+
+        </LinearLayout>
+
+        <cn.chono.yopper.view.TabFragmentIndicator
+            android:id="@+id/discover_tabFragmentIndicator"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@color/color_ffffff"
+            android:orientation="vertical" />
+
+        <ImageView
+            android:id="@+id/discover_fragment_bubbling_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bubbling_icon"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/appoint_fragment_publish_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/app_top_clik_bg"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/appoint_publish_icon" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/discover_viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"></android.support.v4.view.ViewPager>
+
+</LinearLayout>

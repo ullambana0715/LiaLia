@@ -1,0 +1,1396 @@
+package cn.chono.yopper.utils;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.text.TextUtils;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.DatingRequirment;
+import cn.chono.yopper.data.UserInfoAppointment;
+import cn.chono.yopper.glide.RoundedCornersTransformation;
+import cn.chono.yopper.view.MyDialog;
+
+/**
+ * 系统提示对话框
+ *
+ * @author SQ
+ */
+public class DialogUtil {
+
+    private static final String TAG = DialogUtil.class.getName();
+
+    private static Context context;
+    private static TextView toastText;
+
+    private static Toast toast;
+
+    public static void setContext(Context ctx) {
+        context = ctx;
+        toast = new Toast(context);
+        toastText = new TextView(context);
+    }
+
+    /*
+     * 适用于通用对话框的初始化事件和销毁事件监听接口
+     */
+    public interface DialogEventListener {
+        /**
+         * @param contentView 对话框的内容区
+         * @param dialog      对话框
+         */
+        public void onInit(View contentView, PopupWindow dialog);
+    }
+
+
+    /**
+     * 显示提示框，判断时间 防止--（顶部弹出）
+     */
+    public static void showTopToast(Context ctx, String msg) {
+        if (TextUtils.isEmpty(msg)) {
+            return;
+        }
+        if (!ActivityUtil.isOnForeground(ctx)) {
+            return;
+        }
+        makeTopToast(ctx, msg);
+    }
+
+
+    /**
+     * 制作Toast
+     *
+     * @param ctx
+     * @param msg
+     * @return
+     */
+    public static void makeTopToast(Context ctx, String msg) {
+        // 自定义Toast内容
+
+        Display mDisplay = ((Activity) ctx).getWindowManager()
+                .getDefaultDisplay();
+
+
+        View contentview = View.inflate(ctx, R.layout.toast_layout, null);
+        contentview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT));
+
+        TextView text = (TextView) contentview
+                .findViewById(R.id.toast_content_tv);
+        text.setLayoutParams(new LayoutParams(mDisplay.getWidth() - 100,
+                LayoutParams.WRAP_CONTENT));
+
+        text.setText(msg);
+        // toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 150);
+        // toast.setMargin(40, 40);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        // toast.se
+        toast.setView(contentview);
+        toast.show();
+
+    }
+
+
+    /**
+     * 显示提示框，判断时间 防止
+     */
+    public static void showDisCoverNetToast(Activity ctx) {
+
+        if (ctx == null) {
+            return;
+        }
+        if (ctx.isFinishing()) {
+            return;
+        }
+
+        if (!ActivityUtil.isOnForeground(ctx)) {
+            return;
+        }
+        makeDisCoverNetToast(ctx);
+    }
+
+
+    /**
+     * 显示提示框，判断时间 防止
+     */
+    public static void showDisCoverNetToast(Activity ctx, String str) {
+
+        if (ctx == null) {
+            return;
+        }
+        if (ctx.isFinishing()) {
+            return;
+        }
+
+        if (!ActivityUtil.isOnForeground(ctx)) {
+            return;
+        }
+        makeDisCoverNetToast(ctx, str);
+    }
+
+
+    public static void makeDisCoverNetToast(Context ctx, String str) {
+        // 自定义Toast内容
+
+        Display mDisplay = ((Activity) ctx).getWindowManager()
+                .getDefaultDisplay();
+
+        View contentview = View.inflate(ctx, R.layout.discover_net_toast_layout, null);
+
+        TextView tv = (TextView) contentview.findViewById(R.id.toast_tv);
+        tv.setText(str);
+
+        contentview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(contentview);
+        toast.show();
+
+    }
+
+
+    /**
+     * 制作Toast
+     *
+     * @param ctx
+     * @param
+     * @return
+     */
+    public static void makeDisCoverNetToast(Context ctx) {
+        // 自定义Toast内容
+
+        Display mDisplay = ((Activity) ctx).getWindowManager()
+                .getDefaultDisplay();
+
+        View contentview = View.inflate(ctx, R.layout.discover_net_toast_layout, null);
+        contentview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(contentview);
+        toast.show();
+
+    }
+
+    /**
+     * 显示P果发送状态的提示框，判断时间 防止
+     */
+    public static void showPsendToast(Context ctx, int type) {
+
+        if (!ActivityUtil.isOnForeground(ctx)) {
+            return;
+        }
+        makeshowPsendToast(ctx, type);
+    }
+
+    /**
+     * 制作Toast
+     *
+     * @param ctx
+     * @param
+     * @return
+     */
+    public static void makeshowPsendToast(Context ctx, int type) {
+        // 自定义Toast内容
+
+        Display mDisplay = ((Activity) ctx).getWindowManager().getDefaultDisplay();
+
+        View contentview = View
+                .inflate(ctx, R.layout.p_send_toast_layout, null);
+        contentview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT));
+
+        ImageView p_send_iv = (ImageView) contentview.findViewById(R.id.p_send_iv);
+
+        switch (type) {
+            case 1:
+                p_send_iv.setBackgroundResource(R.drawable.p_send_not_enough);
+                break;
+            case 2:
+                p_send_iv.setBackgroundResource(R.drawable.p_send_net_error);
+                break;
+            case 3:
+                p_send_iv.setBackgroundResource(R.drawable.p_send_server_error);
+                break;
+            default:
+                break;
+        }
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(contentview);
+        toast.show();
+
+    }
+
+    /**
+     * 显示位置需要设置
+     *
+     * @param context
+     * @param
+     * @return
+     */
+    public static Dialog hineDialog(Context context, View Layout, int gravity,
+                                    int Animations) {
+
+        return hineDialog(context, -1, Layout, gravity, Animations);
+    }
+
+    /**
+     * 显示位置需要设置
+     *
+     * @param context
+     * @param
+     * @return
+     */
+    public static Dialog hineDialog(Context context, View Layout, int gravity) {
+
+        return hineDialog(context, -1, Layout, gravity, -1);
+    }
+
+    /**
+     * 居中显示
+     *
+     * @param context
+     * @param Layout
+     * @return
+     */
+    public static Dialog hineDialog(Context context, View Layout) {
+
+        return hineDialog(context, -1, Layout, -1, -1);
+    }
+
+    /**
+     * @param context    上下文对象
+     * @param
+     * @param gravity    Gravity.CENTER||Gravity.BOTTOM||Gravity.TOP
+     * @param Animations 启动的动画
+     * @return
+     */
+    public static Dialog hineDialog(Context context, int styleID, View Layout,
+                                    int gravity, int Animations) {
+        final Dialog dialog;
+        if (styleID <= 0) {
+            dialog = new Dialog(context, R.style.MyDialog);
+
+        } else {
+            dialog = new Dialog(context, styleID);
+
+        }
+
+        Window window = dialog.getWindow();
+
+        if (gravity <= 0) {
+            window.setGravity(Gravity.CENTER);
+
+        } else {
+            window.setGravity(gravity);
+
+        }
+
+        if (Animations != -1) {
+            window.setWindowAnimations(Animations); // 添加动画
+        }
+
+        WindowManager windowManager = ((Activity) context).getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = (int) (display.getWidth());
+        dialog.getWindow().setAttributes(params);
+
+        dialog.onWindowAttributesChanged(params);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.setContentView(Layout);
+
+        return dialog;
+    }
+
+
+    public static Dialog createHintOperateDialog(Context context, final String hinttitle, final String content, final String cancel_str, final String ensure_str, final BackCallListener backCallListener) {
+
+        final Dialog dialog = new MyDialog(context, R.style.MyDialog, R.layout.my_hint_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+                TextView my_dialog_hint_title = (TextView) contentView.findViewById(R.id.my_dialog_hint_title);
+                TextView my_dialog_hint_content = (TextView) contentView.findViewById(R.id.my_dialog_hint_content);
+                final TextView my_dialog_hint_ensure = (TextView) contentView.findViewById(R.id.my_dialog_hint_ensure);
+                final TextView my_dialog_hint_cancel = (TextView) contentView.findViewById(R.id.my_dialog_hint_cancel);
+
+                my_dialog_hint_content.setText(content);
+
+                if (!CheckUtil.isEmpty(ensure_str)) {
+                    my_dialog_hint_ensure.setText(ensure_str);
+                }
+
+                if (CheckUtil.isEmpty(hinttitle)) {
+                    my_dialog_hint_title.setVisibility(View.GONE);
+                } else {
+                    my_dialog_hint_title.setVisibility(View.VISIBLE);
+                    my_dialog_hint_title.setText(hinttitle);
+                }
+
+                if (CheckUtil.isEmpty(cancel_str)) {
+                    my_dialog_hint_cancel.setVisibility(View.GONE);
+                } else {
+                    my_dialog_hint_cancel.setVisibility(View.VISIBLE);
+                    my_dialog_hint_cancel.setText(cancel_str);
+                }
+
+                // 点击保存按钮
+                my_dialog_hint_ensure.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        if (backCallListener != null) {
+                            backCallListener.onEnsure(my_dialog_hint_ensure, 1);
+                        }
+
+
+                    }
+
+                });
+                // 点击取消按钮
+                my_dialog_hint_cancel.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+
+                        if (backCallListener != null) {
+                            backCallListener.onCancel(my_dialog_hint_cancel, 2);
+                        }
+                    }
+                });
+
+            }
+        });
+
+        return dialog;
+    }
+
+    public static Dialog createHintOperateDialog(Context context, final String hinttitle, final CharSequence content, final String cancel_str, final String ensure_str, final BackCallListener backCallListener) {
+
+        final Dialog dialog = new MyDialog(context, R.style.MyDialog, R.layout.my_hint_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+                TextView my_dialog_hint_title = (TextView) contentView.findViewById(R.id.my_dialog_hint_title);
+                TextView my_dialog_hint_content = (TextView) contentView.findViewById(R.id.my_dialog_hint_content);
+                final TextView my_dialog_hint_ensure = (TextView) contentView.findViewById(R.id.my_dialog_hint_ensure);
+                final TextView my_dialog_hint_cancel = (TextView) contentView.findViewById(R.id.my_dialog_hint_cancel);
+
+                my_dialog_hint_content.setText(content);
+
+                if (!CheckUtil.isEmpty(ensure_str)) {
+                    my_dialog_hint_ensure.setText(ensure_str);
+                }
+
+                if (CheckUtil.isEmpty(hinttitle)) {
+                    my_dialog_hint_title.setVisibility(View.GONE);
+                } else {
+                    my_dialog_hint_title.setVisibility(View.VISIBLE);
+                    my_dialog_hint_title.setText(hinttitle);
+                }
+
+                if (CheckUtil.isEmpty(cancel_str)) {
+                    my_dialog_hint_cancel.setVisibility(View.GONE);
+                } else {
+                    my_dialog_hint_cancel.setVisibility(View.VISIBLE);
+                    my_dialog_hint_cancel.setText(cancel_str);
+                }
+
+                // 点击保存按钮
+                my_dialog_hint_ensure.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        if (backCallListener != null) {
+                            backCallListener.onEnsure(my_dialog_hint_ensure, 1);
+                        }
+
+
+                    }
+
+                });
+                // 点击取消按钮
+                my_dialog_hint_cancel.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+
+                        if (backCallListener != null) {
+                            backCallListener.onCancel(my_dialog_hint_cancel, 2);
+                        }
+                    }
+                });
+
+            }
+        });
+
+        return dialog;
+    }
+
+
+    /**
+     * 照片提示操作-dialog
+     * 可自行设置提示dialog的title 和提示内容 已经确认取消的text,也可设置是否显示title和是否显示取消控件
+     *
+     * @param context
+     * @param
+     * @param backCall
+     * @return
+     */
+
+    public static Dialog createPhotoDialog(Context context, final String hinttitle, final String onestr, final String twostr, final boolean isshowSample, final BackCall backCall) {
+
+        final Dialog dialog = new MyDialog(context, R.style.MyDialog, R.layout.select_operate_photo_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+                TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_photo_standard_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_photo_standard_layout);
+
+                TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+                TextView select_operate_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_two_tv);
+
+
+                select_operate_dialog_title_tv.setText(hinttitle);
+                select_operate_dialog_one_tv.setText(onestr);
+                select_operate_dialog_two_tv.setText(twostr);
+
+                if (isshowSample) {
+                    select_operate_dialog_photo_standard_layout.setVisibility(View.VISIBLE);
+                } else {
+                    select_operate_dialog_photo_standard_layout.setVisibility(View.GONE);
+                }
+
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_one_layout);
+                    }
+
+                });
+
+                select_operate_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_two_layout);
+                    }
+                });
+
+            }
+        });
+
+        return dialog;
+    }
+
+
+    public static Dialog createSexDialog(Context context, final String hinttitle, final String onestr, final String twostr, final String threestr, final String fourstr, final BackCallSex backCallSex) {
+
+        final Dialog dialog = new MyDialog(context, R.style.MyDialog, R.layout.select_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+                final TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+                LinearLayout select_operate_dialog_four_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_four_layout);
+
+                final TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+                final TextView select_operate_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_two_tv);
+                final TextView select_operate_dialog_three_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_three_tv);
+                final TextView select_operate_dialog_four_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_four_tv);
+
+
+                select_operate_dialog_title_tv.setText(hinttitle);
+                select_operate_dialog_one_tv.setText(onestr);
+                select_operate_dialog_two_tv.setText(twostr);
+                select_operate_dialog_three_tv.setText(threestr);
+                select_operate_dialog_four_tv.setText(fourstr);
+
+
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        if (null != backCallSex) {
+                            backCallSex.onOneLayout(select_operate_dialog_one_tv);
+                        }
+
+                    }
+
+                });
+
+                select_operate_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        if (null != backCallSex) {
+                            backCallSex.onTwoLayout(select_operate_dialog_two_tv);
+                        }
+
+                    }
+                });
+
+                select_operate_dialog_three_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        if (null != backCallSex) {
+                            backCallSex.onThreeLayout(select_operate_dialog_three_tv);
+                        }
+
+                    }
+                });
+                select_operate_dialog_four_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        if (null != backCallSex) {
+                            backCallSex.onFourLayout(select_operate_dialog_four_tv);
+                        }
+
+                    }
+                });
+
+
+            }
+        });
+
+        return dialog;
+    }
+
+    /**
+     * 冒泡举报
+     *
+     * @param context
+     * @param hinttitle
+     * @param onestr
+     * @param twostr
+     * @param threestr
+     * @param backCall
+     * @return
+     */
+    public static Dialog createBubbleReportDialog(Context context, final String hinttitle, final String onestr, final String twostr, final String threestr, final BackCall backCall) {
+
+        final Dialog dialog = new MyDialog(context, R.style.MyDialog, R.layout.select_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+                TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+
+                TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+                TextView select_operate_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_two_tv);
+                TextView select_operate_dialog_three_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_three_tv);
+
+
+                select_operate_dialog_title_tv.setText(hinttitle);
+                select_operate_dialog_one_tv.setText(onestr);
+                select_operate_dialog_two_tv.setText(twostr);
+                select_operate_dialog_three_tv.setText(threestr);
+
+
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_one_layout);
+                    }
+
+                });
+
+                select_operate_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_two_layout);
+                    }
+                });
+
+                select_operate_dialog_three_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_three_layout);
+                    }
+                });
+
+
+            }
+        });
+
+        return dialog;
+    }
+
+    /**
+     * @param context
+     * @param hinttitle
+     * @param onestr
+     * @param twostr
+     * @param threestr
+     * @param backCall
+     * @return
+     */
+    public static Dialog createOperateDialog(Context context, final String hinttitle, final String onestr, final String twostr, final String threestr, final boolean onegone, final boolean twogone, final boolean threegone, final BackCall backCall) {
+
+        final Dialog dialog = new MyDialog(context, R.style.MyDialog, R.layout.select_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+                TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+
+                TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+                TextView select_operate_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_two_tv);
+                TextView select_operate_dialog_three_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_three_tv);
+
+                select_operate_dialog_title_tv.setText(hinttitle);
+                select_operate_dialog_one_tv.setText(onestr);
+                select_operate_dialog_two_tv.setText(twostr);
+                select_operate_dialog_three_tv.setText(threestr);
+
+                if (onegone) {
+                    select_operate_dialog_one_layout.setVisibility(View.GONE);
+                } else {
+                    select_operate_dialog_one_layout.setVisibility(View.VISIBLE);
+                }
+
+                if (twogone) {
+                    select_operate_dialog_two_layout.setVisibility(View.GONE);
+                } else {
+                    select_operate_dialog_two_layout.setVisibility(View.VISIBLE);
+                }
+
+                if (threegone) {
+                    select_operate_dialog_three_layout.setVisibility(View.GONE);
+                } else {
+                    select_operate_dialog_three_layout.setVisibility(View.VISIBLE);
+                }
+
+
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_one_layout);
+                    }
+
+                });
+
+                select_operate_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_two_layout);
+                    }
+                });
+
+                select_operate_dialog_three_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 1000);
+                        backCall.deal(R.id.select_operate_dialog_three_layout);
+                    }
+                });
+
+
+            }
+        });
+
+        return dialog;
+    }
+
+
+    /**
+     * 网络加载。。。。
+     *
+     * @throws
+     * @Title: LoadingDialog
+     * @Description: TODO(这里用一句话描述这个方法的作用)
+     * @param: @param context
+     * @param: @return
+     * @return: Dialog
+     */
+
+    public static Dialog LoadingDialog(Context context, String hingstr) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.loading_dialog, null);
+
+        TextView loadtv = (TextView) view.findViewById(R.id.loading_tv);
+        if (hingstr == null) {
+            loadtv.setVisibility(View.GONE);
+        } else {
+            loadtv.setVisibility(View.VISIBLE);
+            loadtv.setText(hingstr);
+        }
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style_no);
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+
+        WindowManager windowManager = ((Activity) context).getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = (int) (display.getWidth());
+        dialog.getWindow().setAttributes(params);
+
+        dialog.onWindowAttributesChanged(params);
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                        | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(true);
+        dialog.setContentView(view);
+
+
+
+        return dialog;
+
+    }
+
+
+    /**
+     * 设置分享面板
+     *
+     * @param context
+     * @param backCall
+     * @return
+     */
+
+    public static Dialog createShareDialog(Context context, final BackCall backCall) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.setting_app_share_panel, null);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.BOTTOM);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        window.setWindowAnimations(R.style.dialogBOT_style); // 添加动画
+        WindowManager windowManager = ((Activity) context).getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        params.width = (int) (display.getWidth());
+        dialog.getWindow().setAttributes(params);
+
+        dialog.onWindowAttributesChanged(params);
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                        | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(view);
+
+        // 获得按钮
+
+        LinearLayout share_sina_weibo_layout = (LinearLayout) view.findViewById(R.id.setting_share_to_sina_weibo);
+        LinearLayout share_qq_layout = (LinearLayout) view.findViewById(R.id.setting_share_to_qq);
+        LinearLayout share_qq_zone_layout = (LinearLayout) view.findViewById(R.id.setting_share_to_qq_zone);
+        // 分享微信好友
+        LinearLayout share_weixin_layout = (LinearLayout) view.findViewById(R.id.setting_share_to_weixin);
+        // 分享到朋友圈
+        LinearLayout share_wx_friend_layout = (LinearLayout) view.findViewById(R.id.setting_share_to_weixin_friend);
+
+        LinearLayout share_cancel_layout = (LinearLayout) view.findViewById(R.id.setting_share_cancel_layout);
+
+        share_sina_weibo_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                backCall.deal(R.id.setting_share_to_sina_weibo);
+                dialog.dismiss();
+
+            }
+        });
+        share_qq_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                backCall.deal(R.id.setting_share_to_qq);
+                dialog.dismiss();
+            }
+        });
+        share_qq_zone_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                backCall.deal(R.id.setting_share_to_qq_zone);
+                dialog.dismiss();
+            }
+        });
+
+        share_weixin_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                backCall.deal(R.id.setting_share_to_weixin);
+                dialog.dismiss();
+            }
+        });
+
+        share_wx_friend_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                backCall.deal(R.id.setting_share_to_weixin_friend);
+                dialog.dismiss();
+            }
+        });
+
+        share_cancel_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                backCall.deal(R.id.setting_share_cancel_layout);
+                dialog.dismiss();
+            }
+        });
+        return dialog;
+
+    }
+
+    /**
+     * 完善信息提示
+     *
+     * @param context
+     * @param backCall
+     * @return
+     */
+
+    public static Dialog createPublishAppointHintDialog(Context context, final BackCall backCall) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.publish_appointment_hint_layout, null);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(view);
+
+        // 获得按钮
+        ImageView publish_app_hint_exit_iv = (ImageView) view.findViewById(R.id.publish_app_hint_exit_iv);
+
+        TextView publish_app_hint_sure_tv = (TextView) view.findViewById(R.id.publish_app_hint_sure_tv);
+
+        publish_app_hint_exit_iv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+
+            }
+        });
+
+        publish_app_hint_sure_tv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                backCall.deal(R.id.publish_app_hint_sure_tv);
+                dialog.dismiss();
+            }
+        });
+
+        return dialog;
+
+    }
+
+    /**
+     * 完善信息提示
+     *
+     * @param context
+     * @return
+     */
+    public static Dialog createCompileInfoHintDialog(Context context) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.compile_done_hint_layout, null);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(view);
+
+        return dialog;
+
+    }
+
+    /**
+     * 每日登陆
+     *
+     * @param context
+     * @param num
+     * @return
+     */
+    public static Dialog createDailyhintDialog(Context context, String num) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.daily_hint_layout, null);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(view);
+
+        // 获得按钮
+        TextView daily_hint_num_tv = (TextView) view.findViewById(R.id.daily_hint_num_tv);
+
+        daily_hint_num_tv.setText(num + "");
+
+        TextView daily_hint_sure_tv = (TextView) view.findViewById(R.id.daily_hint_sure_tv);
+
+        daily_hint_sure_tv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        return dialog;
+
+    }
+
+
+    /**
+     * 不能发布约会 资料补全提示
+     *
+     * @param context
+     * @return
+     */
+    public static Dialog createNotCanPublishDatingHintDialog(Context context, List<DatingRequirment> list, final BackCallListener backCallListener) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.cannot_publish_dating_hint_layout, null);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(view);
+
+        // 获得按钮
+
+
+        TextView can_not_publish_dating_sure_tv= (TextView) view.findViewById(R.id.can_not_publish_dating_sure_tv);
+        LinearLayout can_not_publish_info_layout= (LinearLayout) view.findViewById(R.id.can_not_publish_info_layout);
+
+        if(can_not_publish_info_layout.getChildCount()>0){
+            can_not_publish_info_layout.removeAllViews();
+        }
+
+       if(list!=null && list.size()>0){
+          for(int i=0;i<list.size();i++){
+              View info_view=inflater.inflate(R.layout.can_not_publish_hint_detail_layout, null);
+              ImageView can_not_publish_dating_iv= (ImageView) info_view.findViewById(R.id.can_not_publish_dating_iv);
+              TextView can_not_publish_dating_tv = (TextView) info_view.findViewById(R.id.can_not_publish_dating_tv);
+              DatingRequirment dto=list.get(i);
+              if(dto.isReady()){
+                  can_not_publish_dating_iv.setBackgroundResource(R.drawable.cannot_publish_dating_ready_icon);
+              }else{
+                  can_not_publish_dating_iv.setBackgroundResource(R.drawable.cannot_publish_dating_not_ready_icon);
+              }
+              if(!CheckUtil.isEmpty(dto.getMsg())){
+                  can_not_publish_dating_tv.setText(dto.getMsg());
+              }
+              can_not_publish_info_layout.addView(info_view);
+          }
+       }
+
+        can_not_publish_dating_sure_tv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                backCallListener.onEnsure(v);
+            }
+        });
+
+        return dialog;
+
+    }
+
+
+    /**
+     * 不能发布约会 资料补全提示
+     *
+     * @param context
+     * @return
+     */
+    public static Dialog createChatSendDatingHintDialog(Context context, final List<UserInfoAppointment> list, final BackCall backCallListener) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.chat_send_dating_hint_layout, null);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(view);
+
+        // 获得按钮
+        LinearLayout chat_send_dating_one_layout= (LinearLayout) view.findViewById(R.id.chat_send_dating_one_layout);
+        ImageView chat_send_dating_type_img_one_iv= (ImageView) view.findViewById(R.id.chat_send_dating_type_img_one_iv);
+        TextView chat_send_dating_content_one_tv = (TextView) view.findViewById(R.id.chat_send_dating_content_one_tv);
+
+        View chat_send_dating_one_view= view.findViewById(R.id.chat_send_dating_one_view);
+
+        LinearLayout chat_send_dating_two_layout= (LinearLayout) view.findViewById(R.id.chat_send_dating_two_layout);
+        ImageView chat_send_dating_type_img_two_iv= (ImageView) view.findViewById(R.id.chat_send_dating_type_img_two_iv);
+        TextView chat_send_dating_content_two_tv = (TextView) view.findViewById(R.id.chat_send_dating_content_two_tv);
+
+        View chat_send_dating_two_view= view.findViewById(R.id.chat_send_dating_two_view);
+
+        LinearLayout chat_send_dating_three_layout= (LinearLayout) view.findViewById(R.id.chat_send_dating_three_layout);
+        ImageView chat_send_dating_type_img_three_iv= (ImageView) view.findViewById(R.id.chat_send_dating_type_img_three_iv);
+        TextView chat_send_dating_content_three_tv = (TextView) view.findViewById(R.id.chat_send_dating_content_three_tv);
+
+       if(list.size()>=1 && list.get(0)!=null){
+           chat_send_dating_one_layout.setVisibility(View.VISIBLE);
+           setDatingTypeImg(list.get(0).getActivityType(),chat_send_dating_type_img_one_iv);
+           chat_send_dating_content_one_tv.setText(list.get(0).getTitle()+"·"+list.get(0).getContent());
+       }else{
+           chat_send_dating_one_layout.setVisibility(View.GONE);
+       }
+
+        if(list.size()>=2 && list.get(1)!=null){
+            chat_send_dating_two_layout.setVisibility(View.VISIBLE);
+            chat_send_dating_one_view.setVisibility(View.VISIBLE);
+            setDatingTypeImg(list.get(1).getActivityType(),chat_send_dating_type_img_two_iv);
+            chat_send_dating_content_two_tv.setText(list.get(1).getTitle()+"·"+list.get(1).getContent());
+        }else{
+            chat_send_dating_two_layout.setVisibility(View.GONE);
+            chat_send_dating_one_view.setVisibility(View.GONE);
+        }
+
+        if(list.size()>=3 && list.get(2)!=null){
+            chat_send_dating_three_layout.setVisibility(View.VISIBLE);
+            chat_send_dating_two_view.setVisibility(View.VISIBLE);
+            setDatingTypeImg(list.get(2).getActivityType(),chat_send_dating_type_img_three_iv);
+            chat_send_dating_content_three_tv.setText(list.get(2).getTitle()+"·"+list.get(2).getContent());
+        }else{
+            chat_send_dating_three_layout.setVisibility(View.GONE);
+            chat_send_dating_two_view.setVisibility(View.GONE);
+        }
+
+
+        chat_send_dating_one_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                if(list.size()>=1 && list.get(0)!=null) {
+                    backCallListener.deal(v.getId(), list.get(0));
+                }
+            }
+        });
+
+        chat_send_dating_two_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                if(list.size()>=2 && list.get(1)!=null) {
+                    backCallListener.deal(v.getId(), list.get(1));
+                }
+            }
+        });
+
+        chat_send_dating_three_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                if(list.size()>=3 && list.get(2)!=null) {
+                    backCallListener.deal(v.getId(), list.get(2));
+                }
+            }
+        });
+
+        return dialog;
+
+    }
+
+    private static void setDatingTypeImg(int datingType, ImageView appoint_type_iv){
+        switch (datingType){
+            case Constant.APPOINT_TYPE_BAR:
+                appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_bar);
+                break;
+
+            case Constant.APPOINT_TYPE_EAT:
+                appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_eat);
+                break;
+
+            case Constant.APPOINT_TYPE_COFFEE:
+                appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_coffee);
+                break;
+
+            case Constant.APPOINT_TYPE_MOVIE:
+                appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_movie);
+                break;
+
+            case Constant.APPOINT_TYPE_FITNESS:
+                appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_fitness);
+                break;
+
+            case Constant.APPOINT_TYPE_DOG:
+                appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_dog);
+                break;
+
+            case Constant.APPOINT_TYPE_KTV:
+                appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_ktv);
+                break;
+        }
+    }
+    /**
+     * 每日打分
+     *
+     * @param context
+     * @param candidatesDto
+     * @param backCallListener
+     * @return
+     */
+    public static Dialog createDailyScoreDialog(Context context, DaillyFaceratingCandidatesDto candidatesDto, final BackCallListener backCallListener) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.daily_score_layout, null);
+
+
+        BitmapPool mBitmapPool = Glide.get(context).getBitmapPool();
+        RoundedCornersTransformation roundedCornersTransformation = new RoundedCornersTransformation(mBitmapPool, 10, 0);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(view);
+
+        int wight = UnitUtil.getScreenWidthPixels(context);
+        int height = UnitUtil.getScreenHeightPixels(context);
+
+        int size_10 = UnitUtil.dip2px(10, context);
+
+
+        int lift_icon_size = wight / 5;
+
+        ImageView daily_score_laout_dialog_lift_icon = (ImageView) view.findViewById(R.id.daily_score_laout_dialog_lift_icon);
+
+        RelativeLayout.LayoutParams daily_score_laout_dialog_lift_icon_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        daily_score_laout_dialog_lift_icon_pa.width = lift_icon_size;
+        daily_score_laout_dialog_lift_icon_pa.height = lift_icon_size;
+        daily_score_laout_dialog_lift_icon.setLayoutParams(daily_score_laout_dialog_lift_icon_pa);
+
+
+        ImageView daily_score_cancel_tv = (ImageView) view.findViewById(R.id.daily_score_cancel_tv);
+
+        LinearLayout.LayoutParams daily_score_cancel_tv_pa = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        daily_score_cancel_tv_pa.width = lift_icon_size / 3;
+        daily_score_cancel_tv_pa.height = lift_icon_size / 3;
+        daily_score_cancel_tv_pa.gravity = Gravity.RIGHT;
+        daily_score_cancel_tv.setLayoutParams(daily_score_cancel_tv_pa);
+
+
+        LinearLayout daily_score_layout_context_layout = (LinearLayout) view.findViewById(R.id.daily_score_layout_context_layout);
+
+        RelativeLayout.LayoutParams daily_score_layout_context_layout_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        daily_score_layout_context_layout_pa.setMargins(lift_icon_size / 3, lift_icon_size / 3, lift_icon_size / 3, lift_icon_size / 3);
+
+        daily_score_layout_context_layout.setLayoutParams(daily_score_layout_context_layout_pa);
+
+
+        ImageView daily_score_laout_dialog_score_icon = (ImageView) view.findViewById(R.id.daily_score_laout_dialog_score_icon);
+
+
+        int wight_score_icon_size = wight - (wight / 3);
+        int wight_score_icon_size_mia = ((wight_score_icon_size / 4));
+        RelativeLayout.LayoutParams daily_score_laout_dialog_score_icon_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        daily_score_laout_dialog_score_icon_pa.width = wight_score_icon_size;
+        daily_score_laout_dialog_score_icon_pa.height = (wight_score_icon_size / 2);
+        daily_score_laout_dialog_score_icon_pa.addRule(RelativeLayout.BELOW, R.id.daily_score_layout);
+        daily_score_laout_dialog_score_icon_pa.setMargins(0, -wight_score_icon_size_mia, 0, 0);
+        daily_score_laout_dialog_score_icon.setLayoutParams(daily_score_laout_dialog_score_icon_pa);
+
+        int daily_score_user_icon_size = wight_score_icon_size - (wight_score_icon_size_mia);
+        ImageView daily_score_user_icon = (ImageView) view.findViewById(R.id.daily_score_user_icon);
+        ImageView daily_score_user_icon_showIcon = (ImageView) view.findViewById(R.id.daily_score_user_icon_showIcon);
+
+        RelativeLayout.LayoutParams daily_score_user_icon_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        daily_score_user_icon_pa.width = daily_score_user_icon_size;
+        daily_score_user_icon_pa.height = daily_score_user_icon_size - size_10;
+        daily_score_user_icon.setLayoutParams(daily_score_user_icon_pa);
+        daily_score_user_icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        daily_score_user_icon_showIcon.setLayoutParams(daily_score_user_icon_pa);
+        daily_score_user_icon_showIcon.setVisibility(View.GONE);
+
+
+        // 获得按钮
+        TextView daily_score_layout_go_tv = (TextView) view.findViewById(R.id.daily_score_layout_go_tv);
+
+        String uresIcoUrl = ImgUtils.DealImageUrl(candidatesDto.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+        Glide.with(context).load(uresIcoUrl).bitmapTransform(roundedCornersTransformation).into(daily_score_user_icon);
+
+        daily_score_layout_go_tv.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != backCallListener) {
+                    backCallListener.onEnsure(v);
+                }
+            }
+        });
+        daily_score_cancel_tv.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != backCallListener) {
+                    backCallListener.onCancel(v);
+                }
+            }
+        });
+
+
+        return dialog;
+
+    }
+
+    /**
+     * 发布约会信息提示 和编辑资料成功提示
+     *
+     * @param context
+     * @param hintstr
+     * @return
+     */
+    public static Dialog createSuccessHintDialog(Context context, String hintstr) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.success_done_hint_layout, null);
+
+        final Dialog dialog = new Dialog(context, R.style.dialog_BOT_style);
+
+        TextView success_hint_tv = (TextView) view.findViewById(R.id.success_hint_tv);
+
+        success_hint_tv.setText(hintstr);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(view);
+        return dialog;
+
+    }
+
+
+    public static Dialog appointWelcomeDialog(Context context, OnClickListener onClickListener){
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.appoint_welcome_layout, null);
+
+        final Dialog dialog = new Dialog(context, R.style.MyDialog);
+
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(view);
+
+        Button next_but= (Button) view.findViewById(R.id.next_but);
+        next_but.setOnClickListener(onClickListener);
+
+
+        return dialog;
+    }
+
+}

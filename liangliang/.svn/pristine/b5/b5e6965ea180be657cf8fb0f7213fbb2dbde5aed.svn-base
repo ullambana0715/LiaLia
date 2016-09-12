@@ -1,0 +1,20 @@
+package cn.chono.yopper.Service.Http.BumpFriendsList;
+
+import cn.chono.yopper.data.BumpFriends;
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/11/20.
+ */
+public class BumpFriendsListRespBean extends RespBean {
+
+    private BumpFriends resp;
+
+    public BumpFriends getResp() {
+        return resp;
+    }
+
+    public void setResp(BumpFriends resp) {
+        this.resp = resp;
+    }
+}

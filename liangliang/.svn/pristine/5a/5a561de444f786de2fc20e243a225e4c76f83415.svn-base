@@ -1,0 +1,128 @@
+package cn.chono.yopper.Service.Http.DaillyFaceratingCandidates;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * Created by zxb on 2015/12/6.
+ */
+public class DaillyFaceratingCandidatesDto implements Serializable {
+
+    private int userId;
+
+    private String name;
+
+    private int horoscope;
+
+    private int sex;
+
+    private String headImg;
+
+    private List<String> album;
+
+    private int age;
+
+    private int attraction;
+
+    private double distance;
+
+    private boolean birthdayPrivacy;
+
+
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getHoroscope() {
+        return horoscope;
+    }
+
+    public void setHoroscope(int horoscope) {
+        this.horoscope = horoscope;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
+    public String getHeadImg() {
+        return headImg;
+    }
+
+    public void setHeadImg(String headImg) {
+        this.headImg = headImg;
+    }
+
+    public List<String> getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(List<String> album) {
+        this.album = album;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public int getAttraction() {
+        return attraction;
+    }
+
+    public void setAttraction(int attraction) {
+        this.attraction = attraction;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public boolean isBirthdayPrivacy() {
+        return birthdayPrivacy;
+    }
+
+    public void setBirthdayPrivacy(boolean birthdayPrivacy) {
+        this.birthdayPrivacy = birthdayPrivacy;
+    }
+
+    @Override
+    public String toString() {
+        return "DaillyFaceratingCandidatesDto{" +
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                ", horoscope=" + horoscope +
+                ", sex=" + sex +
+                ", headImg='" + headImg + '\'' +
+                ", album=" + album +
+                ", age=" + age +
+                ", attraction=" + attraction +
+                ", distance=" + distance +
+                ", birthdayPrivacy=" + birthdayPrivacy +
+                '}';
+    }
+}

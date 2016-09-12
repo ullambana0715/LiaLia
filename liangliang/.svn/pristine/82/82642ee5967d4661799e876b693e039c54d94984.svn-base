@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="@android:color/white" />
+    <item android:state_activated="true" android:color="@android:color/white" />
+    <item android:color="@color/qupai_gray_0x80" />
+</selector><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/diy_group_qupai_text_selector.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/diy_group_qupai_text_selector.xml -->

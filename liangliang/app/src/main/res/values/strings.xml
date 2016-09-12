@@ -1,0 +1,272 @@
+<resources>
+    <string name="app_name">俩俩同城交友</string>
+    <string name="action_settings">Settings</string>
+    <string name="cancel">取消</string>
+    <string name="welcome_but">进入俩俩</string>
+    <string name="register">注册</string>
+    <string name="login">登录</string>
+    <string name="login_phone">使用手机号登录</string>
+    <string name="back">返回</string>
+    <string name="next">下一步</string>
+    <string name="phone_hint_exit">请输入手机号码</string>
+    <string name="protocol_specification_phote">俩俩不会在任何地方泄露您的手机号码</string>
+    <string name="protocol_specification">注册即表示同意</string>
+    <string name="protocol_specification_but">《俩俩用户协议》</string>
+    <string name="register_phone_register">使用手机号码注册</string>
+    <string name="login_verification_code_login">通过短信验证码登录</string>
+    <string name="on_net_Loser">咦？数据加载失败了</string>
+    <string name="on_net_examine">请检查一下你的网络，重新加载吧</string>
+    <string name="on_net_load">重新加载</string>
+    <string name="register_write_info_title">填写个人资料</string>
+    <string name="resend_verification_code">发送验证码</string>
+    <string name="resend_again_verification_code">重新发送</string>
+    <string name="resend_verification_hine">请输入验证码</string>
+    <string name="found_verification_code">收不到验正码？</string>
+    <string name="send_seek_help">点击求帮助</string>
+    <string name="accomplish">完成</string>
+    <string name="passworid_limit">"1234567890qwertyuiopasdfghjklzxcvbnm,./';?:|\QWERTYUIOPLKJHGFDSAZXCVBNM`~!@#$%^*_-+=({}[])"</string>
+    <string name="login_hine_phono">手机号码</string>
+    <string name="login_hine_password">请输入密码</string>
+    <string name="verification_code_title">验证码已发送</string>
+    <string name="verification_code_login_title">通过短信验证码登录</string>
+    <string name="affirm">确认</string>
+    <string name="yes_str">是</string>
+    <string name="no_str">否</string>
+    <string name="nickname_hine">输入昵称</string>
+    <string name="constellation">选择星座</string>
+    <string name="register_write_info_next">进入俩俩</string>
+
+    <!--  -->
+    <string name="photograph">拍照</string>
+    <string name="photo_choose">相片选取</string>
+    <string name="constellation_text_hint">星座选择后不可更改</string>
+    <string name="constellation_tv_hint">请选择你的星座</string>
+
+    <!-- asmack -->
+    <string name="gl_wait">请稍等</string>
+    <string name="status_online">在线</string>
+    <string name="status_available">在线</string>
+    <string name="status_away">离开</string>
+    <string name="status_chat">Q我吧</string>
+    <string name="status_dnd">请勿打扰</string>
+    <string name="status_xa">隐身</string>
+    <string name="status_offline">离线</string>
+    <string name="status_busy">忙碌</string>
+    <string name="run_bg_ticker">XMPP正在后台运行</string>
+    <string name="screen_all">全部</string>
+    <string name="screen_handsome">只看男</string>
+    <string name="screen_belle">只看女</string>
+    <string name="screen_cancel">取消</string>
+    <string name="setting_passwords_hint">请输入密码</string>
+    <string name="setting_passwords_title">设置密码</string>
+    <string name="setting_passwords_text_hint">设置密码后，可以使用手机号＋密码登录俩俩</string>
+    <string name="setting_tv_option">完成</string>
+    <string name="password_specification_hine">为了保护你的账户安全,请勿设置过于简单的密码</string>
+    <string name="page_three_register">个人资料</string>
+
+
+    <string name="user_heiht">身高</string>
+    <string name="user_weight">体重</string>
+    <string name="user_age">年龄</string>
+    <string name="bubbling_edit_hini">说点什么吧…</string>
+    <string name="text_message_voice">消息声音</string>
+    <string name="text_clear_cache">清理缓存</string>
+    <string name="text_share_to_friend">告诉小伙伴</string>
+    <string name="text_quit_account">退出账号</string>
+    <string name="text_photo_tv">照片</string>
+    <string name="text_clear_cache_hint">确定清理缓存吗？</string>
+    <string name="text_clear_cache_ensure">确认</string>
+    <string name="weibosdk_demo_share_text_template">我正在使用微博客户端发博器分享文字</string>
+    <string name="weibosdk_demo_app_url">https://github.com/mobileresearch/weibo_android_sdk/blob/master/WeiboSDKDemo.apk</string>
+
+    <!-- 举报 -->
+    <string name="bubbling_now">骚扰信息</string>
+    <string name="bubbling_two">广告欺诈</string>
+    <string name="bubbling_three">不健康内容</string>
+    <!-- 无数据提示 -->
+    <string name="error_hini">暂时无数据</string>
+    <string name="error_bubbling_hini">附近暂时没有人冒泡</string>
+    <string name="error_bubbling_wo_hini">你还没有冒过泡</string>
+    <string name="error_message_tv_hini">您访问的信息存在违规的内容</string>
+    <string name="submit_text">提交</string>
+
+    <string name="score_text">颜值打分</string>
+
+    <string name="clown_str">丑</string>
+    <string name="general_str">一般</string>
+    <string name="handsome_str">帅</string>
+    <string name="very_handsome_str">很帅</string>
+
+    <string name="addiction_str">还不过瘾?</string>
+    <string name="again_update_str">再来一批</string>
+    <string name="again_already_str">我要打分</string>
+
+    <string name="score_hini_str">姐妹们一起清扫“丑”势力</string>
+    <string name="score_hini_tv_str">安心给他打“丑”分，我们不会告诉他</string>
+    <string name="string_hi">HI，</string>
+    <string name="string_on_a_date">我们约哪里</string>
+
+    <string name="start_appoint_but">开始约会</string>
+    <string name="start_fast_login">第三方账号快速登录</string>
+
+
+    <string name="nearby_str">附近</string>
+    <string name="appointment_str">约会</string>
+    <string name="find_str">发现</string>
+    <string name="message_str">消息</string>
+    <string name="kingdo_str">王国</string>
+
+    <string name="usercenter_str">我</string>
+
+    <string name="constellation_divine">星座占星</string>
+    <string name="emotion_feeling">情感心理</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="simple_string_list">Simple String List</string>
+    <string name="custom_adapter_list">Custom Adapter List</string>
+    <string name="custom_adapter_list_with_dividers">Custom Adapter List with dividers</string>
+
+    <string name="text_my_place">我当前的排名</string>
+    <string name="text_climbing_info">爬行榜介绍</string>
+    <string name="text_bonus_exchange">奖品兑换</string>
+    <string name="text_climbing_list">爬行榜</string>
+    <string name="climbing_list_timer">第%1$d期倒计时: %2$d天%3$d时%4$d分%5$d秒</string>
+    <string name="climbing_list_timer_day">第%1$d期倒计时: %2$d天</string>
+    <string name="climbing_list_timer_hour">第%1$d期倒计时: %2$d时%3$d分</string>
+    <string name="climbing_list_timer_minute">第%1$d期倒计时: %2$d分%3$d秒</string>
+    <string name="climbing_list_timer_second">第%1$d期倒计时: %2$d秒</string>
+
+    <string name="text_sequence">排序</string>
+    <string name="text_destination">目的地</string>
+    <string name="text_label">标签</string>
+    <string name="text_plan_management">计划安排</string>
+    <string name="text_Objects">对象</string>
+    <string name="text_departure_time">出发时间</string>
+    <string name="text_estimated_time">预计时间</string>
+    <string name="text_travel">出行</string>
+    <string name="text_pay">买单</string>
+    <string name="text_destination_notice">有相同目的地的通知我</string>
+    <string name="text_supplement_explanation">补充说明</string>
+    <string name="text_please_choose">请选择</string>
+    <string name="text_Optional">选填</string>
+    <string name="text_travel_et_hint">空乏的说明是没有人报名的...</string>
+    <string name="text_invite_objects">邀请对象</string>
+
+    <string name="text_objects_tyrant_m">土豪男</string>
+    <string name="text_objects_overbearing_chairman">霸道总裁</string>
+    <string name="text_objects_rich_handsome">高富帅</string>
+    <string name="text_objects_female_temperament">气质女</string>
+    <string name="text_objects_silly_sweet_white">傻白甜</string>
+    <string name="text_objects_phu_bai">白富美</string>
+
+    <string name="where_to_go">不知道去哪里</string>
+    <string name="discuss_decide">商议后决定</string>
+    <string name="text_travel_significance">旅行的意义</string>
+    <string name="text_like_preferences">喜好与偏好</string>
+
+    <string name="text_travel_label">旅行标签</string>
+    <string name="text_release">发布</string>
+
+    <string name="text_travel_destination_lable_hint">点选标签，也可输入你心中的目的地</string>
+
+    <string name="text_travel_destination_together_play">结伴游玩</string>
+    <string name="text_travel_destination_xpress_accompanying">随心随行</string>
+    <string name="text_travel_destination_leisure_lnteractive">休闲互动</string>
+    <string name="text_travel_destination_stay_away">说走就走</string>
+    <string name="text_travel_destination_long_vacation">悠长假期</string>
+    <string name="text_travel_destination_dream">梦幻之旅</string>
+
+
+    <string name="text_travel_destination">选择目的地</string>
+
+    <string name="text_travel_the_way">出行方式</string>
+    <string name="text_travel_cost">费用</string>
+
+
+    <string name="text_sports_dating_theme_hint">请勿发布商品广告及色情招嫖等违法信息，否则永久封禁账号和上网设备，即时再注册新号也无法登录俩俩</string>
+    <string name="text_movement">运动</string>
+
+    <string name="text_location_select">选择地点</string>
+    <string name="text_location">地点</string>
+    <string name="text_time_select">选择时间</string>
+    <string name="text_time">时间</string>
+
+    <string name="text_dog_species_select">选择犬种</string>
+    <string name="text_dog_species">狗狗类型</string>
+
+    <string name="text_theme">主题</string>
+    <string name="text_theme_select">选择主题</string>
+
+
+    <string name="text_EAT">吃饭</string>
+    <string name="text_MOVIE">电影</string>
+    <string name="text_BAR">喝酒</string>
+    <string name="text_DOG">溜狗</string>
+    <string name="text_FITNESS">运动</string>
+    <string name="text_KTV">K歌</string>
+    <string name="text_other">其他</string>
+
+    <string name="text_movie_name">影片</string>
+    <string name="text_movie_name_select">请选择影片</string>
+
+    <string name="text_movement_select">选择运动项目</string>
+
+    <string name="text_movement_theme_select">选择邀约主题</string>
+
+    <string name="text_location_city">活动城市</string>
+    <string name="text_location_city_select">请选择活动城市</string>
+    <string name="text_location_city_hint">请写一个熟悉的地点</string>
+
+
+    <string name="text_marry">你想何时结婚</string>
+    <string name="text_parents">你的父母是否建在</string>
+    <string name="text_only_child">你是否独生子女</string>
+    <string name="text_census">户籍所在地</string>
+    <string name="text_address">现居地</string>
+    <string name="text_height">身高</string>
+    <string name="text_body_weight">体重</string>
+    <string name="text_occupation">职业</string>
+    <string name="text_monthly_income">月收入</string>
+    <string name="text_educational_background">学历</string>
+    <string name="text_romance">既往恋爱史</string>
+    <string name="text_marital_history">有无婚史</string>
+    <string name="text_have_children">有无子女</string>
+    <string name="text_drinking">饮酒</string>
+    <string name="text_health">健康自评</string>
+    <string name="text_housing">婚后住房</string>
+    <string name="text_send_message">对他/她的寄语</string>
+
+
+    <string name="text_personals_image_hint">上传一张您本人的照片拒绝ps</string>
+    <string name="text_personals_image">上传照片</string>
+    <string name="text_personals_have_to">征婚必填资料</string>
+    <string name="text_personals_have_to_hint">发布后可修改</string>
+
+
+    <string name="text_send_hint">婚婚是人生大事，你想对未来的他/她说些什么？懒的话选下面，最好自己写</string>
+    <string name="text_appointment_hini">当前信息没有填写完全，无法发布邀约</string>
+    <string name="text_appointment_personals_hini">请认真填写以下全部带有*号的必填项，这样才能让真正适合的人找到你哦</string>
+    <string name="release_address_hint">例如：人民广场附近、中山公园旁边</string>
+
+
+    <string name="interested_talk">感兴趣，先聊聊</string>
+
+    <string name="network_errer">网络异常，请稍后重试</string>
+
+
+    <string name="recorde_press_str">按住录音</string>
+    <string name="recorde_up_str">松开停止</string>
+
+    <string name="tarot_astrology_str">咨询占星师</string>
+
+
+    <string name="experience_immediately">立 即 体 验</string>
+
+
+    <string name="login_error">登录失败，请稍后重试</string>
+
+    <string name="kick_logout">你的账号已在其他终端登录,重新登录</string>
+
+    <string name="need_permission">您需要开启权限,并重启应用</string>
+
+</resources>

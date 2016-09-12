@@ -1,0 +1,1441 @@
+package cn.chono.yopper.activity.base;
+
+import android.app.Application;
+import android.app.Dialog;
+import android.app.KeyguardManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.DaillyTask.DaillyFaceratingCandidatesDBTask;
+import cn.chono.yopper.Service.DaillyTask.DaillyTask;
+import cn.chono.yopper.Service.DaillyTask.OnDaillTaskListener;
+import cn.chono.yopper.Service.DaillyTaskService.DaillyTaskService;
+import cn.chono.yopper.Service.DaillyTaskService.OnDaillyTaskServiceListener;
+import cn.chono.yopper.Service.Http.BumpFriendsList.BumpFriendsListBean;
+import cn.chono.yopper.Service.Http.BumpFriendsList.BumpFriendsListRespBean;
+import cn.chono.yopper.Service.Http.BumpFriendsList.BumpFriendsService;
+import cn.chono.yopper.Service.Http.BumpUserSync.BumpUserSyncBean;
+import cn.chono.yopper.Service.Http.BumpUserSync.BumpUserSyncRespBean;
+import cn.chono.yopper.Service.Http.BumpUserSync.BumpUserSyncService;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+import cn.chono.yopper.Service.Http.GainVersionInfo.GainVersionInfoRespBean;
+import cn.chono.yopper.Service.Http.GainVersionInfo.GainVersionInfoService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoRespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.usercenter.ScoreActivity;
+import cn.chono.yopper.data.BaseUser;
+import cn.chono.yopper.data.BumpDataBD;
+import cn.chono.yopper.data.BumpFriends;
+import cn.chono.yopper.data.BumpResults;
+import cn.chono.yopper.data.LoginVideoStatusDto;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.NotificationMsg;
+import cn.chono.yopper.data.SyncDto;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.data.VersionChkDTO;
+import cn.chono.yopper.data.Visits;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.XXService;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.ChatUtils;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.CommonObservable;
+import cn.chono.yopper.utils.CommonObserver;
+import cn.chono.yopper.utils.Constants;
+import cn.chono.yopper.utils.ContextUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.SHA;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.TimeUtil;
+
+public class IndexActivity extends MainFrameActivity implements OnClickListener {
+
+    private View contentView;
+
+    // 定义Fragment页面
+    private AppointmentFragment fragment_appoint;
+    private DiscoverListFragment fragment_nearby;
+    private MessageFragment fragment_message;
+    private UserCenterFragment fragment_bump;
+    private FindFragment fragment_find;
+
+    // 首页底部约会按钮
+    private LinearLayout appointment_layout_indexActivity;
+
+
+    private LinearLayout find_layout_indexActivity;
+
+    private LinearLayout usercenter_layout_indexActivity;
+
+    private ImageView icon_usercenter_narmal_icon;
+
+    private ImageView icon_appointment_layout_icon;
+
+    private ImageView icon_find_narmal_icon;
+
+    private ImageView icon_message_narmal_icon;
+
+    private ImageView icon_nearby_narmal_icon;
+
+    private ImageView icon_look_me_iv;
+
+
+    private TextView icon_nearby_narmal_tv;
+    private TextView icon_appointment_narmal_tv;
+    private TextView icon_find_narmal_tv;
+    private TextView icon_message_narmal_tv;
+    private TextView icon_usercenter_narmal_tv;
+
+    // 首页消息按钮
+    private LinearLayout message_layout_indexActivity;
+
+    // 消息数量
+    private TextView index_message_bubble_tv;
+
+    private LinearLayout  bottom_tab_container_layout;
+    // 附近按钮
+    private LinearLayout nearby_layout_indexActivity;
+
+    private String mid;
+
+    // private UserDto userInfo;
+
+    private String mAccount;
+    private String mPassword;
+
+    // 升级
+    private Dialog versiondialog;
+
+    private String DownloadLink;
+
+    private Runnable setMsgNumRun = new Runnable() {
+
+        @Override
+        public void run() {
+            setMessageNum(mid);
+
+        }
+    };
+
+    private CommonObserver.SetMessageNumObserver setMessageNumObserver = new CommonObserver.SetMessageNumObserver(setMsgNumRun);
+
+
+    // 版本升级监听
+    private VersionChkDTO checkVerDTO;
+
+    // 版本升级监听
+    private Runnable newVersionRun = new Runnable() {
+
+        @Override
+        public void run() {
+            dealWithVersionDto();
+        }
+    };
+
+    private CommonObserver.NewVersionObserver newVersionObserver = new CommonObserver.NewVersionObserver(newVersionRun);
+
+    public static int selected_menu_type = 1;
+
+    private PackageManager packageManager;
+    private PackageInfo packInfo;
+
+    private FragmentTransaction fragmentTransaction;
+
+    private Intent IndexMessageNumintent;
+
+    public static KeyguardManager mKeyguardManager;
+
+    public static Application myApp;
+
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+
+    private int userid;
+
+    private long mExitTime;
+
+    private Handler synchandler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1) {
+
+                getSync();
+            }
+        }
+    };
+
+    private SyncReceiver syncReceiver;
+
+    private Dialog dialog_dilly_score;
+
+    private Dialog appointWelcomeDialog, loadingDiaog;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+
+        contentView = View.inflate(this, R.layout.index, null);
+
+        setContentView(contentView);
+
+        Loc.sendLocControlMessage(true);
+
+        selected_menu_type = 0;
+
+        userid = YPApplication.loginUser.getUserId();
+
+        ContextUtil.init(this);
+
+        IndexMessageNumintent = new Intent();
+        IndexMessageNumintent.setAction("cn.yopper.chono.set.newmsg");
+
+
+        // 初始化界面
+        initComponent();
+        BaseUser baseUser = DbHelperUtils.getBaseUser(userid);
+        if (baseUser != null) {
+            nearby_layout_indexActivity.performClick();
+        } else {
+            loadingDiaog = DialogUtil.LoadingDialog(IndexActivity.this, null);
+            if (!isFinishing()) {
+                loadingDiaog.show();
+            }
+        }
+        getUserInfo();
+
+        // 注册监听
+        CommonObservable.getInstance().addObserver(setMessageNumObserver);
+        CommonObservable.getInstance().addObserver(newVersionObserver);
+
+        // 获取版本信息
+        Long get_Version_time = SharedprefUtil.getLong(this, "get_Version_time", 0);
+        if (get_Version_time == 0) {
+            SharedprefUtil.saveLong(this, "get_Version_time", System.currentTimeMillis());
+            getVersionInfo();
+        } else {
+            if (!TimeUtil.isToday(get_Version_time)) {
+                SharedprefUtil.saveLong(this, "get_Version_time", System.currentTimeMillis());
+                getVersionInfo();
+            }
+        }
+
+        mid = YPApplication.loginUser.getUserId() + "@chono";
+
+        // 获取碰友列表
+        getBumpFriends();
+
+
+        // 生成广播处理
+        syncReceiver = new SyncReceiver();
+        // 实例化过滤器并设置要过滤的广播
+        IntentFilter intentFilter = new IntentFilter("cn.yopper.chono.set.sync");
+        // 注册广播
+        this.registerReceiver(syncReceiver, intentFilter);
+
+//        DaillyText text=new DaillyText();
+//        text.addtask(this);//添加三个测试任务
+
+
+//        DaillyFaceratingCandidatesTask.getInstance().enqueue(this, 20, YPApplication.loginUser.getUserId());
+
+
+    }
+
+
+
+
+    public class SyncReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            try {
+                Visits dto = YPApplication.getInstance().db.findFirst(Selector.from(Visits.class).where("id", " =", userid));
+                if (dto != null) {
+                    if (dto.getNewadded() != 0) {
+                        icon_look_me_iv.setVisibility(View.VISIBLE);
+                    } else {
+                        LoginVideoStatusDto loginVideoStatusDto = YPApplication.getInstance().db.findFirst(Selector.from(LoginVideoStatusDto.class).where("id", " =", userid));
+                        if (loginVideoStatusDto == null) {
+                            icon_look_me_iv.setVisibility(View.VISIBLE);
+                        } else {
+                            if (loginVideoStatusDto.getIsVisible() == 1) {
+                                icon_look_me_iv.setVisibility(View.VISIBLE);
+                            } else {
+                                icon_look_me_iv.setVisibility(View.GONE);
+                            }
+                        }
+                    }
+
+                } else {
+                    LoginVideoStatusDto loginVideoStatusDto = YPApplication.getInstance().db.findFirst(Selector.from(LoginVideoStatusDto.class).where("id", " =", userid));
+                    if (loginVideoStatusDto == null) {
+                        icon_look_me_iv.setVisibility(View.VISIBLE);
+                    } else {
+                        if (loginVideoStatusDto.getIsVisible() == 1) {
+                            icon_look_me_iv.setVisibility(View.VISIBLE);
+                        } else {
+                            icon_look_me_iv.setVisibility(View.GONE);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void stopTimer() {
+
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+    }
+
+
+    private void startTimer() {
+
+        stopTimer();
+
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    Message msg = new Message();
+                    msg.what = 1;
+                    synchandler.sendMessage(msg);
+                }
+            };
+        }
+
+        if (mTimer != null && mTimerTask != null)
+            mTimer.schedule(mTimerTask, 0, 2 * 60 * 1000);
+
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+
+        startTimer();
+
+        if (YpSettings.xxservice != null) {
+            YpSettings.xxservice.registerConnectionStatusCallback(IndexActivity.this);
+            LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
+            loginAsyncTask.execute();
+            //这里没有ui操作,可以直接new thread代替task操作.
+        }
+//        // 每日首次报到
+
+        DaillyTask.getInstance().enqueue(IndexActivity.this, new OnDaillTaskListener() {
+            @Override
+            public void onSuccess() {
+
+                /**
+                 * 附近人打分任务
+                 */
+                int selected_tab_Id = SharedprefUtil.getInt(IndexActivity.this, YpSettings.DISCOVER_TAB_ID, 0);
+                setDaillyTaskScore(selected_menu_type, selected_tab_Id);
+
+            }
+        });
+        setMessageNum(mid);
+
+        if (selected_menu_type != 1 && selected_menu_type != 2) {
+            Loc.sendLocControlMessage(false);
+        } else {
+            Loc.sendLocControlMessage(true);
+        }
+
+        if (selected_menu_type == 2) {
+            DaillyTaskService.getInstance().seekTask();
+            LogUtils.e("-------------回调了------------");
+            DaillyTaskService.getInstance().getNowTask(new OnDaillyTaskServiceListener() {
+                @Override
+                public boolean execution(String data) {
+
+                    LogUtils.e("-------------data------------");
+                    Dialog dialog = DialogUtil.createDailyhintDialog(IndexActivity.this, data);
+                    dialog.show();
+                    return true;
+                }
+            }, YpSettings.DAILLY_TASK_P);
+        }
+
+        /**
+         * 附近人打分任务
+         */
+        int selected_tab_Id = SharedprefUtil.getInt(IndexActivity.this, YpSettings.DISCOVER_TAB_ID, 0);
+        setDaillyTaskScore(selected_menu_type, selected_tab_Id);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        setMessageNum(mid);
+        if (YpSettings.xxservice != null) {
+            YpSettings.xxservice.registerConnectionStatusCallback(IndexActivity.this);
+        }
+
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Loc.sendLocControlMessage(false);
+        stopTimer();
+    }
+
+    /**
+     * 初始化界面
+     */
+    FragmentManager fragmentMag;
+
+    private void initComponent() {
+
+        bottom_tab_container_layout= (LinearLayout) this.findViewById(R.id.bottom_tab_container_layout);
+        bottom_tab_container_layout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        nearby_layout_indexActivity = (LinearLayout) this.findViewById(R.id.nearby_layout_indexActivity);
+
+        appointment_layout_indexActivity = (LinearLayout) this.findViewById(R.id.appointment_layout_indexActivity);
+
+        find_layout_indexActivity = (LinearLayout) this.findViewById(R.id.find_layout_indexActivity);
+
+        message_layout_indexActivity = (LinearLayout) this.findViewById(R.id.message_layout_indexActivity);
+
+        usercenter_layout_indexActivity = (LinearLayout) this.findViewById(R.id.usercenter_layout_indexActivity);
+
+
+        icon_nearby_narmal_icon = (ImageView) this.findViewById(R.id.icon_nearby_narmal_icon);
+
+        icon_appointment_layout_icon = (ImageView) this.findViewById(R.id.icon_appointment_layout_icon);
+
+        icon_find_narmal_icon = (ImageView) this.findViewById(R.id.icon_find_narmal_icon);
+
+        icon_message_narmal_icon = (ImageView) this.findViewById(R.id.icon_message_narmal_icon);
+
+        icon_usercenter_narmal_icon = (ImageView) this.findViewById(R.id.icon_usercenter_narmal_icon);
+
+
+        icon_nearby_narmal_tv = (TextView) findViewById(R.id.icon_nearby_narmal_tv);
+
+        icon_appointment_narmal_tv = (TextView) findViewById(R.id.icon_appointment_narmal_tv);
+
+        icon_find_narmal_tv = (TextView) findViewById(R.id.icon_find_narmal_tv);
+
+        icon_message_narmal_tv = (TextView) findViewById(R.id.icon_message_narmal_tv);
+
+        icon_usercenter_narmal_tv = (TextView) findViewById(R.id.icon_usercenter_narmal_tv);
+
+
+        index_message_bubble_tv = (TextView) this.findViewById(R.id.index_message_bubble_tv);
+
+        icon_look_me_iv = (ImageView) this.findViewById(R.id.icon_look_me_iv);
+
+
+        fragmentMag = getSupportFragmentManager();
+
+        nearby_layout_indexActivity.setOnClickListener(this);
+
+
+        appointment_layout_indexActivity.setOnClickListener(this);
+
+        find_layout_indexActivity.setOnClickListener(this);
+
+        message_layout_indexActivity.setOnClickListener(this);
+
+        usercenter_layout_indexActivity.setOnClickListener(this);
+
+
+//        contentView.postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                appointment_layout_indexActivity.performClick();
+//            }
+//        }, 10);
+
+        setMessageNum(mid);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+
+
+            case R.id.nearby_layout_indexActivity://附近
+                Loc.sendLocControlMessage(true);
+                int selected_tab_Id = SharedprefUtil.getInt(IndexActivity.this, YpSettings.DISCOVER_TAB_ID, 0);
+                if (selected_menu_type == 1) {
+
+                    if (selected_tab_Id == 0 && IndexActivity.getOnPeopleBackToTopListener() != null) {
+                        IndexActivity.getOnPeopleBackToTopListener().onPeopleBackToTop();
+                    } else if (selected_tab_Id == 1 && IndexActivity.getOnBubbleBackToTopListener() != null) {
+                        IndexActivity.getOnBubbleBackToTopListener().onBubbleBackToTop();
+                    }
+                    return;
+                }
+                selected_menu_type = 1;
+
+                setChioceItem(1);
+                // 改变选中状态
+
+
+                nearby_layout_indexActivity.setSelected(true);
+                icon_nearby_narmal_icon.setSelected(true);
+                icon_nearby_narmal_tv.setSelected(true);
+
+                appointment_layout_indexActivity.setSelected(false);
+                icon_appointment_layout_icon.setSelected(false);
+                icon_appointment_narmal_tv.setSelected(false);
+
+                find_layout_indexActivity.setSelected(false);
+                icon_find_narmal_icon.setSelected(false);
+                icon_find_narmal_tv.setSelected(false);
+
+                message_layout_indexActivity.setSelected(false);
+                icon_message_narmal_icon.setSelected(false);
+                icon_message_narmal_tv.setSelected(false);
+
+                usercenter_layout_indexActivity.setSelected(false);
+                icon_usercenter_narmal_icon.setSelected(false);
+                icon_usercenter_narmal_tv.setSelected(false);
+                /**
+                 * 附近人打分任务
+                 */
+                setDaillyTaskScore(selected_menu_type, selected_tab_Id);
+
+                break;
+
+
+            case R.id.appointment_layout_indexActivity:// 约会
+
+                Loc.sendLocControlMessage(true);
+
+                if (selected_menu_type == 2) {
+                    return;
+                }
+                selected_menu_type = 2;
+
+                setChioceItem(2);
+                // 改变选中状态
+
+                nearby_layout_indexActivity.setSelected(false);
+                icon_nearby_narmal_icon.setSelected(false);
+                icon_nearby_narmal_tv.setSelected(false);
+
+                appointment_layout_indexActivity.setSelected(true);
+                icon_appointment_layout_icon.setSelected(true);
+                icon_appointment_narmal_tv.setSelected(true);
+
+                find_layout_indexActivity.setSelected(false);
+                icon_find_narmal_icon.setSelected(false);
+                icon_find_narmal_tv.setSelected(false);
+
+                message_layout_indexActivity.setSelected(false);
+                icon_message_narmal_icon.setSelected(false);
+                icon_message_narmal_tv.setSelected(false);
+
+                usercenter_layout_indexActivity.setSelected(false);
+                icon_usercenter_narmal_icon.setSelected(false);
+                icon_usercenter_narmal_tv.setSelected(false);
+
+                DaillyTaskService.getInstance().seekTask();
+                DaillyTaskService.getInstance().getNowTask(new OnDaillyTaskServiceListener() {
+                    @Override
+                    public boolean execution(String data) {
+
+                        LogUtils.e("-------------data------------");
+                        Dialog dialog = DialogUtil.createDailyhintDialog(IndexActivity.this, data);
+                        dialog.show();
+                        return true;
+                    }
+                }, YpSettings.DAILLY_TASK_P);
+
+                String ishaveAppointWelcome = SharedprefUtil.get(IndexActivity.this, YPApplication.getInstance().loginUser.getUserId() + "appointWelcomeDialog" + YPApplication.getInstance().StartCode, "");
+                if (CheckUtil.isEmpty(ishaveAppointWelcome)) {
+                    if (appointWelcomeDialog == null) {
+                        appointWelcomeDialog = DialogUtil.appointWelcomeDialog(IndexActivity.this, new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                appointWelcomeDialog.dismiss();
+                                SharedprefUtil.save(IndexActivity.this, YPApplication.getInstance().loginUser.getUserId() + "appointWelcomeDialog" + YPApplication.getInstance().StartCode, "yes");
+                            }
+                        });
+                        appointWelcomeDialog.show();
+                    }
+                }
+                break;
+
+            case R.id.find_layout_indexActivity:// 发现
+
+                Loc.sendLocControlMessage(true);
+
+                if (selected_menu_type == 3) {
+                    return;
+                }
+                selected_menu_type = 3;
+
+                setChioceItem(3);
+
+
+                nearby_layout_indexActivity.setSelected(false);
+                icon_nearby_narmal_icon.setSelected(false);
+                icon_nearby_narmal_tv.setSelected(false);
+
+                appointment_layout_indexActivity.setSelected(false);
+                icon_appointment_layout_icon.setSelected(false);
+                icon_appointment_narmal_tv.setSelected(false);
+
+                find_layout_indexActivity.setSelected(true);
+                icon_find_narmal_icon.setSelected(true);
+                icon_find_narmal_tv.setSelected(true);
+
+                message_layout_indexActivity.setSelected(false);
+                icon_message_narmal_icon.setSelected(false);
+                icon_message_narmal_tv.setSelected(false);
+
+                usercenter_layout_indexActivity.setSelected(false);
+                icon_usercenter_narmal_icon.setSelected(false);
+                icon_usercenter_narmal_tv.setSelected(false);
+
+
+
+                break;
+
+
+            case R.id.message_layout_indexActivity:// 消息
+
+                Loc.sendLocControlMessage(false);
+
+                if (selected_menu_type == 4) {
+                    return;
+                }
+                selected_menu_type = 4;
+
+                setChioceItem(4);
+                // 改变选中状态
+
+
+
+                nearby_layout_indexActivity.setSelected(false);
+                icon_nearby_narmal_icon.setSelected(false);
+                icon_nearby_narmal_tv.setSelected(false);
+
+                appointment_layout_indexActivity.setSelected(false);
+                icon_appointment_layout_icon.setSelected(false);
+                icon_appointment_narmal_tv.setSelected(false);
+
+
+                find_layout_indexActivity.setSelected(false);
+                icon_find_narmal_icon.setSelected(false);
+                icon_find_narmal_tv.setSelected(false);
+
+                message_layout_indexActivity.setSelected(true);
+                icon_message_narmal_icon.setSelected(true);
+                icon_message_narmal_tv.setSelected(true);
+
+                usercenter_layout_indexActivity.setSelected(false);
+                icon_usercenter_narmal_icon.setSelected(false);
+                icon_usercenter_narmal_tv.setSelected(false);
+                break;
+
+            case R.id.usercenter_layout_indexActivity:// 个人中心
+
+                Loc.sendLocControlMessage(false);
+
+                if (selected_menu_type == 5) {
+                    return;
+                }
+                selected_menu_type = 5;
+
+                setChioceItem(5);
+                // 改变选中状态
+                nearby_layout_indexActivity.setSelected(false);
+                icon_nearby_narmal_icon.setSelected(false);
+                icon_nearby_narmal_tv.setSelected(false);
+
+                appointment_layout_indexActivity.setSelected(false);
+                icon_appointment_layout_icon.setSelected(false);
+                icon_appointment_narmal_tv.setSelected(false);
+
+
+                find_layout_indexActivity.setSelected(false);
+                icon_find_narmal_icon.setSelected(false);
+                icon_find_narmal_tv.setSelected(false);
+
+                message_layout_indexActivity.setSelected(false);
+                icon_message_narmal_icon.setSelected(false);
+                icon_message_narmal_tv.setSelected(false);
+
+                usercenter_layout_indexActivity.setSelected(true);
+                icon_usercenter_narmal_icon.setSelected(true);
+                icon_usercenter_narmal_tv.setSelected(true);
+
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    /**
+     * 选项卡索引
+     */
+    public void setChioceItem(int index) {
+        // 重置选项+隐藏所有Fragment
+        fragmentTransaction = fragmentMag.beginTransaction();
+
+        hideFragments(fragmentTransaction);
+        switch (index) {
+            case 1:// 附近
+
+                if (fragment_nearby != null) {
+                    fragmentTransaction.show(fragment_nearby);
+                } else {
+                    fragment_nearby = new DiscoverListFragment();
+                    fragmentTransaction.add(R.id.frame_content, fragment_nearby);
+                }
+                break;
+
+            case 2:// 约会
+
+                if (fragment_appoint != null) {
+                    fragmentTransaction.show(fragment_appoint);
+                } else {
+                    fragment_appoint = new AppointmentFragment();
+                    fragmentTransaction.add(R.id.frame_content, fragment_appoint);
+                }
+
+
+                break;
+            case 3:// 发现
+
+                if (fragment_find != null) {
+                    fragmentTransaction.show(fragment_find);
+                } else {
+                    fragment_find = new FindFragment();
+                    fragmentTransaction.add(R.id.frame_content, fragment_find);
+                }
+
+
+                break;
+
+            case 4:// 消息
+
+                if (fragment_message != null) {
+                    fragmentTransaction.show(fragment_message);
+                } else {
+                    fragment_message = new MessageFragment();
+                    fragmentTransaction.add(R.id.frame_content, fragment_message);
+                }
+
+                break;
+            case 5:// 我的
+                if (fragment_bump != null) {
+                    fragmentTransaction.show(fragment_bump);
+                } else {
+                    fragment_bump = new UserCenterFragment();
+                    fragmentTransaction.add(R.id.frame_content, fragment_bump);
+                }
+
+                break;
+        }
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    private void hideFragments(FragmentTransaction transaction) {
+        if (fragment_appoint != null) {
+            transaction.hide(fragment_appoint);
+        }
+        if (fragment_bump != null) {
+            transaction.hide(fragment_bump);
+        }
+        if (fragment_nearby != null) {
+            transaction.hide(fragment_nearby);
+        }
+        if (fragment_message != null) {
+            transaction.hide(fragment_message);
+        }
+        if (fragment_find != null) {
+            transaction.hide(fragment_find);
+        }
+    }
+
+    /**
+     * 设置未读消息数量
+     *
+     * @param userid
+     */
+    public void setMessageNum(String userid) {
+        try {
+            long no_read_num = 0;
+            List<ChatDto> list = YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("mid", " =", userid).and("status", "=", 0));
+            if (list != null && list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
+                    ChatDto dto = list.get(i);
+                    String message = dto.getMessage();
+                    String type = ChatUtils.getMsgType(message);
+                    if (TextUtils.equals(type, MessageType.Notification)) {
+                        NotificationMsg notificationMsg = JsonUtils.fromJson(message, NotificationMsg.class);
+                        if(notificationMsg.getNotifytype()!=9){
+
+                            int badge = notificationMsg.getBadge();
+                            if (badge >= 0) {
+                                if (badge == 0) {
+                                    badge = 1;
+                                }
+                                no_read_num = no_read_num + badge;
+                            }
+
+                        }
+
+                    } else {
+                        no_read_num = no_read_num + 1;
+                    }
+                }
+            }
+            if (no_read_num != 0) {
+                if (no_read_num < 10) {
+                    index_message_bubble_tv.setBackgroundResource(R.drawable.circle_messaga_num_bg);
+                } else {
+                    index_message_bubble_tv.setBackgroundResource(R.drawable.center_messaga_num_bg);
+                }
+                index_message_bubble_tv.setVisibility(View.VISIBLE);
+                index_message_bubble_tv.setText(no_read_num + "");
+            } else {
+                index_message_bubble_tv.setVisibility(View.GONE);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 获取版本信息
+     */
+    private void getVersionInfo() {
+
+        GainVersionInfoService gainVersionInfoService = new GainVersionInfoService(this);
+        gainVersionInfoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                GainVersionInfoRespBean gainVersionInfoRespBean = (GainVersionInfoRespBean) respBean;
+                VersionChkDTO dto = gainVersionInfoRespBean.getResp();
+
+                if (dto != null) {
+                    YpSettings.gVersionChkDTO = dto;
+                    CommonObservable.getInstance().notifyObservers(CommonObserver.NewVersionObserver.class);
+
+                }
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+            }
+        });
+
+        gainVersionInfoService.enqueue();
+    }
+
+    /**
+     * 检查版本
+     */
+    private void dealWithVersionDto() {
+        contentView.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    checkVerDTO = YpSettings.gVersionChkDTO;
+                    if (checkVerDTO != null) {
+                        checkVersion(checkVerDTO);
+                        // Settings.gVersionChkDTO = null;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 1000);
+    }
+
+    /**
+     * 检查版本处理
+     */
+
+    private synchronized void checkVersion(final VersionChkDTO dto) {
+
+        try {
+            packageManager = this.getPackageManager();
+            packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+            String version = packInfo.versionName;
+            String cur_code = getVersionString(version);
+            String lastest_code = getVersionString(dto.getLatestVersion());
+
+            String min_code = getVersionString(dto.getMinimalSupportVersion());
+
+            int cur_version_code = Integer.valueOf(cur_code);
+            int min_version_code = Integer.valueOf(min_code);
+            int lastest_version_code = Integer.valueOf(lastest_code);
+
+            // 当前版本小于最新版本
+            if (cur_version_code < lastest_version_code) {
+                // 判断当前版本是否高于最低支持版本
+                if (cur_version_code >= min_version_code) {
+                    // 选择升级
+                    //					showNormalVersionDialog(dto);
+                    DownloadLink = dto.getDownloadLink();
+                    versiondialog = DialogUtil.createHintOperateDialog(IndexActivity.this, "版本升级", dto.getReleaseNotes(), "取消", "立即升级", VerbackCallListener);
+                    versiondialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+                    if (!isFinishing()) {
+                        versiondialog.show();
+                    }
+                } else {
+                    // 强制升级
+                    DownloadLink = dto.getDownloadLink();
+                    versiondialog = DialogUtil.createHintOperateDialog(IndexActivity.this, "当前版本过低,强制升级", dto.getReleaseNotes(), "退出", "立即升级", VerbackCallListener);
+                    versiondialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+                    if (!isFinishing()) {
+                        versiondialog.show();
+                    }
+
+                }
+            }
+
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        // // 注销广播
+        super.onDestroy();
+        unregisterReceiver(syncReceiver);
+
+    }
+
+    private BackCallListener VerbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                versiondialog.dismiss();
+            }
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            Uri content_url = Uri.parse(DownloadLink);
+            intent.setData(content_url);
+            IndexActivity.this.startActivity(intent);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                versiondialog.dismiss();
+            }
+
+        }
+    };
+
+    public static String getVersionString(String str) {
+        // 先定义一个集合来存放分解后的字符
+        List<String> list = new ArrayList<String>();
+        String streee = "";
+
+        for (int i = 0; i < str.length(); i++) {
+            streee = str.substring(i, i + 1);
+            list.add(streee);
+        }
+
+        // 定义一个存放最终字符串的StringBuffer
+        StringBuffer strb = new StringBuffer();
+
+        for (int j = 0; j < list.size(); j++) {
+            String a = list.get(j).toString();
+            // 如果不是？号就把这个字符加在上面定义的StringBuffer
+            if (!a.equals(".")) {
+                strb.append(a);
+            }
+        }
+        System.out.println(strb);
+        return strb.toString();
+    }
+
+    /**
+     * 退出
+     */
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                DialogUtil.showDisCoverNetToast(IndexActivity.this, "再按一次退出程序");
+                mExitTime = System.currentTimeMillis();
+
+            } else {
+                if (YpSettings.xxservice != null) {
+                    YpSettings.xxservice.logout();
+                }
+                Loc.sendLocControlMessage(false);
+                finish();
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 获取碰友列表
+     */
+
+    private void getBumpFriends() {
+
+        int statrts = 0;
+        int Rows = 999;
+
+
+        BumpFriendsListBean bumpFriendsListBean = new BumpFriendsListBean();
+        bumpFriendsListBean.setRows(999);
+        bumpFriendsListBean.setStart(0);
+
+        BumpFriendsService bumpFriendsService = new BumpFriendsService(this);
+        bumpFriendsService.parameter(bumpFriendsListBean);
+        bumpFriendsService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                BumpFriendsListRespBean bumpFriendsListRespBean = (BumpFriendsListRespBean) respBean;
+
+                List<BumpResults> list = new ArrayList<BumpResults>();
+                BumpFriends bumpafFriends = bumpFriendsListRespBean.getResp();
+                String response = JsonUtils.toJson(bumpafFriends);
+
+                try {
+                    if (bumpafFriends != null) {
+
+                        list = bumpafFriends.getResults();
+
+                        if (list != null && list.size() > 0) {// 有碰友时
+
+                            BumpDataBD dataBd = null;
+
+                            dataBd = YPApplication.getInstance().db.findFirst(Selector.from(BumpDataBD.class).where("UserId", " =", YPApplication.loginUser.getUserId()));
+
+                            if (dataBd != null) {
+                                dataBd.setUserId(YPApplication.loginUser
+                                        .getUserId());
+                                dataBd.setData(response);
+                                dataBd.setTime(System
+                                        .currentTimeMillis());
+                                YPApplication.getInstance().db
+                                        .update(dataBd);
+                            } else {
+                                dataBd = new BumpDataBD();
+                                dataBd.setUserId(YPApplication.loginUser
+                                        .getUserId());
+                                dataBd.setData(response);
+                                dataBd.setTime(System
+                                        .currentTimeMillis());
+                                YPApplication.getInstance().db
+                                        .save(dataBd);
+                            }
+
+                        }
+                    }
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new OnCallBackFailListener());
+        bumpFriendsService.enqueue();
+
+    }
+
+
+    /**
+     *
+     */
+
+    private void getSync() {
+
+        BumpUserSyncBean bumpUserSyncBean = new BumpUserSyncBean();
+        bumpUserSyncBean.setUserid(userid);
+        BumpUserSyncService bumpUserSyncService = new BumpUserSyncService(this);
+        bumpUserSyncService.parameter(bumpUserSyncBean);
+        bumpUserSyncService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BumpUserSyncRespBean bumpUserSyncRespBean = (BumpUserSyncRespBean) respBean;
+                SyncDto dto = bumpUserSyncRespBean.getResp();
+                try {
+                    if (null != dto) {
+
+
+                        int total = dto.getVisits().getTotal();
+                        int newadd = dto.getVisits().getNewAdded();
+
+                        if (newadd != 0) {
+                            icon_look_me_iv.setVisibility(View.VISIBLE);
+                            LoginVideoStatusDto loginVideoStatusDto = YPApplication.getInstance().db.findFirst(Selector.from(LoginVideoStatusDto.class).where("id", " =", userid));
+                            if (loginVideoStatusDto == null) {
+                                loginVideoStatusDto = new LoginVideoStatusDto();
+                                loginVideoStatusDto.setId(userid);
+                                loginVideoStatusDto.setVideoVerificationStatus(dto.getVideoVerificationStatus());
+                                if (dto.getVideoVerificationStatus() == 0 || dto.getVideoVerificationStatus() == 3) {
+                                    loginVideoStatusDto.setIsVisible(1);
+                                } else {
+                                    loginVideoStatusDto.setIsVisible(0);
+                                }
+                                YPApplication.getInstance().db.save(loginVideoStatusDto);
+                            } else {
+                                if (loginVideoStatusDto.getVideoVerificationStatus() != dto.getVideoVerificationStatus()) {
+                                    loginVideoStatusDto.setVideoVerificationStatus(dto.getVideoVerificationStatus());
+                                    loginVideoStatusDto.setIsVisible(1);
+                                    YPApplication.getInstance().db.update(loginVideoStatusDto);
+                                }
+                            }
+
+                        } else {
+                            LoginVideoStatusDto loginVideoStatusDto = YPApplication.getInstance().db.findFirst(Selector.from(LoginVideoStatusDto.class).where("id", " =", userid));
+                            if (loginVideoStatusDto == null) {
+                                loginVideoStatusDto = new LoginVideoStatusDto();
+                                loginVideoStatusDto.setId(userid);
+                                loginVideoStatusDto.setVideoVerificationStatus(dto.getVideoVerificationStatus());
+                                if (dto.getVideoVerificationStatus() == 0 || dto.getVideoVerificationStatus() == 3) {
+                                    icon_look_me_iv.setVisibility(View.VISIBLE);
+                                    loginVideoStatusDto.setIsVisible(1);
+                                } else {
+                                    icon_look_me_iv.setVisibility(View.GONE);
+                                    loginVideoStatusDto.setIsVisible(0);
+                                }
+                                YPApplication.getInstance().db.save(loginVideoStatusDto);
+                            } else {
+                                if (loginVideoStatusDto.getVideoVerificationStatus() == dto.getVideoVerificationStatus()) {
+                                    if (loginVideoStatusDto.getIsVisible() == 1) {
+                                        icon_look_me_iv.setVisibility(View.VISIBLE);
+                                    } else {
+                                        icon_look_me_iv.setVisibility(View.GONE);
+                                    }
+                                } else {
+                                    icon_look_me_iv.setVisibility(View.VISIBLE);
+                                    loginVideoStatusDto.setVideoVerificationStatus(dto.getVideoVerificationStatus());
+                                    loginVideoStatusDto.setIsVisible(1);
+                                    YPApplication.getInstance().db.update(loginVideoStatusDto);
+                                }
+                            }
+
+                        }
+                        Visits visitsdto = YPApplication.getInstance().db.findFirst(Selector.from(Visits.class).where("id", " =", userid));
+
+                        if (visitsdto != null) {
+                            visitsdto.setTotal(total);
+                            visitsdto.setNewadded(newadd);
+                            YPApplication.getInstance().db.update(visitsdto);
+
+                        } else {
+                            visitsdto = new Visits();
+                            visitsdto.setId(userid);
+                            visitsdto.setTotal(total);
+                            visitsdto.setNewadded(newadd);
+                            YPApplication.getInstance().db.save(visitsdto);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new OnCallBackFailListener());
+
+        bumpUserSyncService.enqueue();
+
+    }
+
+
+    @Override
+    public void connectionStatusChanged(int connectedState, String reason) {
+
+        if (connectedState == XXService.CONNECTED) {
+            SharedprefUtil.save(this, Constants.ACCOUNT, mAccount);// 帐号是一直保存的
+            SharedprefUtil.save(this, Constants.PASSWORD, mPassword);
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(this, Constants.MJD, mAccount + "@chono");
+
+        } else if (connectedState == XXService.DISCONNECTED) {
+            // 失败
+            SharedprefUtil.save(this, Constants.ACCOUNT, "");
+            SharedprefUtil.save(this, Constants.PASSWORD, "");
+            SharedprefUtil.save(this, Constants.MJD, "");
+
+        }
+
+    }
+
+    @Override
+    public void ReceiveNewMsg(ChatDto dto) {
+        setMessageNum(mid);
+    }
+
+    @Override
+    public void ListenSendStatus(int send_status, String packetId) {
+
+    }
+
+    public class LoginAsyncTask extends AsyncTask<Void, Integer, String> {
+
+        // 该方法并不运行在UI线程内，所以在方法内不能对UI当中的控件进行设置和修改
+        // 主要用于进行异步操作
+        @Override
+        protected String doInBackground(Void... params) {
+
+            SharedprefUtil.save(IndexActivity.this, Constants.ACCOUNT,
+                    YPApplication.loginUser.getUserId() + "");// 帐号是一直保存的
+            SharedprefUtil.save(IndexActivity.this, Constants.PASSWORD,
+                    YPApplication.loginUser.getAuthToken());
+            mAccount = YPApplication.loginUser.getUserId() + "";
+            mPassword = YPApplication.loginUser.getAuthToken();
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(IndexActivity.this, Constants.MJD,
+                    mAccount + "@chono");
+            YpSettings.xxservice.Login(mAccount, SHA.encodeByMD5(mPassword));
+
+            return null;
+
+        }
+
+        // 该方法运行在Ui线程内，可以对UI线程内的控件设置和修改其属性
+        @Override
+        protected void onPreExecute() {
+        }
+
+        // 在doInBackground方法当中，每次调用publishProgrogress()方法之后，都会触发该方法
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+
+        // 在doInBackground方法执行结束后再运行，并且运行在UI线程当中
+        // 主要用于将异步操作任务执行的结果展示给用户
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+
+    }
+
+    /***
+     * 获取用户信息及相册信息
+     */
+    private void getUserInfo() {
+
+        UserInfoBean userInfoBean = new UserInfoBean();
+        userInfoBean.setUserId(userid);
+        userInfoBean.setAlbum(true);
+        userInfoBean.setBubble(true);
+        userInfoBean.setBump(true);
+        userInfoBean.setForDating(false);
+        userInfoBean.setWish(true);
+        userInfoBean.setVerification(true);
+        userInfoBean.setAppointment(true);
+
+        UserInfoService userInfoService = new UserInfoService(this);
+        userInfoService.parameter(userInfoBean);
+        userInfoService.callBack(new OnCallBackSuccessListener() {
+                                     @Override
+                                     public void onSuccess(RespBean respBean) {
+                                         super.onSuccess(respBean);
+
+                                         UserInfoRespBean userInfoRespBean = (UserInfoRespBean) respBean;
+                                         UserDto userInfo = userInfoRespBean.getResp();
+                                         String jsonstr = JsonUtils.toJson(userInfo);
+                                         if (null != userInfo) {
+                                             // 保存数据
+                                             DbHelperUtils.saveUserInfo(YPApplication.loginUser.getUserId(), jsonstr);
+                                             // 保存数据
+                                             DbHelperUtils.saveBaseUser(YPApplication.loginUser.getUserId(), userInfo);
+                                         }
+                                         if (loadingDiaog != null) {
+                                             loadingDiaog.dismiss();
+                                             nearby_layout_indexActivity.performClick();
+                                         }
+
+
+                                     }
+                                 }, new OnCallBackFailListener() {
+                                     @Override
+                                     public void onFail(RespBean respBean) {
+                                         super.onFail(respBean);
+                                         if (loadingDiaog != null) {
+                                             loadingDiaog.dismiss();
+                                             nearby_layout_indexActivity.performClick();
+                                         }
+                                     }
+                                 }
+        );
+        userInfoService.enqueue();
+    }
+
+    public static DiscoverListFragment.OnPeopleBackToTopListener onPeopleBackToTopListener;
+
+    public static DiscoverListFragment.OnBubbleBackToTopListener onBubbleBackToTopListener;
+
+    public static OnAppointFilterBackListener onAppointFilterBackListener;
+
+    public static DiscoverListFragment.OnPeopleBackToTopListener getOnPeopleBackToTopListener() {
+        return onPeopleBackToTopListener;
+    }
+
+    public static void setOnPeopleBackToTopListener(DiscoverListFragment.OnPeopleBackToTopListener onPeopleBackToTopListener) {
+        IndexActivity.onPeopleBackToTopListener = onPeopleBackToTopListener;
+    }
+
+    public static DiscoverListFragment.OnBubbleBackToTopListener getOnBubbleBackToTopListener() {
+        return onBubbleBackToTopListener;
+    }
+
+    public static void setOnBubbleBackToTopListener(DiscoverListFragment.OnBubbleBackToTopListener onBubbleBackToTopListener) {
+        IndexActivity.onBubbleBackToTopListener = onBubbleBackToTopListener;
+    }
+
+
+    public static OnAppointFilterBackListener getOnAppointFilterBackListener() {
+        return onAppointFilterBackListener;
+    }
+
+    public static void setOnAppointFilterBackListener(OnAppointFilterBackListener onAppointFilterBackListener) {
+        IndexActivity.onAppointFilterBackListener = onAppointFilterBackListener;
+    }
+
+
+    public interface OnAppointFilterBackListener {
+        public void onAppointFilterBackListener(int appointType, int sexType, int daysOffset, int timeType, int minage, int maxage, int emoType, int horType, int sortType, String city);
+    }
+
+
+    private void setDaillyTaskScore(int selectedTypeId, int selectedTabId) {
+
+        if (null != dialog_dilly_score) {
+            return;
+        }
+
+        if (1 == selectedTypeId && 0 == selectedTabId) {
+
+            DaillyTaskService.getInstance().seekTask();
+            DaillyTaskService.getInstance().getNowTask(new OnDaillyTaskServiceListener() {
+                @Override
+                public boolean execution(String data) {
+                    DaillyFaceratingCandidatesDto candidatesDto = JsonUtils.fromJson(data, DaillyFaceratingCandidatesDto.class);
+
+
+                    dialog_dilly_score = DialogUtil.createDailyScoreDialog(IndexActivity.this, candidatesDto, new BackCallListener() {
+                        @Override
+                        public void onEnsure(View view, Object... obj) {
+                            List<DaillyFaceratingCandidatesDto> daillyFaceratingCandidatesDtos = DaillyFaceratingCandidatesDBTask.getInstance().grtDataLocal(YPApplication.loginUser.getUserId());
+                            if (null != daillyFaceratingCandidatesDtos && daillyFaceratingCandidatesDtos.size() > 0) {
+                                Bundle bun = new Bundle();
+                                bun.putSerializable(YpSettings.SCORE_START_DATA_TAG, (Serializable) daillyFaceratingCandidatesDtos);
+                                ActivityUtil.jump(IndexActivity.this, ScoreActivity.class, bun, 0, 100);
+
+                            } else {
+                                DialogUtil.showDisCoverNetToast(IndexActivity.this, "今日无颜值可打");
+                            }
+
+                            dialog_dilly_score.dismiss();
+
+                        }
+
+                        @Override
+                        public void onCancel(View view, Object... obj) {
+                            dialog_dilly_score.dismiss();
+                        }
+                    });
+
+
+                    dialog_dilly_score.show();
+
+                    return true;
+                }
+            }, YpSettings.DAILLY_TASK_SCORE);
+
+        }
+    }
+
+}

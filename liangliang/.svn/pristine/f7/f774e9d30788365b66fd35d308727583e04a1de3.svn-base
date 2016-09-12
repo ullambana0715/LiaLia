@@ -1,0 +1,1470 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.view.Display;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.ProfileUser.ProfileUserBean;
+import cn.chono.yopper.Service.Http.ProfileUser.ProfileUserRespBean;
+import cn.chono.yopper.Service.Http.ProfileUser.ProfileUserService;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UploadingUserHeadImage.UploadingUserHeadImgBean;
+import cn.chono.yopper.Service.Http.UploadingUserHeadImage.UploadingUserHeadImgRespBean;
+import cn.chono.yopper.Service.Http.UploadingUserHeadImage.UploadingUserHeadImgService;
+import cn.chono.yopper.Service.Http.UploadingUserImage.UploadingUserImageBean;
+import cn.chono.yopper.Service.Http.UploadingUserImage.UploadingUserImageRespBean;
+import cn.chono.yopper.Service.Http.UploadingUserImage.UploadingUserImageService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.register.HeadImgCompileActivity;
+import cn.chono.yopper.adapter.UserInfoAblumAdapter;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.Profile;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.photo.OneImageSelectedDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCall;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.CropDirectionUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.view.MyGridView;
+import cn.chono.yopper.view.FlowLeftLayout;
+import cn.chono.yopper.view.cropper.CopperData;
+
+public class UserInfoEditActivity extends MainFrameActivity implements OnClickListener {
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    //底部保存布局
+    private LinearLayout bottom_layout;
+
+    //顶部左侧返回布局
+    private LinearLayout goback_layout;
+    //顶部标题
+    private TextView title_tv;
+
+    //讨厌
+    private LinearLayout dislike_layout;
+    private TextView dislike_tv;
+    //喜欢
+    private LinearLayout like_layout;
+    private TextView like_tv;
+    //家乡
+    private LinearLayout home_layout;
+    private TextView home_tv;
+    //年龄
+    private LinearLayout age_layout;
+    private TextView age_tv;
+    private TextView age_level_tv;
+    //身高
+    private LinearLayout height_layout;
+    private TextView height_tv;
+    //体重
+    private LinearLayout weight_layout;
+    private TextView weight_tv;
+    //情感状态
+    private LinearLayout emotional_layout;
+    private TextView emotional_tv;
+    //收入
+    private LinearLayout income_layout;
+    private TextView income_tv;
+    //职业
+    private LinearLayout profession_layout;
+    private TextView profession_tv;
+    //标签
+    private LinearLayout lable_layout;
+    private FlowLeftLayout albe_flow_layout;
+    private TextView user_info_edit_no_lable_tv;
+    //相册
+    private MyGridView ablum_recyclerView;
+
+
+    //昵称
+    private LinearLayout nick_name_layout;
+    private TextView nick_name_tv;
+
+    //提示布局
+    private TextView hint_layout;
+
+    private RelativeLayout user_info_edit_head_img_layout;
+    //头像
+    private ImageView head_img_tv;
+
+    private TextView user_info_edit_head_img_tv;
+    private TextView user_info_edit_progress_tv;
+
+    private int userID;
+
+
+    private UserInfoAblumAdapter adapter;
+
+    private static UserDto userdto;
+
+    private Dialog photoDialog, albumhandleDialog, dialog;
+
+    private Dialog loadingDiaog;
+
+    private static boolean isheadOnclik = false;
+
+    private int ablumClickposition;
+
+    private Uri url;
+    private String car_filePath;
+
+    private CopperData copperData;
+
+    private Dialog hintdialog;
+
+    private int mDisplay_width;
+
+    private Dialog imgdialog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        PushAgent.getInstance(this).onAppStart();
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        contextView = mInflater.inflate(R.layout.user_info_edit_activity, null);
+        setContentView(contextView);
+
+        Display mDisplay = this.getWindowManager().getDefaultDisplay();
+        mDisplay_width = mDisplay.getWidth();
+        initComponent();
+
+        Bundle bunble = this.getIntent().getExtras();
+        if (bunble != null) {
+            userID = bunble.getInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+        }
+        userdto = getDbUserData(userID);
+    }
+
+
+    private void initLableViews(String[] lableList) {
+
+        albe_flow_layout.removeAllViews();
+
+        MarginLayoutParams lp = new MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 10;
+        lp.topMargin = 5;
+        lp.bottomMargin = 5;
+        if (lableList != null && lableList.length > 0) {
+
+            for (int i = 0; i < lableList.length; i++) {
+                TextView view = new TextView(this);
+                view.setText(lableList[i]);
+                view.setTextSize(12);
+                view.setTextColor(getResources().getColor(R.color.text_color_818fb7));
+                view.setBackgroundDrawable(getResources().getDrawable(R.drawable.lable_show_bg));
+                albe_flow_layout.addView(view, lp);
+            }
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        MobclickAgent.onPageStart("资料编辑"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+
+        String file_Path = OneImageSelectedDto.select_image_path;
+        int w = OneImageSelectedDto.select_image_w;
+        int h = OneImageSelectedDto.select_image_h;
+        OneImageSelectedDto.select_image_path = "";
+        OneImageSelectedDto.select_image_w = 0;
+        OneImageSelectedDto.select_image_h = 0;
+
+        if (!CheckUtil.isEmpty(file_Path)) {
+
+            if (w == 0 && h == 0) {
+                DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                return;
+            }
+            if (w < 640 && h < 640) {
+                imgdialog = DialogUtil.createHintOperateDialog(UserInfoEditActivity.this, "", "你选择的图片尺寸过小", "", "确认", ImgHintbackCallListener);
+                if (!isFinishing()) {
+                    imgdialog.show();
+                }
+                return;
+            }
+
+            if (isheadOnclik) {
+                File file = new File(file_Path);
+                if (file.exists()) {
+
+                    LogUtils.e("头像11111");
+
+                    Bitmap bm = ImgUtils.resizesBitmap(file_Path);
+
+                    if (null != bm) {
+
+                        // 保存在自己定义文件的路径
+                        String filePath = ImgUtils.saveImgFile(UserInfoEditActivity.this, bm);
+                        LogUtils.e("头像11111=" + filePath);
+                        // 回收内存空间
+                        bm.recycle();
+                        System.gc();
+                        if (!TextUtils.isEmpty(filePath)) {
+                            // 去剪切
+                            CropDirectionUtil.cropDirection(UserInfoEditActivity.this, HeadImgCompileActivity.class, YpSettings.USER_COMPILE, filePath);
+                        }else{
+                            DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                        }
+
+                    }else{
+                        DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                    }
+                }else{
+                    DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                }
+
+            } else {
+                LogUtils.e("图片大小=w="+w+"----h="+h);
+                setUriBitmap(file_Path);
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("资料编辑"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+
+        // 内容部分
+        bottom_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_bottom_layout);
+        bottom_layout.setOnClickListener(this);
+
+        title_tv = (TextView) contextView.findViewById(R.id.user_info_edit_title_tv);
+
+
+        goback_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_goback_layout);
+        goback_layout.setOnClickListener(this);
+
+
+        dislike_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_dislike_layout);
+        dislike_tv = (TextView) contextView.findViewById(R.id.user_info_edit_dislike_detail_tv);
+        dislike_layout.setOnClickListener(this);
+
+        like_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_like_layout);
+        like_tv = (TextView) contextView.findViewById(R.id.user_info_edit_like_detail_tv);
+        like_layout.setOnClickListener(this);
+
+        home_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_home_layout);
+        home_tv = (TextView) contextView.findViewById(R.id.user_info_edit_home_detail_tv);
+        home_layout.setOnClickListener(this);
+
+        age_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_age_layout);
+        age_tv = (TextView) contextView.findViewById(R.id.user_info_edit_age_detail_tv);
+        age_level_tv = (TextView) contextView.findViewById(R.id.user_info_edit_age_detail_level_tv);
+        age_layout.setOnClickListener(this);
+
+        height_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_height_layout);
+        height_tv = (TextView) contextView.findViewById(R.id.user_info_edit_height_detail_tv);
+        height_layout.setOnClickListener(this);
+
+        weight_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_weight_layout);
+        weight_tv = (TextView) contextView.findViewById(R.id.user_info_edit_weight_detail_tv);
+        weight_layout.setOnClickListener(this);
+
+        emotional_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_emotional_layout);
+        emotional_tv = (TextView) contextView.findViewById(R.id.user_info_edit_emo_detail_tv);
+        emotional_layout.setOnClickListener(this);
+
+        income_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_income_layout);
+        income_tv = (TextView) contextView.findViewById(R.id.user_info_edit_income_tv);
+        income_layout.setOnClickListener(this);
+
+        profession_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_profession_layout);
+        profession_tv = (TextView) contextView.findViewById(R.id.user_info_edit_profession_detail_tv);
+        profession_layout.setOnClickListener(this);
+
+        lable_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_lable_layout);
+        albe_flow_layout = (FlowLeftLayout) contextView.findViewById(R.id.user_info_edit_lable_flowlayout);
+        lable_layout.setOnClickListener(this);
+        user_info_edit_no_lable_tv = (TextView) contextView.findViewById(R.id.user_info_edit_no_lable_tv);
+
+
+        ablum_recyclerView = (MyGridView) contextView.findViewById(R.id.user_info_edit_album_gridview);
+
+        nick_name_layout = (LinearLayout) contextView.findViewById(R.id.user_info_edit_name_layout);
+        nick_name_tv = (TextView) contextView.findViewById(R.id.user_info_edit_name_detail_tv);
+        nick_name_layout.setOnClickListener(this);
+
+        hint_layout = (TextView) contextView.findViewById(R.id.user_info_edit_hint_tv);
+
+        user_info_edit_head_img_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_edit_head_img_layout);
+
+        LayoutParams linearParams = (LayoutParams) user_info_edit_head_img_layout.getLayoutParams();
+        linearParams.height = mDisplay_width;
+        linearParams.width = mDisplay_width;
+        user_info_edit_head_img_layout.setLayoutParams(linearParams);
+
+        head_img_tv = (ImageView) contextView.findViewById(R.id.user_info_edit_head_img_iv);
+        user_info_edit_head_img_tv = (TextView) contextView.findViewById(R.id.user_info_edit_head_img_tv);
+        user_info_edit_progress_tv = (TextView) contextView.findViewById(R.id.user_info_edit_progress_tv);
+        user_info_edit_head_img_tv.setOnClickListener(this);
+
+        adapter = new UserInfoAblumAdapter(this);
+
+        ablum_recyclerView.setAdapter(adapter);
+        ablum_recyclerView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                ablumClickposition = position;
+                if (TextUtils.equals(adapter.getData().get(position).toString().trim(), YpSettings.suppose)) {
+
+                    if (!isFinishing()) {
+                        isheadOnclik = false;
+                        photoDialog = DialogUtil.createPhotoDialog(UserInfoEditActivity.this, "上传真实生活照会更受欢迎", "拍照", "相册选取",false, new PhotoMiBackCall());
+                        if (!isFinishing()) {
+                            photoDialog.show();
+                        }
+                    }
+                } else if (TextUtils.equals(adapter.getData().get(position).toString().trim(), YpSettings.album_invite)) {
+
+                } else {
+                    albumhandleDialog = DialogUtil.createOperateDialog(UserInfoEditActivity.this, "操作", "删除", "取消", "", false, true, true, new PhotoOperateBackCall());
+                    if (!isFinishing()) {
+                        albumhandleDialog.show();
+
+                    }
+                }
+
+            }
+        });
+
+    }
+
+    /**
+     * 给控件视图设置数据
+     *
+     * @param dto
+     */
+    private void setDateToView(UserDto dto) {
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getName())) {
+            title_tv.setText(dto.getProfile().getName());
+        }
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getHeadImg())) {
+            String imageurl = ImgUtils.DealImageUrl(dto.getProfile().getHeadImg(), 640, 640);
+            Glide.with(this).load(imageurl).into(head_img_tv);
+        }
+
+        if (dto.getProfile().getStatus() == 0) {
+            hint_layout.setVisibility(View.VISIBLE);
+        } else {
+            hint_layout.setVisibility(View.GONE);
+        }
+
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getName())) {
+            nick_name_tv.setText(dto.getProfile().getName());
+        }
+
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getDislikes())) {
+            dislike_tv.setText(dto.getProfile().getDislikes());
+            dislike_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            dislike_tv.setText("未填写");
+            dislike_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getLikes())) {
+            like_tv.setText(dto.getProfile().getLikes());
+            like_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            like_tv.setText("未填写");
+            like_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+
+        }
+
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getHometown())) {
+            home_tv.setText(dto.getProfile().getHometown());
+            home_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            home_tv.setText("未填写");
+            home_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+
+        if (dto.getProfile().getIncomeLevel() != null) {
+            setIncomeData(dto.getProfile().getIncomeLevel());
+        } else {
+            income_tv.setText("未填写");
+            income_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getCareer())) {
+            profession_tv.setText(dto.getProfile().getCareer());
+            profession_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            profession_tv.setText("未填写");
+            profession_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+
+        if (dto.getProfile().getRelationship() == null) {
+            emotional_tv.setText("未填写");
+            emotional_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+
+        } else {
+            setEmotionalData(dto.getProfile().getRelationship());
+
+        }
+
+        if (dto.getProfile().getHeight() == null) {
+            height_tv.setText("未填写");
+            height_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        } else {
+            height_tv.setText(dto.getProfile().getHeight() + "cm");
+            height_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        }
+
+
+        if (dto.getProfile().getWeight() == null) {
+            weight_tv.setText("未填写");
+            weight_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        } else {
+            weight_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+            weight_tv.setText(dto.getProfile().getWeight() + "kg");
+        }
+
+
+        if (dto.getProfile().getAge() == null) {
+            age_tv.setText("未填写");
+            age_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+            age_level_tv.setVisibility(View.GONE);
+
+        } else {
+
+            if (dto.getProfile().isBirthdayPrivacy()) {
+                age_level_tv.setVisibility(View.GONE);
+                age_tv.setText("保密");
+            } else {
+                age_level_tv.setVisibility(View.VISIBLE);
+                age_level_tv.setText(transAgeToStr(dto.getProfile().getAge()));
+                age_tv.setText(dto.getProfile().getAge() + "");
+            }
+            age_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        }
+
+        if (dto.getProfile().getCompletion() >= 100) {
+            user_info_edit_progress_tv.setVisibility(View.GONE);
+        } else {
+            user_info_edit_progress_tv.setVisibility(View.VISIBLE);
+            user_info_edit_progress_tv.setText("完善度" + dto.getProfile().getCompletion() + "%");
+        }
+
+
+        adapter.setData(changeAlbumData(dto.getAlbum(), dto.getAlbumMax()));
+
+        adapter.notifyDataSetChanged();
+
+
+        String tagStr = dto.getProfile().getTags();
+        if (!CheckUtil.isEmpty(tagStr) && !tagStr.equals("null")) {
+            user_info_edit_no_lable_tv.setVisibility(View.GONE);
+            albe_flow_layout.setVisibility(View.VISIBLE);
+
+            if (tagStr.contains(",")) {
+                String tas[] = tagStr.split(",");
+                initLableViews(tas);
+            } else {
+
+                String tas[] = new String[]{tagStr};
+                initLableViews(tas);
+            }
+
+        } else {
+            user_info_edit_no_lable_tv.setVisibility(View.VISIBLE);
+            albe_flow_layout.setVisibility(View.GONE);
+        }
+
+    }
+
+
+    private String transAgeToStr(int age) {
+        String age_str = "";
+        String lone_str = "";
+        int born_year = getYear() - age;
+        int shiwei_num = (born_year / 10) % 10;
+        int gewei_num = born_year % 10;
+
+        if (gewei_num >= 0 && gewei_num < 5) {
+            lone_str = "0后";
+        } else {
+            lone_str = "5后";
+        }
+        age_str = shiwei_num + lone_str;
+        return age_str;
+
+    }
+
+
+    public int getYear() {
+        Calendar c = Calendar.getInstance();
+        return c.get(Calendar.YEAR);
+    }
+
+    /**
+     * 如果长度大于等于8 截取前8张，如果小于8，则造一个空的
+     *
+     * @param ablumList
+     * @return
+     */
+    private List<String> changeAlbumData(List<String> ablumList, int max) {
+
+        List<String> dolist = new ArrayList<String>();// 包括标记符的
+
+        if (ablumList == null) {
+            dolist.add(YpSettings.suppose);
+
+        } else if (ablumList.size() < max) {
+            dolist = ablumList;
+            // 判断是否有标示suppose
+            for (int i = 0; i < dolist.size(); i++) {// 清空所有的标识
+                if (TextUtils.equals(dolist.get(i).toString().trim(), YpSettings.suppose)) {
+                    dolist.remove(i);
+                    break;
+                }
+            }
+
+            // 设置 userInfo对象
+            dolist.add(YpSettings.suppose);
+        } else if (ablumList.size() >= max) {
+            dolist = ablumList.subList(0, max);
+        }
+
+        return dolist;
+    }
+
+
+    /**
+     * 数据中获取用户的资料
+     *
+     * @param userid
+     */
+    private UserDto getDbUserData(int userid) {
+        UserDto userInfo = null;
+        LoginUserInfo loginUserInfo = DbHelperUtils.getUserInfo(userid);
+
+        if (loginUserInfo != null) {
+            userInfo = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+            if (userInfo != null) {
+                setDateToView(userInfo);
+            }
+        }
+        return userInfo;
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        Bundle bundle = new Bundle();
+        switch (id) {
+            case R.id.user_info_edit_goback_layout://返回
+                dialog = DialogUtil.createHintOperateDialog(UserInfoEditActivity.this, "提示", "放弃修改资料?", "放弃", "继续编辑", backCallListener);
+                if (!isFinishing()) {
+                    dialog.show();
+                }
+                break;
+
+            case R.id.user_info_edit_bottom_layout://保存
+
+                int age=0;
+
+                if(userdto!=null && userdto.getProfile()!=null&&userdto.getProfile().getAge()!=null){
+                    age=userdto.getProfile().getAge();
+                }
+
+                if(age>=100){
+                    DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "年龄不能大于等于100");
+                    return;
+                }
+                // 保存修改
+                loadingDiaog = DialogUtil.LoadingDialog(UserInfoEditActivity.this, "正在更新个人资料");
+                if (!isFinishing()) {
+                    loadingDiaog.show();
+                }
+                submitData();
+
+                break;
+
+            case R.id.user_info_edit_name_layout://昵称修改
+
+                bundle.putString(YpSettings.USER_NAME, userdto.getProfile().getName());
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6600);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserNameActivity.class, bundle, 6600, 0, 100);
+                break;
+
+            case R.id.user_info_edit_age_layout://年龄
+                if (userdto.getProfile().getAge() == null) {
+                    bundle.putInt(YpSettings.USER_AGE, 14);
+                } else {
+                    bundle.putInt(YpSettings.USER_AGE, userdto.getProfile().getAge());
+                }
+
+                bundle.putBoolean(YpSettings.USER_AGE_VISIBILITY, userdto.getProfile().isBirthdayPrivacy());
+
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6608);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserAgeActivity.class, bundle, 6608, 0, 100);
+
+                break;
+
+            case R.id.user_info_edit_height_layout://身高
+
+                if (userdto.getProfile().getHeight() == null) {
+                    bundle.putInt(YpSettings.USER_HEIGHT, 150);
+                } else {
+                    bundle.putInt(YpSettings.USER_HEIGHT, userdto.getProfile().getHeight());
+                }
+
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6606);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserHeightActivity.class, bundle, 6606, 0, 100);
+                break;
+
+
+            case R.id.user_info_edit_weight_layout://体重
+
+                if (userdto.getProfile().getWeight() == null) {
+                    bundle.putInt(YpSettings.USER_WEIGHT, 30);
+                } else {
+                    bundle.putInt(YpSettings.USER_WEIGHT, userdto.getProfile().getWeight());
+                }
+
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6607);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserWeightActivity.class, bundle, 6607, 0, 100);
+
+                break;
+
+
+            case R.id.user_info_edit_profession_layout://职业
+
+                bundle.putString(YpSettings.USER_PROFESSION, userdto.getProfile().getCareer());
+
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6604);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserProfessionActivity.class, bundle, 6604, 0, 100);
+
+                break;
+
+
+            case R.id.user_info_edit_income_layout://收入
+
+                if (userdto.getProfile().getIncomeLevel() == null) {
+                    bundle.putInt(YpSettings.USER_INCOME, 1);
+                } else {
+                    bundle.putInt(YpSettings.USER_INCOME, userdto.getProfile().getIncomeLevel());
+                }
+
+
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6603);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserIncomeActivity.class, bundle, 6603, 0, 100);
+                break;
+
+
+            case R.id.user_info_edit_emotional_layout://情感
+
+                if (userdto.getProfile().getRelationship() == null) {
+                    bundle.putInt(YpSettings.USER_EMOTIONAL, Constant.Emotional_Type_secrecy);
+                } else {
+                    bundle.putInt(YpSettings.USER_EMOTIONAL, userdto.getProfile().getRelationship());
+                }
+
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6605);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserEmotionalActivity.class, bundle, 6605, 0, 100);
+                break;
+
+
+            case R.id.user_info_edit_lable_layout://标签
+
+                if (CheckUtil.isEmpty(userdto.getProfile().getTags())) {
+                    bundle.putString(YpSettings.USER_LABLE, "");
+                } else {
+                    bundle.putString(YpSettings.USER_LABLE, userdto.getProfile().getTags());
+                }
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6609);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserLableActivity.class, bundle, 6609, 0, 100);
+                break;
+
+
+            case R.id.user_info_edit_home_layout://家乡
+
+                bundle.putString(YpSettings.USER_HOMETOWN, userdto.getProfile().getHometown());
+
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6610);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserHomeTownActivity.class, bundle, 6610, 0, 100);
+
+                break;
+
+            case R.id.user_info_edit_dislike_layout://不喜欢
+
+                bundle.putString(YpSettings.USER_DISLIKE, userdto.getProfile().getDislikes());
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6601);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserDisLikeActivity.class, bundle, 6601, 0, 100);
+
+                break;
+
+            case R.id.user_info_edit_like_layout://喜欢
+
+                bundle.putString(YpSettings.USER_LIKE, userdto.getProfile().getLikes());
+                bundle.putInt(YpSettings.INTENT_RESULT_CODE, 6602);
+                ActivityUtil.jumpForResult(UserInfoEditActivity.this, EditUserLikeActivity.class, bundle, 6602, 0, 100);
+
+                break;
+
+            case R.id.user_info_edit_head_img_tv://头像
+
+                copperData = new CopperData();
+
+                if (!isFinishing()) {
+                    isheadOnclik = true;
+                    photoDialog = DialogUtil.createPhotoDialog(UserInfoEditActivity.this, "上传头像", "拍照", "相册选取",true, new PhotoMiBackCall());
+                    if (!isFinishing()) {
+                        photoDialog.show();
+                    }
+                }
+
+                break;
+        }
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Bundle bundle = null;
+        if (data != null) {
+            bundle = data.getExtras();
+        }
+
+        switch (resultCode) {
+            case 6600://昵称编辑
+                if (bundle != null) {
+
+                    String user_name = bundle.getString(YpSettings.USER_NAME);
+                    if (!CheckUtil.isEmpty(user_name)) {
+                        nick_name_tv.setText(user_name);
+                        userdto.getProfile().setName(user_name);
+                    }
+                }
+                break;
+
+            case 6601://不喜欢
+                if (bundle != null) {
+
+                    String dislike_str = bundle.getString(YpSettings.USER_DISLIKE);
+                    if (!CheckUtil.isEmpty(dislike_str)) {
+                        dislike_tv.setText(dislike_str);
+                        userdto.getProfile().setDislikes(dislike_str);
+                        dislike_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+                    } else {
+                        dislike_tv.setText("未填写");
+                        userdto.getProfile().setDislikes("");
+                        dislike_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+                    }
+
+                }
+                break;
+
+            case 6602://喜欢
+                if (bundle != null) {
+
+                    String like_str = bundle.getString(YpSettings.USER_LIKE);
+                    if (!CheckUtil.isEmpty(like_str)) {
+                        like_tv.setText(like_str);
+                        userdto.getProfile().setLikes(like_str);
+                    }
+
+                    if (!CheckUtil.isEmpty(like_str)) {
+                        like_tv.setText(like_str);
+                        userdto.getProfile().setLikes(like_str);
+                        like_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+                    } else {
+                        like_tv.setText("未填写");
+                        userdto.getProfile().setLikes("");
+                        like_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+                    }
+
+                }
+                break;
+
+            case 6603://收入
+                if (bundle != null) {
+
+                    int income_id = bundle.getInt(YpSettings.USER_INCOME);
+                    setIncomeData(income_id);
+                    userdto.getProfile().setIncomeLevel(income_id);
+
+                }
+                break;
+
+
+            case 6604://职位
+                if (bundle != null) {
+
+                    String pro_str = bundle.getString(YpSettings.USER_PROFESSION);
+                    if (!CheckUtil.isEmpty(pro_str)) {
+                        profession_tv.setText(pro_str);
+                        userdto.getProfile().setCareer(pro_str);
+                        profession_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+                    } else {
+                        profession_tv.setText("未填写");
+                        userdto.getProfile().setCareer("");
+                        profession_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+                    }
+
+                }
+                break;
+
+            case 6605://情感
+                if (bundle != null) {
+
+                    int emo_type = bundle.getInt(YpSettings.USER_EMOTIONAL);
+                    setEmotionalData(emo_type);
+                    userdto.getProfile().setRelationship(emo_type);
+
+                }
+                break;
+
+            case 6606://身高
+                if (bundle != null) {
+
+                    int height_num = bundle.getInt(YpSettings.USER_HEIGHT);
+                    height_tv.setText(height_num + "cm");
+                    height_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+                    userdto.getProfile().setHeight(height_num);
+                }
+                break;
+
+            case 6607://体重
+                if (bundle != null) {
+
+                    int weight_num = bundle.getInt(YpSettings.USER_WEIGHT);
+
+                    weight_tv.setText(weight_num + "kg");
+                    weight_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+                    userdto.getProfile().setWeight(weight_num);
+                }
+                break;
+
+            case 6608://年龄
+                if (bundle != null) {
+
+                    boolean age_visibility = bundle.getBoolean(YpSettings.USER_AGE_VISIBILITY);
+                    int age = bundle.getInt(YpSettings.USER_AGE);
+
+                    if (age_visibility) {
+                        age_level_tv.setVisibility(View.GONE);
+                        age_tv.setText("保密");
+                    } else {
+                        age_level_tv.setVisibility(View.VISIBLE);
+                        age_level_tv.setText(transAgeToStr(age));
+                        age_tv.setText(age + "");
+                    }
+                    age_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+                    userdto.getProfile().setAge(age);
+                    userdto.getProfile().setBirthdayPrivacy(age_visibility);
+                    //保存显示还是不显示年龄
+                }
+                break;
+
+            case 6609://标签
+                if (bundle != null) {
+                    String allLableList = bundle.getString(YpSettings.USER_LABLE);
+                    LogUtils.e("0999=" + allLableList);
+                    if (!CheckUtil.isEmpty(allLableList) && !allLableList.equals("null")) {
+                        user_info_edit_no_lable_tv.setVisibility(View.GONE);
+                        albe_flow_layout.setVisibility(View.VISIBLE);
+
+                        userdto.getProfile().setTags(allLableList);
+                        if (allLableList.contains(",")) {
+                            String tas[] = allLableList.split(",");
+                            initLableViews(tas);
+                        } else {
+
+                            String tas[] = new String[]{allLableList};
+                            initLableViews(tas);
+                        }
+
+
+                    } else {
+                        userdto.getProfile().setTags("");
+                        user_info_edit_no_lable_tv.setVisibility(View.VISIBLE);
+                        albe_flow_layout.setVisibility(View.GONE);
+                    }
+                }
+
+                break;
+
+            case 6610://家乡
+                if (bundle != null) {
+
+                    String home_str = bundle.getString(YpSettings.USER_HOMETOWN);
+                    if (!CheckUtil.isEmpty(home_str)) {
+                        home_tv.setText(home_str);
+                        userdto.getProfile().setHometown(home_str);
+                        home_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+                    } else {
+                        home_tv.setText("未填写");
+                        userdto.getProfile().setHometown("");
+                        home_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+                    }
+                }
+                break;
+
+
+            case YpSettings.FLAG_MODIFY_FINISH_SELECT_ONE:// 选择相册
+
+                break;
+
+
+            default:
+                break;
+        }
+
+        switch (requestCode) {
+            case YpSettings.FLAG_CHOOSE_PHONE:// 拍照
+
+                if (resultCode == RESULT_OK) {
+
+                    if (null != car_filePath) {
+                        if (isheadOnclik) {
+                            photoHeadDeal();
+                        } else {
+                            setUriBitmap(car_filePath);
+                        }
+                    }else{
+                        DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                    }
+                }else{
+                    DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                }
+
+                break;
+
+            case YpSettings.USER_COMPILE:// 剪切后
+                if (null != data) {
+                    copperData = (CopperData) data.getExtras().getSerializable("copperData");
+                    if (copperData != null) {
+                        String albumImg = copperData.getCroppedImage();
+                        douploadingUserHeadImg(albumImg);
+                    }else{
+                        DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                    }
+                }else{
+                    DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+                }
+
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    private BackCallListener ImgHintbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                imgdialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                imgdialog.dismiss();
+            }
+
+        }
+    };
+
+    private void photoHeadDeal() {
+        Bitmap bm = ImgUtils.resizesBitmap(car_filePath);
+        if (null != bm) {
+            // 保存在自己定义文件的路径
+            String file_Path = ImgUtils.saveImgFile(UserInfoEditActivity.this, bm);
+            // 回收内存空间
+            bm.recycle();
+            // 去剪切
+            CropDirectionUtil.cropDirection(UserInfoEditActivity.this, HeadImgCompileActivity.class, YpSettings.USER_COMPILE, file_Path);
+        }else{
+            DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+        }
+    }
+
+
+    private class PhotoMiBackCall extends BackCall {
+        @Override
+        public void deal(int which, Object... obj) {
+
+            switch (which) {
+                case R.id.select_operate_dialog_one_layout:
+
+
+                    if (!isFinishing()) {
+                        photoDialog.dismiss();
+                    }
+                    String fileName = System.currentTimeMillis() + ".jpg";
+
+                    String imgPath = ImgUtils.makeRootDirectory(UserInfoEditActivity.this);
+                    if (CheckUtil.isEmpty(imgPath)) {
+                        return;
+                    }
+                    File dir = new File(imgPath);
+                    // 原图
+                    File file = new File(dir, fileName);
+                    car_filePath = file.getAbsolutePath();// 获取相片保存路径
+                    url = Uri.fromFile(file);
+
+                    LogUtils.e("去拍照==" + car_filePath);
+
+                    Intent inten = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    inten.putExtra(MediaStore.EXTRA_OUTPUT, url);
+                    startActivityForResult(inten, YpSettings.FLAG_CHOOSE_PHONE);
+
+                    break;
+                case R.id.select_operate_dialog_two_layout:
+
+                    if (!isFinishing()) {
+                        photoDialog.dismiss();
+                    }
+
+                    Intent in = new Intent(UserInfoEditActivity.this, SelectOneAlbumTypeActivity.class);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(YpSettings.PHOTO_TAG, YpSettings.PHOTO_SELECT);
+                    in.putExtras(bundle);
+
+                    startActivity(in);
+
+                    break;
+            }
+            super.deal(which, obj);
+        }
+    }
+
+
+    private class PhotoOperateBackCall extends BackCall {
+        @Override
+        public void deal(int which, Object... obj) {
+            switch (which) {
+
+                case R.id.select_operate_dialog_one_layout:// 删除
+
+                    if (!isFinishing()) {
+                        albumhandleDialog.dismiss();
+                    }
+                    userdto.getAlbum().remove(ablumClickposition);
+                    adapter.setData(changeAlbumData(userdto.getAlbum(), userdto.getAlbumMax()));
+                    adapter.notifyDataSetChanged();
+                    break;
+
+                default:
+                    break;
+            }
+            super.deal(which, obj);
+        }
+    }
+
+
+    /**
+     * @throws
+     * @Title: setUriBitmap
+     * @Description: 上传图片前对图片的操作(这里用一句话描述这个方法的作用)
+     * @param: @param url
+     * @return: void
+     */
+    private void setUriBitmap(String file_Path) {
+
+        Bitmap bm = ImgUtils.resizesBitmap(file_Path);
+
+        if (null != bm) {
+            // 保存在自己定义文件的路径
+
+            String filePath = ImgUtils.saveImgFile(this, bm);
+            bm.recycle();
+            if (!CheckUtil.isEmpty(filePath)) {
+                douploadingUserImg(filePath);
+            }else{
+                DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+            }
+        }else{
+            DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, "选取失败，请重新选择上传！");
+        }
+
+    }
+
+
+    /**
+     * 上传图片
+     *
+     * @param @param filePath
+     * @param @param date
+     * @param @param w
+     * @param @param h 设定文件
+     * @return void 返回类型
+     * @throws
+     * @Title: uploadingUserHeadImg
+     */
+
+    private void douploadingUserImg(String filePath) {
+
+
+        UploadingUserImageBean imageBean = new UploadingUserImageBean();
+        imageBean.setFilePath(filePath);
+
+        UploadingUserImageService imageService = new UploadingUserImageService(this);
+        imageService.parameter(imageBean);
+        imageService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UploadingUserImageRespBean imageRespBean = (UploadingUserImageRespBean) respBean;
+                String respStr = imageRespBean.getResp();
+
+                List<String> urlList = userdto.getAlbum();
+                for (int i = 0; i < urlList.size(); i++) {
+                    if (TextUtils.equals(urlList.get(i).toString().trim(), YpSettings.suppose)) {
+                        userdto.getAlbum().remove(i);
+                        break;
+                    }
+
+                }
+                userdto.getAlbum().add(respStr);
+
+                List<String> dolist = changeAlbumData(userdto.getAlbum(), userdto.getAlbumMax());
+
+                adapter.setData(dolist);
+                adapter.notifyDataSetChanged();
+
+            }
+        });
+        imageService.enqueue();
+
+
+    }
+
+    /**
+     * 保存上传用户资料
+     *
+     * @return void 返回类型
+     * @throws
+     * @Title: submitData
+     */
+    private void submitData() {
+        if (userdto == null) {
+            loadingDiaog.dismiss();
+            return;
+        }
+
+
+        ProfileUserBean userBean = new ProfileUserBean();
+        userBean.setUserId(userID);
+
+        Profile profile = userdto.getProfile();
+
+
+        userBean.setAge(profile.getAge());
+        userBean.setRelationship(profile.getRelationship());
+        userBean.setHeight(profile.getHeight());
+        userBean.setWeight(profile.getWeight());
+        userBean.setIncomeLevel(profile.getIncomeLevel());
+        userBean.setCareer(profile.getCareer());
+        userBean.setTags(profile.getTags());
+        userBean.setName(profile.getName());
+        userBean.setBirthdayPrivacy(profile.isBirthdayPrivacy());
+        userBean.setLikes(profile.getLikes());
+        userBean.setDislikes(profile.getDislikes());
+        userBean.setHeadImg(profile.getHeadImg());
+        userBean.setHometown(profile.getHometown());
+
+        List<String> album = new ArrayList<>();
+
+        for (int i = 0; i < userdto.getAlbum().size(); i++) {
+            if (TextUtils.equals(userdto.getAlbum().get(i), YpSettings.suppose)) {
+                userdto.getAlbum().remove(i);
+            } else {
+
+                album.add(userdto.getAlbum().get(i).toString().trim());
+
+
+            }
+        }
+        userBean.setAlbum(album);
+
+
+        ProfileUserService userService = new ProfileUserService(this);
+
+        userService.parameter(userBean);
+
+        userService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                ProfileUserRespBean userRespBean = (ProfileUserRespBean) respBean;
+
+                loadingDiaog.dismiss();
+                boolean submit = userRespBean.isResp();
+
+                if (submit) {
+                    saveOrUpdateDbUserDatas();
+
+                    hintdialog = DialogUtil.createSuccessHintDialog(UserInfoEditActivity.this, "保存成功!");
+                    if (!UserInfoEditActivity.this.isFinishing()) {
+                        hintdialog.show();
+                        successtimer = new SuccessTimer(2000, 1000);
+                        successtimer.start();
+                    }
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+                DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this);
+            }
+        });
+
+        userService.enqueue();
+
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            dialog = DialogUtil.createHintOperateDialog(UserInfoEditActivity.this, "提示", "放弃修改资料?", "放弃", "继续编辑", backCallListener);
+            if (!isFinishing()) {
+                dialog.show();
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 保存或者更新数据库中用户的资料
+     */
+    private void saveOrUpdateDbUserDatas() {
+        String jsonstr = JsonUtils.toJson(userdto);
+        DbHelperUtils.saveUserInfo(userID, jsonstr);
+    }
+
+    private BackCallListener backCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                dialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                finish();
+            }
+
+        }
+    };
+
+    /**
+     * 头像上传中
+     *
+     * @param filePath
+     */
+    private void douploadingUserHeadImg(String filePath) {
+
+
+        UploadingUserHeadImgBean imgBean = new UploadingUserHeadImgBean();
+        imgBean.setFilePath(filePath);
+        imgBean.setSaveToAlbum(false);
+
+        UploadingUserHeadImgService uploadingUserHeadImgService = new UploadingUserHeadImgService(this);
+        uploadingUserHeadImgService.parameter(imgBean);
+        uploadingUserHeadImgService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                UploadingUserHeadImgRespBean imgRespBean = (UploadingUserHeadImgRespBean) respBean;
+
+                UploadingUserHeadImgRespBean.HeadImgUrl imagurl = imgRespBean.getResp();
+                if (imagurl != null) {
+
+                    userdto.getProfile().setHeadImg(imagurl.getHeadImgUrl());
+                    String imageurl = ImgUtils.DealImageUrl(imagurl.getHeadImgUrl(), 640, 640);
+                    if (!UserInfoEditActivity.this.isFinishing()) {
+                        Glide.with(UserInfoEditActivity.this).load(imageurl).into(head_img_tv);
+                    }
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoEditActivity.this, imgRespBean.getMsg());
+                }
+
+
+            }
+        });
+
+        uploadingUserHeadImgService.enqueue();
+
+
+    }
+
+
+    private void setEmotionalData(int emotional_id) {
+        emotional_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+
+        switch (emotional_id) {
+            case Constant.Emotional_Type_secrecy:
+                emotional_tv.setText("保密");
+                break;
+
+            case Constant.Emotional_Type_lone:
+                emotional_tv.setText("单身");
+                break;
+
+            case Constant.Emotional_Type_married:
+                emotional_tv.setText("已婚");
+                break;
+
+            case Constant.Emotional_Type_loving:
+                emotional_tv.setText("恋爱中");
+                break;
+
+            case Constant.Emotional_Type_Gay:
+                emotional_tv.setText("同性");
+                break;
+        }
+    }
+
+
+    private void setIncomeData(int type) {
+        income_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+
+        switch (type) {
+            case Constant.Income_Type_3000down:
+                income_tv.setText("3000元以下");
+                break;
+            case Constant.Income_Type_3000up:
+                income_tv.setText("3000元以上");
+                break;
+
+            case Constant.Income_Type_5000up:
+                income_tv.setText("5000元以上");
+                break;
+
+            case Constant.Income_Type_10000up:
+                income_tv.setText("10000元以上");
+                break;
+
+            case Constant.Income_Type_20000up:
+                income_tv.setText("20000元以上");
+                break;
+            case Constant.Income_Type_50000up:
+
+                income_tv.setText("50000元以上");
+                break;
+            case Constant.Income_Type_secrecy:
+                income_tv.setText("保密");
+                break;
+        }
+
+    }
+
+
+    private SuccessTimer successtimer;
+
+    private class SuccessTimer extends CountDownTimer {
+
+        public SuccessTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+
+        }
+
+        @Override
+        public void onFinish() {
+            if (hintdialog != null) {
+                hintdialog.dismiss();
+            }
+            finish();
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+        }
+    }
+
+
+}

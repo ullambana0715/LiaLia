@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.duanqu.qupai.widget.FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+</com.duanqu.qupai.widget.FrameLayout>
+<!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/layout/qupai_common_overlay_manager_fragment.xml -->

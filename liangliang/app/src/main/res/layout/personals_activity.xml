@@ -1,0 +1,1309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="6dp"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/corners_white_style"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp">
+
+                <ImageView
+                    android:id="@+id/personals_image_iv"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/personals_image_bg" />
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/personals_image_fillet" />
+
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_personals_image_hint"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15sp" />
+
+
+                <LinearLayout
+                    android:id="@+id/personals_image_layout"
+                    android:layout_width="150dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/travel_label_lable_corners_setect"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/personals_camera" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:gravity="center"
+                        android:text="@string/text_personals_image"
+                        android:textColor="@color/color_ffffff"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:text="@string/text_personals_have_to"
+                android:textColor="@color/color_ff7462"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:gravity="center"
+                android:text="@string/text_personals_have_to_hint"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/corners_white_style"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_marry"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+
+                    android:id="@+id/personals_marry_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_parents"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_parents_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_only_child"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_only_child_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_census"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_census_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_address"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_address_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_height"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_height_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_body_weight"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_body_weight_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_occupation"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_occupation_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_monthly_income"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_monthly_income_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_educational_background"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_educational_background_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_romance"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_romance_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_marital_history"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_marital_history_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_have_children"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_have_children_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_drinking"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_drinking_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_health"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_health_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_housing"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_housing_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:gravity="center_vertical"
+                        android:text="@string/text_send_message"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp"
+
+                        />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:src="@drawable/personals_have_to_icon" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/personals_send_message_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:maxLines="1"
+                    android:paddingLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</ScrollView>

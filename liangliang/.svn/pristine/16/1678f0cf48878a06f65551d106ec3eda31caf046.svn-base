@@ -1,0 +1,48 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class ZoomViewerDto implements Serializable {
+
+	private List<String> list;
+
+	private int position;
+
+	private String type;
+
+
+	public List<String> getList() {
+		return list;
+	}
+
+	public void setList(List<String> list) {
+		this.list = list;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "ZoomViewerDto{" +
+				"list=" + list +
+				", position=" + position +
+				", type='" + type + '\'' +
+				'}';
+	}
+}

@@ -1,0 +1,42 @@
+package cn.chono.yopper.Service.Http.Facerating;
+
+import java.io.Serializable;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/12/7.
+ */
+public class FaceratingRespBean extends RespBean {
+
+    private FaceratingResp resp;
+
+    public FaceratingResp getResp() {
+        return resp;
+    }
+
+    public void setResp(FaceratingResp resp) {
+        this.resp = resp;
+    }
+
+       public class  FaceratingResp implements Serializable{
+        private int targetUserId;
+        private int level;
+
+        public int getTargetUserId() {
+            return targetUserId;
+        }
+
+        public void setTargetUserId(int targetUserId) {
+            this.targetUserId = targetUserId;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(int level) {
+            this.level = level;
+        }
+    }
+}

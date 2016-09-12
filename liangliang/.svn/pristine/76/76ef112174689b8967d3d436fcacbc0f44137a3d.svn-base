@@ -1,0 +1,157 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.ScoreZoomViewerDto;
+import cn.chono.yopper.view.viewpager.HackyViewPager;
+import cn.chono.yopper.view.viewpager.PhotoView;
+import cn.chono.yopper.view.viewpager.PhotoViewAttacher;
+
+/**
+ * Created by zxb on 2015/12/14.
+ */
+public class ScoreZoomViewersActivity extends MainFrameActivity {
+
+    private HackyViewPager score_viewPager;
+
+    private ScoreSamplePagerAdapter score_adapter;
+
+    private ScoreZoomViewerDto sq;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+        setContentView(R.layout.score_zoom_image_viewer_activity);
+        PushAgent.getInstance(this).onAppStart();
+        initView();
+        sq = (ScoreZoomViewerDto) getIntent().getExtras().getSerializable(YpSettings.SCORE_ZOOM_LIST_DTO);
+
+        setViewPageData();
+    }
+
+
+
+    private void initView() {
+        score_viewPager = (HackyViewPager) findViewById(R.id.score_viewPager);
+        score_adapter = new ScoreSamplePagerAdapter(this);
+        score_viewPager.setAdapter(score_adapter);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("颜值打分（预览照片）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("颜值打分（预览照片）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    private void setViewPageData() {
+
+        if (sq == null) {
+            System.out.println("sq--=" + sq);
+            return;
+        }
+        System.out.println("sq--=" + sq.getList().size());
+
+        score_adapter.setData(sq.getList());
+        score_viewPager.setCurrentItem(sq.getPosition());
+        score_adapter.notifyDataSetChanged();
+    }
+
+
+    private class ScoreSamplePagerAdapter extends PagerAdapter {
+
+        private Context context;
+        private List<String> list;
+
+        private ScoreSamplePagerAdapter(Context context) {
+            this.context = context;
+        }
+
+        public void setData(List<String> list) {
+            this.list = list;
+        }
+
+        @Override
+        public int getCount() {
+            return list == null ? 0 : list.size();
+        }
+
+        @Override
+        public View instantiateItem(ViewGroup container, int position) {
+            View v = LayoutInflater.from(context).inflate(R.layout.zoom_image_viewer_item_layout, null);
+            container.addView(v);
+
+            final ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+            final PhotoView photoView = (PhotoView) v.findViewById(R.id.photoView);
+
+            String imgeUrl = list.get(position).toString().trim();
+            progressBar.setVisibility(View.VISIBLE);
+            Glide.with(context).load(imgeUrl).error(R.drawable.error_default_icon).listener(new RequestListener<String, GlideDrawable>() {
+
+                @Override
+                public boolean onException(Exception arg0, String arg1, Target<GlideDrawable> arg2, boolean arg3) {
+                    progressBar.setVisibility(View.GONE);
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(GlideDrawable arg0, String arg1, Target<GlideDrawable> arg2, boolean arg3, boolean arg4) {
+                    progressBar.setVisibility(View.GONE);
+                    return false;
+                }
+
+            }).into(photoView);
+
+            photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+
+                @Override
+                public void onPhotoTap(View view, float x, float y) {
+                    finish();
+
+                }
+            });
+            return v;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+    }
+}

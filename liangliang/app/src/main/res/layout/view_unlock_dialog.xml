@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gift_dialog_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/activity_ite_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/remind_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_chat_dlg_key" />
+
+            <TextView
+                android:id="@+id/remind_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dialog_iv"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="20dp"
+                android:text="解锁需1把钥匙\n您现在有9把钥匙\n（系统每天会赠送钥匙）"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="16sp" />
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@id/dialog_iv"-->
+                <!--android:gravity="center"-->
+                <!--android:text="（系统每天会赠送钥匙)"-->
+                <!--android:textColor="@color/color_b2b2b2"-->
+                <!--android:textSize="16sp" />-->
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/cancel_btn"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:background="@drawable/gift_dialog_strokebtn"
+                android:gravity="center"
+                android:text="取消使用"
+                android:textColor="@color/color_ff7462" />
+
+            <Button
+                android:id="@+id/sure_btn"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/gift_dialog_redbtn"
+                android:gravity="center"
+                android:text="立即使用"
+                android:textColor="@color/color_ffffff" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

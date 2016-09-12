@@ -1,0 +1,892 @@
+package cn.chono.yopper.utils;
+
+import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.text.TextUtils;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+
+
+
+/*
+ * 处理url匹配的工具类
+ * 内部链接导航的地址  
+ * 
+ */
+
+
+public class URLExecutor {
+
+    public static final String NEXT_PAGE_MAP = "map";
+    public static final String NEXT_PAGE_PICTURE = "picture";
+    public static final String NEXT_PAGE_PICTURE_FOOD = "picture_food";
+    public static final String NEXT_PAGE_DESCRIBE = "describe";
+    public static final String NEXT_PAGE_DISCOUNT = "discount";
+    public static final String NEXT_PAGE_FOOD = "food";
+    public static final String NEXT_PAGE_COMMENT = "comment";
+    public static final String NEXT_PAGE_DISH = "dish";
+    public static final String NEXT_PAGE_ORDER = "order";
+
+    private static List<UrlMatcher> list = new ArrayList<UrlMatcher>();
+
+    static {
+        // 使用自带浏览器打开页面
+        registerUrlMatcher(new UrlMatcher() {
+
+            @Override
+            public boolean isMatched(String url, Context context) {
+                if (url.startsWith("link://")) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void doAction(String url, Context context, int frompage) {
+                if (context instanceof Activity) {
+                    ActivityUtil.jumpToWeb((Activity) context, url.replace("link://", "http://"));
+                }
+            }
+        });
+
+
+//
+        registerUrlMatcher(new UrlMatcher() {
+
+            @Override
+            public boolean isMatched(String url, Context context) {
+                if (url.startsWith("http://m.dianping.com")) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void doAction(String url, Context context, int frompage) {
+
+
+                if (context instanceof Activity) {
+                    ActivityUtil.jumpToWeb((Activity) context, url.replace("link://", "http://"));
+                }
+            }
+        });
+
+
+//		// 转到餐厅详情下的某个子页面
+//		registerUrlMatcher(new UrlMatcher() {
+//
+//			@Override
+//			public boolean isMatched(String url, Context context) {
+//				if (!TextUtils.isEmpty(url) && url.startsWith("xms://restaurant/jump/")) {
+//					return true;
+//				}
+//				return false;
+//			}
+//
+//			@Override
+//			public void doAction(String url, Context context, int frompage) {
+//				try {
+//					// 格式：xms://restaurant/jump/{restId}/{参数}
+//					// //地图 map
+//					// //餐厅图片列表 picture
+//					// //餐馆描述 describe
+//					// //优惠信息 discount
+//					// //菜单列表 food
+//					// //评论列表 comment
+//					// //预点菜 dish (这个是新加的)
+//					// //下单 order (这个是新加的)
+//					int start = url.indexOf("xms://restaurant/jump/") + "xms://restaurant/jump/".length();
+//					int end = url.lastIndexOf("/");
+//					String restId = ConvertUtil.subString(url, start, end);
+//					String page = ConvertUtil.subString(url, end + 1);
+//
+//					restId = URLDecoder.decode(restId, "utf-8");
+//					page = URLDecoder.decode(page, "utf-8");
+//
+//					Bundle bundle = new Bundle();
+//					bundle.putString(Settings.BUNDLE_KEY_ID, restId);
+//					bundle.putString(Settings.BUNDLE_RES_DETAIL_NEXT_PAGE, page);
+//					ActivityUtil.jump(context, RestaurantDetailActivity.class, frompage, bundle);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//		
+//		// 拨打电话
+//		registerUrlMatcher(new UrlMatcher() {
+//
+//			@Override
+//			public boolean isMatched(String url, Context context) {
+//				if (url.startsWith("tel://")) {
+//					return true;
+//				}
+//				return false;
+//			}
+//
+//			@Override
+//			public void doAction(String url, Context context, int frompage) {
+//				String phoneNo = url.replace("tel://", "");
+//				ActivityUtil.callSuper57(context, phoneNo);
+//			}
+//		});
+//		// 跳转到下载软件
+//		registerUrlMatcher(new UrlMatcher() {
+//
+//			@Override
+//			public boolean isMatched(String url, Context context) {
+//				if (url != null && url.startsWith("xms://download/")) {
+//					return true;
+//				}
+//				return false;
+//			}
+//
+//			@Override
+//			public void doAction(String url, Context context, int frompage) {
+//				int start = 15;
+//				Bundle bundle = new Bundle();
+//				// bundle.putString(Settings.BUNDLE_KEY_ID,
+//				// url.substring(start));
+//				// if(Settings.gVersionChkDTO==null||!Settings.gVersionChkDTO.isHaveNewVersionTag()){
+//				// return;
+//				// }
+//				// bundle.putString(Settings.BUNDLE_KEY_CONTENT,
+//				// Settings.gVersionChkDTO.getDownloadUrl());
+//				bundle.putString(Settings.BUNDLE_KEY_CONTENT, url.substring(start));
+//				ActivityUtil.jump(context, AutoUpdateActivity.class, frompage, bundle);
+//
+//			}
+//		});
+
+    }
+
+    private static void registerUrlMatcher(UrlMatcher matcher) {
+        list.add(matcher);
+    }
+
+    /**
+     * 执行一个url，如果有已注册的url处理器，则会执行处理，并且返回true，否则返回false
+     *
+     * @param url
+     * @param context
+     * @param frompage
+     * @return 返回true表示有匹配的url处理器
+     */
+
+    public static boolean execute(String url, Context context, int frompage) {
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).isMatched(url, context)) {
+                list.get(i).doAction(url, context, frompage);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private abstract static class UrlMatcher {
+
+        public abstract boolean isMatched(String url, Context context);
+
+        public abstract void doAction(String url, Context context, int frompage);
+    }
+
+
+    /**
+     * @param website  自已服务器的website
+     * @param type     类型。一种是“shop_list”
+     * @param category json字符串
+     * @return
+     */
+    public static String getLoaderJS(String website, String type, String category) {
+
+        String inject="";
+
+        if (!TextUtils.equals("shop_list",type)){
+            inject="injectCss(baseUrl + 'app/' + name + '.css?temp=" +
+                    System.currentTimeMillis() +
+                    "\'" +
+                    ");";
+        }
+
+
+
+        String js = "(" +
+                "function(document, baseUrl, name, query){" +
+                "function injectCss(href){var link = document.createElement('link');" +
+                "link.rel = 'stylesheet';link.type = 'text/css';link.href = href;document.head.appendChild(link);" +
+                "}" +
+                "function injectJs(src)" +
+                "{var s = document.createElement('script');" +
+                "s.type = 'text/javascript';s.src = src;" +
+                "document.head.appendChild(s);" +
+                "}" +
+                "function injectAll(baseUrl, name, query){" +
+                inject+
+                "injectJs(baseUrl + 'app/' + name + '.js?temp=" +
+                System.currentTimeMillis() +
+                "\'" +
+                ");" +
+                "}" +
+                "window._injected_query = query;" +
+                "injectAll(baseUrl, name, query);" +
+                "}" +
+                ")" +
+                "(document," + "\"" +
+                website +
+                "\"" +
+                "," +
+                "\"" +
+                type +
+                "\"" +
+                "," +
+                category +
+                ");";
+
+        return js;
+    }
+
+    /**
+     * @param website 自已服务器的前地址
+     * @param type    访问地址的域名
+     * @return
+     */
+    public static String getMovieJS(String website, String type) {
+        String inject="";
+
+        if (!TextUtils.equals("new_movie_list",type)){
+            inject="injectCss(baseUrl + 'app/' + name + '.css?temp=" +
+                    System.currentTimeMillis() +
+                    "\'" +
+                    ");";
+        }
+
+
+        String js = "(" +
+                "function(document, baseUrl, name, query){" +
+                "function injectCss(href){var link = document.createElement('link');" +
+                "link.rel = 'stylesheet';link.type = 'text/css';link.href = href;document.head.appendChild(link);" +
+                "}" +
+                "function injectJs(src)" +
+                "{var s = document.createElement('script');" +
+                "s.type = 'text/javascript';s.src = src;" +
+                "document.head.appendChild(s);" +
+                "}" +
+                "function injectAll(baseUrl, name, query){" +
+                inject+
+                "injectJs(baseUrl + 'app/' + name + '.js?temp=" +
+                System.currentTimeMillis() +
+                "\'" +
+                ");" +
+                "}" +
+                "window._injected_query = query;" +
+                "injectAll(baseUrl, name, query);" +
+                "}" +
+                ")" +
+                "(document," + "\"" +
+                website +
+                "\"" +
+                "," +
+                "\"" +
+                type +
+                "\"" +
+                ");";
+
+        return js;
+    }
+
+
+    private static String patternUrl(String url) {
+
+        String urlStr = "";
+
+        Pattern p = Pattern.compile("[^//]*?\\.(com|cn|net|org|biz|info|cc|tv)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = p.matcher(url);
+
+        while (matcher.find()) {
+            urlStr = matcher.group();
+
+        }
+
+        return urlStr;
+    }
+
+    /**
+     * 获取 URL 中的域名
+     *
+     * @param url
+     * @return
+     */
+    public static String getHttpHost(String url) {
+
+        if (url.toLowerCase().startsWith("http://")) {
+            url = url.replace("http://", "");
+            String[] httpUrl = url.split("\\/");
+            if (null != httpUrl && httpUrl.length > 0) {
+                url = httpUrl[0];
+            }
+        } else {
+            url = "";
+        }
+
+
+        return url;
+
+    }
+
+    /**
+     * 获取地址中 category 字段的值
+     *
+     * @param frma_url
+     * @return
+     */
+    public static String getCategory(String frma_url) {
+
+
+        String category = "";
+        String url = "";
+
+
+        String dianping = "";
+
+        int url_end = frma_url.length();
+        int start_index = frma_url.indexOf("?");
+
+        String dataUrl = (String) frma_url.subSequence(start_index + 1, url_end);
+
+        if (!TextUtils.isEmpty(dataUrl)) {
+
+            int dataUrl_end = dataUrl.length();
+            int dataUrl_index = dataUrl.indexOf("=");
+
+            dianping = (String) dataUrl.subSequence(dataUrl_index + 1, dataUrl_end);
+
+
+        }
+
+
+        String[] dianping_local = dianping.split("&");
+
+
+        String redirect_returnLocation = "";
+        String redirect_params = "";
+
+
+        if (null != dianping_local && dianping_local.length > 0) {
+            for (int i = 0; i < dianping_local.length; i++) {
+                switch (i) {
+                    case 0:
+                        url = dianping_local[0];
+                        break;
+                    case 1:
+                        redirect_returnLocation = dianping_local[1];
+                        break;
+                    case 2:
+                        redirect_params = dianping_local[2];
+                        break;
+                }
+
+            }
+
+        }
+
+        String redirect_returnLocation_vulea = "";
+        String redirect_returnLocation_key = "";
+
+        if (!TextUtils.isEmpty(redirect_returnLocation)) {
+            String[] redirect_returnLocation_s = redirect_returnLocation.split("=");
+            if (null != redirect_returnLocation_s && redirect_returnLocation_s.length > 0) {
+                for (int i = 0; i < redirect_returnLocation_s.length; i++) {
+                    switch (i) {
+                        case 0:
+                            redirect_returnLocation_key = redirect_returnLocation_s[0];
+                            break;
+                        case 1:
+                            redirect_returnLocation_vulea = redirect_returnLocation_s[1];
+                            break;
+                    }
+                }
+
+            }
+
+        }
+
+
+        String redirect_params_key;
+        String redirect_params_vulea;
+
+
+        if (!TextUtils.isEmpty(redirect_params)) {
+            String[] redirect_params_s = redirect_params.split("=");
+            if (null != redirect_params_s && redirect_params_s.length > 0) {
+                for (int i = 0; i < redirect_params_s.length; i++) {
+                    switch (i) {
+                        case 0:
+                            redirect_params_key = redirect_params_s[0];
+
+                            break;
+                        case 1:
+                            redirect_params_vulea = redirect_params_s[1];
+                            category = redirect_params_vulea;
+                            break;
+                    }
+                }
+
+            }
+
+        }
+
+        return category;
+
+    }
+
+    /**
+     * 获取能访问 的地址
+     *
+     * @param httpURL
+     * @param APPOINTMENT_YTPE
+     * @return
+     */
+    public static String getAccessHttpURL(String httpURL, int APPOINTMENT_YTPE) {
+        double longtitude = 121.476092;
+        double latitude =31.230997;
+        String url = "";
+
+
+        String dianping = "";
+
+        int url_end = httpURL.length();
+        int start_index = httpURL.indexOf("?");
+
+        String dataUrl = (String) httpURL.subSequence(start_index + 1, url_end);
+
+        if (!TextUtils.isEmpty(dataUrl)) {
+
+            int dataUrl_end = dataUrl.length();
+            int dataUrl_index = dataUrl.indexOf("=");
+
+            dianping = (String) dataUrl.subSequence(dataUrl_index + 1, dataUrl_end);
+
+
+        }
+
+
+        String[] dianping_local = dianping.split("&");
+
+
+        String redirect_returnLocation = "";
+        String redirect_params = "";
+
+
+        if (null != dianping_local && dianping_local.length > 0) {
+            for (int i = 0; i < dianping_local.length; i++) {
+                switch (i) {
+                    case 0:
+                        url = dianping_local[0];
+                        break;
+                    case 1:
+                        redirect_returnLocation = dianping_local[1];
+                        break;
+                    case 2:
+                        redirect_params = dianping_local[2];
+                        break;
+                }
+
+            }
+
+        }
+
+        String redirect_returnLocation_vulea = "";
+        String redirect_returnLocation_key = "";
+
+        if (!TextUtils.isEmpty(redirect_returnLocation)) {
+            String[] redirect_returnLocation_s = redirect_returnLocation.split("=");
+            if (null != redirect_returnLocation_s && redirect_returnLocation_s.length > 0) {
+                for (int i = 0; i < redirect_returnLocation_s.length; i++) {
+                    switch (i) {
+                        case 0:
+                            redirect_returnLocation_key = redirect_returnLocation_s[0];
+                            break;
+                        case 1:
+                            redirect_returnLocation_vulea = redirect_returnLocation_s[1];
+                            break;
+                    }
+                }
+
+            }
+
+        }
+
+
+        String redirect_params_key;
+        String redirect_params_vulea;
+
+
+        if (!TextUtils.isEmpty(redirect_params)) {
+            String[] redirect_params_s = redirect_params.split("=");
+            if (null != redirect_params_s && redirect_params_s.length > 0) {
+                for (int i = 0; i < redirect_params_s.length; i++) {
+                    switch (i) {
+                        case 0:
+                            redirect_params_key = redirect_params_s[0];
+
+                            break;
+                        case 1:
+                            redirect_params_vulea = redirect_params_s[1];
+
+                            break;
+                    }
+                }
+
+            }
+
+        }
+
+
+        if (TextUtils.equals("true", redirect_returnLocation_vulea)) {
+
+            LocInfo myLoc = Loc.getLoc();
+            if (null != myLoc) {
+
+                Location location=myLoc.getLoc();
+
+                if(null !=location){
+                    latitude = myLoc.getLoc().getLatitude();
+                    longtitude = myLoc.getLoc().getLongitude();
+                }
+
+
+
+            }
+
+
+            if (url.contains("?")) {
+                url = url + "&temp=" + System.currentTimeMillis();
+            } else {
+                url = url + "?temp=" + System.currentTimeMillis();
+            }
+            if (APPOINTMENT_YTPE == Constant.APPOINT_TYPE_MOVIE) {
+                url = url + "&x=" + latitude + "&y=" +longtitude;
+            } else {
+                url = url + "&lat=" +  latitude + "&lng=" + longtitude;
+            }
+
+
+        }
+
+
+
+        return url;
+    }
+
+    /**
+     * 获取 地址中callback字段中的值
+     *
+     * @param frma_url
+     * @return
+     */
+    public static String getCallback(String frma_url) {
+
+
+        String dianping = "";
+
+
+        int url_end = frma_url.length();
+        int start_index = frma_url.indexOf("?");
+
+        String dataUrl = (String) frma_url.subSequence(start_index, url_end);
+
+        if (!TextUtils.isEmpty(dataUrl)) {
+
+            int dataUrl_end = dataUrl.length();
+            int dataUrl_index = dataUrl.indexOf("=");
+
+            dianping = (String) dataUrl.subSequence(dataUrl_index + 1, dataUrl_end);
+
+
+        }
+
+
+        String[] dianping_local = dianping.split("&");
+
+
+        String httprequest_shopId = "";
+        String httprequest_callback = "";
+
+
+        if (null != dianping_local && dianping_local.length > 0) {
+            for (int i = 0; i < dianping_local.length; i++) {
+                switch (i) {
+                    case 0:
+                        httprequest_shopId = dianping_local[0];
+                        break;
+                    case 1:
+                        httprequest_callback = dianping_local[1];
+                        break;
+
+                }
+
+            }
+
+        }
+
+        String httprequest_shopId_url = "";
+        String httprequest_shopId_url_key = "";
+
+        if (!TextUtils.isEmpty(httprequest_shopId)) {
+            String[] httprequest_shopId_s = httprequest_shopId.split("&");
+            if (null != httprequest_shopId_s && httprequest_shopId_s.length > 0) {
+                for (int i = 0; i < httprequest_shopId_s.length; i++) {
+                    switch (i) {
+                        case 0:
+                            httprequest_shopId_url = httprequest_shopId_s[0];
+
+                            break;
+                        case 1:
+                            httprequest_shopId_url_key = httprequest_shopId_s[1];
+                            break;
+                    }
+                }
+
+            }
+
+        }
+
+
+        String shopId = "";
+        String shopId_key = "";
+
+        if (!TextUtils.isEmpty(httprequest_shopId_url)) {
+            String[] httprequest_shopId_url_key_s = httprequest_shopId.split("\\?");
+
+            if (null != httprequest_shopId_url_key_s && httprequest_shopId_url_key_s.length > 1) {
+
+                String httprequest_shopId_s = httprequest_shopId_url_key_s[1];
+
+                if (!TextUtils.isEmpty(httprequest_shopId_s)) {
+
+                    String[] httprequest_shopId_vlaeu = httprequest_shopId.split("=");
+
+                    if (null != httprequest_shopId_vlaeu && httprequest_shopId_vlaeu.length > 0) {
+
+                        for (int i = 0; i < httprequest_shopId_vlaeu.length; i++) {
+                            switch (i) {
+                                case 0:
+                                    shopId_key = httprequest_shopId_vlaeu[0];
+
+                                    break;
+                                case 1:
+                                    shopId = httprequest_shopId_vlaeu[1];
+
+                                    break;
+                            }
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        String callback = "";
+        String callback_key = "";
+
+
+        if (!TextUtils.isEmpty(httprequest_callback)) {
+
+            String[] httprequest_callback_s = httprequest_callback.split("=");
+
+            if (null != httprequest_callback_s && httprequest_callback_s.length > 0) {
+                for (int i = 0; i < httprequest_callback_s.length; i++) {
+
+                    switch (i) {
+                        case 0:
+                            callback_key = httprequest_callback_s[0];
+
+                            break;
+                        case 1:
+                            callback = httprequest_callback_s[1];
+
+                            break;
+                    }
+
+                }
+
+
+            }
+
+
+        }
+
+        return callback;
+    }
+
+    /**
+     * 获取能访问的地址
+     *
+     * @param frma_url
+     * @return
+     */
+    public static String getHttprequestURL(String frma_url) {
+        String url = "";
+
+
+        String dianping = "";
+
+
+        int url_end = frma_url.length();
+        int start_index = frma_url.indexOf("?");
+
+        String dataUrl = (String) frma_url.subSequence(start_index, url_end);
+
+        if (!TextUtils.isEmpty(dataUrl)) {
+
+            int dataUrl_end = dataUrl.length();
+            int dataUrl_index = dataUrl.indexOf("=");
+
+            dianping = (String) dataUrl.subSequence(dataUrl_index + 1, dataUrl_end);
+
+
+        }
+
+
+        String[] dianping_local = dianping.split("&");
+
+
+        String httprequest_shopId = "";
+        String httprequest_callback = "";
+
+
+        if (null != dianping_local && dianping_local.length > 0) {
+            for (int i = 0; i < dianping_local.length; i++) {
+                switch (i) {
+                    case 0:
+                        httprequest_shopId = dianping_local[0];
+                        break;
+                    case 1:
+                        httprequest_callback = dianping_local[1];
+                        break;
+
+                }
+
+            }
+
+        }
+
+        String httprequest_shopId_url = "";
+        String httprequest_shopId_url_key = "";
+
+        if (!TextUtils.isEmpty(httprequest_shopId)) {
+            String[] httprequest_shopId_s = httprequest_shopId.split("&");
+            if (null != httprequest_shopId_s && httprequest_shopId_s.length > 0) {
+                for (int i = 0; i < httprequest_shopId_s.length; i++) {
+                    switch (i) {
+                        case 0:
+                            httprequest_shopId_url = httprequest_shopId_s[0];
+                            url = httprequest_shopId_url;
+                            break;
+                        case 1:
+                            httprequest_shopId_url_key = httprequest_shopId_s[1];
+                            break;
+                    }
+                }
+
+            }
+
+        }
+
+
+        String shopId = "";
+        String shopId_key = "";
+
+        if (!TextUtils.isEmpty(httprequest_shopId_url)) {
+            String[] httprequest_shopId_url_key_s = httprequest_shopId.split("\\?");
+
+            if (null != httprequest_shopId_url_key_s && httprequest_shopId_url_key_s.length > 1) {
+
+                String httprequest_shopId_s = httprequest_shopId_url_key_s[1];
+
+                if (!TextUtils.isEmpty(httprequest_shopId_s)) {
+
+                    String[] httprequest_shopId_vlaeu = httprequest_shopId.split("=");
+
+                    if (null != httprequest_shopId_vlaeu && httprequest_shopId_vlaeu.length > 0) {
+
+                        for (int i = 0; i < httprequest_shopId_vlaeu.length; i++) {
+                            switch (i) {
+                                case 0:
+                                    shopId_key = httprequest_shopId_vlaeu[0];
+
+                                    break;
+                                case 1:
+                                    shopId = httprequest_shopId_vlaeu[1];
+
+                                    break;
+                            }
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        String callback = "";
+        String callback_key = "";
+
+
+        if (!TextUtils.isEmpty(httprequest_callback)) {
+
+            String[] httprequest_callback_s = httprequest_callback.split("=");
+
+            if (null != httprequest_callback_s && httprequest_callback_s.length > 0) {
+                for (int i = 0; i < httprequest_callback_s.length; i++) {
+
+                    switch (i) {
+                        case 0:
+                            callback_key = httprequest_callback_s[0];
+
+                            break;
+                        case 1:
+                            callback = httprequest_callback_s[1];
+
+                            break;
+                    }
+
+                }
+
+
+            }
+
+
+        }
+
+        if (url.contains("?")) {
+            url = url + "&temp=" + System.currentTimeMillis();
+        } else {
+            url = url + "?temp=" + System.currentTimeMillis();
+        }
+
+        return url;
+    }
+
+
+}

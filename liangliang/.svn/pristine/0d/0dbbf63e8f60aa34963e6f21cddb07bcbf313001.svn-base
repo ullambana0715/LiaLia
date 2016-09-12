@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.chono.yopper.view.ResizeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/login_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/text_color_white">
+
+        <TextView
+            android:id="@+id/back_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="20dp"
+            android:text="取消"
+
+            android:textColor="@color/text_color_black"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/main_frame_tvTitle_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip">
+
+            <!-- 页面标题 -->
+
+            <TextView
+                android:id="@+id/main_frame_tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="发布冒泡"
+                android:textColor="@color/text_color_black"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/publish_bubbling_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingBottom="1dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="10dp"
+            android:paddingTop="1dp"
+            android:src="@drawable/bubbling_pubish_icon" />
+
+    </RelativeLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/layoutIcon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <HorizontalScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <GridView
+                        android:id="@+id/ypGridView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:listSelector="@android:color/transparent"></GridView>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="left|top"
+                android:hint="@string/bubbling_edit_hini"
+                android:maxLength="100"
+                android:minHeight="100dp"
+                android:textColor="#000000"
+                android:textColorHint="@color/hint_tv" />
+
+            <LinearLayout
+                android:id="@+id/typeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/discover_bubbling_type_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp">
+
+                <ImageView
+                    android:id="@+id/typeIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="2dp" />
+
+                <TextView
+                    android:id="@+id/typeTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_color_7d7d7d"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</cn.chono.yopper.view.ResizeLayout>

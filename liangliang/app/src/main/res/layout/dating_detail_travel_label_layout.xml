@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/color_eeeeee"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:text="Ta对旅行的偏好和喜好"
+        android:textSize="12sp"
+        android:gravity="center_vertical"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
+        android:textColor="@color/color_9a9a9a"
+        />
+    <cn.chono.yopper.view.FlowCenterLayout
+        android:id="@+id/dating_detail_travel_label_flow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
+        android:background="@drawable/appoint_detail_white_bg">
+    </cn.chono.yopper.view.FlowCenterLayout>
+</LinearLayout>

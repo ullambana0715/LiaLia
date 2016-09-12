@@ -1,0 +1,99 @@
+package cn.chono.yopper.Service.DaillyTask;
+
+import android.os.AsyncTask;
+import android.text.TextUtils;
+
+import com.google.xiaomishujson.reflect.TypeToken;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDB;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.utils.JsonUtils;
+
+/**
+ * Created by zxb on 2015/12/7.
+ */
+public class DaillyFaceratingCandidatesDBTask {
+
+    private static DaillyFaceratingCandidatesDBTask daillyFaceratingCandidatesDBTask;
+
+
+    public static DaillyFaceratingCandidatesDBTask getInstance() {
+
+        if (null == daillyFaceratingCandidatesDBTask) {
+            synchronized (DaillyFaceratingCandidatesDBTask.class) {
+                if (null == daillyFaceratingCandidatesDBTask) {
+                    daillyFaceratingCandidatesDBTask = new DaillyFaceratingCandidatesDBTask();
+                }
+            }
+        }
+        return daillyFaceratingCandidatesDBTask;
+
+    }
+
+    /**
+     * 缓存数据
+     *
+     * @param userId
+     * @param data
+     */
+    public void saveDataLocal(final int userId, final String data) {
+        try {
+            DaillyFaceratingCandidatesDB localDto = YPApplication.db .findFirst(Selector.from(DaillyFaceratingCandidatesDB.class).where("userId", " =", userId));
+
+            if (null !=localDto ) {
+                localDto.setUserId(userId);
+                localDto.setData(data);
+                localDto.setTime(System.currentTimeMillis());
+                YPApplication.db.update(localDto);
+            } else {
+                localDto = new DaillyFaceratingCandidatesDB();
+                localDto.setUserId(userId);
+                localDto.setData(data);
+                localDto.setTime(System.currentTimeMillis());
+                YPApplication.db.save(localDto);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 获取缓存数据
+     *
+     * @param userId
+     * @return
+     */
+
+    public List<DaillyFaceratingCandidatesDto> grtDataLocal(int userId) {
+        List<DaillyFaceratingCandidatesDto> daillyFaceratingCandidatesDtos = new ArrayList<>();
+
+        try {
+            DaillyFaceratingCandidatesDB localDto = YPApplication.db
+                    .findFirst(Selector.from(DaillyFaceratingCandidatesDB.class)
+                            .where("userId", " =", userId));
+            if (null !=localDto) {
+
+                String dataStr = localDto.getData();
+                if (!TextUtils.isEmpty(dataStr)) {
+                    daillyFaceratingCandidatesDtos = JsonUtils.fromJson(dataStr, new TypeToken<List<DaillyFaceratingCandidatesDto>>() {}.getType());
+                }
+            }
+
+
+        } catch (DbException e) {
+            e.printStackTrace();
+
+        }
+
+        return daillyFaceratingCandidatesDtos;
+
+    }
+}

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/appoint_layout_bg"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="104px"
+        android:gravity="center"
+        android:text="俩俩约会"
+        android:textColor="@color/text_color_3c4144"
+        android:textSize="44px" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52px"
+        android:gravity="center"
+        android:text="遇见“真实”，约会安全"
+        android:textColor="@color/text_color_3c4144"
+        android:textSize="44px" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18px"
+        android:gravity="center"
+
+        android:text="我们坚持做最真实的交友，最安全的约会"
+        android:textColor="@color/text_color_949494"
+        android:textSize="32px" />
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="94px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="85px"
+        android:paddingRight="85px">
+
+        <ImageView
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:src="@drawable/appoint_video_icon"
+            app:layout_auto_baseheight="width" />
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40px"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="头像、视频认证"
+                android:textColor="@color/text_color_3c4144"
+                android:textSize="36px"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16px"
+                android:maxLines="1"
+                android:text="为真实和安全作保障"
+                android:textColor="@color/text_color_949494"
+                android:textSize="28px" />
+
+
+        </com.zhy.autolayout.AutoLinearLayout>
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="85px"
+        android:paddingRight="85px">
+
+        <ImageView
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:src="@drawable/appoint_user_info_icon"
+            app:layout_auto_baseheight="width" />
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40px"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="完善的个人资料"
+                android:textColor="@color/text_color_3c4144"
+                android:textSize="36px"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16px"
+                android:maxLines="1"
+                android:text="多一点了解也就多一份可能"
+                android:textColor="@color/text_color_949494"
+                android:textSize="28px" />
+
+
+        </com.zhy.autolayout.AutoLinearLayout>
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="85px"
+        android:paddingRight="85px">
+
+        <ImageView
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:src="@drawable/appoint_user_info_icon"
+            app:layout_auto_baseheight="width" />
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40px"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="匹配度"
+                android:textColor="@color/text_color_3c4144"
+                android:textSize="36px"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16px"
+                android:maxLines="1"
+                android:text="彼此适合的开始，为你推荐"
+                android:textColor="@color/text_color_949494"
+                android:textSize="28px" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8px"
+                android:maxLines="1"
+                android:text="最理想的Ta"
+                android:textColor="@color/text_color_949494"
+                android:textSize="28px" />
+
+
+        </com.zhy.autolayout.AutoLinearLayout>
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <Button
+        android:id="@+id/next_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35px"
+        android:layout_marginRight="35px"
+        android:layout_marginTop="106px"
+        android:background="@drawable/corners_orange_selected_style"
+        android:gravity="center"
+        android:text="@string/start_appoint_but"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="32px" />
+
+</com.zhy.autolayout.AutoLinearLayout>

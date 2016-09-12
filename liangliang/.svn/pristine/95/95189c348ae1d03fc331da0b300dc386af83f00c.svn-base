@@ -1,0 +1,64 @@
+package cn.chono.yopper.data;
+
+import cn.chono.yopper.smack.entity.EntityBase;
+
+import com.lidroid.xutils.db.annotation.Column;
+import com.lidroid.xutils.db.annotation.NoAutoIncrement;
+import com.lidroid.xutils.db.annotation.Table;
+
+/**
+ * 附近列表保存十条的数量对象
+ * 
+ * @ClassName: NearestDataBD
+ * @Description:TODO(这里用一句话描述这个类的作用)
+ * @author: xianbin.zou
+ * @date: 2015年4月3日 上午9:28:32
+ * 
+ */
+@Table(name = "BumpDataBD")
+public class BumpDataBD extends EntityBase{
+
+	@Column(column = "data")
+	private String data;
+	
+	@Column(column = "UserId")
+	@NoAutoIncrement()
+	private int UserId;
+	
+	
+	@Column(column = "time")
+	private long time;
+
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.data = data;
+	}
+
+	@Override
+	public String toString() {
+		return "BumpDataBD [data=" + data + ", UserId=" + UserId + ", time="
+				+ time + "]";
+	}
+
+	public int getUserId() {
+		return UserId;
+	}
+
+	public void setUserId(int userId) {
+		UserId = userId;
+	}
+	
+	
+
+}

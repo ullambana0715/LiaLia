@@ -1,0 +1,153 @@
+package cn.chono.yopper.activity.find;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Parcelable;
+import android.text.format.DateUtils;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.lang.ref.WeakReference;
+import java.util.Calendar;
+import java.util.Date;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.adapter.ClimbingListAdapter;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+
+/**
+ * Created by yangjinyu on 16/2/25.
+ */
+public class ClimbingListActivity extends Activity implements View.OnClickListener{
+
+    public static final int MESSAGE_CLIMBING_TIMER = 1;
+
+    XRefreshView mXRefreshView;
+    ListView mClimbingListView;
+    ClimbingListAdapter mAdapter;
+    TextView mClimbingTimer;
+    TextView mClimbingInfo;
+    String mClimbingTimerText;
+    String temp;
+    int mClimbingSeason;
+    int mDayLeft;
+    int mHourLeft;
+    int mMinuteLeft;
+    int mSecondLeft;
+
+    boolean isOnRefresh;
+    boolean isOnLoadMore;
+
+
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case MESSAGE_CLIMBING_TIMER:
+                    Calendar c = Calendar.getInstance();
+                    mDayLeft = 7 - c.get(Calendar.DAY_OF_WEEK)+1;
+                    mHourLeft = 24 - c.getTime().getHours();
+                    mMinuteLeft = 60 - c.getTime().getMinutes();
+                    mSecondLeft = 60- c.getTime().getSeconds();
+                    if(mDayLeft > 1){
+                        temp = getResources().getString(R.string.climbing_list_timer_day);
+                        mClimbingTimerText = String.format(temp, mClimbingSeason,mDayLeft);
+                    }else if(mHourLeft > 1){
+                        temp = getResources().getString(R.string.climbing_list_timer_hour);
+                        mClimbingTimerText = String.format(temp, mClimbingSeason, mHourLeft, mMinuteLeft);
+                    }else if(mMinuteLeft > 1){
+                        temp = getResources().getString(R.string.climbing_list_timer_minute);
+                        mClimbingTimerText = String.format(temp, mClimbingSeason, mMinuteLeft, mSecondLeft);
+                    }else if(mSecondLeft > 1){
+                        temp = getResources().getString(R.string.climbing_list_timer_second);
+                        mClimbingTimerText = String.format(temp, mClimbingSeason, mSecondLeft);
+                    }
+                    mClimbingTimer.setText(mClimbingTimerText);
+                    System.out.println("mSecondsLeft:" + mSecondLeft);
+
+                    mHandler.sendEmptyMessageDelayed(MESSAGE_CLIMBING_TIMER, 1000);
+                    mAdapter.updateSpecificItemByPosition(mClimbingListView,2,mSecondLeft);
+                    break;
+            }
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.climbing_list_activity);
+        mClimbingTimer = (TextView)findViewById(R.id.climbing_timer);
+        mXRefreshView = (XRefreshView)findViewById(R.id.climbing_list_xrefreshview);
+        mClimbingListView = (ListView)findViewById(R.id.climbing_list);
+        mClimbingInfo = (TextView)findViewById(R.id.climbing_info);
+        mClimbingInfo.setOnClickListener(this);
+        initXRefreshView();
+        mAdapter = new ClimbingListAdapter(this);
+        mClimbingListView.setAdapter(mAdapter);
+        mHandler.sendEmptyMessage(MESSAGE_CLIMBING_TIMER);
+    }
+
+    public void initXRefreshView(){
+        mXRefreshView.setSlienceLoadMore();
+        mXRefreshView.setAutoLoadMore(false);
+        mXRefreshView.setPinnedTime(1000);
+        mXRefreshView.setMoveForHorizontal(true);
+        mXRefreshView.setCustomHeaderView(new CustomHeaderAnim(this));
+        mXRefreshView.setXRefreshViewListener(new XRefreshView.SimpleXRefreshListener() {
+            @Override
+            public void onRefresh() {
+                super.onRefresh();
+                if(isOnRefresh){
+                    return;
+                }
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        isOnRefresh = true;
+                        System.out.println("Climbing List Refresh");
+                        mXRefreshView.stopRefresh();
+                    }
+                });
+            }
+
+            @Override
+            public void onLoadMore(boolean isSilence) {
+                super.onLoadMore(isSilence);
+                if(isOnLoadMore){
+                    return;
+                }
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        isOnLoadMore = true;
+                        System.out.println("Climbing List LoadMore");
+                        mXRefreshView.stopLoadMore();
+                    }
+                });
+            }
+        });
+
+    }
+        @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+//        Parcelable listState = mClimbingListView.onSaveInstanceState();
+//            mClimbingListView.onRestoreInstanceState(listState);
+
+        mHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if(id == mClimbingInfo.getId()){
+            System.out.println("OnClick");
+        }
+    }
+}

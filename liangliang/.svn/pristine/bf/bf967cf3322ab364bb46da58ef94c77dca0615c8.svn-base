@@ -1,0 +1,128 @@
+package cn.chono.yopper.Service.Http.DaingsNearest;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class DaingsNearestBean extends ParameterBean {
+
+
+    private double lat;
+    private double lng;
+    private int Sex;
+    private int Type;
+    private int Sort;
+    private int start;
+    private String city;
+    private int horoscope;
+    private int relationship;
+    private int ageMax;
+    private int ageMin;
+    private int daysOffset;
+    private int time;
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public int getSex() {
+        return Sex;
+    }
+
+    public void setSex(int sex) {
+        Sex = sex;
+    }
+
+    public int getType() {
+        return Type;
+    }
+
+    public void setType(int type) {
+        Type = type;
+    }
+
+    public int getSort() {
+        return Sort;
+    }
+
+    public void setSort(int sort) {
+        Sort = sort;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public int getHoroscope() {
+        return horoscope;
+    }
+
+    public void setHoroscope(int horoscope) {
+        this.horoscope = horoscope;
+    }
+
+    public int getAgeMax() {
+        return ageMax;
+    }
+
+    public void setAgeMax(int ageMax) {
+        this.ageMax = ageMax;
+    }
+
+    public int getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(int relationship) {
+        this.relationship = relationship;
+    }
+
+    public int getAgeMin() {
+        return ageMin;
+    }
+
+    public void setAgeMin(int ageMin) {
+        this.ageMin = ageMin;
+    }
+
+    public int getDaysOffset() {
+        return daysOffset;
+    }
+
+    public void setDaysOffset(int daysOffset) {
+        this.daysOffset = daysOffset;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+}

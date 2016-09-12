@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/video_commit_success_bg"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.9"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="提交成功"
+            android:textColor="@color/color_3a4245"
+            android:textSize="22.4sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal"
+            android:text="我们将在24小时之内完成审核"
+            android:textColor="@color/color_939393"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="通过后你将获得以下特权"
+            android:textColor="@color/color_939393"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <ImageView
+            android:id="@+id/video_commit_success_sex_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/video_commit_success_man" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="0.15" />
+
+
+            <Button
+                android:id="@+id/video_commit_success_finish_tv"
+                android:layout_width="0dp"
+                android:layout_weight="0.85"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/corners_orange_selected_style"
+                android:gravity="center"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp"
+                android:text="完成"
+                android:textColor="@drawable/font_selected_style_ffffff"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="0.15" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.75" />
+    </LinearLayout>
+
+</LinearLayout>

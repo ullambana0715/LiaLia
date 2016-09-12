@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+
+              android:orientation="horizontal">
+
+    <Space
+        android:id="@+id/item_user_info_space"
+        android:layout_width="15dp"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/item_user_info_dating_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shadow"
+        android:paddingBottom="5dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="5dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/item_user_info_dating_type_iv"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"/>
+
+                <TextView
+                    android:id="@+id/item_user_info_dating_title_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="50dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textColor="@color/color_333333"
+
+
+                    android:textSize="15sp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="75dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:id="@+id/item_user_info_dating_address_iv"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:background="@drawable/appoint_item_address_icon"/>
+
+                        <TextView
+                            android:id="@+id/item_user_info_dating_address_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/color_b2b2b2"
+
+
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:id="@+id/item_user_info_dating_time_iv"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:background="@drawable/appoint_item_time_icon"/>
+
+                        <TextView
+                            android:id="@+id/item_user_info_dating_time_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+
+
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/color_b2b2b2"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:id="@+id/item_user_info_dating_content_iv"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:background="@drawable/white_bg_ff_circle"/>
+
+                        <TextView
+                            android:id="@+id/item_user_info_dating_content_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:ellipsize="end"
+
+
+                            android:singleLine="true"
+                            android:textColor="@color/color_b2b2b2"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/item_user_info_dating_image_iv"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_alignParentRight="true"/>
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/item_user_info_dating_tv_interested_talk"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:layout_below="@+id/view_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/ff7462_border_corners_ffffff_selected_style"
+                android:gravity="center"
+                android:text="@string/interested_talk"
+                android:textColor="@color/color_ff7462"
+                android:textSize="14sp"
+                android:visibility="visible"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <Space
+        android:id="@+id/item_user_info_space_right"
+
+        android:layout_width="15dp"
+        android:layout_height="match_parent"/>
+</LinearLayout>

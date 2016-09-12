@@ -1,0 +1,39 @@
+package cn.chono.yopper.Service.Http.ApointValidJoin;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+
+public class AppointMentsValidJoinService extends HttpService {
+
+    public AppointMentsValidJoinService(Context context) {
+        super(context);
+    }
+
+    private AppointMentsValidJoinBean joinBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = RespBean.class;
+
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("join", joinBean.isJoin());
+
+        String url = HttpURL.appointments_comment + joinBean.getId() + "/valid";
+
+        callWrap = OKHttpUtils.put(context, url, map, okHttpListener);
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        joinBean = (AppointMentsValidJoinBean) iBean;
+    }
+}

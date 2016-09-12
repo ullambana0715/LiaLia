@@ -1,0 +1,198 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.VisitorsDto;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.TimeUtil;
+
+public class UserVisitorsAdapter extends RecyclerView.Adapter<UserVisitorsAdapter.NewViewHolder> {
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position, int userID);
+
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
+
+    private BitmapPool mPool;
+    private CropCircleTransformation transformation;
+
+    private Context context;
+
+    private List<VisitorsDto> list;
+
+    public UserVisitorsAdapter(Context context) {
+        this.context = context;
+
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+    }
+
+    public void setData(List<VisitorsDto> list) {
+        this.list = list;
+    }
+
+    public List<VisitorsDto> getData() {
+        return list;
+    }
+
+    public class NewViewHolder extends RecyclerView.ViewHolder {
+
+        private ImageView user_visitor_head_img_iv;
+
+        private ImageView user_visitor_isnew_iv;
+
+        private ImageView user_visitor_video_iv;
+
+        private TextView user_visitor_sex_constellation_tv;
+
+        private TextView user_visitor_name_tv;
+
+        private TextView user_visitor_time_tv;
+
+
+        public NewViewHolder(View itemView) {
+            super(itemView);
+
+
+            user_visitor_head_img_iv = (ImageView) itemView.findViewById(R.id.user_visitor_head_img_iv);
+
+            user_visitor_isnew_iv = (ImageView) itemView.findViewById(R.id.user_visitor_isnew_iv);
+
+            user_visitor_video_iv = (ImageView) itemView.findViewById(R.id.user_visitor_video_iv);
+
+            user_visitor_sex_constellation_tv = (TextView) itemView.findViewById(R.id.user_visitor_sex_constellation_tv);
+
+            user_visitor_name_tv = (TextView) itemView.findViewById(R.id.user_visitor_name_tv);
+
+            user_visitor_time_tv = (TextView) itemView.findViewById(R.id.user_visitor_time_tv);
+
+
+        }
+    }
+
+
+    @Override
+    public NewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_visitors_item_layout, parent,false);
+        return new NewViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(final NewViewHolder holder, final int position) {
+
+
+        final VisitorsDto dto = list.get(position);
+
+        String url = dto.getUser().getHeadImg();
+        String imageurl = ImgUtils.DealImageUrl(url, YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+
+        Glide.with(context).load(imageurl).bitmapTransform(transformation).dontAnimate().into(holder.user_visitor_head_img_iv);
+
+        if (dto.isNew()) {
+            holder.user_visitor_isnew_iv.setVisibility(View.VISIBLE);
+        } else {
+            holder.user_visitor_isnew_iv.setVisibility(View.GONE);
+        }
+
+
+
+        String name = dto.getUser().getName();
+
+        String nameStr="";
+
+
+        if (!TextUtils.isEmpty(name)){
+            int length=name.length();
+            if (length>9){
+                nameStr=name.substring(0, 8) + "...";
+            }else{
+                nameStr=name;
+            }
+
+
+
+        }
+
+        holder.user_visitor_name_tv.setText(nameStr);
+
+        if (dto.getUser().getSex() == 1) {
+            //男性
+            holder.user_visitor_sex_constellation_tv.setBackgroundResource(R.drawable.discover_male_bg);
+        } else {
+            //女性
+            holder.user_visitor_sex_constellation_tv.setBackgroundResource(R.drawable.discover_female_bg);
+        }
+
+        if (((dto.getUser().getStatus() >> 1) & 1) == 0) {
+            //视频不通过
+            holder.user_visitor_video_iv.setVisibility(View.GONE);
+        } else {
+            holder.user_visitor_video_iv.setVisibility(View.VISIBLE);
+        }
+
+
+
+        holder.user_visitor_sex_constellation_tv.setText(CheckUtil.ConstellationMatching(dto.getUser().getHoroscope()));
+
+        long time = ISO8601.getTime(dto.getLastVisitTime());
+        String timeStr = TimeUtil.normalTimeFormat(time);
+        holder.user_visitor_time_tv.setText(timeStr + "看过你");
+
+//		holder.praiseNumberTv.setText(list.get(position).getUv() + "");
+//
+//		long time = ISO8601.getTime(list.get(position).getUpdateTime());
+//		String timeStr = TimeUtil.LivelyTimeFormat(time);
+//		String location_str = CheckUtil.getSpacingTool(list.get(position).getDistance());
+//		String location_time_tv = timeStr + "|" + location_str;
+//
+//		holder.locationNumberTv.setText(location_time_tv);
+
+        if (mOnItemClickLitener != null) {
+            holder.user_visitor_head_img_iv.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnItemClickLitener.onItemClick(holder.user_visitor_head_img_iv, position, dto.getUser().getId());
+                }
+            });
+        }
+
+
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemCount() {
+        return list == null ? 0 : list.size();
+    }
+
+
+}

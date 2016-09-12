@@ -1,0 +1,175 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.SelectOneAlbumTypeAdapter;
+import cn.chono.yopper.adapter.SelectOneAlbumTypeAdapter.OnItemClickLitener;
+import cn.chono.yopper.photo.OneAlbumHelper;
+import cn.chono.yopper.photo.OneImageBucket;
+import cn.chono.yopper.photo.OneImageItem;
+import cn.chono.yopper.photo.OneImageSelectedDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.DialogUtil;
+
+public class SelectOneAlbumTypeActivity extends MainFrameActivity implements
+        OnItemClickLitener {
+
+    private RecyclerView recyclerView;
+
+    private SelectOneAlbumTypeAdapter adapter;
+
+    private OneAlbumHelper _helper;
+
+    private ProgressDialog mProgressDialog;
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            mProgressDialog.dismiss();
+
+            adapter.notifyDataSetChanged();
+
+            if (OneImageSelectedDto.dataList == null || OneImageSelectedDto.dataList.size() == 0) {
+                DialogUtil.showDisCoverNetToast(SelectOneAlbumTypeActivity.this, "无外部存储或外部存储异常未取到图片");
+            }
+        }
+    };
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.album_type_activity);
+        initView();
+
+        getphotoData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("注册上传头像或选择照片相册页"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("注册上传头像或选择照片相册页"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 组件初始化
+     */
+    private void initView() {
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        // recyclerView.addItemDecoration(new
+        // DividerItemDecoration(this,LinearLayoutManager.VERTICAL,
+        // R.drawable.album_type_itme_icon));
+
+        adapter = new SelectOneAlbumTypeAdapter(this);
+        recyclerView.setAdapter(adapter);
+        adapter.setOnItemClickLitener(this);
+
+        getBtnGoBack().setVisibility(View.INVISIBLE);
+        TextView textView = gettvOption();
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(R.string.screen_cancel);
+        textView.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                OneImageSelectedDto.dataList = new ArrayList<OneImageBucket>();
+                OneImageSelectedDto.imageList = new ArrayList<OneImageItem>();
+                //				Bundle bundle = new Bundle();
+                //				bundle.putString(YpSettings.PHOTO_PATH, null);
+                //
+                //				setResult(YpSettings.FLAG_MODIFY_FINISH_SELECT_ONE);
+                OneImageSelectedDto.select_image_path = "";
+                OneImageSelectedDto.select_image_w = 0;
+                OneImageSelectedDto.select_image_h = 0;
+                finish();
+            }
+        });
+        // 设置标题栏
+        getTvTitle().setText(R.string.text_photo_tv);
+    }
+
+
+    private void getphotoData() {
+
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            DialogUtil.showDisCoverNetToast(SelectOneAlbumTypeActivity.this, "无外部存储");
+            return;
+        }
+
+        // 显示进度条
+        mProgressDialog = ProgressDialog.show(this, null, "正在加载...");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                _helper = OneAlbumHelper.getHelper();
+                _helper.init(getApplicationContext());
+                OneImageSelectedDto.dataList = _helper.getImagesBucketList(false);
+
+                mHandler.sendEmptyMessage(0x110);
+
+            }
+        }).start();
+
+
+    }
+
+
+    @Override
+    public void onItemClick(View view, int position, OneImageBucket imageBucket,
+                            List<OneImageItem> imageList) {
+
+        OneImageSelectedDto.imageList = imageList;
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(YpSettings.PHOTO_TAG, YpSettings.PHOTO_TYPE);
+        bundle.putString(YpSettings.PHOTO_TAG_NMAE, imageBucket.bucketName);
+        ActivityUtil.jump(SelectOneAlbumTypeActivity.this, SelectOneAlbumActivity.class, bundle, 0, 100);
+        finish();
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            OneImageSelectedDto.dataList = new ArrayList<OneImageBucket>();
+            OneImageSelectedDto.imageList = new ArrayList<OneImageItem>();
+            //			Bundle bundle = new Bundle();
+            //			bundle.putString(YpSettings.PHOTO_PATH, null);
+            //
+            //			setResult(YpSettings.FLAG_MODIFY_FINISH_SELECT_ONE);
+            OneImageSelectedDto.select_image_path = "";
+            OneImageSelectedDto.select_image_w = 0;
+            OneImageSelectedDto.select_image_h = 0;
+            finish();
+        }
+        return true;
+    }
+}

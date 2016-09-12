@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="top"
+    android:background="@color/color_ffffff"
+    android:gravity="top|center"
+
+    >
+
+    <WebView
+        android:id="@+id/simple_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true"
+        android:scrollbars="none"
+        android:layout_marginBottom="20dp"
+         />
+
+    <include layout="@layout/on_net_layout" />
+
+    <TextView
+        android:id="@+id/localhost_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="正在加载..."
+        android:background="@color/color_ffffff"
+        android:textColor="@color/color_b2b2b2"
+        android:textSize="15dp"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/corners_ff7462_top_style"
+        android:id="@+id/signup"
+        android:text="报名"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:visibility="gone"/>
+
+
+</FrameLayout>

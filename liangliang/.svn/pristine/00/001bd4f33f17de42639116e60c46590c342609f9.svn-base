@@ -1,0 +1,220 @@
+package cn.chono.yopper.view;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.view.wheel.AbstractWheelTextAdapter;
+import cn.chono.yopper.view.wheel.OnWheelChangedListener;
+import cn.chono.yopper.view.wheel.OnWheelScrollListener;
+import cn.chono.yopper.view.wheel.WheelView;
+
+/**
+ * Created by SQ on 2015/12/22.
+ */
+public class CityZareaWheelDialog extends  Dialog{
+
+    private OnSelectedListener onSelectedListener;
+
+    private WheelView city_wheel;
+    private WheelView zarea_wheel;
+//    private ArrayList<String> cityList;
+
+    private ArrayList<String> zarealist;
+
+
+    private int maxsize = 24;
+    private int minsize = 14;
+    private Map<String,ArrayList<String>> mCitisDatasMap = new HashMap<String, ArrayList<String>>();
+
+    private AddressTextAdapter cityAdapter;
+    private AddressTextAdapter zareaAdapter;
+
+    private String select_city="";
+    private String select_zarea="";
+
+    public CityZareaWheelDialog(final Context context, OnSelectedListener listener, ArrayList<String> citylist, Map<String,ArrayList<String>> map) {
+        super(context, R.style.dialog_BOT_style);
+        onSelectedListener = listener;
+        View view =   LayoutInflater.from(context).inflate(R.layout.dating_filter_wheel_layout, null);
+        city_wheel=(WheelView) view.findViewById(R.id.dating_filter_wheel);
+        zarea_wheel=(WheelView) view.findViewById(R.id.dating_filter_wheel_two);
+        zarea_wheel.setVisibility(View.VISIBLE);
+
+//        cityList=citylist;
+        mCitisDatasMap=map;
+
+
+
+        Window window = getWindow();
+        window.setGravity(Gravity.BOTTOM);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        setCancelable(true);
+        setCanceledOnTouchOutside(true);
+        setContentView(view);
+
+//        setContentView(view);
+//        setWidth(LinearLayout.LayoutParams.MATCH_PARENT);
+//        setHeight(LayoutParams.WRAP_CONTENT);
+//        setBackgroundDrawable(new ColorDrawable(-00000));
+//        setOutsideTouchable(true);
+//        setFocusable(true);
+
+
+        cityAdapter = new AddressTextAdapter(context, citylist, 0, maxsize, minsize);
+        city_wheel.setVisibleItems(5);
+        city_wheel.setViewAdapter(cityAdapter);
+        city_wheel.setCurrentItem(0);
+        select_city=citylist.get(0);
+        zarealist = mCitisDatasMap.get(select_city);
+
+
+        zareaAdapter = new AddressTextAdapter(context, zarealist, 0, maxsize, minsize);
+        zarea_wheel.setVisibleItems(5);
+        zarea_wheel.setViewAdapter(zareaAdapter);
+        zarea_wheel.setCurrentItem(0);
+
+        city_wheel.addChangingListener(new OnWheelChangedListener() {
+
+            @Override
+            public void onChanged(WheelView wheel, int oldValue, int newValue) {
+                // TODO Auto-generated method stub
+                String currentText = (String) cityAdapter.getItemText(wheel.getCurrentItem());
+                select_city = currentText;
+                setTextviewSize(currentText, cityAdapter);
+                zarealist = mCitisDatasMap.get(currentText);
+                select_zarea=zarealist.get(0);
+                zareaAdapter = new AddressTextAdapter(context, zarealist, 0, maxsize, minsize);
+                zarea_wheel.setVisibleItems(5);
+                zarea_wheel.setViewAdapter(zareaAdapter);
+                zarea_wheel.setCurrentItem(0);
+            }
+        });
+
+        city_wheel.addScrollingListener(new OnWheelScrollListener() {
+
+            @Override
+            public void onScrollingStarted(WheelView wheel) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onScrollingFinished(WheelView wheel) {
+                // TODO Auto-generated method stub
+                String currentText = (String) cityAdapter.getItemText(wheel.getCurrentItem());
+                setTextviewSize(currentText, cityAdapter);
+                onSelectedListener.onSelectedListener(select_city,select_zarea);
+//                edit_hometown_provinces_tv.setText(strProvince + " " + strCity);
+            }
+        });
+
+
+        zarea_wheel.addChangingListener(new OnWheelChangedListener() {
+
+            @Override
+            public void onChanged(WheelView wheel, int oldValue, int newValue) {
+                // TODO Auto-generated method stub
+                String currentText = (String) zareaAdapter.getItemText(wheel.getCurrentItem());
+                select_zarea = currentText;
+                setTextviewSize(currentText, zareaAdapter);
+            }
+        });
+
+        zarea_wheel.addScrollingListener(new OnWheelScrollListener() {
+
+            @Override
+            public void onScrollingStarted(WheelView wheel) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onScrollingFinished(WheelView wheel) {
+                // TODO Auto-generated method stub
+                String currentText = (String) zareaAdapter.getItemText(wheel.getCurrentItem());
+                select_zarea=currentText;
+                setTextviewSize(currentText, zareaAdapter);
+//                edit_hometown_provinces_tv.setText(strProvince + " " + strCity);
+                onSelectedListener.onSelectedListener(select_city,select_zarea);
+            }
+        });
+
+
+    }
+
+
+    public interface  OnSelectedListener{
+        public void onSelectedListener(String cityStr, String zareaStr);
+    }
+
+    private class AddressTextAdapter extends AbstractWheelTextAdapter {
+        ArrayList<String> list;
+
+        protected AddressTextAdapter(Context context, ArrayList<String> list, int currentItem, int maxsize, int minsize) {
+            super(context, R.layout.item_birth_year, NO_RESOURCE, currentItem, maxsize, minsize);
+            this.list = list;
+            setItemTextResource(R.id.tempValue);
+        }
+
+        @Override
+        public View getItem(int index, View cachedView, ViewGroup parent) {
+            View view = super.getItem(index, cachedView, parent);
+            return view;
+        }
+
+        @Override
+        public int getItemsCount() {
+            return list.size();
+        }
+
+        @Override
+        protected CharSequence getItemText(int index) {
+            return list.get(index) + "";
+        }
+    }
+
+
+
+
+    /**
+     *
+     *
+     * 设置字体大小
+     *
+     * @param curriteItemText
+     * @param adapter
+     */
+    public void setTextviewSize(String curriteItemText, AddressTextAdapter adapter) {
+        ArrayList<View> arrayList = adapter.getTestViews();
+        int size = arrayList.size();
+        String currentText;
+        for (int i = 0; i < size; i++) {
+            TextView textvew = (TextView) arrayList.get(i);
+            currentText = textvew.getText().toString();
+            if (curriteItemText.equals(currentText)) {
+                textvew.setTextSize(24);
+            } else {
+                textvew.setTextSize(14);
+            }
+        }
+    }
+
+
+
+
+}

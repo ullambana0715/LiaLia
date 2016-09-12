@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/select_entry_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_registered_bg"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="224px"
+        android:src="@drawable/login_registered_icon"
+        app:layout_auto_basewidth="height" />
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34px"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_hi"
+            android:textColor="@color/text_color_797286"
+            android:textSize="34px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_on_a_date"
+            android:textColor="@color/text_color_797286"
+            android:textSize="32px" />
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <Button
+        android:id="@+id/register_but"
+        android:layout_width="match_parent"
+        android:layout_height="94px"
+        android:layout_marginLeft="35px"
+        android:layout_marginRight="35px"
+        android:layout_marginTop="350px"
+        android:background="@drawable/corners_white_selected_style"
+        android:gravity="center"
+        android:text="@string/register"
+        android:textColor="@drawable/font_selected_style_695e7e"
+        android:textSize="32px" />
+
+    <Button
+        android:id="@+id/login_but"
+        android:layout_width="match_parent"
+        android:layout_height="94px"
+        android:layout_marginLeft="35px"
+        android:layout_marginRight="35px"
+        android:layout_marginTop="32px"
+        android:background="@drawable/white_border_corners_transparent_selected_style"
+        android:gravity="center"
+        android:text="@string/login"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="32px" />
+
+
+</com.zhy.autolayout.AutoLinearLayout>

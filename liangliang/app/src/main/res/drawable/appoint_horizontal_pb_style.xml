@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!--  设置背景色图像资源  hor_bar_bg  hor_bar_progress  ecf4f2  ff735d-->
+
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="28px" />
+
+            <gradient
+                android:angle="0"
+                android:centerColor="#d5e3e3"
+                android:centerY="0.75"
+                android:endColor="#d5e3e3"
+                android:startColor="#d5e3e3" />
+        </shape>
+    </item>
+
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <corners android:radius="28px" />
+
+                <gradient
+                    android:angle="0"
+                    android:endColor="#ff735d"
+                    android:startColor="#ff735d" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

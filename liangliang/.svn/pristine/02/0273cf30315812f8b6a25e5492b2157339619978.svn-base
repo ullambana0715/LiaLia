@@ -1,0 +1,76 @@
+package cn.chono.yopper.data;
+
+public class AppointLocation {
+
+	private int id;
+	private double lat;
+	private double lng;
+	private String name;
+	private int city;
+	private String address;
+	private boolean  isFeatured;
+	private int score;
+	private int status;
+	
+	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public double getLat() {
+		return lat;
+	}
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+	public double getLng() {
+		return lng;
+	}
+	public void setLng(double lng) {
+		this.lng = lng;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getCity() {
+		return city;
+	}
+	public void setCity(int city) {
+		this.city = city;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public boolean isFeatured() {
+		return isFeatured;
+	}
+	public void setFeatured(boolean isFeatured) {
+		this.isFeatured = isFeatured;
+	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+ 
+	
+	
+
+    
+}

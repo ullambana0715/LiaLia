@@ -1,0 +1,155 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.lidroid.xutils.util.LogUtils;
+
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.Banners.BannersSubBanners;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.SharedprefUtil;
+
+/**
+ * Created by cc on 16/2/23.
+ */
+public class FindGridViewAdapter extends BaseAdapter {
+
+
+
+    private FindAdapter.OnItemGridViewClickListener onItemGridViewClickListener;
+
+    public void setOnItemGridViewClickListener(FindAdapter.OnItemGridViewClickListener onItemGridViewClickListener) {
+        this.onItemGridViewClickListener = onItemGridViewClickListener;
+    }
+
+    public FindGridViewAdapter(Context context) {
+        this.context = context;
+    }
+
+
+    private Context context;
+
+    private List<BannersSubBanners> subBanners;
+
+    public List<BannersSubBanners> getSubBanners() {
+        return subBanners;
+    }
+
+    public void setSubBanners(List<BannersSubBanners> subBanners) {
+        this.subBanners = subBanners;
+    }
+
+    @Override
+    public int getCount() {
+
+
+        return subBanners == null ? 0 : subBanners.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return subBanners.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    private HolderView holderView;
+
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+
+        if (null == convertView) {
+            holderView = new HolderView();
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.find_gridview_context_layout, parent, false);
+
+            holderView.find_gridview_context_icon = (ImageView) convertView.findViewById(R.id.find_gridview_context_icon);
+            holderView.find_gridview_context_name_tv = (TextView) convertView.findViewById(R.id.find_gridview_context_name_tv);
+            holderView.find_gridview_prompt_view = convertView.findViewById(R.id.find_gridview_prompt_view);
+            holderView.find_gridview_context_tv = (TextView) convertView.findViewById(R.id.find_gridview_context_tv);
+            holderView.find_gridview_dividing_line_view = convertView.findViewById(R.id.find_gridview_dividing_line_view);
+
+
+            convertView.setTag(holderView);
+        } else {
+            holderView = (HolderView) convertView.getTag();
+        }
+
+        final BannersSubBanners banners = subBanners.get(position);
+
+        String Url = banners.getIconUrl();
+        String iconUrl = ImgUtils.DealImageUrl(Url,
+                YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+
+        Glide.with(context).load(iconUrl).into(holderView.find_gridview_context_icon);
+
+        if (!TextUtils.isEmpty(banners.getName())) {
+            holderView.find_gridview_context_name_tv.setText(banners.getName());
+        }
+
+        if (!TextUtils.isEmpty(banners.getDescription())) {
+            holderView.find_gridview_context_tv.setText(banners.getDescription());
+        }
+        boolean isNew=SharedprefUtil.getBoolean(context,banners.getBannerId(),false);
+
+        if(isNew){
+            holderView.find_gridview_prompt_view.setVisibility(View.VISIBLE);
+        }else{
+            holderView.find_gridview_prompt_view.setVisibility(View.GONE);
+        }
+
+        if ((position % 2 )== 0) {
+            holderView.find_gridview_dividing_line_view.setVisibility(View.VISIBLE);
+        } else {
+            holderView.find_gridview_dividing_line_view.setVisibility(View.INVISIBLE);
+        }
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (null !=onItemGridViewClickListener){
+                    onItemGridViewClickListener.onItemGridViewClick(position,banners);
+                }
+
+            }
+        });
+
+
+
+
+
+        return convertView;
+    }
+
+
+    private class HolderView {
+
+
+        private ImageView find_gridview_context_icon;
+
+
+        private TextView find_gridview_context_name_tv;
+
+        private View find_gridview_prompt_view;
+
+        private TextView find_gridview_context_tv;
+
+        private View find_gridview_dividing_line_view;
+
+
+    }
+}

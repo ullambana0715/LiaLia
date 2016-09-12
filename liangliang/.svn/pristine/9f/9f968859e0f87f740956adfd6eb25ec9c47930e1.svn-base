@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ffffff_rectangle"
+        android:orientation="vertical">
+
+        <com.zhy.autolayout.AutoLinearLayout
+
+            android:id="@+id/find_context_packet_title_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14px">
+
+            <View
+                android:layout_width="3px"
+                android:layout_height="match_parent"
+                android:background="@color/text_color_ff7462" />
+
+            <TextView
+
+                android:id="@+id/find_context_packet_title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12px"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text=""
+                android:textColor="@color/text_color_b2b2b2"
+                android:textSize="22px"
+
+                />
+
+
+        </com.zhy.autolayout.AutoLinearLayout>
+
+        <cn.chono.yopper.view.MyGridView
+
+            android:id="@+id/find_context_gridview"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12px"
+            android:listSelector="@android:color/transparent"
+            android:numColumns="2">
+
+        </cn.chono.yopper.view.MyGridView>
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+</com.zhy.autolayout.AutoLinearLayout>

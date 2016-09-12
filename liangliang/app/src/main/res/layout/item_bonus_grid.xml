@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bonus_item_layout"
+    android:layout_width="165dp"
+    android:layout_height="150dip"
+    android:background="@color/color_ffffff"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/bonus_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apple Watch"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/color_333333"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/bonus_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/bonus_name"
+        android:layout_below="@id/bonus_name"
+        android:layout_marginTop="7dip"
+        android:text="价值 : 8888"
+        android:textColor="@color/color_9a9a9a"
+        android:textSize="10sp" />
+
+    <ImageView
+        android:id="@+id/bonus_img"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:layout_below="@id/bonus_value"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/bonus_expired" />
+
+
+    <TextView
+        android:id="@+id/bonus_exchanage_btn"
+        android:layout_width="65dp"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/address_manager_btn_bg"
+        android:gravity="center"
+        android:text="20000苹果"
+        android:textSize="10sp" />
+
+</RelativeLayout>

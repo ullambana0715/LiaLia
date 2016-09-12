@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CircleLayout">
+        <attr name="radiuss" format="dimension"/>
+        <attr name="offset" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="SelectableRoundedImageView">
+        <attr name="sriv_left_top_corner_radius" format="dimension"/>
+        <attr name="sriv_right_top_corner_radius" format="dimension"/>
+        <attr name="sriv_left_bottom_corner_radius" format="dimension"/>
+        <attr name="sriv_right_bottom_corner_radius" format="dimension"/>
+        <attr name="sriv_border_width" format="dimension"/>
+        <attr name="sriv_border_color" format="color"/>
+        <attr name="sriv_oval" format="boolean"/>
+        <attr name="android:scaleType"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="TagFlowLayout">
+        <attr name="multi_suppout" format="boolean"/>
+        <attr name="max_select" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="SwitchButton">
+
+        <attr name="kswThumbDrawable" format="reference"/>
+
+        <attr name="kswThumbColor" format="color|reference"/>
+
+        <attr name="kswThumbMargin" format="dimension|reference"/>
+
+        <attr name="kswThumbMarginTop" format="dimension|reference"/>
+
+        <attr name="kswThumbMarginBottom" format="dimension|reference"/>
+
+        <attr name="kswThumbMarginLeft" format="dimension|reference"/>
+
+        <attr name="kswThumbMarginRight" format="dimension|reference"/>
+
+        <attr name="kswThumbWidth" format="dimension|reference"/>
+
+        <attr name="kswThumbHeight" format="dimension|reference"/>
+
+        <attr name="kswThumbRadius" format="dimension|reference"/>
+
+        <attr name="kswBackRadius" format="dimension|reference"/>
+
+        <attr name="kswBackDrawable" format="reference"/>
+
+        <attr name="kswBackColor" format="color|reference"/>
+
+        <attr name="kswFadeBack" format="boolean"/>
+
+        <attr name="kswBackMeasureRatio" format="float"/>
+
+        <attr name="kswAnimationDuration" format="integer"/>
+
+        <attr name="kswTintColor" format="color|reference"/>
+
+    </declare-styleable>
+
+
+    <declare-styleable name="ProgressBarView">
+
+        <!-- 进度条的背景色 -->
+        <attr name="outside_round_color" format="color"/>
+
+        <!-- 进度条View的大小 -->
+        <attr name="outside_round_width" format="dimension"/>
+
+        <!-- 进度条的%进度的颜色-->
+        <attr name="outside_round_progress_color" format="color"/>
+
+        <!-- 进度条的样式，0表示空心。1表示实心 -->
+        <attr name="outside_round_progress_style">
+            <enum name="STROKE" value="0"></enum>
+            <enum name="FILL" value="1"></enum>
+        </attr>
+
+        <!-- 进度条背景圆环的样式，0表示空心。1表示实心 -->
+        <attr name="outside_round_style">
+            <enum name="STROKE" value="0"></enum>
+            <enum name="FILL" value="1"></enum>
+        </attr>
+        <!-- 中间显示百分比%的颜色 -->
+        <attr name="textColor" format="color"/>
+        <!-- 中间显示百分比%的字体大小 -->
+        <attr name="textSize" format="dimension"/>
+        <!-- 中间显示百分比% 显否显示-->
+        <attr name="textIsDisplayable" format="boolean"></attr>
+
+        <!-- 中间提示方案的颜色 -->
+        <attr name="promptTextColor" format="color"/>
+        <!-- 中间提示方案的大小 -->
+        <attr name="promptTextSize" format="dimension"/>
+        <!-- 中间提示方案的是否显示 -->
+        <attr name="promptTextIsDisplayable" format="boolean"></attr>
+
+        <!-- 进度条内框与外框的间矩  -->
+        <attr name="inside_round_moment_from" format="dimension"/>
+
+        <!--  进度条内框与外框有间矩的背景色 -->
+        <attr name="inside_round_color" format="color"/>
+        <!-- 百分比与提示文字 的矩离 -->
+        <attr name="prompt_text_moment_from" format="dimension"/>
+
+
+
+    </declare-styleable>
+    <declare-styleable name="HorizontalListView">
+        <attr name="dividerWidth" format="dimension"/>
+        <attr name="android:divider"/>
+        <attr name="android:requiresFadingEdge"/>
+        <attr name="android:fadingEdgeLength"/>
+    </declare-styleable>
+
+
+    <declare-styleable name = "dashedline">
+        <attr name = "lineColor" format= "color" />
+    </declare-styleable >
+
+
+    <!--旅行的意义-->
+    <string-array name="travel_significance_lable">
+
+        <item>说走就走的旅行</item>
+        <item>走近自然</item>
+        <item>徒步旅行</item>
+        <item>快乐骑行</item>
+        <item>欢乐自驾游</item>
+        <item>周末结伴游</item>
+        <item>有行程找驴友</item>
+        <item>去购物血拼</item>
+        <item>醉翁之意不在酒</item>
+
+    </string-array>
+    <!--希望与偏好-->
+    <string-array name="like_preferences_lable">
+
+        <item>星级酒店/私人沙滩 躺在沙发上喝喝红酒看看书</item>
+        <item>少玩景点</item>
+        <item>享受慵懒假期</item>
+        <item>随心旅行</item>
+        <item>逛热门景点</item>
+        <item>我带着你你带着钱</item>
+        <item>沿途拍不停</item>
+
+
+    </string-array>
+
+
+    <!--结伴游玩-->
+    <string-array name="travel_destination_together_play">
+
+        <item>野餐烧烤</item>
+        <item>实弹射击</item>
+        <item>撕名牌</item>
+        <item>密室逃脱</item>
+        <item>游乐场</item>
+        <item>水世界</item>
+        <item>农家乐</item>
+        <item>摘草莓</item>
+        <item>钓鱼</item>
+        <item>沙滩</item>
+        <item>风洞飞行</item>
+        <item>爬山</item>
+        <item>漂流</item>
+        <item>徒步</item>
+        <item>泡温泉</item>
+        <item>［周边跟团游，地点可商议］</item>
+
+    </string-array>
+
+    <!--随心随行-->
+
+    <string-array name="travel_destination_xpress_accompanying">
+
+        <item>周末放松出游</item>
+        <item>平日错峰出游</item>
+        <item>［周边自助游，地点可商议］</item>
+        <item>［短途自驾游，地点可商议］</item>
+
+
+    </string-array>
+
+    <!--休闲互动-->
+
+    <string-array name="travel_destination_leisure_lnteractive">
+
+        <item>骑行</item>
+        <item>逛公园</item>
+        <item>划船</item>
+        <item>踏青</item>
+        <item>赏花</item>
+        <item>滑雪</item>
+        <item>戏水</item>
+        <item>当地自然风光</item>
+        <item>当地景点</item>
+        <item>摩登建筑</item>
+
+
+    </string-array>
+    <!--说走就走-->
+
+    <string-array name="travel_destination_stay_away">
+
+        <item>上海</item>
+        <item>北京</item>
+        <item>广州</item>
+        <item>深圳</item>
+        <item>杭州</item>
+        <item>千岛湖</item>
+        <item>厦门</item>
+        <item>南京</item>
+        <item>成都</item>
+        <item>重庆</item>
+        <item>青岛</item>
+        <item>桂林</item>
+        <item>张家界</item>
+        <item>九寨沟</item>
+        <item>西藏</item>
+        <item>大理</item>
+        <item>凤凰</item>
+        <item>丽江</item>
+        <item>三亚</item>
+        <item>珠海</item>
+        <item>澳门</item>
+        <item>香港</item>
+        <item>台湾</item>
+        <item>日本</item>
+        <item>韩国</item>
+        <item>泰国</item>
+        <item>越南</item>
+        <item>新加坡</item>
+        <item>帕劳</item>
+
+
+    </string-array>
+    <!--悠长假期-->
+
+    <string-array name="travel_destination_long_vacation">
+
+        <item>巴厘岛</item>
+        <item>济州岛</item>
+        <item>普吉岛</item>
+        <item>苏梅岛</item>
+        <item>塞班岛</item>
+        <item>冲绳</item>
+        <item>斯里兰卡</item>
+        <item>爱琴海</item>
+
+
+    </string-array>
+    <!--梦幻之旅-->
+
+    <string-array name="travel_destination_dream">
+
+        <item>欧洲诸国游</item>
+        <item>欧洲一国深度游</item>
+        <item>美国</item>
+        <item>澳大利亚</item>
+        <item>印度</item>
+        <item>马尔代夫</item>
+        <item>巴西</item>
+        <item>阿根廷</item>
+        <item>加拿大</item>
+        <item>迪拜</item>
+
+
+    </string-array>
+
+
+    <!--出行方式-->
+
+    <string-array name="travel_the_way">
+
+        <item>往返双飞</item>
+        <item>动车高铁</item>
+        <item>游轮</item>
+        <item>自驾</item>
+        <item>大巴</item>
+        <item>骑行</item>
+
+
+    </string-array>
+
+    <!--费用男性-->
+
+    <string-array name="travel_male">
+
+        <item>我承担全部</item>
+        <item>AA</item>
+        <item>来回机票我承担</item>
+        <item>承担对方2000以内的费用</item>
+        <item>承担对方3000以内的费用</item>
+        <item>承担对方5000以内的费用</item>
+
+
+    </string-array>
+
+
+    <!--费用女性-->
+
+    <string-array name="travel_female">
+
+        <item>我承担全部</item>
+        <item>AA</item>
+        <item>希望男方买单</item>
+        <item>你丑你买单</item>
+        <item>我胸大你承担</item>
+        <item>剪刀石头布</item>
+
+    </string-array>
+
+    <!--运动-->
+
+    <string-array name="movement">
+
+        <item>健身</item>
+        <item>羽毛球</item>
+        <item>网球</item>
+        <item>游泳</item>
+        <item>保龄球</item>
+        <item>高尔夫</item>
+        <item>瑜伽</item>
+        <item>桌球</item>
+        <item>舞蹈</item>
+        <item>乒乓球</item>
+        <item>射箭</item>
+        <item>骑马</item>
+        <item>射击</item>
+        <item>攀岩</item>
+        <item>卡丁车</item>
+        <item>蹦极</item>
+
+    </string-array>
+
+    <!--选择邀约类型-->
+
+    <string-array name="movement_thmem">
+
+        <item>逛街购物</item>
+        <item>摄影</item>
+        <item>看海</item>
+        <item>钓鱼</item>
+        <item>开车兜风</item>
+        <item>看车展</item>
+        <item>聊人生理想</item>
+        <item>看日出日落</item>
+        <item>拍创意照片</item>
+        <item>探讨某一话题</item>
+        <item>草地上看书</item>
+
+
+    </string-array>
+
+    <!--选择犬种-->
+
+    <string-array name="dog_thmem">
+
+        <item>大型犬</item>
+        <item>中型犬</item>
+        <item>小型犬</item>
+        <item>幼犬</item>
+        <item>牧羊犬</item>
+        <item>工作犬</item>
+        <item>运动犬</item>
+        <item>狩猎犬</item>
+        <item>梗犬</item>
+        <item>非运动犬</item>
+        <item>玩具犬</item>
+
+
+    </string-array>
+
+    <!--你想何时结婚-->
+
+    <string-array name="marry">
+
+        <item>希望三个月内结婚</item>
+        <item>希望一年内结婚</item>
+        <item>相处好就结婚</item>
+
+    </string-array>
+
+    <!--你的父母是否建在-->
+    <string-array name="parents">
+
+        <item>双亲健在</item>
+        <item>父亲健在</item>
+        <item>母亲健在</item>
+
+    </string-array>
+
+    <!--你是否独生子女-->
+
+    <string-array name="only_child">
+
+        <item>是</item>
+        <item>否</item>
+
+
+    </string-array>
+
+    <!--学历-->
+    <string-array name="educational_background">
+
+        <item>高中</item>
+        <item>中专</item>
+        <item>大专</item>
+        <item>本科</item>
+        <item>双学士</item>
+        <item>硕士</item>
+        <item>博士</item>
+        <item>博士后</item>
+
+
+    </string-array>
+
+    <!--既往恋爱史-->
+    <string-array name="romance">
+
+        <item>有过一次恋爱经历</item>
+        <item>有过两次恋爱经历</item>
+        <item>有过三次恋爱经历</item>
+        <item>有过多次恋爱经历</item>
+        <item>恋爱啥滋味</item>
+    </string-array>
+
+    <!--有无婚史-->
+    <string-array name="marital_history">
+
+        <item>无</item>
+        <item>有</item>
+
+    </string-array>
+
+    <!--有无子女-->
+    <string-array name="have_children">
+
+        <item>无</item>
+        <item>有</item>
+        <item>有/孩子跟我</item>
+        <item>有/孩子跟我父母</item>
+        <item>孩子跟对方</item>
+
+    </string-array>
+
+    <!--健康自评-->
+    <string-array name="health">
+
+        <item>身体极好</item>
+        <item>一切正常</item>
+        <item>有点亚健康</item>
+        <item>有时候有些小毛病</item>
+        <item>目前不太好</item>
+
+    </string-array>
+
+    <!--婚后住房-->
+    <string-array name="housing">
+
+        <item>家乡有房，但在工作地租住</item>
+        <item>计划购买，双方共担</item>
+        <item>计划购买，我独自承担</item>
+        <item>已购房产</item>
+        <item>父母住房</item>
+        <item>单位配房</item>
+
+    </string-array>
+
+    <!--身高　-->
+    <string-array name="height">
+
+        <item>150cm</item>
+        <item>151cm</item>
+        <item>152cm</item>
+        <item>153cm</item>
+        <item>154cm</item>
+        <item>155cm</item>
+        <item>156cm</item>
+        <item>157cm</item>
+        <item>159cm</item>
+        <item>159cm</item>
+
+        <item>160cm</item>
+        <item>161cm</item>
+        <item>162cm</item>
+        <item>163cm</item>
+        <item>164cm</item>
+        <item>165cm</item>
+        <item>166cm</item>
+        <item>167cm</item>
+        <item>168cm</item>
+        <item>169cm</item>
+
+        <item>170cm</item>
+        <item>171cm</item>
+        <item>172cm</item>
+        <item>173cm</item>
+        <item>174cm</item>
+        <item>175cm</item>
+        <item>176cm</item>
+        <item>177cm</item>
+        <item>178cm</item>
+        <item>179cm</item>
+
+        <item>180cm</item>
+        <item>181cm</item>
+        <item>182cm</item>
+        <item>183cm</item>
+        <item>184cm</item>
+        <item>185cm</item>
+        <item>186cm</item>
+        <item>187cm</item>
+        <item>188cm</item>
+        <item>189cm</item>
+
+        <item>190cm</item>
+        <item>191cm</item>
+        <item>192cm</item>
+        <item>193cm</item>
+        <item>194cm</item>
+        <item>195cm</item>
+        <item>196cm</item>
+        <item>197cm</item>
+        <item>198cm</item>
+        <item>199cm</item>
+
+
+        <item>200cm</item>
+        <item>201cm</item>
+        <item>202cm</item>
+        <item>203cm</item>
+        <item>204cm</item>
+        <item>205cm</item>
+        <item>206cm</item>
+        <item>207cm</item>
+        <item>208cm</item>
+        <item>209cm</item>
+
+        <item>210cm</item>
+        <item>211cm</item>
+        <item>212cm</item>
+        <item>213cm</item>
+        <item>214cm</item>
+        <item>215cm</item>
+        <item>216cm</item>
+        <item>217cm</item>
+        <item>218cm</item>
+        <item>219cm</item>
+
+        <item>220cm</item>
+        <item>221cm</item>
+        <item>222cm</item>
+        <item>223cm</item>
+        <item>224cm</item>
+        <item>225cm</item>
+        <item>226cm</item>
+        <item>227cm</item>
+        <item>228cm</item>
+        <item>229cm</item>
+
+
+    </string-array>
+    <!--体重-->
+    <string-array name="body_weight">
+
+        <item>30kg</item>
+        <item>31kg</item>
+        <item>32kg</item>
+        <item>33kg</item>
+        <item>34kg</item>
+        <item>35kg</item>
+        <item>36kg</item>
+        <item>37kg</item>
+        <item>38kg</item>
+        <item>39kg</item>
+
+        <item>40kg</item>
+        <item>41kg</item>
+        <item>42kg</item>
+        <item>43kg</item>
+        <item>44kg</item>
+        <item>45kg</item>
+        <item>46kg</item>
+        <item>47kg</item>
+        <item>48kg</item>
+        <item>49kg</item>
+
+
+        <item>50kg</item>
+        <item>51kg</item>
+        <item>52kg</item>
+        <item>53kg</item>
+        <item>54kg</item>
+        <item>55kg</item>
+        <item>56kg</item>
+        <item>57kg</item>
+        <item>58kg</item>
+        <item>59kg</item>
+
+
+        <item>60kg</item>
+        <item>61kg</item>
+        <item>62kg</item>
+        <item>63kg</item>
+        <item>64kg</item>
+        <item>65kg</item>
+        <item>66kg</item>
+        <item>67kg</item>
+        <item>68kg</item>
+        <item>69kg</item>
+
+
+        <item>70kg</item>
+        <item>71kg</item>
+        <item>72kg</item>
+        <item>73kg</item>
+        <item>74kg</item>
+        <item>75kg</item>
+        <item>76kg</item>
+        <item>77kg</item>
+        <item>78kg</item>
+        <item>79kg</item>
+
+
+        <item>80kg</item>
+        <item>81kg</item>
+        <item>82kg</item>
+        <item>83kg</item>
+        <item>84kg</item>
+        <item>85kg</item>
+        <item>86kg</item>
+        <item>87kg</item>
+        <item>88kg</item>
+        <item>89kg</item>
+
+        <item>80kg</item>
+        <item>81kg</item>
+        <item>82kg</item>
+        <item>83kg</item>
+        <item>84kg</item>
+        <item>85kg</item>
+        <item>86kg</item>
+        <item>87kg</item>
+        <item>88kg</item>
+        <item>89kg</item>
+
+        <item>90kg</item>
+        <item>91kg</item>
+        <item>92kg</item>
+        <item>93kg</item>
+        <item>94kg</item>
+        <item>95kg</item>
+        <item>96kg</item>
+        <item>97kg</item>
+        <item>98kg</item>
+        <item>99kg</item>
+
+        <item>100kg</item>
+        <item>101kg</item>
+        <item>102kg</item>
+        <item>103kg</item>
+        <item>104kg</item>
+        <item>105kg</item>
+        <item>106kg</item>
+        <item>107kg</item>
+        <item>108kg</item>
+        <item>109kg</item>
+
+        <item>110kg</item>
+        <item>111kg</item>
+        <item>112kg</item>
+        <item>113kg</item>
+        <item>114kg</item>
+        <item>115kg</item>
+        <item>116kg</item>
+        <item>117kg</item>
+        <item>118kg</item>
+        <item>119kg</item>
+
+        <item>120kg</item>
+        <item>121kg</item>
+        <item>122kg</item>
+        <item>123kg</item>
+        <item>124kg</item>
+        <item>125kg</item>
+        <item>126kg</item>
+        <item>127kg</item>
+        <item>128kg</item>
+        <item>129kg</item>
+
+        <item>130kg</item>
+        <item>131kg</item>
+        <item>132kg</item>
+        <item>133kg</item>
+        <item>134kg</item>
+        <item>135kg</item>
+        <item>136kg</item>
+        <item>137kg</item>
+        <item>138kg</item>
+        <item>139kg</item>
+
+        <item>140kg</item>
+        <item>141kg</item>
+        <item>142kg</item>
+        <item>143kg</item>
+        <item>144kg</item>
+        <item>145kg</item>
+        <item>146kg</item>
+        <item>147kg</item>
+        <item>148kg</item>
+        <item>149kg</item>
+
+    </string-array>
+
+
+    <!--月收入-->
+    <string-array name="monthly_income">
+
+        <item>3000以下</item>
+        <item>3000以上</item>
+        <item>5000以上</item>
+        <item>10000以上</item>
+        <item>20000以上</item>
+        <item>50000以上</item>
+
+
+    </string-array>
+
+
+    <!--职业-->
+    <string-array name="occupation">
+
+        <item>职业经理人</item>
+        <item>私营企业主</item>
+        <item>中层管理者</item>
+        <item>高校学生</item>
+        <item>公司职员</item>
+        <item>工程师</item>
+        <item>军人</item>
+        <item>警察</item>
+        <item>医生</item>
+        <item>护士</item>
+        <item>空乘</item>
+        <item>航空公司</item>
+        <item>演艺人员</item>
+        <item>模特</item>
+        <item>教师</item>
+        <item>国企工作者</item>
+        <item>机关工作者</item>
+        <item>媒体工作者</item>
+        <item>互联网从业者</item>
+        <item>风险投资人</item>
+
+    </string-array>
+
+    <!--饮酒-->
+    <string-array name="drinking">
+
+        <item>经常饮酒</item>
+        <item>偶尔小酌</item>
+        <item>不会喝酒</item>
+        <item>偶尔饮葡萄酒</item>
+        <item>会喝一些啤酒</item>
+        <item>会喝一点</item>
+        <item>喜欢白酒</item>
+        <item>喜欢洋酒</item>
+        <item>喜欢啤酒</item>
+        <item>喜欢自酿酒</item>
+        <item>心情不好时喝</item>
+        <item>聚会应酬时喝</item>
+
+    </string-array>
+    <!--寄语-->
+    <string-array name="send_message">
+
+        <item>当你带倦容归来，推开家门，闻到厨房饭香。。。</item>
+        <item>当我真的想结婚时，才知长相不重要，心才重要！希望你也一样</item>
+        <item>花这么多时间填资料，我容易么我。。。</item>
+        <item>不再期许绚丽爱情，只盼与君共筑温馨小家</item>
+        <item>如果注定有一个软件让我认识你，那你就出现在这里吧！</item>
+        <item>不求富贵荣华，但愿平平淡淡，与君共度此生！</item>
+        <item>如果来得及，今年我们一起过年〜〜</item>
+        <item>我没有很好的物质条件，但我会真心对你好，让你不后悔选择一个基貌不扬的我。</item>
+        <item>走，见我妈去</item>
+
+
+    </string-array>
+
+
+    <!--订单评价-->
+    <string-array name="order_evaluation">
+
+        <item>很准时</item>
+        <item>很贴心</item>
+        <item>很耐心</item>
+        <item>知心姐姐</item>
+        <item>暖暖地</item>
+        <item>测得很准</item>
+        <item>解答详细</item>
+        <item>正能量</item>
+
+    </string-array>
+    <!--投诉反馈-->
+    <string-array name="feedback">
+
+        <item>占卜师没有在约定时间出现</item>
+        <item>占卜师未经商量结束了服务</item>
+        <item>其他问题（请在下方详细描述）</item>
+
+
+    </string-array>
+
+
+    <declare-styleable name="PullScrollView">
+        <attr name="header" format="reference" />
+        <attr name="headerHeight" format="dimension" />
+        <attr name="headerVisibleHeight" format="dimension" />
+    </declare-styleable>
+
+</resources>

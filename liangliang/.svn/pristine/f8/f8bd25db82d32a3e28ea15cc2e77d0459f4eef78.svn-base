@@ -1,0 +1,30 @@
+package cn.chono.yopper.Service.Http.Campaigns;
+
+import android.content.Context;
+
+import cn.chono.yopper.Service.Http.Banners.BannersRespBean;
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+/**
+ * Created by cc on 16/2/23.
+ */
+public class CampaignsService extends HttpService {
+    public CampaignsService(Context context) {
+        super(context);
+    }
+
+    @Override
+    public void enqueue() {
+        OutDataClass = CampaignsRespBean.class;
+
+        callWrap = OKHttpUtils.get(context, HttpURL.campaigns, okHttpListener);
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+
+    }
+}

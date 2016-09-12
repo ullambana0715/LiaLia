@@ -1,0 +1,7 @@
+include ':app', ':autolayout'
+include ':OkHttp'
+include ':xrefreshview'
+include ':OneSDK'
+include ':VideoTrimActivity'
+include ':StickyRecyclerview'
+

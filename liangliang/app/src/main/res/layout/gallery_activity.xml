@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <cn.chono.yopper.view.viewpager.HackyViewPager
+            android:id="@+id/constellation_viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000" >
+        </cn.chono.yopper.view.viewpager.HackyViewPager>
+    </RelativeLayout>
+
+    <!-- 头部布局 -->
+
+    <LinearLayout
+        android:id="@+id/frame_titlelayout"
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <!-- 返回按钮 -->
+
+        <LinearLayout
+            android:id="@+id/frame_btnGoBack_container"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="0dip"
+            android:gravity="left|center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/frame_btnGoBack"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:gravity="center"
+                android:paddingLeft="0dip"
+                android:paddingRight="10dip"
+                android:src="@drawable/icon_go_back"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/frame_tvTitle_layout"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip" >
+
+            <!-- 页面标题 -->
+
+            <TextView
+                android:id="@+id/main_frame_tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/color_ffffff"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/frame_btnOption_containers"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <ImageView
+                android:id="@+id/frame_btnOption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/album_icon_no"
+                android:visibility="visible" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/completeTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:padding="10dp"
+            android:text="完成"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/numberTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/completeTv"
+            android:padding="10dp"
+            android:text=""
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

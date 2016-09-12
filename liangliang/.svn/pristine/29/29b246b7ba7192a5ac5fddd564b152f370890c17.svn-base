@@ -1,0 +1,56 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+public class Bubble implements Serializable{
+
+	private int total;
+	private String content;
+	private String imageUrl;
+	private int id;
+
+	private String addressName;
+
+
+	public String getAddressName() {
+		return addressName;
+	}
+	public void setAddressName(String addressName) {
+		this.addressName = addressName;
+	}
+
+
+
+	public int getTotal() {
+		return total;
+	}
+	public void setTotal(int total) {
+		this.total = total;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getImageUrl() {
+		return imageUrl;
+	}
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	@Override
+	public String toString() {
+		return "Bubble [tatal=" + total + ", content=" + content
+				+ ", imageUrl=" + imageUrl + ", id=" + id + "]";
+	}
+
+
+}

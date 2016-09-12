@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="false" >
+
+    <!-- 旋转 -->
+
+    <rotate
+        android:duration="530"
+        android:fromDegrees="-52"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toDegrees="0" />
+
+    <!-- 移动 -->
+
+    <translate
+        android:duration="530"
+        android:fromXDelta="-343"
+        android:fromYDelta="163"
+        android:toXDelta="0"
+        android:toYDelta="0" />
+
+    <!-- 放大 -->
+
+    <scale
+        android:duration="530"
+        android:fromXScale="1.170"
+        android:fromYScale="1.170"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.0"
+        android:toYScale="1.0" />
+
+</set>

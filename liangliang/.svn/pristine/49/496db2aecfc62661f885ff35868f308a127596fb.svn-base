@@ -1,0 +1,299 @@
+package cn.chono.yopper.activity.near;
+
+import android.app.Dialog;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.GridView;
+import android.widget.TextView;
+
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.AlbumAdapter;
+import cn.chono.yopper.adapter.AlbumAdapter.OnItemClickLitener;
+import cn.chono.yopper.photo.AlbumHelper;
+import cn.chono.yopper.photo.ImageBucket;
+import cn.chono.yopper.photo.ImageItem;
+import cn.chono.yopper.photo.ImageSelectedDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.DialogUtil;
+
+public class AlbumActivity extends MainFrameActivity implements
+        OnClickListener, OnItemClickLitener {
+
+    private TextView _browseTv;
+    private TextView _completeTv;
+    private TextView _numberTv;
+
+    private AlbumAdapter adapter;
+
+    private AlbumHelper _helper;
+
+    private final int _TAB_NUMBER = 0;
+
+    private TextView _Title;
+
+    private GridView gridView;
+
+    private Dialog imgdialog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.album_activity);
+        PushAgent.getInstance(this).onAppStart();
+        initView();// 组件初始化
+        Bundle bundle = getIntent().getExtras();
+        judgeFromObject(bundle);
+    }
+
+    private void judgeFromObject(Bundle bundle) {
+        int fromObject = bundle.getInt(YpSettings.PHOTO_TAG);
+        switch (fromObject) {
+            case YpSettings.PHOTO_BUBBLING:
+                photo();
+                break;
+            case YpSettings.PHOTO_TYPE:
+                String name = bundle.getString(YpSettings.PHOTO_TAG_NMAE);
+                _Title.setText(name);
+
+                adapter.notifyDataSetChanged();
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("选择相册图片"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+        if (ImageSelectedDto.selectedList.size() == 0) {
+            _numberTv.setText("");
+        } else {
+            _numberTv.setText(ImageSelectedDto.selectedList.size() + "");
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("选择相册图片"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 组件初始化
+     */
+    private void initView() {
+
+        gridView = (GridView) findViewById(R.id.gridView);
+        _browseTv = (TextView) findViewById(R.id.browseTv);
+        _completeTv = (TextView) findViewById(R.id.completeTv);
+        _numberTv = (TextView) findViewById(R.id.numberTv);
+
+        _browseTv.setOnClickListener(this);
+        _completeTv.setOnClickListener(this);
+
+        adapter = new AlbumAdapter(this);
+        gridView.setAdapter(adapter);
+        adapter.setOnItemClickLitener(this);
+        _Title = getTvTitle();
+        _Title.setText("选择相片");
+
+        TextView rightTv = gettvOption();
+        rightTv.setVisibility(View.VISIBLE);
+        rightTv.setText("取消");
+        getOptionLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ImageSelectedDto.dataList = new ArrayList<ImageBucket>();
+                ImageSelectedDto.imageList = new ArrayList<ImageItem>();
+                ImageSelectedDto.selectedList = new ArrayList<ImageItem>();
+
+                setResult(YpSettings.FLAG_MODIFY_FINISH);
+                finish();
+
+            }
+        });
+
+        getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Bundle bundle = new Bundle();
+
+                ActivityUtil.jump(AlbumActivity.this, AlbumTypeActivity.class, bundle, 0, 200);
+                finish();
+//				ActivityUtil.overridePendingTransition(AlbumActivity.this,
+//						R.anim.in_from_left, R.anim.out_to_right);
+
+            }
+        });
+    }
+
+    private void photo() {
+        _helper = AlbumHelper.getHelper();
+        _helper.init(getApplicationContext());
+        ImageSelectedDto.dataList = _helper.getImagesBucketList(false);
+
+        int listSize = 0;
+        for (int i = 0; i < ImageSelectedDto.dataList.size(); i++) {
+            int imageListSize = ImageSelectedDto.dataList.get(i).imageList
+                    .size();
+            if (listSize < imageListSize) {
+                listSize = imageListSize;
+                ImageSelectedDto.imageList = ImageSelectedDto.dataList.get(i).imageList;
+            }
+
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.browseTv:// 预览
+
+//                if (ImageSelectedDto.selectedList != null
+//                        && ImageSelectedDto.selectedList.size() > 0) {
+//                    Bundle bundle = new Bundle();
+//
+//                    bundle.putInt(YpSettings.PHOTO_GALLERY_TAG, 0);
+//                    bundle.putInt(YpSettings.PHOTO_TAG_LIST,
+//                            YpSettings.PHOTO_TAG_LIST_ONE);
+//                    ActivityUtil.jump(AlbumActivity.this, GalleryActivity.class,
+//                            bundle, 0, 100);
+//                } else {
+//                    DialogUtil.showDisCoverNetToast(AlbumActivity.this, "请选择图片");
+//                }
+
+                break;
+            case R.id.completeTv:// 完成
+                ImageSelectedDto.okselectedList
+                        .addAll(ImageSelectedDto.selectedList);
+
+                ImageSelectedDto.dataList = new ArrayList<ImageBucket>();
+                ImageSelectedDto.imageList = new ArrayList<ImageItem>();
+                ImageSelectedDto.selectedList = new ArrayList<ImageItem>();
+
+                setResult(YpSettings.FLAG_MODIFY_FINISH);
+                finish();
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onIsSelectedItemClick(View view, int position,boolean isSelected, ImageItem imageItem) {
+        if (ImageSelectedDto.selectedList.size() > ImageSelectedDto.maximum
+                - ImageSelectedDto.okselectedList.size()) {
+            Message message = Message.obtain(_mHandler, _TAB_NUMBER);
+            message.sendToTarget();
+            return;
+        }
+
+        if (ImageSelectedDto.selectedList.contains(imageItem)) {
+
+            ImageSelectedDto.selectedList.remove(imageItem);
+
+            if (ImageSelectedDto.selectedList.size() == 0) {
+                _numberTv.setText("");
+            } else {
+                _numberTv.setText(ImageSelectedDto.selectedList.size() + "");
+            }
+            adapter.notifyDataSetChanged();
+
+        } else {
+
+            if (ImageSelectedDto.selectedList.size() >= ImageSelectedDto.maximum - ImageSelectedDto.okselectedList.size()) {
+                Message message = Message.obtain(_mHandler, _TAB_NUMBER);
+                message.sendToTarget();
+                return;
+            }
+            if (imageItem.h >= 300 || imageItem.w >= 300) {
+                LogUtils.e("W=" + imageItem.w + "====H=" + imageItem.h);
+                ImageSelectedDto.selectedList.add(imageItem);
+                if (ImageSelectedDto.selectedList.size() == 0) {
+                    _numberTv.setText("");
+                } else {
+                    _numberTv.setText(ImageSelectedDto.selectedList.size() + "");
+                }
+                adapter.notifyDataSetChanged();
+            } else {
+                imgdialog = DialogUtil.createHintOperateDialog(AlbumActivity.this, "", "你选择的图片尺寸过小", "", "确认", imgbackCallListener);
+                if (!isFinishing()) {
+                    imgdialog.show();
+                }
+            }
+
+        }
+    }
+
+    private BackCallListener imgbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                imgdialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                imgdialog.dismiss();
+            }
+
+        }
+    };
+
+
+    @Override
+    public void onItemClick(View view, int position) {
+//        Bundle bundle = new Bundle();
+//        bundle.putInt(YpSettings.PHOTO_GALLERY_TAG, position);
+//        bundle.putInt(YpSettings.PHOTO_TAG_LIST, YpSettings.PHOTO_TAG_LIST_ADD);
+//        ActivityUtil.jump(AlbumActivity.this, GalleryActivity.class, bundle, 0, 100);
+
+
+    }
+
+    Handler _mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case _TAB_NUMBER:
+
+                    DialogUtil.showDisCoverNetToast(
+                            AlbumActivity.this,
+                            "最多只能选择"
+                                    + (ImageSelectedDto.maximum - ImageSelectedDto.okselectedList
+                                    .size()) + "张图片");
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    };
+}

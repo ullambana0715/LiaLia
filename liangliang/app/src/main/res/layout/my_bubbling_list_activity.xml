@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_e3e3e3"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_ffffff"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/my_bubble_back_layout"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|left"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/icon_go_back" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/my_bubble_title_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="我的冒泡"
+            android:textColor="@color/color_000000"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/my_bubble_option_layout"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="2dp"
+            android:paddingTop="2dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/bubbling_icon" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ViewStub
+        android:id="@+id/my_bubble_error_network_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_network_layout" />
+
+    <ViewStub
+        android:id="@+id/my_bubble_error_location_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_location_layout" />
+
+    <ViewStub
+        android:id="@+id/my_bubble_error_no_data_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_no_data_layout" />
+
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/my_bubble_xrefreshview_View"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/my_bubble_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_ffffff"
+            ></android.support.v7.widget.RecyclerView>
+    </com.andview.refreshview.XRefreshView>
+
+</LinearLayout>

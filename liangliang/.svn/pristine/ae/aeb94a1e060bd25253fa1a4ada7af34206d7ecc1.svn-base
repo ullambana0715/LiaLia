@@ -1,0 +1,296 @@
+package cn.chono.yopper.activity.bump;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.adapter.BumpWinAdapter;
+import cn.chono.yopper.data.BaseUser;
+import cn.chono.yopper.data.BumpPoll;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.view.MiListView;
+import cn.chono.yopper.wxapi.WeixinUtils;
+
+public class BumpWinActivity extends MainFrameActivity implements
+        OnClickListener {
+
+    /**
+     * 碰成功的确认
+     */
+    private TextView affirm_tv;
+    /**
+     * 碰成功的炫耀
+     */
+    private TextView share_tv;
+
+    /**
+     * 碰成功的头像
+     */
+    private ImageView bump_icon;
+    /**
+     * 碰成功的name
+     */
+    private TextView name;
+    /**
+     * 碰成功的星座
+     */
+    private TextView constellation_bume;
+    /**
+     * 碰成功的P果
+     */
+    private TextView p_fruit;
+    /**
+     * 碰成功后的文本
+     */
+    private TextView bump_ok_friend_tv;
+    /**
+     * 碰成功后p果的布局
+     */
+    private LinearLayout p_fruit_layout;
+    /**
+     * 碰成功后奖品提示
+     */
+    private LinearLayout award_layout;
+    /**
+     * 碰成功的奖品列表
+     */
+    private ImageView nobumpdateIcon;
+    /**
+     * /** 碰成功的奖品列表
+     */
+    private MiListView listview;
+
+    private ScrollView scrollView;
+
+    private BumpWinAdapter adapter;
+    private List<BumpPoll.Rewards> list;
+
+    private boolean isStop = true;
+
+    private BumpPoll bumpPoll;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.bump_win_activtiy);
+        PushAgent.getInstance(this).onAppStart();
+        initView();
+        mPool = Glide.get(this).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+        initContent();
+        bumpPoll = (BumpPoll) getIntent().getExtras().getSerializable(
+                "BumpPoll");
+        if (bumpPoll != null) {
+            setBumpOKView(bumpPoll);
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        scrollView.post(new Runnable() {
+            // 防止布局自动定位
+            @Override
+            public void run() {
+                while (isStop) {
+                    scrollView.fullScroll(ScrollView.FOCUS_UP);
+                    isStop = false;
+                }
+            }
+        });
+        MobclickAgent.onPageStart("碰成功"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+        MobclickAgent.onPageEnd("碰成功"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    private void initView() {
+        getTitleLayout().setVisibility(View.GONE);
+
+        affirm_tv = (TextView) findViewById(R.id.affirm_tv);
+        share_tv = (TextView) findViewById(R.id.share_tv);
+        bump_icon = (ImageView) findViewById(R.id.bump_icon);
+        name = (TextView) findViewById(R.id.name);
+        constellation_bume = (TextView) findViewById(R.id.constellation_bume);
+        p_fruit = (TextView) findViewById(R.id.p_fruit);
+        bump_ok_friend_tv = (TextView) findViewById(R.id.bump_ok_friend_tv);
+        p_fruit_layout = (LinearLayout) findViewById(R.id.p_fruit_layout);
+        award_layout = (LinearLayout) findViewById(R.id.award_layout);
+        nobumpdateIcon = (ImageView) findViewById(R.id.nobumpdateIcon);
+        listview = (MiListView) findViewById(R.id.listview);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+
+        affirm_tv.setOnClickListener(this);
+        share_tv.setOnClickListener(this);
+
+    }
+
+    private void initContent() {
+        adapter = new BumpWinAdapter(this);
+        list = new ArrayList<BumpPoll.Rewards>();
+        adapter.setDatas(list);
+        listview.setAdapter(adapter);
+    }
+
+    @SuppressWarnings({"unchecked", "deprecation"})
+    private void setBumpOKView(BumpPoll bumpPoll) {
+        String url = bumpPoll.getBumpResult().getBumpFriend().getHeadImg();
+        String iconUrl = ImgUtils.DealImageUrl(url, 150, 150);
+
+        // 绑定数据
+        // imageLoader.displayImage(iconUrl,
+        // bump_icon,YPApplication.getDisplayImageOptions());
+        Glide.with(this).load(iconUrl).bitmapTransform(transformation).into(bump_icon);
+
+        name.setText(bumpPoll.getBumpResult().getBumpFriend().getName());
+
+        int sex = bumpPoll.getBumpResult().getBumpFriend().getSex();
+        Drawable iconDrawable = null;
+        switch (sex) {
+            case 1:// 男
+                iconDrawable = BumpWinActivity.this.getResources().getDrawable(
+                        R.drawable.male_icon);
+                // 这一步必须要做,否则不会显示.
+                iconDrawable.setBounds(0, 0, iconDrawable.getMinimumWidth(),
+                        iconDrawable.getMinimumHeight());
+                constellation_bume.setCompoundDrawables(iconDrawable, null, null,
+                        null);
+                constellation_bume.setBackgroundResource(R.drawable.male_bg);
+
+                break;// 女
+            case 2:
+
+                iconDrawable = BumpWinActivity.this.getResources().getDrawable(
+                        R.drawable.female_icon);
+                // 这一步必须要做,否则不会显示.
+                iconDrawable.setBounds(0, 0, iconDrawable.getMinimumWidth(),
+                        iconDrawable.getMinimumHeight());
+                constellation_bume.setCompoundDrawables(iconDrawable, null, null,
+                        null);
+                constellation_bume.setBackgroundResource(R.drawable.femal_bg);
+                break;
+
+            default:
+                break;
+        }
+
+        constellation_bume.setText(CheckUtil.ConstellationMatching(bumpPoll
+                .getBumpResult().getBumpFriend().getHoroscope()));
+
+        bump_ok_friend_tv.setText(bumpPoll.getBumpResult().getMsg());
+        if (bumpPoll.getBumpResult().getPointsGet() != 0) {
+            p_fruit_layout.setVisibility(View.VISIBLE);
+            p_fruit.setText("X" + bumpPoll.getBumpResult().getPointsGet());
+        } else {
+            p_fruit_layout.setVisibility(View.GONE);
+        }
+
+        if (bumpPoll.getBumpResult().getRewards().size() > 0) {
+            adapter.setDatas(bumpPoll.getBumpResult().getRewards());
+            adapter.notifyDataSetChanged();
+            nobumpdateIcon.setVisibility(View.GONE);
+            listview.setVisibility(View.VISIBLE);
+            award_layout.setVisibility(View.VISIBLE);
+
+        } else {
+            nobumpdateIcon.setVisibility(View.VISIBLE);
+            listview.setVisibility(View.GONE);
+            award_layout.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
+    public void finish() {
+
+        super.finish();
+
+//		overridePendingTransition(0, R.anim.out_to_bottom);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+
+            case R.id.affirm_tv:
+
+                finish();
+                break;
+            case R.id.share_tv:
+
+                BaseUser baseUser = null;
+                try {
+                    baseUser = YPApplication.getInstance().db.findFirst(Selector
+                            .from(BaseUser.class).where("id", " =",
+                                    YPApplication.loginUser.getUserId()));
+                } catch (DbException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                String imageUrl = "";
+                if (baseUser != null) {
+                    imageUrl = baseUser.getHeadImg();
+
+                }
+
+                String url = "http://www.yopper.cn/mobilesite/wxshare?uid="
+                        + YPApplication.loginUser.getUserId() + "&uid2="
+                        + bumpPoll.getBumpResult().getBumpFriend().getId();
+
+                // 微信朋友圈分享
+
+                if (WeixinUtils.isWeixinAvailable()) {
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+                            R.drawable.share_weixin_image);
+                    WeixinUtils.sendFriendTextAndPicture(
+                            "我刚刚认识了新“碰”友！手机碰一碰，神奇加好友，快来和我碰吧！",
+                            "我刚刚认识了新“碰”友！手机碰一碰，神奇加好友，快来和我碰吧！", imageUrl, url, bmp);
+
+                } else {
+                    // DialogUtil.showAlert(BumpWinActivity.this, "提示",
+                    // "您的手机没有安装微信!");
+                }
+
+                break;
+
+            default:
+                break;
+
+        }
+    }
+}

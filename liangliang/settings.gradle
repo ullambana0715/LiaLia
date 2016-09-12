@@ -1,0 +1,5 @@
+
+include ':app', ':carousel', ':Qupaisdk-release', ':MultiImageSelector'
+
+include ':autolayout'
+include ':OkHttp'

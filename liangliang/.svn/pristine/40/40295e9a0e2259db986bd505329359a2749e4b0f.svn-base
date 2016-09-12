@@ -1,0 +1,46 @@
+package cn.chono.yopper.Service.Http.SignUpManagement;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementMatchScore implements Serializable {
+
+    private int profile;
+    private int safety;
+    private int magic;
+    private int totalMatch;
+
+    public int getProfile() {
+        return profile;
+    }
+
+    public void setProfile(int profile) {
+        this.profile = profile;
+    }
+
+    public int getSafety() {
+        return safety;
+    }
+
+    public void setSafety(int safety) {
+        this.safety = safety;
+    }
+
+    public int getMagic() {
+        return magic;
+    }
+
+    public void setMagic(int magic) {
+        this.magic = magic;
+    }
+
+    public int getTotalMatch() {
+        return totalMatch;
+    }
+
+    public void setTotalMatch(int totalMatch) {
+        this.totalMatch = totalMatch;
+    }
+}

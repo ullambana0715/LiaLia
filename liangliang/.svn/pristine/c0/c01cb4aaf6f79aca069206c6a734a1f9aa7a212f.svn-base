@@ -1,0 +1,27 @@
+package cn.chono.yopper.Service.Http.SigUpTarget;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/12/31.
+ */
+public class SigUpTargetBean extends ParameterBean{
+    private String id;
+    private int  targetUserId;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getTargetUserId() {
+        return targetUserId;
+    }
+
+    public void setTargetUserId(int targetUserId) {
+        this.targetUserId = targetUserId;
+    }
+}

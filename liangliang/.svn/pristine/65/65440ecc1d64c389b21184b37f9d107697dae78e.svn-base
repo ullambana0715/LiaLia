@@ -1,0 +1,133 @@
+package cn.chono.yopper.utils;
+
+import java.util.ArrayList;
+
+import com.lidroid.xutils.util.LogUtils;
+
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+
+/**
+ * 
+ * @ClassName: SensorUtils
+ * @Description:传感器的处理数据工具类(这里用一句话描述这个类的作用)
+ * @author: xianbin.zou
+ * @date: 2015年3月6日 下午12:45:00
+ *
+ */
+public class SensorUtils {
+
+	private Context context;
+	private ArrayList<Double> arrayList;
+
+	public SensorUtils(Context context) {
+		this.context = context;
+		arrayList = new ArrayList<Double>();
+
+	}
+
+	/**
+	 * 数据源--上一个记录的值
+	 */
+	double former = 0.00;
+	/**
+	 * 经测算后是否碰撞成功的状态，默认为 false
+	 */
+	private boolean statu = false;
+
+	public ArrayList<Double> getArrayList() {
+		return arrayList;
+
+	}
+
+	public void setArrayList() {
+		arrayList = new ArrayList<Double>();
+	}
+
+	/**
+	 * 
+	 * @Title: getGyroscopData
+	 * @Description: 判断是否碰撞成功(这里用一句话描述这个方法的作用)
+	 * @param: @param data 帧数据
+	 * @param: @return
+	 * @return: boolean 返回ture,false,ture表示碰撞成功，则反之
+	 * @throws
+	 */
+	public boolean getGyroscopData(Double data) {
+
+		if (arrayList.size() > 40) {
+			arrayList.remove(0);
+		}
+
+		if (Math.abs(data - former) <= 0.8 ) {
+			arrayList.add(0.00);
+			former = 0.00;
+
+		} else {
+			arrayList.add(Math.abs(data));
+			former = data;
+		}
+
+		if (arrayList.size() < 40) {
+			statu = false;
+
+		} else {
+			/**
+			 * 记录次数
+			 */
+			int b = 0;
+			// 取数组最后10个判定
+			for (int i = arrayList.size() - 10; i < arrayList.size(); i++) {
+				if (arrayList.get(i) > 0) {
+					b++;
+
+				}
+
+			}
+			if (b > 0) {
+				statu = true;
+				return statu;
+
+			}
+			// 取数组长度-13条判定
+			for (int i = 0; i < 27; i++) {
+				if (arrayList.get(i) > 0) {
+					b++;
+
+				}
+
+			}
+			if (b > 0) {
+				statu = false;
+				return statu;
+
+			}
+			// 取数组最后13-10条判定
+			for (int i = 27; i < 30; i++) {
+
+				if (arrayList.get(i) > 0) {
+					b++;
+
+				}
+
+			}
+
+			if (b > 0 && b <= 3) {
+				statu = true;
+				return statu;
+
+			}
+
+		}
+
+		return statu;
+
+	}
+
+	public boolean getSatu() {
+		return statu;
+
+	}
+
+}

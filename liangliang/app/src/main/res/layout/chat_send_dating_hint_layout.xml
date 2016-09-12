@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="280dp"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_horizontal"
+              android:background="@drawable/chat_appoint_dialog_bg"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              android:paddingBottom="20dp">
+
+
+    <TextView
+        android:id="@+id/invite_dating_title_tv"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="邀请Ta报名我的约会"
+        android:textColor="@color/color_ff7462"
+        android:textSize="14sp"/>
+
+    <LinearLayout
+        android:id="@+id/invite_dating_add_layout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/invite_dating_no_data_tv"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="暂无邀约"
+        android:textColor="@color/color_999999"
+        android:textSize="15sp"/>
+
+
+    <TextView
+        android:id="@+id/invite_dating_join_me_tv"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="邀请Ta报名我的约会"
+        android:textColor="@color/color_ff7462"
+        android:textSize="14sp"/>
+
+
+</LinearLayout>

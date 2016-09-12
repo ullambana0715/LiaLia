@@ -1,0 +1,148 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+public class Bump implements Serializable{
+	private int total;
+	private String address;
+	private BumpFriend bumpFriend;
+
+
+
+	@Override
+	public String toString() {
+		return "Bump [total=" + total + ", address=" + address
+				+ ", bumpFriend=" + bumpFriend + "]";
+	}
+
+
+
+
+	public int getTotal() {
+		return total;
+	}
+
+
+
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+
+
+
+	public String getAddress() {
+		return address;
+	}
+
+
+
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+
+
+
+	public BumpFriend getBumpFriend() {
+		return bumpFriend;
+	}
+
+
+
+
+	public void setBumpFriend(BumpFriend bumpFriend) {
+		this.bumpFriend = bumpFriend;
+	}
+
+
+
+
+	public class BumpFriend implements Serializable{
+
+		private int  status;
+		private String	hashedPassword;
+		private String mobile;
+		private int id;
+		private String name;
+		private int horoscope;
+		private String headImg;
+		private int sex;
+		private String regTime;
+		private int cityCode;
+
+
+		public int getCityCode() {
+			return cityCode;
+		}
+		public void setCityCode(int cityCode) {
+			this.cityCode = cityCode;
+		}
+		public int getStatus() {
+			return status;
+		}
+		public void setStatus(int status) {
+			this.status = status;
+		}
+		public String getHashedPassword() {
+			return hashedPassword;
+		}
+		public void setHashedPassword(String hashedPassword) {
+			this.hashedPassword = hashedPassword;
+		}
+		public String getMobile() {
+			return mobile;
+		}
+		public void setMobile(String mobile) {
+			this.mobile = mobile;
+		}
+		public int getId() {
+			return id;
+		}
+		public void setId(int id) {
+			this.id = id;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public int getHoroscope() {
+			return horoscope;
+		}
+		public void setHoroscope(int horoscope) {
+			this.horoscope = horoscope;
+		}
+		public String getHeadImg() {
+			return headImg;
+		}
+		public void setHeadImg(String headImg) {
+			this.headImg = headImg;
+		}
+		public int getSex() {
+			return sex;
+		}
+		public void setSex(int sex) {
+			this.sex = sex;
+		}
+		public String getRegTime() {
+			return regTime;
+		}
+		public void setRegTime(String regTime) {
+			this.regTime = regTime;
+		}
+		@Override
+		public String toString() {
+			return "BumpFriend [id=" + id + ", name=" + name + ", horoscope="
+					+ horoscope + ", headImg=" + headImg + ", sex=" + sex
+					+ ", regTime=" + regTime + "]";
+		}
+
+
+
+	}
+
+}

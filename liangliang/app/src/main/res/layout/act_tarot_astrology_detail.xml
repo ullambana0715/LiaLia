@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+                android:background="@color/color_f8f8f7"
+              android:layout_height="match_parent">
+
+    <ViewStub
+        android:id="@+id/tarotOrAstrologyDetail_vs_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_layout_no_data"
+        />
+
+    <include
+
+        layout="@layout/act_tarot_astrology_detail_content"></include>
+
+    <!--返回按键-->
+    <ImageView
+        android:id="@+id/tarotOrAstrologyDetail_iv_back"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:paddingBottom="20dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="20dp"
+        android:src="@drawable/icon_go_back_white"></ImageView>
+
+</RelativeLayout>

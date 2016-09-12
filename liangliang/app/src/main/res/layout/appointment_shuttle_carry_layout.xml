@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70px"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="24px"
+    android:paddingRight="24px">
+
+
+    <RadioButton
+        android:id="@+id/appointment_carry_ratiobutton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:button="@null"
+        android:checked="false"
+        android:drawableLeft="@drawable/evaluation_style"
+        android:drawablePadding="6dp"
+        android:tag="false"
+        android:text="我接送"
+        android:textColor="@color/color_333333"
+        android:textSize="12sp" />
+
+
+    <RadioButton
+        android:id="@+id/appointment_companionCondition_ratiobutton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:button="@null"
+        android:checked="false"
+        android:drawableLeft="@drawable/evaluation_style"
+        android:drawablePadding="6dp"
+        android:tag="false"
+        android:text="对方可携带一名闺蜜"
+        android:textColor="@color/color_333333"
+        android:textSize="12sp" />
+
+
+</RelativeLayout>
+

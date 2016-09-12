@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_ffffff"
+
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="14dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+
+            >
+
+
+            <TextView
+                android:id="@+id/userOrderEvaluation_tv_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="36dp"
+                android:layout_centerVertical="true"
+                android:text="@string/star"
+                android:textColor="@color/color_666666"
+                android:textSize="15sp"
+                />
+
+            <RatingBar
+                android:id="@+id/userOrderEvaluation_rbar_score"
+                style="@style/score_rating_bar_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="false"
+                android:layout_toRightOf="@+id/userOrderEvaluation_tv_score"
+                android:max="5"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="1"
+                />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="14dp"
+            android:background="@color/color_eeeeee"
+            ></View>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="14dp"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/userOrderEvaluation_tv_laber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="36dp"
+                android:text="@string/label"
+                android:textColor="@color/color_666666"
+                android:textSize="15sp"
+                />
+
+            <cn.chono.yopper.view.FlowLeftLayout
+                android:id="@+id/userOrderEvaluation_fll_laber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/userOrderEvaluation_tv_laber"
+                android:visibility="visible">
+
+            </cn.chono.yopper.view.FlowLeftLayout>
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="14dp"
+            android:background="@drawable/eeeeee_border_corners_ffffff"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+
+            <EditText
+                android:id="@+id/userOrderEvaluation_et_evaluation"
+                android:layout_width="match_parent"
+                android:layout_height="214dp"
+                android:background="@null"
+                android:gravity="left|top"
+                android:hint="@string/evaluation_et_hint"
+                android:inputType="textMultiLine"
+                android:maxLength="200"
+                android:textColor="@color/color_333333"
+                android:textColorHint="@color/color_b2b2b2"
+                android:textSize="14sp"
+                />
+
+            <TextView
+                android:id="@+id/userOrderEvaluation_et_number_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right|center_vertical"
+
+                android:text="0/200"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="10sp"/>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/userOrderEvaluation_btn_confirm_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="17dp"
+            android:layout_marginLeft="17dp"
+            android:layout_marginRight="17dp"
+            android:layout_marginTop="65dp"
+            android:background="@drawable/ff7462_fillet_ff7462_style"
+            android:text="@string/confirm_submit"
+            android:textColor="@color/color_fffffff_b2b2b2_style"
+            android:textSize="16sp"
+
+            />
+
+    </LinearLayout>
+</ScrollView>

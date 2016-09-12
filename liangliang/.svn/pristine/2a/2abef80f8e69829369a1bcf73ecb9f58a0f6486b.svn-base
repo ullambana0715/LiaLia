@@ -1,0 +1,39 @@
+package cn.chono.yopper.Service.Http.SignUpManagement;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementService extends HttpService {
+    public SignUpManagementService(Context context) {
+        super(context);
+    }
+
+    private  SignUpManagementBean managementBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass=SignUpManagementRespBean.class;
+
+        String url= HttpURL.appointments_comment+managementBean.getId()+"/candidates?";
+
+        HashMap<String,Object> map=new HashMap<>();
+        map.put("start",managementBean.getStart());
+
+        callWrap= OKHttpUtils.get(context,url,map,okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        managementBean= (SignUpManagementBean) iBean;
+    }
+}

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:background="@drawable/appoint_layout_bg"
+              android:orientation="vertical">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_ffffff"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:id="@+id/dating_type_all_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+
+                <ImageView
+                    android:id="@+id/dating_all_type_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_all_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_all_type_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_all_type_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_all_type_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="全部"
+                    android:textColor="@color/color_ff7462" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dating_type_married_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+
+                <ImageView
+                    android:id="@+id/dating_married_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_married_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_married_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_married_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_married_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="征婚"
+                    android:textColor="@color/color_fc3b6e" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dating_type_travel_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/dating_travel_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_travel_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_travel_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_travel_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_travel_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="旅行"
+                    android:textColor="@color/color_72cd26" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dating_type_eat_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/dating_eat_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_eat_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_eat_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_eat_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_eat_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="吃饭"
+                    android:textColor="@color/color_fd7823" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dating_type_movie_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/dating_movie_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_movie_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_movie_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_movie_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_movie_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="电影"
+                    android:textColor="@color/color_5a38d0" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dating_type_ktv_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/dating_ktv_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_ktv_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_ktv_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_ktv_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_ktv_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="唱歌"
+                    android:textColor="@color/color_b62efb" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dating_type_fitness_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/dating_fitness_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_fitness_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_fitness_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_fitness_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_fitness_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="运动"
+                    android:textColor="@color/color_2ed3cc" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/dating_type_dog_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/dating_dog_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_dog_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_dog_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_dog_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_dog_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="遛狗"
+                    android:textColor="@color/color_1ab142" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dating_type_others_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/dating_others_iv"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/dating_others_icon" />
+
+                <LinearLayout
+                    android:id="@+id/dating_others_select_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="-2dp"
+                    android:layout_toRightOf="@+id/dating_others_iv"
+                    android:paddingTop="5dp"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/dating_type_selected_icon" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dating_others_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="其他"
+                    android:textColor="@color/color_728de5" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/appoint_xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false"
+        android:visibility="gone">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/appoint_list_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.andview.refreshview.XRefreshView>
+
+    <ViewStub
+        android:id="@+id/datings_error_network_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_network_layout" />
+
+    <ViewStub
+        android:id="@+id/datings_error_location_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_location_layout" />
+
+    <LinearLayout
+        android:id="@+id/error_no_data_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/error_no_data_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="暂时没有发现符合条件的约会"
+            android:textColor="@color/color_918b97"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/error_no_data_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="点击查看所有约会>"
+            android:textColor="@color/color_635d6b"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,39 @@
+package cn.chono.yopper.Service.Http.SendAttraction;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * 发送P果
+ * Created by zxb on 2015/11/21.
+ */
+public class SendAttractionService extends HttpService {
+    public SendAttractionService(Context context) {
+        super(context);
+    }
+
+    private SendAttractionBean sendAttractionBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = SendAttractionRespBean.class;
+        HashMap<String, Object> HashMap = new HashMap<>();
+        HashMap.put("targetUserId", sendAttractionBean.getTargetUserId());
+        HashMap.put("notify", sendAttractionBean.isNotify());
+
+        String url = HttpURL.send_attraction + sendAttractionBean.getUserId() + "/attraction/sendto";
+        callWrap = OKHttpUtils.post(context, url, HashMap, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        sendAttractionBean = (SendAttractionBean) iBean;
+    }
+}

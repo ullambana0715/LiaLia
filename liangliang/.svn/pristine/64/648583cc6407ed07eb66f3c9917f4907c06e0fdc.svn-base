@@ -1,0 +1,828 @@
+package cn.chono.yopper.activity.appointment;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.baidu.mapapi.model.LatLng;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.BiZarea.BiZareaBean;
+import cn.chono.yopper.Service.Http.BiZarea.BiZareaRespBean;
+import cn.chono.yopper.Service.Http.BiZarea.BiZareaService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsBean;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsRespBean;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsService;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UploadingUserHeadImage.UploadingUserHeadImgBean;
+import cn.chono.yopper.Service.Http.UploadingUserHeadImage.UploadingUserHeadImgRespBean;
+import cn.chono.yopper.Service.Http.UploadingUserHeadImage.UploadingUserHeadImgService;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoRespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.register.HeadImgCompileActivity;
+import cn.chono.yopper.activity.usercenter.SelectOneAlbumTypeActivity;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.data.walkADogDto;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.photo.OneImageSelectedDto;
+import cn.chono.yopper.utils.BackCall;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.CropDirectionUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.view.CityZareaWheelDialog;
+import cn.chono.yopper.view.cropper.CopperData;
+
+/**
+ * Created by zxb on 2016/1/4.
+ */
+public class PublishDogDatingActivity extends MainFrameActivity implements CityZareaWheelDialog.OnSelectedListener{
+
+
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    private LinearLayout appoint_select_address_layout;
+    private TextView address_tv;
+    private RadioGroup appoint_date_radio_group;
+    private RadioGroup appoint_tiem_radio_group;
+    private RadioGroup appoint_sex_radio_group;
+
+    private RadioButton publish_dog_video_ratiobutton;
+
+    private Button appoint_dog_release_btn;
+
+    private ImageView appoint_dog_release_img_iv;
+
+    private TextView appoint_dog_release_add_img_hint_tv;
+
+
+    private Dialog imgdialog;
+
+    private Dialog photoDialog;
+
+    private static String graph_filePath;
+
+    private String albumImg="";
+
+    private CopperData copperData;
+
+    private int userid;
+
+    private int sex;
+
+    private int user_sex;
+    private int time_type=0;
+
+    private int day_type=6;
+
+    private String city="上海";
+
+    private boolean videoRequest=false;
+
+    private double longtitude = 121.478844;
+    private double latitude = 31.240517;
+    private String address="";
+
+    private ArrayList<String> citylist=new ArrayList<String>();
+    private Map<String,ArrayList<String>> mCitisDatasMap = new HashMap<String, ArrayList<String>>();
+
+    private CityZareaWheelDialog cityZareaWheelWindow;
+
+    private String frompage;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+
+        userid = YPApplication.getInstance().loginUser.getUserId();
+        frompage=getIntent().getExtras().getString(YpSettings.FROM_PAGE);
+
+        user_sex = DbHelperUtils.getDbUserSex(userid);
+        if(user_sex==1){
+            sex=2;
+        }else if(user_sex==2){
+            sex=1;
+        }
+
+
+        LocInfo myLoc = Loc.getLoc();
+        if(myLoc!=null && !CheckUtil.isEmpty(myLoc.getCity())){
+            city= myLoc.getCity();
+        }
+
+        String json=DbHelperUtils.getBiZareaData(city);
+        if(!CheckUtil.isEmpty(json)){
+            LogUtils.e("数据库内缓存的商圈数据字符串不是空的");
+            BiZareaRespBean biZareaRespBean=JsonUtils.fromJson(json, BiZareaRespBean.class);
+            mCitisDatasMap=biZareaRespBean.getResp();
+            for (Map.Entry<String, ArrayList<String>> entry : mCitisDatasMap.entrySet()){
+                citylist.add(entry.getKey());
+            }
+
+            if(mCitisDatasMap!=null){
+                LogUtils.e("mCitisDatasMap大小="+mCitisDatasMap.size());
+            }
+            if(citylist!=null){
+                LogUtils.e("citylist大小="+citylist.size());
+            }
+
+            if(mCitisDatasMap!=null &&  mCitisDatasMap.size()>0&& citylist!=null&&citylist.size()>0){
+
+            }else{
+                LogUtils.e("数据库内缓存的商圈数据是空的========");
+                get_bizarea_city(city);
+            }
+        }else{
+            LogUtils.e("数据库内缓存的商圈数据是空的");
+            get_bizarea_city(city);
+        }
+
+        initView();
+        setSexSelect();
+        setDaySelect();
+        setTimeSelect();
+
+
+    }
+
+
+    private void initView() {
+
+        getBtnGoBack().setVisibility(View.GONE);
+        gettvBack().setVisibility(View.VISIBLE);
+        gettvBack().setText("取消");
+        getTvTitle().setText("溜狗");
+
+
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        contextView = mInflater.inflate(R.layout.release_dog_activity, null);
+
+        appoint_select_address_layout= (LinearLayout) contextView.findViewById(R.id.appoint_select_address_layout);
+        appoint_select_address_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(mCitisDatasMap!=null&& mCitisDatasMap.size()>0&& citylist!=null && citylist.size()>0){
+                    cityZareaWheelWindow = new CityZareaWheelDialog(PublishDogDatingActivity.this,PublishDogDatingActivity.this,citylist,mCitisDatasMap);
+                    cityZareaWheelWindow.show();
+                }else{
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this,"未获取到周边商圈数据");
+                }
+//                cityZareaWheelWindow.showAtLocation(contextView, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+
+            }
+        });
+
+        address_tv = (TextView) contextView.findViewById(R.id.address_tv);
+
+        appoint_date_radio_group = (RadioGroup) contextView.findViewById(R.id.appoint_date_radio_group);
+        appoint_tiem_radio_group = (RadioGroup) contextView.findViewById(R.id.appoint_tiem_radio_group);
+        appoint_sex_radio_group = (RadioGroup) contextView.findViewById(R.id.appoint_sex_radio_group);
+
+        publish_dog_video_ratiobutton= (RadioButton) contextView.findViewById(R.id.publish_dog_video_ratiobutton);
+
+        appoint_dog_release_btn = (Button) contextView.findViewById(R.id.appoint_dog_release_btn);
+
+        appoint_dog_release_img_iv = (ImageView) contextView.findViewById(R.id.appoint_dog_release_img_iv);
+        appoint_dog_release_add_img_hint_tv = (TextView) contextView.findViewById(R.id.appoint_dog_release_add_img_hint_tv);
+
+        publish_dog_video_ratiobutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(videoRequest){
+                    videoRequest=false;
+                    publish_dog_video_ratiobutton.setChecked(false);
+                }else{
+                    videoRequest=true;
+                    publish_dog_video_ratiobutton.setChecked(true);
+                }
+            }
+        });
+
+        appoint_date_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.date_seven_radiobutton://七天内
+                        day_type=6;
+                        break;
+
+                    case R.id.date_today_radiobutton://今天
+                        day_type=0;
+                        break;
+
+                    case R.id.date_tomorrow_radiobutton://明天
+                        day_type=1;
+                        break;
+
+                }
+
+
+            }
+        });
+
+        appoint_tiem_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                //约会时间，Unknown = 0, Morning = 1, Noon = 2, Afternoon = 3, Night = 4
+                switch (checkedId) {
+                    case R.id.time_nolimit_radiobutton://不限
+                        time_type=0;
+
+                        break;
+                    case R.id.time_midday_radiobutton://中午
+                        time_type=1;
+
+                        break;
+                    case R.id.time_pm_radiobutton://下午
+                        time_type=2;
+
+                        break;
+                    case R.id.time_night_radiobutton://晚上
+
+                        time_type=3;
+
+                        break;
+                }
+
+            }
+        });
+
+        appoint_sex_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.sex_man_radiobutton://1男
+                        sex=1;
+                        break;
+                    case R.id.sex_women_radiobutton://2女
+                        sex=2;
+                        break;
+                    case R.id.sex_nolimit_radiobutton://0无限
+                        sex=0;
+                        break;
+                }
+
+            }
+        });
+
+        appoint_dog_release_img_iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                copperData = new CopperData();
+                photoDialog = DialogUtil.createPhotoDialog(PublishDogDatingActivity.this, "请上传爱犬照片", "拍照", "相册选取", false, new PhotoMiBackCall());
+                if (!isFinishing()) {
+                    photoDialog.show();
+                }
+
+            }
+        });
+
+        appoint_dog_release_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(CheckUtil.isEmpty(address)){
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this,"请选择地点");
+                    return;
+                }
+                if(!CheckUtil.isEmpty(albumImg)){
+                    douploadingUserHeadImg(albumImg);
+                }else{
+
+                    loadingDiaog = DialogUtil.LoadingDialog(PublishDogDatingActivity.this,null);
+
+                    if (!isFinishing()) {
+                        loadingDiaog.show();
+                    }
+                    publish_dating(albumImg);
+                }
+
+            }
+        });
+
+        this.getGoBackLayout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                finish();
+            }
+        });
+
+        this.getMainLayout().addView(contextView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+    }
+
+
+
+
+    private  void get_bizarea_city(final String citystr) {
+
+        loadingDiaog = DialogUtil.LoadingDialog(PublishDogDatingActivity.this,null);
+
+        if (!isFinishing()) {
+            loadingDiaog.show();
+        }
+
+
+        BiZareaBean biZareaBean = new BiZareaBean();
+        biZareaBean.setCity(citystr);
+
+        BiZareaService biZareaService = new BiZareaService(this);
+
+        biZareaService.parameter(biZareaBean);
+        biZareaService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                loadingDiaog.dismiss();
+                BiZareaRespBean biZareaRespBean=(BiZareaRespBean) respBean;
+                String json= JsonUtils.toJson(biZareaRespBean);
+                DbHelperUtils.saveBiZareaData(citystr,json);
+                if(!CheckUtil.isEmpty(json)){
+                    BiZareaRespBean biZareaRespBeandto=JsonUtils.fromJson(json, BiZareaRespBean.class);
+                    mCitisDatasMap= new HashMap<String, ArrayList<String>>();
+                    mCitisDatasMap=biZareaRespBeandto.getResp();
+                    citylist.clear();
+                    for (Map.Entry<String, ArrayList<String>> entry : mCitisDatasMap.entrySet()){
+                        citylist.add(entry.getKey());
+                    }
+                }else{
+                    LogUtils.e("商圈数据请求回来是空的");
+                }
+            }
+        }, new OnCallBackFailListener(){
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+            }
+        });
+
+        biZareaService.enqueue();
+    }
+
+    private void setSexSelect(){
+        if(sex==0){
+            appoint_sex_radio_group.check(R.id.sex_nolimit_radiobutton);
+        }else if(sex==1){
+            appoint_sex_radio_group.check(R.id.sex_man_radiobutton);
+        }else if(sex==2){
+            appoint_sex_radio_group.check(R.id.sex_women_radiobutton);
+        }
+    }
+
+    private void setDaySelect(){
+        if(day_type==0){
+            appoint_date_radio_group.check(R.id.date_today_radiobutton);
+        }else if(day_type==1){
+            appoint_date_radio_group.check(R.id.date_tomorrow_radiobutton);
+        }else if(day_type==6){
+            appoint_date_radio_group.check(R.id.date_seven_radiobutton);
+        }
+    }
+
+    private void setTimeSelect(){
+        if(time_type==0){
+            appoint_tiem_radio_group.check(R.id.time_nolimit_radiobutton);
+        }else if(time_type==1){
+            appoint_tiem_radio_group.check(R.id.time_midday_radiobutton);
+
+        }else if(time_type==2){
+            appoint_tiem_radio_group.check(R.id.time_pm_radiobutton);
+
+        }else if(time_type==3){
+            appoint_tiem_radio_group.check(R.id.time_night_radiobutton);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("发布约会（溜狗）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+
+        String file_Path = OneImageSelectedDto.select_image_path;
+        int w = OneImageSelectedDto.select_image_w;
+        int h = OneImageSelectedDto.select_image_h;
+        OneImageSelectedDto.select_image_path = "";
+        OneImageSelectedDto.select_image_w = 0;
+        OneImageSelectedDto.select_image_h = 0;
+
+
+        if (!CheckUtil.isEmpty(file_Path)) {
+
+            if (w == 0 && w == h) {
+                DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+                return;
+            }
+            if (w < 640 && h < 640) {
+                imgdialog = DialogUtil.createHintOperateDialog(PublishDogDatingActivity.this, "提示", "你选择的图片尺寸过小", "", "确认", ImgbackCallListener);
+                if (!isFinishing()) {
+                    imgdialog.show();
+                }
+                return;
+            }
+
+            File file = new File(file_Path);
+            if (file.exists()) {
+                Bitmap bm = ImgUtils.resizesBitmap(file_Path);
+                if (null != bm) {
+                    // 保存在自己定义文件的路径
+                    String filePath = ImgUtils.saveImgFile(this, bm);
+                    // 回收内存空间
+                    bm.recycle();
+                    System.gc();
+                    if (!TextUtils.isEmpty(filePath)) {
+                        // 去剪切
+                        CropDirectionUtil.cropDirection(PublishDogDatingActivity.this, HeadImgCompileActivity.class, YpSettings.HEAD_IMG_REGISTER, filePath);
+                    } else {
+                        DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+                    }
+
+                } else {
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+                }
+
+            } else {
+                DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+            }
+        }
+
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("发布约会（溜狗）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+
+    private class PhotoMiBackCall extends BackCall {
+        @Override
+        public void deal(int which, Object... obj) {
+
+            switch (which) {
+                case R.id.select_operate_dialog_one_layout:
+                    if (!isFinishing()) {
+                        photoDialog.dismiss();
+                    }
+                    Uri imageUri = null;
+                    String imgPath = ImgUtils.makeRootDirectory(PublishDogDatingActivity.this);
+                    String fileName = TimeUtil.getCurrentTimeMillis() + ".jpg";
+
+                    Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    File filePath = new File(imgPath, fileName);
+                    graph_filePath = filePath.getAbsolutePath();// 图片的真实路径
+
+                    imageUri = Uri.fromFile(filePath);
+                    // 指定照片保存路径（SD卡），image.jpg为一个临时文件，每次拍照后这个图片都会被替换
+                    openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(openCameraIntent,YpSettings.FLAG_CHOOSE_PHONE);
+
+                    break;
+                case R.id.select_operate_dialog_two_layout:
+
+                    if (!isFinishing()) {
+                        photoDialog.dismiss();
+                    }
+
+                    try {
+                        Intent in = new Intent(PublishDogDatingActivity.this, SelectOneAlbumTypeActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(YpSettings.PHOTO_TAG, YpSettings.PHOTO_SELECT);
+                        in.putExtras(bundle);
+                        startActivity(in);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+            }
+            super.deal(which, obj);
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case YpSettings.FLAG_CHOOSE_PHONE:// 拍照
+                if (resultCode == RESULT_OK) {
+                    if (!CheckUtil.isEmpty(graph_filePath)) {
+                        Bitmap bm = ImgUtils.resizesBitmap(graph_filePath);
+                        if (null != bm) {
+                            // 保存在自己定义文件的路径
+                            String file_Path = ImgUtils.saveImgFile(PublishDogDatingActivity.this, bm);
+                            // 回收内存空间
+                            bm.recycle();
+                            // 去剪切
+                            CropDirectionUtil.cropDirection(
+                                    PublishDogDatingActivity.this,
+                                    HeadImgCompileActivity.class,
+                                    YpSettings.HEAD_IMG_REGISTER, file_Path);
+
+                        } else {
+                            DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+                        }
+                    }
+                }
+                break;
+
+            case YpSettings.HEAD_IMG_REGISTER:// 剪切回来
+
+                if (data != null) {
+
+                    copperData = (CopperData) data.getExtras().getSerializable("copperData");
+                    if (copperData != null) {
+                        albumImg = copperData.getCroppedImage();
+                        Glide.with(PublishDogDatingActivity.this).load(albumImg).diskCacheStrategy(DiskCacheStrategy.NONE).listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                return false;
+                            }
+                        }).into(appoint_dog_release_img_iv);
+                        appoint_dog_release_add_img_hint_tv.setText("点击更换");
+
+                    } else {
+                        DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+                    }
+                } else {
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this, "选取失败，请重新选择上传！");
+                }
+                break;
+            default:
+                break;
+
+        }
+
+    }
+
+    private Dialog loadingDiaog;
+    /**
+     * 图片上传中
+     *
+     * @param filePath
+     */
+    private void douploadingUserHeadImg(String filePath) {
+
+        loadingDiaog = DialogUtil.LoadingDialog(PublishDogDatingActivity.this,null);
+
+        if (!isFinishing()) {
+            loadingDiaog.show();
+        }
+
+        UploadingUserHeadImgBean imgBean = new UploadingUserHeadImgBean();
+        imgBean.setFilePath(filePath);
+        imgBean.setSaveToAlbum(false);
+
+        UploadingUserHeadImgService uploadingUserHeadImgService = new UploadingUserHeadImgService(this);
+        uploadingUserHeadImgService.parameter(imgBean);
+        uploadingUserHeadImgService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                UploadingUserHeadImgRespBean imgRespBean = (UploadingUserHeadImgRespBean) respBean;
+
+                UploadingUserHeadImgRespBean.HeadImgUrl imagurl = imgRespBean.getResp();
+                albumImg = imagurl.getHeadImgUrl();
+                publish_dating(albumImg);
+//                submitUserInfo();
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this,msg);
+                }
+
+            }
+        });
+
+        uploadingUserHeadImgService.enqueue();
+
+    }
+
+
+    private void publish_dating(String dogimg){
+
+        LocInfo myLoc = Loc.getLoc();
+        if(myLoc!=null && myLoc.getLoc()!=null){
+            latitude=myLoc.getLoc().getLatitude();
+            longtitude=myLoc.getLoc().getLongitude();
+        }
+
+        LatLng pt = new LatLng(latitude, longtitude);
+        pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+
+        ReleaseAppointmentsBean releaseAppointmentsBean = new ReleaseAppointmentsBean();
+        releaseAppointmentsBean.setCity(city);
+        releaseAppointmentsBean.setActivityType(Constant.APPOINT_TYPE_DOG);
+        releaseAppointmentsBean.setCostType(0);
+        releaseAppointmentsBean.setSexRequired(sex);
+        releaseAppointmentsBean.setAvailableTime(time_type);
+        releaseAppointmentsBean.setVideoRequired(videoRequest);
+        releaseAppointmentsBean.setLat(pt.latitude);
+        releaseAppointmentsBean.setLng(pt.longitude);
+        releaseAppointmentsBean.setEndTime(TimeUtil.timeWithSettingDay(day_type));
+        LogUtils.e("结束时间="+TimeUtil.timeWithSettingDay(day_type));
+        walkADogDto dto=new walkADogDto();
+        dto.setAddress(address);
+        if(!CheckUtil.isEmpty(dogimg)){
+            dto.setImg(dogimg);
+        }
+        releaseAppointmentsBean.setWalkADog(dto);
+
+        ReleaseAppointmentsService releaseAppointmentsService = new ReleaseAppointmentsService(this);
+        releaseAppointmentsService.parameter(releaseAppointmentsBean);
+        releaseAppointmentsService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                ReleaseAppointmentsRespBean releaseAppointmentsRespBean=(ReleaseAppointmentsRespBean)respBean;
+                if(releaseAppointmentsRespBean.getResp()!=null){
+                    getUserInfo();
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this,msg);
+
+                }
+
+            }
+        });
+
+        releaseAppointmentsService.enqueue();
+    }
+
+
+    /***
+     * 获取用户信息及相册信息
+     *
+     */
+    private void getUserInfo() {
+
+        UserInfoBean userInfoBean = new UserInfoBean();
+        userInfoBean.setUserId(userid);
+        userInfoBean.setAlbum(true);
+        userInfoBean.setBubble(true);
+        userInfoBean.setBump(true);
+        userInfoBean.setForDating(false);
+        userInfoBean.setWish(true);
+        userInfoBean.setVerification(true);
+        userInfoBean.setAppointment(true);
+
+        UserInfoService userInfoService = new UserInfoService(this);
+        userInfoService.parameter(userInfoBean);
+        userInfoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UserInfoRespBean userInfoRespBean = (UserInfoRespBean) respBean;
+                UserDto userInfo = userInfoRespBean.getResp();
+                String jsonstr = JsonUtils.toJson(userInfo);
+                if (null != userInfo) {
+                    // 保存数据
+                    DbHelperUtils.saveUserInfo(userid, jsonstr);
+                    // 保存数据
+                    DbHelperUtils.saveBaseUser(userid, userInfo);
+                }
+                loadingDiaog.dismiss();
+
+                DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this,"发布成功");
+                LogUtils.e("来自页面＝"+frompage);
+                if(frompage.equals("UserAppointListActivity")){
+                    PublishDogDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(2);
+                }else{
+                    PublishDogDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(1);
+                }
+                finish();
+
+            }
+        }, new OnCallBackFailListener(){
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+                DialogUtil.showDisCoverNetToast(PublishDogDatingActivity.this,"发布成功");
+                if(frompage.equals("UserAppointListActivity")){
+                    PublishDogDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(2);
+                }else{
+                    PublishDogDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(1);
+                }
+                finish();
+            }
+        });
+        userInfoService.enqueue();
+    }
+
+    private BackCallListener ImgbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                imgdialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                imgdialog.dismiss();
+            }
+
+        }
+    };
+
+
+    @Override
+    public void onSelectedListener(String cityStr, String zareaStr) {
+        if(!CheckUtil.isEmpty(zareaStr)){
+            address=cityStr+"/"+zareaStr;
+        }else{
+            address=cityStr;
+        }
+        address_tv.setText(address);
+    }
+
+}

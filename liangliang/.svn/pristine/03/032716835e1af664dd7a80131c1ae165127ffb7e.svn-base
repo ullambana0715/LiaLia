@@ -1,0 +1,141 @@
+package cn.chono.yopper.data;
+
+import com.lidroid.xutils.db.annotation.Column;
+import com.lidroid.xutils.db.annotation.Table;
+
+import cn.chono.yopper.smack.entity.EntityBase;
+
+/**
+ * 消息列表消息体对象
+ *
+ * @author SQ
+ */
+@Table(name = "MessageDto")
+public class MessageDto extends EntityBase {
+
+    /**
+     * 不是陌生人
+     */
+    public final static int no_strange = 0;
+    /**
+     * 陌生人
+     */
+    public final static int strange = 1;
+
+    //对话最后一条消息
+    @Column(column = "lastmessage")
+    private String lastmessage;
+
+    @Column(column = "lasttime")
+    private long lasttime;
+
+    @Column(column = "mid")
+    private String mid;
+
+    @Column(column = "jid")
+    private String jid;
+    //0是失败 1是成功 2发送中
+    @Column(column = "send_state")
+    private int send_state;
+    //0不是陌生人，1是陌生人
+    @Column(column = "is_strange")
+    private int is_strange;
+
+    //未读数量
+    @Column(column = "no_read_num")
+    private int no_read_num;
+
+    //发送还是接受的消息
+    @Column(column = "s_r_type")
+    private int s_r_type;
+
+
+    public String getLastmessage() {
+        return lastmessage;
+    }
+
+    public void setLastmessage(String lastmessage) {
+        this.lastmessage = lastmessage;
+    }
+
+    public long getLasttime() {
+        return lasttime;
+    }
+
+    public void setLasttime(long lasttime) {
+        this.lasttime = lasttime;
+    }
+
+    public String getMid() {
+        return mid;
+    }
+
+    public void setMid(String mid) {
+        this.mid = mid;
+    }
+
+    public String getJid() {
+        return jid;
+    }
+
+    public void setJid(String jid) {
+        this.jid = jid;
+    }
+
+    public int getSend_state() {
+        return send_state;
+    }
+
+    public void setSend_state(int send_state) {
+        this.send_state = send_state;
+    }
+
+
+    public int getIs_strange() {
+        return is_strange;
+    }
+
+    public void setIs_strange(int is_strange) {
+        this.is_strange = is_strange;
+    }
+
+
+    public int getNo_read_num() {
+        return no_read_num;
+    }
+
+    public void setNo_read_num(int no_read_num) {
+        this.no_read_num = no_read_num;
+    }
+
+
+    public int getS_r_type() {
+        return s_r_type;
+    }
+
+    public void setS_r_type(int s_r_type) {
+        this.s_r_type = s_r_type;
+    }
+
+
+    public MessageDto(String lastmessage, long lasttime, String mid,
+                      String jid, int send_state, int is_strange, int no_read_num,
+                      int s_r_type) {
+        super();
+        this.lastmessage = lastmessage;
+        this.lasttime = lasttime;
+        this.mid = mid;
+        this.jid = jid;
+        this.send_state = send_state;
+        this.is_strange = is_strange;
+        this.no_read_num = no_read_num;
+        this.s_r_type = s_r_type;
+    }
+
+
+    public MessageDto() {
+        super();
+
+    }
+
+}

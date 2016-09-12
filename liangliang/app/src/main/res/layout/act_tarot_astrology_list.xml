@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:background="@color/color_f8f8f7"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+
+        <ViewStub
+            android:id="@+id/tarotOrAstrology_vs_no_data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout="@layout/error_layout_no_data"
+            />
+
+        <com.andview.refreshview.XRefreshView
+            android:id="@+id/tarotOrAstrology_xrv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:isHeightMatchParent="false"
+            app:isWidthMatchParent="false">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/tarotOrAstrology_rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@android:color/transparent"
+                android:listSelector="@android:color/transparent"
+
+                android:scrollbars="none"></android.support.v7.widget.RecyclerView>
+
+        </com.andview.refreshview.XRefreshView>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/tarotOrAstrology_iv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:visibility="visible"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="20dp"
+        ></ImageView>
+
+
+
+
+
+</RelativeLayout>

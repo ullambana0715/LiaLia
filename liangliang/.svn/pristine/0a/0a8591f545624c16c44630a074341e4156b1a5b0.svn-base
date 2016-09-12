@@ -1,0 +1,33 @@
+package cn.chono.yopper.Service.Http.BubblingReport;
+
+import java.io.Serializable;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class BubblingReportRespBean extends RespBean {
+
+    private Messages resp;
+
+    public Messages getResp() {
+        return resp;
+    }
+
+    public void setResp(Messages resp) {
+        this.resp = resp;
+    }
+
+    public  class Messages implements Serializable{
+        private String message;
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+}

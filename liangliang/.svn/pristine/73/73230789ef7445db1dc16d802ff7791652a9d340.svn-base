@@ -1,0 +1,533 @@
+package cn.chono.yopper.activity.near;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.BubblingBubbleLikes.BubblingBubbleLikesBean;
+import cn.chono.yopper.Service.Http.BubblingBubbleLikes.BubblingBubbleLikesRespBean;
+import cn.chono.yopper.Service.Http.BubblingBubbleLikes.BubblingBubbleLikesService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.adapter.BubblingPraiseListAdapter;
+import cn.chono.yopper.adapter.BubblingPraiseListAdapter.OnItemPraiseClickLitener;
+import cn.chono.yopper.data.BubblingPraiseDto;
+import cn.chono.yopper.data.BubblingPraiseDto.BubblingPraise;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+import cn.chono.zxb.xrefreshview.XRefreshView.SimpleXRefreshListener;
+
+/**
+ * 点赞人列表
+ */
+public class BubblingPraiseListActivity extends MainFrameActivity implements
+        OnItemPraiseClickLitener, OnClickListener {
+
+    private XRefreshView xrefreshView;
+    private ListView praise_list;
+
+    private BubblingPraiseListAdapter adapter;
+
+    private String bubblingId;
+
+    private int _start = 0;
+
+    private int _total = 0;
+
+    private Animation mRotateAnimation;
+
+    private TextView error_network_tv;
+    private TextView error_no_data_remove_tv;
+    private ImageView error_to_load_img;
+
+    private LinearLayout error_network_layout;// 网络
+    private LinearLayout error_no_data_remove_layout;// 已经删除
+    private LinearLayout error_to_load_layout;// 加载
+    private LinearLayout error_message_layout;// 错误
+
+    private boolean haveFilterListData = false;
+
+    private boolean isOnRefresh = true;
+    private boolean isOnLoadMore = true;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("点赞人列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("点赞人列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+        if (!haveFilterListData) {
+            initRotateAnimation();
+            error_network_layout.setVisibility(View.GONE);
+            error_message_layout.setVisibility(View.GONE);
+            error_no_data_remove_layout.setVisibility(View.GONE);
+            error_to_load_layout.setVisibility(View.VISIBLE);
+
+            xrefreshView.setVisibility(View.GONE);
+
+            _start = 0;
+            onRefreshData(bubblingId, _start);
+
+        }
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.bubblingpraiselist);
+        PushAgent.getInstance(this).onAppStart();
+        initView();
+        setXrefreshListener();
+        bubblingId = getIntent().getExtras().getString(
+                YpSettings.BUBBLING_LIST_ID);
+
+    }
+
+    /**
+     * 初始化
+     */
+    private void initView() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("点赞的人");
+
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+
+                finish();
+
+            }
+        });
+
+        xrefreshView = (XRefreshView) findViewById(R.id.xrefreshview);
+        praise_list = (ListView) findViewById(R.id.praise_list);
+        adapter = new BubblingPraiseListAdapter(this);
+        adapter.setOnItemClickLitener(this);
+        praise_list.setAdapter(adapter);
+
+        error_network_tv = (TextView) findViewById(R.id.error_network_tv);
+        error_no_data_remove_tv = (TextView) findViewById(R.id.error_no_data_remove_tv);
+        error_to_load_img = (ImageView) findViewById(R.id.error_to_load_img);
+
+        error_network_layout = (LinearLayout) findViewById(R.id.error_network_layout);
+        error_no_data_remove_layout = (LinearLayout) findViewById(R.id.error_no_data_remove_layout);
+        error_to_load_layout = (LinearLayout) findViewById(R.id.error_to_load_layout);
+        error_message_layout = (LinearLayout) findViewById(R.id.error_message_layout);
+
+        error_network_tv.setOnClickListener(this);
+
+    }
+
+    private void setXrefreshListener() {
+        // 设置静默加载模式
+        xrefreshView.setSlienceLoadMore();
+        xrefreshView.setAutoLoadMore(true);
+        xrefreshView.setPinnedTime(1000);
+        xrefreshView.setMoveForHorizontal(true);
+        xrefreshView.setCustomHeaderView(new CustomHeaderAnim(this));
+
+        // 处理ViewPager冲突
+        xrefreshView.setMoveForHorizontal(true);
+        xrefreshView.setPreLoadCount(3);
+
+        xrefreshView.setXRefreshViewListener(new SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (isOnRefresh) {
+                            isOnRefresh = false;
+                            _start = 0;
+                            onRefreshData(bubblingId, _start);
+                        }
+
+                        xrefreshView.stopRefresh();
+                    }
+                }, 2000);
+            }
+
+            @Override
+            public void onLoadMore(boolean isSlience) {
+                super.onLoadMore(isSlience);
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+
+                        if (isOnLoadMore) {
+                            if (_total >= _start) {
+                                isOnLoadMore = false;
+                                onLoadMoreData(bubblingId, _start);
+                            }
+
+                        }
+
+                        // 刷新完成必须调用此方法停止加载
+                        xrefreshView.stopLoadMore();
+                    }
+                }, 500);
+            }
+
+        });
+
+    }
+
+    private void onRefreshData(String id, int start) {
+
+        BubblingBubbleLikesBean likesBean = new BubblingBubbleLikesBean();
+
+        likesBean.setId(id);
+        likesBean.setStart(start);
+        likesBean.setRows(20);
+
+        BubblingBubbleLikesService likesService = new BubblingBubbleLikesService(this);
+        likesService.parameter(likesBean);
+        likesService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BubblingBubbleLikesRespBean bubbleLikesRespBean = (BubblingBubbleLikesRespBean) respBean;
+                BubblingPraiseDto bubblingPraiseDto = bubbleLikesRespBean.getResp();
+
+
+                isOnRefresh = true;
+                // 定位视图隐藏 网络加载失败视图隐藏-小圆圈视图隐藏
+                // 如果没有数据，则显示无数据视图，如果有数据则刷新视图
+                // 动画回收
+                // 动画回收
+                removeRotateAnimation();
+
+
+                if (bubblingPraiseDto != null) {
+
+                    List<BubblingPraise> list = bubblingPraiseDto
+                            .getList();
+                    _start = _start
+                            + bubblingPraiseDto.getRows();
+                    _total = bubblingPraiseDto.getTotal();
+                    if (list != null && list.size() > 0) {
+
+                        haveFilterListData = true;
+                        error_network_layout
+                                .setVisibility(View.GONE);
+                        error_message_layout
+                                .setVisibility(View.GONE);
+                        error_no_data_remove_layout
+                                .setVisibility(View.GONE);
+                        error_to_load_layout
+                                .setVisibility(View.GONE);
+                        xrefreshView
+                                .setVisibility(View.VISIBLE);
+
+                        adapter.setData(bubblingPraiseDto
+                                .getList());
+                        adapter.notifyDataSetChanged();
+
+                    } else {
+                        haveFilterListData = false;
+                        error_network_layout
+                                .setVisibility(View.VISIBLE);
+                        error_message_layout
+                                .setVisibility(View.GONE);
+                        error_no_data_remove_layout
+                                .setVisibility(View.GONE);
+                        error_to_load_layout
+                                .setVisibility(View.GONE);
+                        xrefreshView.setVisibility(View.GONE);
+                    }
+
+                } else {
+
+                    haveFilterListData = false;
+                    error_network_layout
+                            .setVisibility(View.VISIBLE);
+                    error_message_layout
+                            .setVisibility(View.GONE);
+                    error_no_data_remove_layout
+                            .setVisibility(View.GONE);
+                    error_to_load_layout
+                            .setVisibility(View.GONE);
+                    xrefreshView.setVisibility(View.GONE);
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                String statusCode = respBean.getStatus();
+
+                isOnRefresh = true;
+                // 定位视图隐藏 无数据视图隐藏-小圆圈视图隐藏-
+                // 如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                // 动画回收
+                // 动画回收
+                // 动画回收
+                removeRotateAnimation();
+
+                if (TextUtils.equals("404", statusCode)) {// 内容不存在了
+                    error_network_layout.setVisibility(View.GONE);
+                    error_message_layout.setVisibility(View.GONE);
+                    error_no_data_remove_layout
+                            .setVisibility(View.VISIBLE);
+                    error_to_load_layout.setVisibility(View.GONE);
+
+                    xrefreshView.setVisibility(View.GONE);
+
+                    return;
+
+                }
+                if (TextUtils.equals("410", statusCode)) {
+                    error_network_layout.setVisibility(View.GONE);
+                    error_message_layout.setVisibility(View.VISIBLE);
+                    error_no_data_remove_layout
+                            .setVisibility(View.GONE);
+                    error_to_load_layout.setVisibility(View.GONE);
+
+                    xrefreshView.setVisibility(View.GONE);
+                    return;
+
+                }
+
+                error_network_layout.setVisibility(View.VISIBLE);
+                error_message_layout.setVisibility(View.GONE);
+                error_no_data_remove_layout
+                        .setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+
+                xrefreshView.setVisibility(View.GONE);
+
+
+            }
+        });
+        likesService.enqueue();
+
+
+    }
+
+    private void onLoadMoreData(String id, int start) {
+
+
+        BubblingBubbleLikesBean likesBean = new BubblingBubbleLikesBean();
+
+        likesBean.setId(id);
+        likesBean.setStart(start);
+        likesBean.setRows(20);
+
+        BubblingBubbleLikesService likesService = new BubblingBubbleLikesService(this);
+        likesService.parameter(likesBean);
+        likesService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BubblingBubbleLikesRespBean bubbleLikesRespBean = (BubblingBubbleLikesRespBean) respBean;
+                BubblingPraiseDto bubblingPraiseDto = bubbleLikesRespBean.getResp();
+
+                isOnLoadMore = true;
+
+                // 定位视图隐藏 网络加载失败视图隐藏-小圆圈视图隐藏
+                // 如果没有数据，则显示无数据视图，如果有数据则刷新视图
+                // 动画回收
+                // 动画回收
+                removeRotateAnimation();
+
+
+                if (bubblingPraiseDto != null) {
+
+                    List<BubblingPraise> list = bubblingPraiseDto
+                            .getList();
+
+                    _start = _start
+                            + bubblingPraiseDto.getRows();
+                    _total = bubblingPraiseDto.getTotal();
+
+                    if (list != null && list.size() > 0) {
+                        _start = list.size();
+                        haveFilterListData = true;
+                        error_network_layout
+                                .setVisibility(View.GONE);
+                        error_message_layout
+                                .setVisibility(View.GONE);
+                        error_no_data_remove_layout
+                                .setVisibility(View.GONE);
+                        error_to_load_layout
+                                .setVisibility(View.GONE);
+                        xrefreshView
+                                .setVisibility(View.VISIBLE);
+
+                        adapter.addData(bubblingPraiseDto
+                                .getList());
+                        adapter.notifyDataSetChanged();
+
+                    } else {
+                        // 没有网络的场合，去提示页
+                        DialogUtil
+                                .showDisCoverNetToast(BubblingPraiseListActivity.this);
+                    }
+
+                } else {
+
+                    // 没有网络的场合，去提示页
+                    DialogUtil
+                            .showDisCoverNetToast(BubblingPraiseListActivity.this);
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                String statusCode = respBean.getStatus();
+
+                isOnLoadMore = true;
+                // 定位视图隐藏 无数据视图隐藏-小圆圈视图隐藏-
+                // 如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                // 动画回收
+                // 动画回收
+                // 动画回收
+                removeRotateAnimation();
+
+                if (TextUtils.equals("404", statusCode)) {// 内容不存在了
+                    error_network_layout.setVisibility(View.GONE);
+                    error_message_layout.setVisibility(View.GONE);
+                    error_no_data_remove_layout
+                            .setVisibility(View.VISIBLE);
+                    error_to_load_layout.setVisibility(View.GONE);
+
+                    xrefreshView.setVisibility(View.GONE);
+                    return;
+
+                }
+                if (TextUtils.equals("410", statusCode)) {
+                    error_network_layout.setVisibility(View.GONE);
+                    error_message_layout.setVisibility(View.VISIBLE);
+                    error_no_data_remove_layout
+                            .setVisibility(View.GONE);
+                    error_to_load_layout.setVisibility(View.GONE);
+
+                    xrefreshView.setVisibility(View.GONE);
+
+                    return;
+
+                }
+
+                error_network_layout.setVisibility(View.VISIBLE);
+                error_message_layout.setVisibility(View.GONE);
+                error_no_data_remove_layout
+                        .setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+
+                xrefreshView.setVisibility(View.GONE);
+
+
+            }
+        });
+        likesService.enqueue();
+
+
+    }
+
+    @Override
+    public void onItemPraiseClick(View view, int position, int userID) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(YpSettings.USERID, userID);
+        ActivityUtil.jump(BubblingPraiseListActivity.this,
+                UserInfoActivity.class, bundle, 0, 200);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.error_network_tv:
+
+                initRotateAnimation();
+                error_network_layout.setVisibility(View.GONE);
+                error_message_layout.setVisibility(View.GONE);
+                error_no_data_remove_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.VISIBLE);
+
+                xrefreshView.setVisibility(View.GONE);
+
+                _start = 0;
+                onRefreshData(bubblingId, _start);
+
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // 动画回收
+        removeRotateAnimation();
+    }
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        // mRotateAnimation.setDuration(ROTATION_ANIMATION_DURATION);
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        error_to_load_img.setAnimation(mRotateAnimation);
+    }
+
+    /**
+     * 正在加载动画回收
+     */
+    private void removeRotateAnimation() {
+        // 动画回收
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            error_to_load_img.clearAnimation();
+        }
+    }
+
+}

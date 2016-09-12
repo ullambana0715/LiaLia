@@ -1,0 +1,312 @@
+package cn.chono.yopper;
+
+import cn.chono.yopper.data.VersionChkDTO;
+import cn.chono.yopper.smack.service.XXService;
+
+/**
+ * 系统常量 Author: sunquan
+ */
+public class YpSettings {
+
+    public static final boolean DEBUG = true;
+
+    public static final boolean isTest = true;
+
+
+    // 最大允许图片选择数量，key
+    public static final String KEY_MAX_ALLOWED_IMAGE_COUNT = "KEY_MAX_ALLOWED_IMAGE_COUNT";
+
+    // 拍照类型
+    public static final int CAMERAIMAGE = 9999; // 拍照上传
+    public static final int LOCALIMAGE = 9998; // 本地上传
+    public static final int LOCALIMAGE_BATCH = 9997; // 批量上传
+    public static final int RDITOR_LOCALIMAGE = 9990; // 批量上传图片（修改图片信息）
+
+    // 上传图片模块中使用的图片uri，或者是拍照设置的或者是选择图片后设置的，上传页面中读取该值
+    public static String uploadPictureUri = "";
+    public static int uploadPictureOrignalActivityId = 0;
+
+    // 百度地图是否可用
+    public static boolean gBaiduAvailable;
+
+    /**
+     * 图片暂存目录句柄
+     */
+    public static final String IMAGE_CACHE_DIRECTORY = "Yopper/image/";
+    /**
+     * 图片暂存目录句柄
+     */
+    public static final String IMAGE_CACHE_DIRECTORY_ICON = "icon/";
+    /**
+     * 图片暂存目录句柄
+     */
+    public static final String IMAGE_CACHE_DIRECTORY_CROPICON = "cropimage/";
+
+    public static final String APK_CACHE_DIRECTORY = "Yopper/apk/";
+
+    /**
+     * 进入主程序的延迟时间
+     */
+    public static final int TIME = 1000;
+
+    // 窗口跳转动画 右边进 左出
+    public static final int ACTIVITY_IN_RIGHT_OUT_LEFT_ANIM_TYPE = 100;
+
+    public final static String BUNDLE_KEY_WEB_URL_TYPE = "BUNDLE_KEY_WEB_URL_TYPE"; // 要加载的url界面标记
+     public final static String BUNDLE_KEY_WEB_URL = "BUNDLE_KEY_WEB_URL"; // 要加载的url
+    public final static String BUNDLE_KEY_WEB_TITLE = "BUNDLE_KEY_WEB_TITLE"; // 要加载的页面显示的title
+    public final static String BUNDLE_KEY_WEB_HIDE_TITLE = "BUNDLE_KEY_WEB_HIDE_TITLE"; // 跳到web页后是否要隐藏应用本身的title
+    public final static String BUNDLE_KEY_WEB_NEED_HOST = "BUNDLE_KEY_WEB_NEED_HOST"; // 跳到web页后是否需要加主机地址
+
+    /**
+     * 文件目录管理
+     */
+    public static final String CONFIG_FILE = "Config_Yopper"; // 配置信息句柄
+
+    public static final String IS_OPEAN_MESSAGE_VOICE = "Is_Opean_Message_voice"; // 配置信息句柄
+
+    public static XXService xxservice;
+
+    public static final String MESSAGE_OTHER_JID = "message_other_jid"; // 对方的jid
+
+    public static final String USERID = "userId"; // 用户id
+    public static final String USER_NAME = "user_name"; // 用户昵称
+    public static final String USER_DISLIKE = "user_dislike"; // 用户讨厌
+
+    public static final String USER_LIKE = "user_like"; // 用户喜欢
+
+    public static final String USER_INCOME = "user_income"; // 用户喜欢
+
+    public static final String USER_PROFESSION = "user_profession"; // 用户职位
+
+    public static final String USER_EMOTIONAL = "user_emotional"; // 用户情感状态
+
+    public static final String USER_HOMETOWN = "user_hometown"; // 用户家乡
+
+    public static final String USER_AGE = "user_age"; // 年龄
+
+    public static final String USER_AGE_VISIBILITY = "user_age_visibility"; // 年龄显示隐藏
+
+    public static final String USER_HEIGHT = "user_height"; // 身高
+
+    public static final String USER_WEIGHT = "user_weight"; // 体重
+
+    public static final String USER_LABLE = "user_lable"; // 标签
+
+    public static final String MESSAGE_OTHER_HEAD_IMG = "message_other_head_img"; // 对方的头像
+
+    public static final String MESSAGE_OTHER_NAME = "message_other_name"; // 对方的昵称
+
+    public static final String APPOINTMENT_INTENT_YTPE = "appointment_intent_type"; // 约会意愿类型
+
+    public static final String APPOINTMENT_MSG_STR = "appointment_msg_str"; // 约会消息
+
+    public static final String APPOINTMENT_ADDRESS = "appointment_address"; // 约会地址
+
+    public static final String ADDRESS_ID = "address_id"; // 约会地点id
+
+    public static final String ADDRESS_NAME = "address_name"; // 约会地点名
+
+    public static final String APPOINTMENT_CONTENT = "appoint_content"; // 约会内容
+
+    public static final String LATITUDE = "latitude"; // 经纬度
+
+    public static final String LONTITUDE = "lontitude"; // 经纬度
+
+
+    public static final String DATING_PURPOSE = "dating_purpose"; // 交友目的
+
+
+    public static final String NOTIFICATION_TITLE = "notification_title"; // 通知的标题：心动消息 冒泡通知
+
+    // public static String latitude;
+    // public static String lontitude;
+
+    public static boolean isNavigation = true;
+    public static boolean isDiscovertion = true;
+    public static boolean isScheduledTime = true;
+
+//    public static final int CHATAPPOINT = 7878; // 聊天约会请求
+
+//    public static final int CHATAPPOINT_DETAIL = 8787; // 聊天约会聊天详情
+    public static final int CHATAPPOINT_BUMP = 9797; // 磁-碰--约会
+
+    public static final String INTENT_RESULT_CODE = "intent_result_code";
+
+    public static final int FLAG_CHOOSE_IMG = 5;
+    public static final int FLAG_CHOOSE_PHONE = 6;
+    public static final int FLAG_MODIFY_FINISH = 7;
+
+    public static final int FLAG_MODIFY_FINISH_SELECT_ONE = 1111;
+    /**
+     * 标记
+     */
+    public static int isUser;
+    /**
+     * 标记
+     */
+    public static String isUserTag = "isUserTag";
+    /**
+     * // 姓名
+     */
+
+    public static int item_name = 0;
+    /**
+     * // 情感状态
+     */
+    public static int item_affective_state = 1;
+    /**
+     * // 职业
+     */
+    public static int item_job = 2;
+    /**
+     * // 年龄
+     */
+    public static int item_age = 3;
+    /**
+     * // 家乡
+     */
+    public static int item_location = 4;
+    /**
+     * :// 喜欢
+     */
+    public static int item_like = 5;
+    /**
+     * // 讨厌
+     */
+    public static int item_dislike = 6;
+    /**
+     * // 身高/体重
+     */
+    public static int item_height_weight = 7;
+    /**
+     * 限定年龄
+     */
+    public static int time_h = 14;
+
+    public static final String IMAGE_POSITION = "com.nostra13.example.universalimageloader.IMAGE_POSITION";
+    public static final String suppose = "suppose";
+    public static final String album_invite = "album_invite";
+
+    public static final String FRIEND_HEAD_IMG = "friend_head_img"; // 朋友头像
+
+    public static final String FRIEND_ID = "friend_id"; // 朋友id
+
+    public static final String FRIEND_NICK = "friend_nick"; // 朋友昵称
+
+    public static final String APPOINTMENT_ID = "appointment_id"; // 约会id
+
+    public static String BUNDLE_UPDATE_URL = "updateUrl";
+    public static String BUNDLE_UPDATE_SAVE_NAME = "updateSaveName";
+    public static String BUNDLE_UPDATE_APP_NAME = "updateAppName";
+
+    // 版本检查结果全局变量
+    public static VersionChkDTO gVersionChkDTO;
+
+    public static final String IS_SYSTEM_ACCOUNT = "is_system_account"; // 是否是系统账号
+
+    public static final String CHAT_IMAGE_URL = "chat_image_url"; // 图片URL
+
+    public static final String UPDATE_SAVENAME = "Yopper_newVer.apk"; // 新版本保存名
+
+
+    public static final String ConnectionClosedOnErrorMsg = "ConnectionClosedOnErrorMsg";
+
+    public static final String message_voice_time = "message_voice_time";
+
+    public static final String FROM_PAGE = "from_page";
+    public static final int IMG_SIZE_150 = 150;
+    public static final int IMG_SIZE_300 = 300;
+    public static final int IMG_SIZE_360 = 360;
+    public static final int USER_COMPILE = 11;
+    public static final int USER_Mssage = 333;
+
+    public static final int HEAD_IMG_REGISTER = 12;
+
+    public static final int FLAG_CONSTELLATION = 13;
+
+    public static final String APPOINTMENT_TAB_ID = "Appointment_tab_id";
+    public static final String DISCOVER_TAB_ID = "Discover_tab_id";
+
+    public static final String PHOTO_TAG = "PHOTO_TAG";
+    public static final String PHOTO_TAG_NMAE = "PHOTO_TAG_NAEM";
+    public static final String PHOTO_TAG_LIST = "PHOTO_TAG_LIST";
+    public static final String PHOTO_TAG_LIST_BUCKET = "PHOTO_TAG_LIST_BUCKET";
+    public static final int PHOTO_SELECT = 511;
+    public static final int PHOTO_BUBBLING = 411;
+    public static final int PHOTO_TYPE = 311;
+
+    public static final String PHOTO_GALLERY_TAG = "PHOTO_GALLERY_TAG";
+    public static final int PHOTO_TAG_LIST_ONE = 511;
+    public static final int PHOTO_TAG_LIST_ADD = 611;
+    public static final String BUBBLING_LIST = "bubblingList";
+    public static final String BUBBLING_LIST_ID = "BUBBLING_LIST_ID";
+    public static final String ADDRESS_LIST_DTO = "ADDRESS_LIST_DTO";
+    public static final String ZOOM_LIST_DTO = "ZOOM_LIST_DTO";
+
+    public static final String SCORE_ZOOM_LIST_DTO = "SCORE_ZOOM_LIST_DTO";
+
+    public static boolean isBumpOnClick = true;
+    public static boolean isBumData = true;
+
+    public static String BUBBLING_PUBLISH = "BUBBLING_PUBLISH";
+
+    public static String APPOINTMENT_PUBLISH = "APPOINTMENT_PUBLISH";
+
+    public static String BUBBLING_ADDRESS_STR = "BUBBLING_ADDRESS_STR";
+
+    public static String BUBBLING_FROM_TAG_KEY = "BUBBLING_FROM_TAG_KEY";
+    public static String BUBBLING_FROM_TAG_DISCOVER = "BUBBLING_FROM_TAG_DISCOVER";
+
+    public static String BUBBLING_FROM_TAG_USERCENTER_MY = "BUBBLING _FROM_TAG_USERCENTER_MY";
+
+    public static final String VIDEO_PATH_NAME = "VIDEO_PATH_NAME";
+    public static final String VIDEO_PATH_NAME_IMG = "VIDEO_PATH_NAME_IMG";
+
+    public static String CONNECT_STATE = "CONNECT_STATE";
+    public static String PURPOSE_KEY = "PURPOSE_KEY";
+
+
+    public static final String VIDEO_URL = "VIDEO_URL";
+
+    public static final String VIDEO_IMG_URl = "VIDEO_IMG_URl";
+
+    public static final String VIDEO_STATE = "VIDEO_STATE";
+    public static final String VIDEO_OPEN = "VIDEO_OPEN";
+    public static final String VIDEO_PURPOSE = "VIDEO_PURPOSE";
+    public static final String VIDEO_CHAT_WITH_USER_ONLY = "VIDEO_CHAT_WITH_USER_ONLY";
+
+    public static final String DAILLY_TASK_P = "DAILLY_TASK_P";//今日任务--P果
+    public static final String DAILLY_TASK_SCORE = "DAILLY_TASK_SCORE";//今日任务--颜值打分
+
+    public static final String SCORE_START_LIFT = "SCORE_START_LIFT";//是否启动打个分
+    public static final String SCORE_START_TOP = "SCORE_START_TOP";//是否启动打个分
+    public static final String SCORE_START_RIGHT = "SCORE_START_RIGHT";//是否启动打个分
+    public static final String SCORE_START_BOTTOM = "SCORE_START_BOTTOM";//是否启动打个分
+    public static final String SCORE_START_WELCOME = "SCORE_START_WELCOME";//标记是不是第一次打开打分界面
+
+    public static final String SCORE_START_ISRefresh = "SCORE_START_ISRefresh";//标记是否需要刷新
+    public static final String SCORE_START_DATA_TAG = "daillyFaceratingCandidatesDtos";//标记是否需要刷新
+
+    public static final String FROM_TAG = "from_tag";//标记从哪个页面过来的
+    public static final int FROM_LOGIN = 1000;
+    public static final int FROM_REGIDTER = 1001;
+
+
+    public static final String USER_APPOINT = "USER_APPOINT";//标记从哪个页面过来的
+    public static final int USER_APPOINT_TODAY = 0;//标记从哪个页面过来的--约会历史
+    public static final int USER_APPOINT_HISTORY = 1;//标记从哪个页面过来的--我的约会
+
+    public static final String APPOINT_DETAIL_DIO_KEY = "APPOINT_DETAIL_DIO_KEY";//标记从哪个页面过来的--我的约会
+    public static final String APPOINT_ID_KEY = "APPOINT_ID_KEY";//标记从哪个页面过来的--我的约会
+
+    public static final int WEB_CODE=2000;
+    public static final String WEB_DATA_KEY="WEB_DATA_KEY";
+
+    public static final String SOURCE_YTPE_KEY="SOURCE_YTPE_KEY";
+
+    public static final String BannerId="BannerId";
+
+    public static final String BannerName="BannerName";
+
+}

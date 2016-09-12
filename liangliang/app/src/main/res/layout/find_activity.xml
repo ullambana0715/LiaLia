@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   android:background="@color/color_f8f8f7"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dip"
+        android:layout_gravity="top"
+        android:background="@color/color_ffffff"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/find_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+
+            android:singleLine="true"
+            android:text="发现"
+            android:textColor="@color/color_000000"
+            android:textSize="18sp" />
+
+
+
+
+    </RelativeLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+
+        android:id="@+id/find_context_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+</LinearLayout>

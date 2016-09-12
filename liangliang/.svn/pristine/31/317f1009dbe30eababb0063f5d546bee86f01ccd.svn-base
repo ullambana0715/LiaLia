@@ -1,0 +1,39 @@
+package cn.chono.yopper.Service.Http.BumpHistory;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class BumpHistoryBean extends ParameterBean {
+
+    private int userId;
+
+    private int Start;
+
+    private int Rows;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getStart() {
+        return Start;
+    }
+
+    public void setStart(int start) {
+        Start = start;
+    }
+
+    public int getRows() {
+        return Rows;
+    }
+
+    public void setRows(int rows) {
+        Rows = rows;
+    }
+}

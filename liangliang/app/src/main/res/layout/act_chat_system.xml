@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:layout_gravity="top"
+            android:background="@color/color_ffffff"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <!-- 返回按钮 -->
+
+            <LinearLayout
+                android:id="@+id/chat_goback_layout"
+                android:layout_width="80dip"
+                android:layout_height="30dip"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="0dip"
+                android:gravity="left|center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:gravity="center"
+                    android:paddingLeft="0dip"
+                    android:paddingRight="10dip"
+                    android:src="@drawable/icon_go_back"
+                    android:textColor="@color/color_ffffff"
+                    android:textSize="14dip" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/chat_title_tv"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="用户"
+                android:textColor="@color/color_333333"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="80dip"
+                android:layout_height="30dip"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:gravity="center_vertical|right"
+                android:orientation="horizontal"
+                android:visibility="invisible">
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <cn.chono.yopper.view.DragListView
+            android:id="@+id/chat_msg_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:divider="@null"
+            android:fadingEdge="none"
+            android:background="@color/color_f8f8f7"
+            android:listSelector="@android:color/transparent"
+            android:scrollbarStyle="insideInset"
+            android:scrollingCache="false"
+            android:transcriptMode="normal"
+            android:visibility="visible" />
+    </LinearLayout>
+
+</LinearLayout>

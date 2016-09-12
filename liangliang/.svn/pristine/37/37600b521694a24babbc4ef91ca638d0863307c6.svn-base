@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/chat_bg"
+    android:orientation="vertical"
+    android:paddingTop="0dp" >
+
+    <TextView
+        android:id="@+id/chat_item_dating_result_extramsg_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/chat_item_hint_bg"
+        android:gravity="center"
+        android:paddingBottom="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="2dp"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/text_color_white"
+        android:textSize="12sp" />
+
+</LinearLayout>

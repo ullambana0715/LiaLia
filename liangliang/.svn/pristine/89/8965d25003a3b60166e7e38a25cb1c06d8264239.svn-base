@@ -1,0 +1,42 @@
+package cn.chono.yopper.Service.Http.BumpHistory;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.BumpUserSync.BumpUserSyncRespBean;
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * 获取当前用户与目标用户碰的历史记录
+ * Created by zxb on 2015/11/21.
+ */
+public class BumpHistoryService extends HttpService {
+    public BumpHistoryService(Context context) {
+        super(context);
+    }
+
+  private   BumpHistoryBean historyBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass= BumpHistoryRespBean.class;
+        HashMap<String ,Object> HashMap=new HashMap<>();
+        HashMap.put("userId",historyBean.getUserId());
+        HashMap.put("Start",historyBean.getStart());
+        HashMap.put("Rows",historyBean.getRows());
+
+        callWrap= OKHttpUtils.get(context, HttpURL.bump_history,HashMap,okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+
+        historyBean= (BumpHistoryBean) iBean;
+
+    }
+}

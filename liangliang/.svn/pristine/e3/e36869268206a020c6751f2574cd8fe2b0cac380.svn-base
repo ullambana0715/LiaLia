@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/compile_done_bg"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/compile_done_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/compile_done_icon" />
+
+    <TextView
+        android:id="@+id/compile_done_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/compile_done_iv"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="90dp"
+        android:singleLine="true"
+        android:text="交友资料已完善"
+        android:textColor="#333333"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/compile_done_two_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/compile_done_tv"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="可以发布约会了喔"
+        android:textColor="#ff8424"
+        android:textSize="16sp" />
+
+</RelativeLayout>

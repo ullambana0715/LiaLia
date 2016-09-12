@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/video_commit_success_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/video_welcome_back_layout"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        >
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/icon_go_back" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="0dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical" >
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/video_welcome_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal" />
+        </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/video_welcome_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:gravity="top|center_horizontal"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="0.15" />
+
+                <TextView
+                    android:id="@+id/video_welcome_go_ver_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="0.8"
+                    android:background="@drawable/corners_orange_selected_style"
+                    android:gravity="center_horizontal"
+                    android:paddingBottom="6dp"
+                    android:paddingTop="6dp"
+                    android:text="我要认证"
+                    android:textColor="@drawable/font_selected_style_ffffff"
+                    android:textSize="18sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="0.15" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/video_welcome_verification_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="30dp"
+                android:text="视频认证规范"
+                android:textColor="@color/text_color_bbd9e3"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

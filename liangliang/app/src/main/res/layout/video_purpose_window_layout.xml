@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选择"
+            android:textColor="@color/color_ffffff"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="交友目的"
+            android:textColor="@color/color_ff7462"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/video_window_purpose_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:src="@drawable/video_window_purpose_friend_btn_bg" />
+
+    <ImageView
+        android:id="@+id/video_window_purpose_love"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:src="@drawable/video_window_purpose_love_btn_bg" />
+
+    <ImageView
+        android:id="@+id/video_window_purpose_married"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:src="@drawable/video_window_purpose_married_btn_bg" />
+</LinearLayout>

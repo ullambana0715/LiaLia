@@ -1,0 +1,40 @@
+package cn.chono.yopper.Service.Http.FaceratingList;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * Created by zxb on 2015/12/8.
+ */
+public class FaceratingListDto implements Serializable {
+
+    private List<FaceratingListDate> list;
+
+    private int start;
+
+    private String nextQuery;
+
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public String getNextQuery() {
+        return nextQuery;
+    }
+
+    public void setNextQuery(String nextQuery) {
+        this.nextQuery = nextQuery;
+    }
+
+    public List<FaceratingListDate> getList() {
+        return list;
+    }
+
+    public void setList(List<FaceratingListDate> list) {
+        this.list = list;
+    }
+}

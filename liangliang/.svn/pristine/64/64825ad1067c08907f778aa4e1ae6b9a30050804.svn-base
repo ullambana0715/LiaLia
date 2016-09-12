@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+     android:shape="rectangle">
+            <solid android:color="@color/qupai_import_toast_bg" />
+</shape><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/guide_qupai_bottom_bg_rect.xml -->

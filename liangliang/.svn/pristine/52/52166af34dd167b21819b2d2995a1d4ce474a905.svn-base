@@ -1,0 +1,2355 @@
+package cn.chono.yopper.activity.chat;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.baidu.mapapi.model.LatLng;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.BlockRequest.BlockRequestBean;
+import cn.chono.yopper.Service.Http.BlockRequest.BlockRequestService;
+import cn.chono.yopper.Service.Http.BubblingReport.BubblingReportBean;
+import cn.chono.yopper.Service.Http.BubblingReport.BubblingReportRespBean;
+import cn.chono.yopper.Service.Http.BubblingReport.BubblingReportService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.SendAttraction.SendAttractionBean;
+import cn.chono.yopper.Service.Http.SendAttraction.SendAttractionRespBean;
+import cn.chono.yopper.Service.Http.SendAttraction.SendAttractionService;
+import cn.chono.yopper.Service.Http.UploadingChatImage.UploadingChatImgBean;
+import cn.chono.yopper.Service.Http.UploadingChatImage.UploadingChatImgRespBean;
+import cn.chono.yopper.Service.Http.UploadingChatImage.UploadingChatImgService;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoRespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.usercenter.SelectOneAlbumTypeActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.adapter.ChatMessageAdapter;
+import cn.chono.yopper.adapter.EmoViewPagerAdapter;
+import cn.chono.yopper.adapter.EmoteAdapter;
+import cn.chono.yopper.data.AppointmentMsg;
+import cn.chono.yopper.data.AttractionMsg;
+import cn.chono.yopper.data.AttractionResultDto;
+import cn.chono.yopper.data.ImgMsg;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.TextMsg;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.data.UserInfoAppointment;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.photo.OneImageSelectedDto;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.smack.service.XXService;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCall;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.ChatUtils;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.Constants;
+import cn.chono.yopper.utils.ContextUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.FaceTextUtils;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.SHA;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.UUIDGenerator;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.DragListView;
+import cn.chono.yopper.view.MyDialog;
+import cn.chono.yopper.view.ResizeLayout;
+import cn.chono.yopper.view.FlowLeftLayout;
+
+@SuppressLint("HandlerLeak")
+public class ChatActivity extends MainFrameActivity implements DragListView.OnRefreshLoadingMoreListener, IConnectionStatusCallback, OnClickListener {
+
+    // 根布局
+    private static ResizeLayout chat_root_layout;
+
+    //	private XRefreshView chat_xRefreshView;
+
+    // 消息列表
+    private DragListView messageListView;
+
+    // 收到P果效果布局
+    private LinearLayout chat_receive_fruit_layout;
+
+
+    private LinearLayout chat_bottom_operate_layout;
+    // 网络提示
+    private LinearLayout net_hint_layout;
+
+    // 更多按钮
+    private LinearLayout chat_more_btn_layout;
+
+    private ImageView chat_more_btn;
+
+    // 输入框
+    private EditText chat_input_et;
+
+    // 表情按钮
+    private Button chat_expresion_btn;
+
+
+//    private LinearLayout chat_appointment_btn_layout;
+
+    // 约会按钮
+    private Button chat_cannot_send_btn;
+
+    // 发送按钮
+    private Button chat_send_btn;
+
+    // 更多内容布局
+    private LinearLayout chat_more_layout;
+
+    // 表情布局
+    private LinearLayout chat_more_face_layout;
+
+    // 表情页
+    private ViewPager chat_more_face_view_pager;
+
+    // 底部表情的类型
+    private LinearLayout chat_more_face_type_layout;
+
+    // 表情发送
+    private LinearLayout chat_more_face_send_layout;
+
+    // 更多其他内容布局 如位置 图片等
+    private LinearLayout chat_more_others_layout;
+
+    // 照片按钮
+    private LinearLayout chat_photo_layout;
+
+    // 相机按钮
+    private LinearLayout chat_camera_layout;
+
+    private LinearLayout chat_send_date_layout;
+
+    // 赠送P果
+    private LinearLayout chat_give_fruit_layout;
+
+    private LinearLayout  chat_bottom_hint_layout;
+
+    private LinearLayout chat_goback_layout;
+    private TextView chat_title_tv;
+    private ImageView chat_lable_status_iv;
+    private LinearLayout chat_option_layout;
+
+    private static final int BIGGER = 1;
+    private static final int SMALLER = 2;
+    private static final int MSG_RESIZE = 1;
+
+
+    private FlowLeftLayout chat_lable_flowlayout;
+    private TextView chat_lable_tv;
+    private LinearLayout chat_lable_layout;
+
+    private int curTat;// 当前的状态
+
+    private int face_or_others;// 100时点击了表情按钮 200时点击了更多按钮 300时候listview
+
+    private List<ChatDto> recoverlist;
+
+    private List<ChatDto> no_read_list;
+
+
+    private static ChatMessageAdapter messageAdapter;
+
+    private ReceiveFruitTimer receiveFruittimer;
+
+    // 一页10条数据
+    private int pagesize = 10;
+    // 页数
+    private static int pagecount = 0;
+
+    private static int cur_pagecount = 1;
+    // 页面数据余数
+    private int remainder_count = 0;
+
+    private static List<ChatDto> chatdtolist;
+    private Handler mhandler;
+
+    // 聊友对象信息
+    private UserDto userdto;
+    // 自己的信息
+
+    private boolean isopenFace = false;
+    private boolean isopenmore = false;
+
+    private String mAccount;
+    private String mPassword;
+
+    private NetState receiver;
+
+    private LinearLayout chat_face_indicator;//图片指示器
+
+    private boolean isLabel_opean;
+    @Override
+    public void connectionStatusChanged(int connectedState, String reason) {
+        if (connectedState == XXService.CONNECTED) {
+            SharedprefUtil.save(this, Constants.ACCOUNT, mAccount);// 帐号是一直保存的
+            SharedprefUtil.save(this, Constants.PASSWORD, mPassword);
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(this, Constants.MJD, mAccount + "@chono");
+
+        } else if (connectedState == XXService.DISCONNECTED) {
+            // 失败
+
+            SharedprefUtil.save(this, Constants.ACCOUNT, "");
+            SharedprefUtil.save(this, Constants.PASSWORD, "");
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(this, Constants.MJD, "");
+
+        }
+
+    }
+
+    public class LoginAsyncTask extends AsyncTask<Void, Integer, String> {
+
+        // 该方法并不运行在UI线程内，所以在方法内不能对UI当中的控件进行设置和修改
+        // 主要用于进行异步操作
+        @Override
+        protected String doInBackground(Void... params) {
+
+            SharedprefUtil.save(ChatActivity.this, Constants.ACCOUNT, YPApplication.loginUser.getUserId() + "");// 帐号是一直保存的
+            SharedprefUtil.save(ChatActivity.this, Constants.PASSWORD, YPApplication.loginUser.getAuthToken());
+            mAccount = YPApplication.loginUser.getUserId() + "";
+            mPassword = YPApplication.loginUser.getAuthToken();
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(ChatActivity.this, Constants.MJD, mAccount + "@chono");
+            YpSettings.xxservice.Login(mAccount, SHA.encodeByMD5(mPassword));
+
+            return null;
+
+        }
+
+        // 该方法运行在Ui线程内，可以对UI线程内的控件设置和修改其属性
+        @Override
+        protected void onPreExecute() {
+        }
+
+        // 在doInBackground方法当中，每次调用publishProgrogress()方法之后，都会触发该方法
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+
+        // 在doInBackground方法执行结束后再运行，并且运行在UI线程当中
+        // 主要用于将异步操作任务执行的结果展示给用户
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+
+    }
+
+    private class ReceiveFruitTimer extends CountDownTimer {
+
+        public ReceiveFruitTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onFinish() {
+            chat_receive_fruit_layout.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            chat_receive_fruit_layout.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    private class InputHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_RESIZE: {
+
+                    if (msg.arg1 == BIGGER) {
+                        curTat = BIGGER;
+                        setMoreLayoutVisible(true);
+
+                    } else {
+                        curTat = SMALLER;
+                        setMoreLayoutVisible(false);
+                    }
+                }
+                break;
+                default:
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    }
+
+    private InputHandler inputHandler = new InputHandler();
+
+    private static String mid;
+
+    private static int objectUserId;// 当前聊友的id
+
+    private static String mWithJabberID = "";
+
+    // private boolean is_system = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        PushAgent.getInstance(this).onAppStart();
+
+        mid = YPApplication.loginUser.getUserId() + "@chono";
+
+        ContextUtil.init(this);
+        chatdtolist = new ArrayList<ChatDto>();
+        setContentView(R.layout.chat_activity);
+
+        Bundle bundle = this.getIntent().getExtras();
+
+        if (bundle != null) {
+            if (bundle.containsKey(YpSettings.USERID)) {
+                objectUserId = bundle.getInt(YpSettings.USERID);
+            }
+
+        }
+
+        getMeDbUserData();
+
+        initComponent();
+
+
+
+        LocInfo myLoc = Loc.getLoc();
+        if (myLoc != null && myLoc.getLoc() != null) {
+            latitude = myLoc.getLoc().getLatitude();
+            longtitude = myLoc.getLoc().getLongitude();
+        }
+
+        mWithJabberID = objectUserId + "@chono";
+        getUserInfoWithID(objectUserId);
+
+        mhandler = new Handler();
+
+        try {
+            cur_pagecount = 1;
+            recoverlist = new ArrayList<ChatDto>();
+            recoverlist = YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("jid", " =", mWithJabberID).and("mid", " =", mid).orderBy("date"));
+            no_read_list = new ArrayList<ChatDto>();
+            no_read_list = YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("jid", " =", mWithJabberID).and("mid", " =", mid).and("status", " =", 0).orderBy("date"));
+            if (recoverlist != null && recoverlist.size() > 0) {
+
+                // private int pagesize=10;
+                // //页数
+                // private static int pagecount=0;
+                // //页面数据余数
+                // private int remainder_count=0;
+                isLabel_opean=false;
+                chat_lable_layout.setVisibility(View.GONE);
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+                chat_lable_status_iv.setBackgroundResource(R.drawable.lable_open_icon);
+
+
+                remainder_count = recoverlist.size() % pagesize;
+                if (remainder_count > 0) {
+                    pagecount = recoverlist.size() / pagesize + 1;
+                } else {
+                    pagecount = recoverlist.size() / pagesize;
+                }
+
+                if (pagecount > 1) {
+                    chatdtolist = recoverlist.subList(pagecount * pagesize - (cur_pagecount + 1) * pagesize + remainder_count, recoverlist.size());
+                    // 允许下拉
+                    messageAdapter = new ChatMessageAdapter(this, chatdtolist);
+                    messageListView.setAdapter(messageAdapter);
+                    messageListView.setSelection(chatdtolist.size() - 1);
+
+                } else {
+                    chatdtolist = recoverlist;
+                    // bu允许下拉
+                    // messageListView.R
+
+                    messageAdapter = new ChatMessageAdapter(this, chatdtolist);
+                    messageListView.setAdapter(messageAdapter);
+                    messageListView.setSelection(chatdtolist.size() - 1);
+                }
+
+            } else {
+                isLabel_opean=true;
+
+                if(YpSettings.isTest){
+                    if(objectUserId==129319){
+                        chat_lable_layout.setVisibility(View.GONE);
+                    }else{
+                        chat_lable_layout.setVisibility(View.VISIBLE);
+                        chat_lable_status_iv.setBackgroundResource(R.drawable.lable_close_icon);
+                    }
+                }else{
+                    if(objectUserId==103835){
+                        chat_lable_layout.setVisibility(View.GONE);
+                    }else{
+                        chat_lable_layout.setVisibility(View.VISIBLE);
+                        chat_lable_status_iv.setBackgroundResource(R.drawable.lable_close_icon);
+                    }
+                }
+
+                chat_bottom_hint_layout.setVisibility(View.VISIBLE);
+
+                messageAdapter = new ChatMessageAdapter(this, chatdtolist);
+                messageListView.setAdapter(messageAdapter);
+            }
+
+            if (no_read_list != null && no_read_list.size() > 0) {
+                for (int i = 0; i < no_read_list.size(); i++) {
+                    ChatDto dto = no_read_list.get(i);
+                    try {
+                        dto.setStatus(ChatDto.readed_status);
+                        YPApplication.getInstance().db.update(dto);
+                    } catch (DbException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+        if (YpSettings.xxservice != null) {
+
+            // 取得填入的用户和密码
+            if (!YpSettings.xxservice.isAuthenticated()) {
+                LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
+                loginAsyncTask.execute();
+            }
+
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("聊天"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        LoginUserInfo loginUserInfo = DbHelperUtils.getUserInfo(objectUserId);
+        if (loginUserInfo != null) {
+
+            userdto = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+            if (userdto != null) {
+                initTopLableData();
+            }
+        }
+
+        MobclickAgent.onPageStart("聊天"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+        if (YpSettings.xxservice != null) {
+            YpSettings.xxservice.registerConnectionStatusCallback(ChatActivity.this);
+        }
+
+        String file_Path = OneImageSelectedDto.select_image_path;
+        OneImageSelectedDto.select_image_path = "";
+        OneImageSelectedDto.select_image_w = 0;
+        OneImageSelectedDto.select_image_h = 0;
+        if (!CheckUtil.isEmpty(file_Path)) {
+            setUriBitmap(file_Path);
+        }
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            hideSoftInputView();
+            try {
+                no_read_list = new ArrayList<ChatDto>();
+                no_read_list = YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("jid", " =", mWithJabberID).and("mid", " =", mid).and("status", " =", 0).orderBy("date"));
+                if (no_read_list != null && no_read_list.size() > 0) {
+                    for (int i = 0; i < no_read_list.size(); i++) {
+                        ChatDto dto = no_read_list.get(i);
+                        try {
+                            dto.setStatus(ChatDto.readed_status);
+                            YPApplication.getInstance().db.update(dto);
+                        } catch (DbException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } catch (DbException e1) {
+                e1.printStackTrace();
+            }
+            finish();
+        }
+        return true;
+    }
+
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+        // 设置标题栏 标题栏设置为聊天对象的昵称
+        chat_goback_layout = (LinearLayout) this.findViewById(R.id.chat_goback_layout);
+        chat_title_tv = (TextView) this.findViewById(R.id.chat_title_tv);
+        chat_lable_status_iv = (ImageView) this.findViewById(R.id.chat_lable_status_iv);
+        chat_option_layout = (LinearLayout) this.findViewById(R.id.chat_option_layout);
+
+        chat_lable_flowlayout=(FlowLeftLayout) this.findViewById(R.id.chat_lable_flowlayout);
+        chat_lable_tv=(TextView) this.findViewById(R.id.chat_lable_tv);
+        chat_lable_layout=(LinearLayout) this.findViewById(R.id.chat_lable_layout);
+
+
+
+
+
+        chat_title_tv.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+
+                if(YpSettings.isTest){
+                    if(objectUserId!=129319){
+                        if(isLabel_opean){
+                            isLabel_opean=false;
+                            chat_lable_layout.setVisibility(View.GONE);
+                            chat_lable_status_iv.setBackgroundResource(R.drawable.lable_open_icon);
+                        }else{
+                            isLabel_opean=true;
+                            chat_lable_layout.setVisibility(View.VISIBLE);
+                            chat_lable_status_iv.setBackgroundResource(R.drawable.lable_close_icon);
+                        }
+                    }
+                }else{
+                    if(objectUserId!=103835){
+                        if(isLabel_opean){
+                            isLabel_opean=false;
+                            chat_lable_layout.setVisibility(View.GONE);
+                            chat_lable_status_iv.setBackgroundResource(R.drawable.lable_open_icon);
+                        }else{
+                            isLabel_opean=true;
+                            chat_lable_layout.setVisibility(View.VISIBLE);
+                            chat_lable_status_iv.setBackgroundResource(R.drawable.lable_close_icon);
+                        }
+                    }
+                }
+
+
+            }
+        });
+
+        chat_option_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+                hideSoftInputView();
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+                showOptionsDialog();
+
+            }
+        });
+
+        chat_goback_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                hideSoftInputView();
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+                try {
+                    no_read_list = new ArrayList<ChatDto>();
+                    no_read_list = YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("jid", " =", mWithJabberID).and("mid", " =", mid).and("status", " =", 0).orderBy("date"));
+                    if (no_read_list != null && no_read_list.size() > 0) {
+                        for (int i = 0; i < no_read_list.size(); i++) {
+                            ChatDto dto = no_read_list.get(i);
+                            try {
+                                dto.setStatus(ChatDto.readed_status);
+                                YPApplication.getInstance().db.update(dto);
+                            } catch (DbException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } catch (DbException e1) {
+                    e1.printStackTrace();
+                }
+                finish();
+            }
+        });
+
+        // 内容部分
+
+        chat_root_layout = (ResizeLayout) this.findViewById(R.id.chat_root_layout);
+
+        chat_receive_fruit_layout = (LinearLayout) this.findViewById(R.id.chat_receive_fruit_layout);
+
+        net_hint_layout = (LinearLayout) this.findViewById(R.id.net_hint_layout);
+
+        chat_bottom_operate_layout=(LinearLayout) this.findViewById(R.id.chat_bottom_operate_layout);
+        chat_more_btn_layout = (LinearLayout) this.findViewById(R.id.chat_more_btn_layout);
+
+        chat_more_btn = (ImageView) this.findViewById(R.id.chat_more_btn);
+
+        chat_input_et = (EditText) this.findViewById(R.id.chat_input_et);
+
+        chat_expresion_btn = (Button) this.findViewById(R.id.chat_expresion_btn);
+
+        chat_cannot_send_btn=(Button) this.findViewById(R.id.chat_cannot_send_btn);
+        chat_send_btn = (Button) this.findViewById(R.id.chat_send_btn);
+        chat_send_btn.setOnClickListener(this);
+
+        chat_more_layout = (LinearLayout) this.findViewById(R.id.chat_more_layout);
+
+        chat_more_face_layout = (LinearLayout) this.findViewById(R.id.chat_more_face_layout);
+
+        chat_more_face_view_pager = (ViewPager) this.findViewById(R.id.chat_more_face_view_pager);
+
+        chat_face_indicator = (LinearLayout) this.findViewById(R.id.chat_more_face_indicator);
+
+        chat_more_face_type_layout = (LinearLayout) this.findViewById(R.id.chat_more_face_type_layout);
+
+        chat_more_face_send_layout = (LinearLayout) this.findViewById(R.id.chat_more_face_send_layout);
+        chat_more_face_send_layout.setOnClickListener(this);
+
+        chat_more_others_layout = (LinearLayout) this.findViewById(R.id.chat_more_others_layout);
+
+        chat_photo_layout = (LinearLayout) this.findViewById(R.id.chat_photo_layout);
+        chat_photo_layout.setOnClickListener(this);
+
+        chat_camera_layout = (LinearLayout) this.findViewById(R.id.chat_camera_layout);
+        chat_camera_layout.setOnClickListener(this);
+
+        chat_send_date_layout = (LinearLayout) this.findViewById(R.id.chat_send_date_layout);
+        chat_send_date_layout.setOnClickListener(this);
+
+        chat_give_fruit_layout = (LinearLayout) this.findViewById(R.id.chat_give_fruit_layout);
+        chat_give_fruit_layout.setOnClickListener(this);
+
+        messageListView = (DragListView) this.findViewById(R.id.chat_msg_listView);
+
+        chat_bottom_hint_layout=(LinearLayout) this.findViewById(R.id.chat_bottom_hint_layout);
+
+
+        if(YpSettings.isTest){
+            if(objectUserId==129319){
+                chat_option_layout.setVisibility(View.INVISIBLE);
+                chat_lable_status_iv.setVisibility(View.GONE);
+                chat_lable_layout.setVisibility(View.GONE);
+                chat_bottom_operate_layout.setVisibility(View.GONE);
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+            }
+        }else{
+            if(objectUserId==103835){
+                chat_option_layout.setVisibility(View.INVISIBLE);
+                chat_lable_status_iv.setVisibility(View.GONE);
+                chat_lable_layout.setVisibility(View.GONE);
+                chat_bottom_operate_layout.setVisibility(View.GONE);
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+            }
+        }
+
+
+
+        receiver = new NetState();
+        IntentFilter filter = new IntentFilter();
+
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        this.registerReceiver(receiver, filter);
+        receiver.onReceive(this, null);
+
+        messageListView.setOnRefreshListener(this);
+        messageListView.setPullLoadEnable(false);
+
+        messageListView.setDividerHeight(0);
+
+        chat_root_layout.setOnResizeListener(new ResizeLayout.OnResizeListener() {
+            public void OnResize(int w, int h, int oldw, int oldh) {
+                int change = BIGGER;
+                if (h < oldh) {
+                    change = SMALLER;
+                }
+                Message msg = new Message();
+                msg.what = 1;
+                msg.arg1 = change;
+                inputHandler.sendMessage(msg);
+            }
+        });
+        chat_more_layout.setTag(100);
+        chat_more_layout.setVisibility(View.GONE);
+
+        curTat = BIGGER;// 界面控制在了刚进入什么都是隐藏的状态，故这个值可以这么给初始化
+
+        // 更多按钮
+        chat_more_btn_layout.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+
+                chat_input_et.requestFocus();
+                chat_input_et.setCursorVisible(false);
+
+                if (isopenmore) {
+                    chat_more_layout.setVisibility(View.GONE);
+                    chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+
+                    isopenmore = false;
+                    return;
+                }
+
+                chat_more_layout.setTag(1000);
+
+                face_or_others = 200;
+
+                if (curTat == SMALLER) {// 软键盘显示了
+                    changeInput();
+                } else {
+                    setMoreLayoutVisible(true);
+                }
+
+            }
+        });
+
+        // 表情按钮
+        chat_expresion_btn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+
+                chat_input_et.requestFocus();
+                chat_input_et.setCursorVisible(true);
+
+                if (isopenFace) {
+                    chat_more_layout.setVisibility(View.GONE);
+                    isopenFace = false;
+                    changeInput();
+                    chat_expresion_btn.setBackgroundResource(R.drawable.chat_expresion_btn_bg);
+                    return;
+                }
+
+
+                isopenFace = false;
+                isopenmore = true;
+
+                chat_more_layout.setTag(1000);
+                face_or_others = 100;
+                // 弹出照片 拍照 位置 语音 赠送P果等功能面板
+                if (curTat == SMALLER) {// 软键盘显示了
+                    changeInput();
+                } else {
+                    setMoreLayoutVisible(true);
+                }
+
+            }
+        });
+
+        // 文本输入框监控 点击隐藏约会信息 有文字输入则显示发送按钮 隐藏约会按钮
+        chat_input_et.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                      int arg3) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1,
+                                          int arg2, int arg3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+
+                if (!CheckUtil.isEmpty(arg0.toString().trim())) {
+                    // 有文字输入则显示发送按钮 隐藏约会按钮
+                    chat_cannot_send_btn.setVisibility(View.GONE);
+                    chat_send_btn.setVisibility(View.VISIBLE);
+                } else {
+                    chat_send_btn.setVisibility(View.GONE);
+                    chat_cannot_send_btn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        chat_input_et.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                chat_lable_layout.setVisibility(View.GONE);
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+                chat_more_layout.setVisibility(View.GONE);
+                chat_input_et.setCursorVisible(true);
+                return false;
+            }
+        });
+
+
+        messageListView.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+
+                face_or_others = 300;
+                //
+                hideSoftInputView();
+
+                chat_more_layout.setVisibility(View.GONE);
+
+                chat_bottom_hint_layout.setVisibility(View.GONE);
+
+                chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+                chat_expresion_btn.setBackgroundResource(R.drawable.chat_expresion_btn_bg);
+
+                return false;
+            }
+        });
+
+
+        initEmoView();
+
+    }
+
+    List<String> emos;
+
+    /**
+     * 初始化表情布局
+     *
+     * @param
+     * @return void
+     * @throws
+     * @Title: initEmoView
+     */
+    private void initEmoView() {
+
+        emos = FaceTextUtils.emoList;
+
+        List<View> views = new ArrayList<View>();
+        for (int i = 0; i < 3; ++i) {
+            views.add(getGridView(i));
+        }
+        initLayout();
+        chat_more_face_view_pager.setAdapter(new EmoViewPagerAdapter(views));
+        chat_more_face_view_pager.addOnPageChangeListener(new PageChageListener());
+    }
+
+    class PageChageListener implements OnPageChangeListener {
+
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+        }
+
+        @Override
+        public void onPageSelected(int arg0) {
+            // 更改指示器图片
+            for (int i = 0; i < indicators.length; i++) {
+                indicators[arg0].setBackgroundResource(R.drawable.near_detail_img_selected);
+                if (arg0 != i) {
+                    indicators[i].setBackgroundResource(R.drawable.near_detail_img_no_selected);
+                }
+            }
+
+        }
+
+    }
+
+    private ImageView[] indicators = null;
+
+    private LinearLayout.LayoutParams params;
+
+    /**
+     * 手机密度
+     */
+    private ImageView indicator_view;
+
+    private void initLayout() {
+        indicators = new ImageView[3]; // 定义指示器数组大小
+
+        for (int i = 0; i < 3; i++) {
+
+            int imagePadding = 10;
+            params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            params.setMargins(imagePadding, imagePadding, imagePadding, imagePadding);
+
+            // 循环加入指示器
+            indicator_view = new ImageView(this);
+            indicator_view.setBackgroundResource(R.drawable.near_detail_img_no_selected);
+
+            indicators[i] = indicator_view;
+            if (i == 0) {
+                indicators[i].setBackgroundResource(R.drawable.near_detail_img_selected);
+            }
+            chat_face_indicator.addView(indicators[i], params);
+
+        }
+        chat_face_indicator.setVisibility(View.VISIBLE);
+    }
+
+
+    private View getGridView(final int i) {
+        View view = View.inflate(this, R.layout.include_emo_gridview, null);
+        GridView gridview = (GridView) view.findViewById(R.id.gridview);
+        List<String> list = new ArrayList<String>();
+
+        if (i == 0) {
+            list.addAll(emos.subList(0, 18));
+        } else if (i == 1) {
+            list.addAll(emos.subList(18, 36));
+        }else if (i == 2){
+            list.addAll(emos.subList(36, emos.size()));
+        }
+
+        final EmoteAdapter gridAdapter = new EmoteAdapter(ChatActivity.this, list);
+        gridview.setAdapter(gridAdapter);
+        gridview.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+
+                if (i == 0 || i==1) {
+                    if (position == 17) {
+                        faceDeletefun();
+                    } else {
+                        inputFaceFun(position+i*18);
+                    }
+                } else {
+                    if (position == 5) {
+                        faceDeletefun();
+                    } else {
+                        inputFaceFun(position + 36);
+                    }
+                }
+
+            }
+        });
+        return view;
+    }
+
+    private void inputFaceFun(int position) {
+        String emo_Str = "[" + FaceTextUtils.expression_text[position] + "]";
+
+        int start = chat_input_et.getSelectionStart();
+        CharSequence content = chat_input_et.getText().insert(start, emo_Str);
+        SpannableString spannableString = FaceTextUtils.toSpannableString(ChatActivity.this, content.toString());
+        chat_input_et.setText(spannableString, TextView.BufferType.SPANNABLE);
+        // chat_input_et.setText(content);
+        // 定位光标位置
+        CharSequence info = chat_input_et.getText();
+        if (info instanceof Spannable) {
+            Spannable spanText = (Spannable) info;
+            Selection.setSelection(spanText, start + emo_Str.length());
+        }
+    }
+
+    private void faceDeletefun() {
+
+        int start = chat_input_et.getSelectionStart();
+        if (start > 0) {
+
+            boolean no_face = true;
+            String emo_str_one = "";
+            String emo_str_two = "";
+            String emo_str_three = "";
+            String input_str = chat_input_et.getText().toString();
+            if (input_str.length() >= 4) {
+                emo_str_one = input_str.substring(start - 4, start);
+            }
+            if (input_str.length() >= 3) {
+                emo_str_two = input_str.substring(start - 3, start);
+            }
+            if (input_str.length() >= 5) {
+                emo_str_three = input_str.substring(start - 5, start);
+            }
+
+            String face_str = "";
+            for (int i = 0; i < FaceTextUtils.expression_text.length - 1; i++) {
+                face_str = "[" + FaceTextUtils.expression_text[i].toString()
+                        + "]";
+                if (emo_str_one.equals(face_str)) {
+                    // String conent = input_str.substring(0, start - 5)
+                    // + input_str.substring(start + 1);
+                    chat_input_et.getEditableText().delete(start - 4, start);
+                    SpannableString spannableString = FaceTextUtils.toSpannableString(ChatActivity.this, chat_input_et.getText().toString());
+                    chat_input_et.setText(spannableString, TextView.BufferType.SPANNABLE);
+                    chat_input_et.setSelection(start - 4);
+                    no_face = false;
+                    break;
+                }
+
+                if (emo_str_two.equals(face_str)) {
+                    // String conent = input_str.substring(0, start - 4)
+                    // + input_str.substring(start + 1);
+                    chat_input_et.getEditableText().delete(start - 3, start);
+                    SpannableString spannableString = FaceTextUtils.toSpannableString(ChatActivity.this, chat_input_et.getText().toString());
+                    chat_input_et.setText(spannableString, TextView.BufferType.SPANNABLE);
+                    chat_input_et.setSelection(start - 3);
+                    no_face = false;
+                    break;
+                }
+                if (emo_str_three.equals(face_str)) {
+                    // String conent = input_str.substring(0, start - 4)
+                    // + input_str.substring(start + 1);
+                    chat_input_et.getEditableText().delete(start - 5, start);
+                    SpannableString spannableString = FaceTextUtils.toSpannableString(ChatActivity.this, chat_input_et.getText().toString());
+                    chat_input_et.setText(spannableString, TextView.BufferType.SPANNABLE);
+                    chat_input_et.setSelection(start - 5);
+                    no_face = false;
+                    break;
+                }
+            }
+
+            if (no_face) {
+                chat_input_et.getEditableText().delete(start - 1, start);
+                SpannableString spannableString = FaceTextUtils.toSpannableString(ChatActivity.this, chat_input_et.getText().toString());
+                chat_input_et.setText(spannableString, TextView.BufferType.SPANNABLE);
+                chat_input_et.setSelection(start - 1);
+            }
+
+        }
+    }
+
+    private void setMoreLayoutVisible(boolean show) {
+        if (null != chat_more_layout) {
+            int id = (Integer) chat_more_layout.getTag();
+            if (show && id == 1000) {
+                if (face_or_others == 200) {
+                    chat_more_btn.setBackgroundResource(R.drawable.chat_more_add_off);
+                    chat_more_layout.setVisibility(View.VISIBLE);
+                    chat_more_face_layout.setVisibility(View.GONE);
+                    chat_more_others_layout.setVisibility(View.VISIBLE);
+                    chat_expresion_btn.setBackgroundResource(R.drawable.chat_expresion_btn_bg);
+
+                    isopenFace = false;
+                    isopenmore = true;
+
+                } else if (face_or_others == 100) {
+                    chat_more_layout.setVisibility(View.VISIBLE);
+                    chat_more_face_layout.setVisibility(View.VISIBLE);
+                    chat_more_others_layout.setVisibility(View.GONE);
+                    chat_expresion_btn.setBackgroundResource(R.drawable.chat_input_btn_bg);
+                    chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+
+                    isopenFace = true;
+                    isopenmore = false;
+
+                } else {
+                    chat_more_layout.setVisibility(View.GONE);
+                    chat_more_face_layout.setVisibility(View.GONE);
+                    chat_more_others_layout.setVisibility(View.GONE);
+                    chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+                    chat_expresion_btn.setBackgroundResource(R.drawable.chat_expresion_btn_bg);
+                    isopenFace = false;
+                    isopenmore = false;
+                }
+
+            } else {
+                chat_more_layout.setVisibility(View.GONE);
+
+                chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+                chat_expresion_btn.setBackgroundResource(R.drawable.chat_expresion_btn_bg);
+                isopenFace = false;
+                isopenmore = false;
+            }
+        }
+    }
+
+    /**
+     * 反复切换软键盘
+     */
+    private void changeInput() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+    }
+
+    /**
+     * 隐藏软键盘 hideSoftInputView
+     *
+     * @param
+     * @return void
+     * @throws
+     * @Title: hideSoftInputView
+     */
+    public void hideSoftInputView() {
+        InputMethodManager manager = ((InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE));
+        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getCurrentFocus() != null)
+                manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        // 下拉加载更多
+        mhandler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+
+                cur_pagecount = cur_pagecount + 1;
+                if (cur_pagecount - pagecount == 0) {
+                    messageListView.setPullRefreshEnable(false);
+                    // messageListView.removeHeadView(ChatActivity.this);
+                    List<ChatDto> pageList = recoverlist.subList(0, remainder_count);
+                    List<ChatDto> allList = new ArrayList<ChatDto>();
+                    for (int i = 0; i < pageList.size(); i++) {
+                        allList.add(pageList.get(i));
+                    }
+                    for (int i = 0; i < chatdtolist.size(); i++) {
+                        allList.add(chatdtolist.get(i));
+                    }
+                    chatdtolist = allList;
+                    messageAdapter.setList(chatdtolist);
+                    messageAdapter.notifyDataSetChanged();
+                } else if (cur_pagecount < pagecount) {
+                    int start = pagecount * pagesize - (cur_pagecount + 1) * pagesize + remainder_count;
+                    int end = (pagecount - cur_pagecount) * pagesize + remainder_count;
+                    List<ChatDto> pageList = recoverlist.subList(start, end);
+                    List<ChatDto> allList = new ArrayList<ChatDto>();
+                    // 允许下拉
+                    messageListView.setPullRefreshEnable(true);
+                    // messageListView.initHeadView(ChatActivity.this,
+                    // System.currentTimeMillis()+"");;
+                    for (int i = 0; i < pageList.size(); i++) {
+                        allList.add(pageList.get(i));
+                    }
+                    for (int i = 0; i < chatdtolist.size(); i++) {
+                        allList.add(chatdtolist.get(i));
+                    }
+                    // messageListView.setSelection(15);
+
+                    chatdtolist = allList;
+                    messageAdapter.setList(chatdtolist);
+                    messageAdapter.notifyDataSetChanged();
+                    messageListView.setSelectionFromTop(12, 20);
+
+                } else {
+                    messageListView.setPullRefreshEnable(false);
+                }
+
+                messageListView.onRefreshComplete();
+            }
+
+        }, 2000);
+
+    }
+
+    // 发送消息
+    private void sendMessageIfNotNull(String str, int contenttype) {
+
+        switch (contenttype) {
+            // 发送文本消息
+            case 1:
+                if (!TextUtils.isEmpty(str)) {
+                    if (YpSettings.xxservice != null) {
+
+                        TextMsg textmsg = new TextMsg();
+                        textmsg.setType("text");
+                        textmsg.setText(str);
+
+                        long date = System.currentTimeMillis();
+                        String message = JsonUtils.toJson(textmsg);
+                        String packetId= UUIDGenerator.getUUID();
+
+                        ChatDto chatDto = new ChatDto(mid, mWithJabberID, message,
+                                date, ChatDto.s_type, ChatDto.readed_status, packetId,
+                                ChatDto.sending);
+                        setChatdtolist(chatDto);
+
+                        ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, message,date,ChatDto.s_type,ChatDto.readed_status,packetId,ChatDto.sending);
+                        ChatUtils.saveMessageRecord(message,mWithJabberID, ChatDto.sending, 0, ChatDto.s_type,date);
+
+                        // 发送消息
+                        if (YpSettings.xxservice != null) {
+                            YpSettings.xxservice.sendMessage(mWithJabberID, message, date,packetId);
+                        }
+
+                        // saveChatMsg(mWithJabberID, message,ChatDto.sending,
+                        // date);
+                    }
+                }
+                break;
+
+            // 发送P果消息
+            case 2:
+                if (!TextUtils.isEmpty(str)) {
+
+                    AttractionMsg msg = new AttractionMsg();
+                    msg.setType("Attraction");
+
+                    long date = System.currentTimeMillis();
+                    String message = JsonUtils.toJson(msg);
+                    String packetId= UUIDGenerator.getUUID();
+
+                    ChatDto chatDto = new ChatDto(mid, mWithJabberID, message,
+                            date, ChatDto.s_type, ChatDto.readed_status, packetId,
+                            ChatDto.sending);
+
+                    setChatdtolist(chatDto);
+
+                    ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, message, date,ChatDto.s_type,ChatDto.readed_status,packetId,ChatDto.sending);
+                    ChatUtils.saveMessageRecord(message,mWithJabberID, ChatDto.sending,0,ChatDto.s_type,date);
+                    send_attraction(message, mWithJabberID, date,packetId);
+
+
+
+
+                }
+                break;
+
+        }
+
+    }
+
+    private Uri url;
+
+    @Override
+    public void ReceiveNewMsg(ChatDto dto) {
+
+        if (chatdtolist != null && chatdtolist.size() > 0) {
+            if (dto.getJid().equals(mWithJabberID)) {
+
+                try {
+                    dto.setStatus(ChatDto.readed_status);
+                    YPApplication.getInstance().db.update(dto);
+
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+
+                chatdtolist.add(dto);
+                messageAdapter.setList(chatdtolist);
+                // messageListView.setSelection(messageAdapter.getCount()-1);
+            }
+
+        } else {
+
+            if (dto.getJid().equals(mWithJabberID)) {
+                chatdtolist = new ArrayList<ChatDto>();
+                try {
+                    dto.setStatus(ChatDto.readed_status);
+                    YPApplication.getInstance().db.update(dto);
+
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+                chatdtolist.add(dto);
+                messageAdapter = new ChatMessageAdapter(this, chatdtolist);
+                messageListView.setAdapter(messageAdapter);
+                messageListView.setSelection(messageAdapter.getCount() - 1);
+                messageAdapter.setList(chatdtolist);
+                // messageAdapter.notifyDataSetChanged();
+
+            }
+        }
+
+        if (dto != null) {
+            if (dto.getJid().equals(mWithJabberID)) {
+
+                try {
+                    JSONObject json = new JSONObject(dto.getMessage());
+                    if (json != null) {
+                        String type;
+                        type = json.getString("type");
+
+                        if (type.equals(MessageType.Attraction)) {
+                            if (receiveFruittimer != null) {
+                                receiveFruittimer.cancel();
+                                receiveFruittimer.start();
+                            } else {
+                                receiveFruittimer = new ReceiveFruitTimer(4000, 1000);
+                                receiveFruittimer.start();
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
+
+    @Override
+    public void ListenSendStatus(int send_status, String packetId) {
+        changeSendStatus(send_status, packetId);
+    }
+
+
+    @SuppressLint("NewApi")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        switch (requestCode) {
+
+            case YpSettings.CAMERAIMAGE:
+                if (null != url) {
+                    setUriBitmap(url);
+                }else {
+                    DialogUtil.showDisCoverNetToast(ChatActivity.this, "选取失败，请重新选择！");
+                }
+
+                break;
+
+            default:
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    /**
+     * @throws
+     * @Title: setChatdtolist
+     * @Description: 将消息显示listview
+     * @return: void
+     */
+
+    private void setChatdtolist(ChatDto chatDto) {
+
+        if (chatdtolist != null && chatdtolist.size() > 0) {
+            chatdtolist.add(chatDto);
+        } else {
+            chatdtolist = new ArrayList<ChatDto>();
+            chatdtolist.add(chatDto);
+        }
+
+        if (messageAdapter != null) {
+            messageAdapter.setList(chatdtolist);
+            messageListView.setAdapter(messageAdapter);
+            messageAdapter.notifyDataSetChanged();
+            if (chatdtolist.size() > 1) {
+                messageListView.setSelection(messageListView.FOCUS_DOWN);
+            }
+
+        } else {
+            messageAdapter = new ChatMessageAdapter(this, chatdtolist);
+            messageListView.setAdapter(messageAdapter);
+            messageAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    /**
+     * @throws
+     * @Title: setUriBitmap
+     * @Description: 上传图片前对图片的操作(这里用一句话描述这个方法的作用)
+     * @param: @param url
+     * @return: void
+     */
+    private void setUriBitmap(Uri url) {
+
+        String file_Path = ImgUtils.parseImgPath(this,url);
+        if (CheckUtil.isEmpty(file_Path)) {
+            DialogUtil.showDisCoverNetToast(ChatActivity.this, "选取失败，请重新选择！");
+            return;
+        }
+        Bitmap bm = ImgUtils.resizesBitmap(file_Path);
+
+        if (null != bm) {
+            // 保存在自己定义文件的路径
+            String filePath = ImgUtils.saveImgFile(ChatActivity.this, bm);
+            if (CheckUtil.isEmpty(filePath)) {
+                DialogUtil.showDisCoverNetToast(ChatActivity.this, "选取失败，请重新选择！");
+                return;
+            }
+
+            long date = System.currentTimeMillis();
+
+            ImgMsg msg = new ImgMsg();
+            msg.setType("img");
+            msg.setUrl("");
+            msg.setW(bm.getWidth());
+            msg.setH(bm.getHeight());
+
+            String message = JsonUtils.toJson(msg);
+            String packetId= UUIDGenerator.getUUID();
+
+            ChatDto chatDto = new ChatDto(mid, mWithJabberID, message, date,
+                    ChatDto.s_type, ChatDto.readed_status, packetId, ChatDto.sending,
+                    filePath);
+
+            // 加入消息列表
+            setChatdtolist(chatDto);
+
+            ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, message,date,ChatDto.s_type,ChatDto.readed_status,packetId,ChatDto.sending);
+            ChatUtils.saveMessageRecord(message,mWithJabberID, ChatDto.sending, 0, ChatDto.s_type,date);
+            // 上传图片
+            uploadingImg(filePath, date, bm.getWidth(), bm.getHeight(),packetId);
+
+
+
+        }else{
+            DialogUtil.showDisCoverNetToast(ChatActivity.this, "选取失败，请重新选择！");
+        }
+
+    }
+
+
+    private void setUriBitmap(String file_Path) {
+
+        //		String file_Path = parseImgPath(url);
+        if (CheckUtil.isEmpty(file_Path)) {
+            DialogUtil.showDisCoverNetToast(ChatActivity.this, "选取失败，请重新选择！");
+            return;
+        }
+        Bitmap bm = ImgUtils.resizesBitmap(file_Path);
+
+        if (null != bm) {
+            // 保存在自己定义文件的路径
+            String filePath = ImgUtils.saveImgFile(ChatActivity.this, bm);
+            if (CheckUtil.isEmpty(filePath)) {
+                DialogUtil.showDisCoverNetToast(ChatActivity.this, "选取失败，请重新选择！");
+                return;
+            }
+
+            long date = System.currentTimeMillis();
+
+            ImgMsg msg = new ImgMsg();
+            msg.setType("img");
+            msg.setUrl("");
+            msg.setW(bm.getWidth());
+            msg.setH(bm.getHeight());
+
+            String message = JsonUtils.toJson(msg);
+            String packetId= UUIDGenerator.getUUID();
+
+            ChatDto chatDto = new ChatDto(mid, mWithJabberID, message, date,
+                    ChatDto.s_type, ChatDto.readed_status, packetId, ChatDto.sending,
+                    filePath);
+            // 加入消息列表
+            setChatdtolist(chatDto);
+
+            ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, message,date,ChatDto.s_type,ChatDto.readed_status,packetId,ChatDto.sending);
+            ChatUtils.saveMessageRecord(message,mWithJabberID, ChatDto.sending, 0, ChatDto.s_type,date);
+            uploadingImg(filePath, date, bm.getWidth(), bm.getHeight(),packetId);
+
+
+        }else{
+            DialogUtil.showDisCoverNetToast(ChatActivity.this, "选取失败，请重新选择！");
+        }
+
+    }
+
+
+    /**
+     * 压缩上传图片 上传成功后改变聊天图片信息的发送状态
+     *
+     * @param filePath
+     * @param date
+     * @param w
+     * @param h
+     */
+    public static void uploadingImg(String filePath, final long date,final double w, final double h,final String packetId) {
+
+
+        UploadingChatImgBean uploadingChatImgBean = new UploadingChatImgBean();
+        uploadingChatImgBean.setFilePath(filePath);
+
+        UploadingChatImgService imgService = new UploadingChatImgService(ContextUtil.getContext());
+        imgService.parameter(uploadingChatImgBean);
+        imgService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UploadingChatImgRespBean imgRespBean = (UploadingChatImgRespBean) respBean;
+                try {
+
+
+                    String imgUrl = imgRespBean.getResp();
+
+                    ImgMsg msg = new ImgMsg();
+                    msg.setType("img");
+                    msg.setUrl(imgUrl);
+                    msg.setW(w);
+                    msg.setH(h);
+                    String message = JsonUtils.toJson(msg);
+
+                    ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, message,date,ChatDto.s_type,ChatDto.readed_status,packetId,ChatDto.succeed);
+                    ChatUtils.saveMessageRecord(message,mWithJabberID, ChatDto.succeed, 0, ChatDto.s_type,date);
+
+                    if (YpSettings.xxservice != null) {
+                        YpSettings.xxservice.sendMessage(mWithJabberID, message, date,packetId);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                ImgMsg msg = new ImgMsg();
+                msg.setType("img");
+                msg.setUrl("");
+                msg.setW(w);
+                msg.setH(h);
+                String message = JsonUtils.toJson(msg);
+                ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, message,date,ChatDto.s_type,ChatDto.readed_status,packetId,ChatDto.no_succeed);
+
+                ChatUtils.saveMessageRecord(message,mWithJabberID, ChatDto.no_succeed, 0, ChatDto.s_type,date);
+                changeSendStatus(ChatDto.no_succeed,packetId);
+                messageAdapter.notifyDataSetChanged();
+
+            }
+        });
+        imgService.enqueue();
+
+
+    }
+
+    /**
+     * 发送P果
+     */
+    public static void send_attraction(final String messages2,final String toJID, final long sendtime,final String packetid) {
+
+
+        SendAttractionBean sendAttractionBean = new SendAttractionBean();
+        sendAttractionBean.setUserId(YPApplication.loginUser.getUserId());
+        sendAttractionBean.setTargetUserId(objectUserId);
+        sendAttractionBean.setNotify(false);
+
+        SendAttractionService attractionService = new SendAttractionService(ContextUtil.getContext());
+        attractionService.parameter(sendAttractionBean);
+        attractionService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                SendAttractionRespBean attractionRespBean = (SendAttractionRespBean) respBean;
+                AttractionResultDto dto = attractionRespBean.getResp();
+                if(dto.getResultCode()==5){
+                    changeSendStatus(ChatDto.no_succeed, packetid);
+                    ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, messages2,sendtime,ChatDto.s_type,ChatDto.readed_status,packetid, ChatDto.no_succeed );
+                    ChatUtils.saveMessageRecord(messages2,mWithJabberID, ChatDto.no_succeed,0,ChatDto.s_type,sendtime);
+                    DialogUtil.showPsendToast(ContextUtil.getContext(), 1);
+
+                }else if(dto.getResultCode()==6){
+                    changeSendStatus(ChatDto.succeed, packetid);
+                    ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, messages2,sendtime,ChatDto.s_type,ChatDto.readed_status,packetid, ChatDto.succeed );
+                    ChatUtils.saveMessageRecord(messages2,mWithJabberID, ChatDto.succeed,0,ChatDto.s_type,sendtime);
+
+                }else{
+                    changeSendStatus(ChatDto.no_succeed, packetid);
+                    ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, messages2,sendtime,ChatDto.s_type,ChatDto.readed_status,packetid, ChatDto.no_succeed );
+                    ChatUtils.saveMessageRecord(messages2,mWithJabberID, ChatDto.no_succeed,0,ChatDto.s_type,sendtime);
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                changeSendStatus(ChatDto.no_succeed, packetid);
+                ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, messages2,sendtime,ChatDto.s_type,ChatDto.readed_status,packetid, ChatDto.no_succeed );
+                ChatUtils.saveMessageRecord(messages2,mWithJabberID, ChatDto.no_succeed,0,ChatDto.s_type,sendtime);
+
+                DialogUtil.showPsendToast(ContextUtil.getContext(), 2);
+            }
+        });
+
+        attractionService.enqueue();
+
+
+    }
+
+
+    /**
+     * 改变发送消息的发送状态
+     *
+     * @param send_status
+     */
+
+    private static void changeSendStatus(int send_status, String packetid) {
+
+        int size = chatdtolist.size();
+        for (int i = 0; i < size; i++) {
+            ChatDto dto = chatdtolist.get(i);
+            if (dto.getPacketid() == packetid) {
+                dto.setSend_status(send_status);
+                messageAdapter.notifyDataSetChanged();
+                chat_root_layout.postInvalidate();
+                break;
+            }
+        }
+    }
+
+    /**
+     * 网络状态广播接收者
+     *
+     * @author SQ
+     */
+    class NetState extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent arg1) {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo gprs = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (gprs != null && wifi != null) {
+
+                if (!gprs.isConnected() && !wifi.isConnected()) {
+                    // 网络连接断开，请检查网络
+                    net_hint_layout.setVisibility(View.VISIBLE);
+                    chat_title_tv.setText("未连接");
+                } else {
+                    net_hint_layout.setVisibility(View.GONE);
+                    if (userdto != null) {
+                        chat_title_tv.setText(userdto.getProfile().getName());
+                    }
+
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取聊友的信息 系统账号则不用获取
+     *
+     * @param id
+     */
+    private void getUserInfoWithID(final int id) {
+
+        LoginUserInfo loginUserInfo = DbHelperUtils.getUserInfo(id);
+        if (loginUserInfo != null) {
+
+            userdto = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+            if (userdto != null) {
+
+                initTopLableData();
+            }
+        }
+        getUserInfoHTTP(id);
+    }
+
+    private void initTopLableData(){
+        chat_title_tv.setText(userdto.getProfile().getName());
+        String location_str = CheckUtil.getSpacingTool(userdto.getDistance());
+        String age="";
+        String horoscope=CheckUtil.ConstellationMatching(userdto.getProfile().getHoroscope());
+
+        if(userdto.getProfile().getAge()!=null){
+            age=transAgeToStr(userdto.getProfile().getAge());
+        }
+
+        if(CheckUtil.isEmpty(age)){
+            chat_lable_tv.setText("• "+horoscope+ "座  "+location_str);
+        }else{
+            chat_lable_tv.setText("• "+age+"  "+horoscope+ "座  "+location_str);
+        }
+
+        if (!CheckUtil.isEmpty(userdto.getProfile().getTags()) && !userdto.getProfile().getTags().equals("null")) {
+            String tagStr = userdto.getProfile().getTags();
+            String tas[] = tagStr.split(",");
+            chat_lable_flowlayout.setVisibility(View.VISIBLE);
+            initLableViews(tas);
+        }else{
+            chat_lable_flowlayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void initLableViews(String[] lableList) {
+        chat_lable_flowlayout.removeAllViews();
+
+        ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 10;
+        lp.topMargin = 5;
+        lp.bottomMargin = 5;
+
+        if (lableList != null && lableList.length > 0) {
+
+            for (int i = 0; i < lableList.length; i++) {
+                TextView view = new TextView(this);
+                String lable_str=lableList[i];
+                view.setText(lable_str);
+
+                view.setTextSize(13);
+                boolean ishave = false;
+
+                if (mytas != null && mytas.length > 0) {
+                    for (int j = 0; j < mytas.length; j++) {
+                        if (lable_str.equals(mytas[j])) {
+                            ishave = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (ishave) {
+                    view.setTextColor(getResources().getColor(R.color.text_color_white));
+                    view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_lable_select_bg));
+                } else {
+                    view.setTextColor(getResources().getColor(R.color.text_color_818fb7));
+                    view.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_lable_show_bg));
+                }
+                chat_lable_flowlayout.addView(view, lp);
+            }
+        }
+    }
+
+    private double latitude = 0;
+    private double longtitude = 0;
+
+    /**
+     * 连网获取用户信息
+     *
+     * @param id
+     */
+    private void getUserInfoHTTP(final int id) {
+
+
+        LatLng pt = new LatLng(latitude, longtitude);
+        pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+
+        UserInfoBean userInfoBean = new UserInfoBean();
+
+        userInfoBean.setUserId(id);
+        userInfoBean.setAlbum(true);
+        userInfoBean.setBubble(true);
+        userInfoBean.setBump(true);
+        userInfoBean.setForDating(false);
+        userInfoBean.setWish(true);
+        userInfoBean.setVerification(true);
+        userInfoBean.setFaceRating(true);
+
+        if (latitude != 0 && longtitude != 0 && latitude != longtitude) {
+            userInfoBean.setLat(pt.latitude);
+            userInfoBean.setLng(pt.longitude);
+        }
+
+        UserInfoService userInfoService = new UserInfoService(this);
+        userInfoService.parameter(userInfoBean);
+        userInfoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UserInfoRespBean userInfoRespBean = (UserInfoRespBean) respBean;
+                userdto = userInfoRespBean.getResp();
+                String jsonstr = JsonUtils.toJson(userdto);
+                if (null != userdto) {
+                    initTopLableData();
+                    // 保存数据
+                    DbHelperUtils.saveUserInfo(id, jsonstr);
+                    // 保存数据
+                    DbHelperUtils.saveBaseUser(id, userdto);
+                }
+
+
+            }
+        }, new OnCallBackFailListener());
+        userInfoService.enqueue();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mhandler != null) {
+            mhandler.removeCallbacksAndMessages(null);
+        }
+        if (inputHandler != null) {
+            inputHandler.removeCallbacksAndMessages(null);
+        }
+        unregisterReceiver(receiver);
+        super.onDestroy();
+    }
+
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.chat_send_btn:// 发送
+                String str = chat_input_et.getText().toString();
+                chat_input_et.setText("");
+                sendMessageIfNotNull(str, 1);
+
+                break;
+            case R.id.chat_photo_layout:// 图片发送
+                try {
+
+                    Intent in = new Intent(ChatActivity.this, SelectOneAlbumTypeActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(YpSettings.PHOTO_TAG, YpSettings.PHOTO_SELECT);
+                    in.putExtras(bundle);
+
+                    startActivity(in);
+
+                    chat_more_layout.setVisibility(View.GONE);
+                    chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+                    isopenmore = false;
+                } catch (Exception e) {
+                    // DialogUtil.showToast(activity, "对不起，你的手机不支持本地上传图片");
+
+                }
+
+                break;
+            case R.id.chat_camera_layout:// 拍照
+
+                try {
+
+                    String fileName = System.currentTimeMillis() + ".jpg";
+                    url = ActivityUtil.captureImage(ChatActivity.this, YpSettings.CAMERAIMAGE, fileName, "Image capture by camera for " + ChatActivity.this.getString(R.string.app_name));
+                    chat_more_layout.setVisibility(View.GONE);
+                    chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+                    isopenmore = false;
+                } catch (Exception e) {
+                    // DialogUtil.showToast(activity, "对不起，你的手机不支持本地上传图片");
+                }
+
+                break;
+
+            case R.id.chat_give_fruit_layout:// P果发送
+
+                String fruit_str = "赠送[P果]";
+                sendMessageIfNotNull(fruit_str, 2);
+                break;
+
+            case R.id.chat_send_date_layout:// 约会
+                chat_more_layout.setVisibility(View.GONE);
+
+//                Bundle bundle = new Bundle();
+//                bundle.putInt(YpSettings.USERID, objectUserId);
+//                bundle.putString(YpSettings.FROM_PAGE, "ChatActivity");
+//                ActivityUtil.jumpForResult(ChatActivity.this, ChatAppointActivity.class, bundle, YpSettings.CHATAPPOINT, 0, 100);
+
+                //从数据库中取出自己的约会列表
+                if(appointmentList!=null && appointmentList.size()>0){
+                    sendDatingHintDialog=DialogUtil.createChatSendDatingHintDialog(ChatActivity.this,appointmentList,new sendDatingBackCall());
+                    sendDatingHintDialog.show();
+                }else{
+                    DialogUtil.showDisCoverNetToast(ChatActivity.this,"你还没有约会,先去发布一条吧");
+                }
+                chat_more_layout.setVisibility(View.GONE);
+                chat_more_btn.setBackgroundResource(R.drawable.chat_more_bg);
+                isopenmore = false;
+                break;
+
+            case R.id.chat_more_face_send_layout:// 发送
+                String content = chat_input_et.getText().toString();
+                chat_input_et.setText("");
+                sendMessageIfNotNull(content, 1);
+
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private  class sendDatingBackCall extends  BackCall{
+        @Override
+        public void deal(int which, Object... obj) {
+            super.deal(which, obj);
+            switch (which){
+                case R.id.chat_send_dating_one_layout:
+                    sendDatingHintDialog.dismiss();
+                    UserInfoAppointment dtoone=(UserInfoAppointment)obj[0];
+                    sendAppointment(dtoone);
+                    break;
+
+                case R.id.chat_send_dating_two_layout:
+                    sendDatingHintDialog.dismiss();
+                    UserInfoAppointment dtotwo=(UserInfoAppointment)obj[0];
+                    sendAppointment(dtotwo);
+                    break;
+                case R.id.chat_send_dating_three_layout:
+                    sendDatingHintDialog.dismiss();
+                    UserInfoAppointment dtothree=(UserInfoAppointment)obj[0];
+                    sendAppointment(dtothree);
+                    break;
+            }
+        }
+    }
+
+
+    private void sendAppointment(UserInfoAppointment dto){
+        AppointmentMsg appointmentMsg=new AppointmentMsg();
+        appointmentMsg.setDateContent(dto.getContent());
+        appointmentMsg.setDateId(dto.getId());
+        appointmentMsg.setDateType(dto.getActivityType());
+        appointmentMsg.setType("appointment");
+        appointmentMsg.setId(UUIDGenerator.getUUID());
+
+        //通过opeanfire发送约会消息
+        sendDatingHintDialog.dismiss();
+        long date = System.currentTimeMillis();
+        String appoint_msg = JsonUtils.toJson(appointmentMsg);
+        String packetId= UUIDGenerator.getUUID();
+        ChatDto chatDto = new ChatDto(mid, mWithJabberID, appoint_msg, date, ChatDto.s_type, ChatDto.readed_status,packetId, ChatDto.succeed);
+        setChatdtolist(chatDto);
+        ChatUtils.SaveOrUpdateChatMsgToDB(mWithJabberID, appoint_msg,  date,ChatDto.s_type,ChatDto.readed_status,packetId,ChatDto.succeed);
+        ChatUtils.saveMessageRecord(appoint_msg,mWithJabberID, ChatDto.succeed,0,ChatDto.s_type,date);
+        if (YpSettings.xxservice != null) {
+            YpSettings.xxservice.sendMessage(mWithJabberID, appoint_msg, date,packetId);
+        }
+    }
+
+    private Dialog sendDatingHintDialog;
+    private Dialog helpdialog;
+    private Dialog optionsDialog,loadingDiaog,hintdialog,reportDialog;
+
+    public void showOptionsDialog() {
+        // 初始化一个自定义的Dialog
+        optionsDialog = new MyDialog(ChatActivity.this, R.style.MyDialog, R.layout.select_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+
+                TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+
+                TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+
+                TextView select_operate_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_two_tv);
+
+                TextView select_operate_dialog_three_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_three_tv);
+
+                select_operate_dialog_title_tv.setText("操作");
+                select_operate_dialog_one_tv.setText("查看资料");
+                select_operate_dialog_two_tv.setText("举报");
+                select_operate_dialog_three_tv.setText("拉黑");
+
+
+                select_operate_dialog_one_layout.setVisibility(View.VISIBLE);
+                select_operate_dialog_two_layout.setVisibility(View.VISIBLE);
+                select_operate_dialog_three_layout.setVisibility(View.VISIBLE);
+
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+                        optionsDialog.dismiss();
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(YpSettings.USERID, objectUserId);
+                        ActivityUtil.jump(ChatActivity.this, UserInfoActivity.class, bundle, 0, 100);
+
+                    }
+
+                });
+
+                select_operate_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        optionsDialog.dismiss();
+                        showRePortDialog();
+                    }
+
+                });
+
+                select_operate_dialog_three_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        optionsDialog.dismiss();
+
+                        helpdialog = DialogUtil.createHintOperateDialog(ChatActivity.this, "提示", "拉黑后将不会收到对方发来的消息,可在“设置->黑名单”中解除,是否确认?", "取消", "确认", doBackCallListener);
+                        if (!isFinishing()) {
+                            helpdialog.show();
+                        }
+
+                    }
+
+                });
+
+            }
+        });
+        optionsDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+        optionsDialog.show();
+
+    }
+
+
+    private BackCallListener doBackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            loadingDiaog = DialogUtil.LoadingDialog(ChatActivity.this, null);
+            if (!isFinishing()) {
+                loadingDiaog.show();
+            }
+            doBlockRequest();
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+
+        }
+    };
+
+
+    public void showRePortDialog() {
+        // 初始化一个自定义的Dialog
+        reportDialog = new MyDialog(ChatActivity.this, R.style.MyDialog, R.layout.select_operate_post_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+
+                TextView select_operate_post_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_title_tv);
+                LinearLayout select_operate_post_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_one_layout);
+                LinearLayout select_operate_post_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_two_layout);
+                LinearLayout select_operate_post_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_three_layout);
+                LinearLayout select_operate_post_dialog_four_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_four_layout);
+                LinearLayout select_operate_post_dialog_five_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_five_layout);
+
+                TextView select_operate_post_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_one_tv);
+
+                TextView select_operate_post_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_two_tv);
+
+                TextView select_operate_post_dialog_three_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_three_tv);
+
+                TextView select_operate_post_dialog_four_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_four_tv);
+
+                TextView select_operate_post_dialog_five_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_five_tv);
+
+                select_operate_post_dialog_title_tv.setText("举报原因");
+                select_operate_post_dialog_one_tv.setText("诽谤谩骂");
+                select_operate_post_dialog_two_tv.setText("色情骚扰");
+                select_operate_post_dialog_three_tv.setText("垃圾广告");
+                select_operate_post_dialog_four_tv.setText("欺诈(酒托、饭托等)");
+                select_operate_post_dialog_five_tv.setText("违法(涉毒、暴恐等)");
+
+                select_operate_post_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+                        doReportRequest("诽谤谩骂");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+                        doReportRequest("色情骚扰");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_three_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+
+                        doReportRequest("垃圾广告");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_four_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+
+                        doReportRequest("欺诈(酒托、饭托等)");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_five_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+                        doReportRequest("违法(涉毒、暴恐等)");
+                    }
+                });
+
+
+            }
+        });
+        reportDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+        reportDialog.show();
+
+    }
+
+    /**
+     * 举报
+     */
+    private void doReportRequest(String content) {
+
+//		String url = "Type=2&Id=" + userID + "&Content=涉黄";
+
+        loadingDiaog = DialogUtil.LoadingDialog(ChatActivity.this, null);
+        if (!isFinishing()) {
+            loadingDiaog.show();
+        }
+
+        BubblingReportBean reportBean = new BubblingReportBean();
+        reportBean.setId(objectUserId + "");
+        reportBean.setType("2");
+        reportBean.setContent(content);
+
+        BubblingReportService reportService = new BubblingReportService(this);
+        reportService.parameter(reportBean);
+        reportService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                BubblingReportRespBean reportRespBean = (BubblingReportRespBean) respBean;
+
+                loadingDiaog.dismiss();
+
+                hintdialog = DialogUtil.createSuccessHintDialog(
+                        ChatActivity.this, "举报成功!");
+                if (!ChatActivity.this.isFinishing()) {
+                    hintdialog.show();
+                    successtimer = new SuccessTimer(2000, 1000);
+                    successtimer.start();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(ChatActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(ChatActivity.this, msg);
+            }
+        });
+        reportService.enqueue();
+
+    }
+
+
+    /**
+     * 拉黑
+     */
+    private void doBlockRequest() {
+
+        BlockRequestBean blockRequestBean = new BlockRequestBean();
+        blockRequestBean.setId(objectUserId);
+        blockRequestBean.setUserId(YPApplication.getInstance().loginUser.getUserId());
+        blockRequestBean.setBlock(true);
+
+        BlockRequestService blockRequestService = new BlockRequestService(this);
+        blockRequestService.parameter(blockRequestBean);
+        blockRequestService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                loadingDiaog.dismiss();
+
+                hintdialog = DialogUtil.createSuccessHintDialog(ChatActivity.this, "拉黑成功!");
+                if (!ChatActivity.this.isFinishing()) {
+                    hintdialog.show();
+                    successtimer = new SuccessTimer(2000, 1000);
+                    successtimer.start();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    // 没有网络的场合，去提示页
+                    DialogUtil.showDisCoverNetToast(ChatActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(ChatActivity.this, msg);
+            }
+        });
+        blockRequestService.enqueue();
+
+    }
+
+
+    private SuccessTimer successtimer;
+
+    private class SuccessTimer extends CountDownTimer {
+
+        public SuccessTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+
+        }
+
+        @Override
+        public void onFinish() {
+            if (hintdialog != null) {
+                hintdialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+        }
+    }
+
+    /**
+     * 从数据库中获取登录用户的标签和约会记录
+     */
+    private String mytas[];
+    private List<UserInfoAppointment> appointmentList;
+    private void getMeDbUserData() {
+        LoginUserInfo loginUserInfo =DbHelperUtils.getUserInfo(YPApplication.getInstance().loginUser.getUserId());
+        if (loginUserInfo != null) {
+
+            UserDto  mydto = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+            if (mydto != null) {
+                if (!CheckUtil.isEmpty(mydto.getProfile().getTags()) && !mydto.getProfile().getTags().equals("null")) {
+                    String tagStr = mydto.getProfile().getTags();
+                    mytas= tagStr.split(",");
+                }
+
+                if(mydto.getAppointments()!=null && mydto.getAppointments().size()>0){
+                    appointmentList=mydto.getAppointments();
+                }
+            }
+        }
+    }
+
+
+    private String transAgeToStr(int age) {
+        String age_str = "";
+        String lone_str = "";
+        int born_year = getYear() - age;
+
+        int shiwei_num = (born_year / 10) % 10;
+        int gewei_num = born_year % 10;
+
+
+        if (gewei_num >= 0 && gewei_num < 5) {
+            lone_str = "0后";
+        } else {
+            lone_str = "5后";
+        }
+        age_str = shiwei_num + lone_str;
+        return age_str;
+
+    }
+
+    public int getYear() {
+        Calendar c = Calendar.getInstance();
+        return c.get(Calendar.YEAR);
+    }
+}

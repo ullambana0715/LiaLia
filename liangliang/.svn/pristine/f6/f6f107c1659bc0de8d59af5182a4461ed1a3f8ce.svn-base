@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/find_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dip"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:background="@color/text_color_white"
+        android:visibility="visible"
+
+        >
+
+
+        <TextView
+            android:id="@+id/find_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+
+            android:singleLine="true"
+            android:text="发现"
+            android:textColor="@color/text_color_black"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/find_message_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+
+            <ImageView
+                android:id="@+id/find_message_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/find_message_normal" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+
+        android:id="@+id/find_context_recyclerView_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/find_context_recyclerView_bg_iv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <android.support.v7.widget.RecyclerView
+
+            android:id="@+id/find_context_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+
+        </android.support.v7.widget.RecyclerView>
+
+
+    </RelativeLayout>
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/find_context_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/text_color_white"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <include layout="@layout/error_network_layout" />
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+</LinearLayout>

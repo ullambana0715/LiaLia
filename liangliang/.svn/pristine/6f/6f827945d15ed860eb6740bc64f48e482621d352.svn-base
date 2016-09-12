@@ -1,0 +1,20 @@
+package cn.chono.yopper.Service.Http.BiZarea;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class BiZareaBean extends ParameterBean {
+
+    private  String city;
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+}

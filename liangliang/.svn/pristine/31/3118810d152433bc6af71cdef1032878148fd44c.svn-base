@@ -1,0 +1,520 @@
+package cn.chono.yopper.activity.base;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.usercenter.MyBubblingActivity;
+import cn.chono.yopper.activity.usercenter.ScoreAlreadyActivity;
+import cn.chono.yopper.activity.usercenter.SettingActivity;
+import cn.chono.yopper.activity.usercenter.UserAppointListActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoEditActivity;
+import cn.chono.yopper.activity.usercenter.UserPFruitActivity;
+import cn.chono.yopper.activity.usercenter.VisitorsActivity;
+import cn.chono.yopper.activity.video.VideoDetailGetActivity;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.LoginVideoStatusDto;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.data.Visits;
+import cn.chono.yopper.glide.BlurTransformation;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.UnitUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+
+/**
+ * 个人中心
+ *
+ * @author SQ
+ */
+public class UserCenterFragment extends Fragment implements OnClickListener {
+
+    private Context mContext;
+    private FrameLayout user_center_root_layout;
+    private ImageView user_center_bg_iv;
+
+    private TextView user_center_done_hint_tv;
+
+    private TextView user_name_tv;// 昵称
+
+    private RelativeLayout user_center_head_img_layout;
+    private ImageView user_head_img_iv;// 头像
+    private ImageView user_head_img_bg;// 头像遮挡
+
+    private LinearLayout bump_layout;// 碰友
+    private TextView bump_num_tv;// 碰友数量
+
+    private RelativeLayout user_center_hint_layout;
+
+    private RelativeLayout look_layout;// 看过我
+    private TextView look_num_tv;// 看过我的总人数
+    private TextView add_look_num_tv;// 新增查看人数
+
+    private LinearLayout user_info_layout;// 资料
+
+    private LinearLayout appointment_layout;// 我的约会
+
+    private LinearLayout bubble_layout;// 我的冒泡
+
+    private LinearLayout p_guo_layout;// 我的P果
+
+    private LinearLayout user_center_score;// 设置
+    private RelativeLayout user_center_video;
+
+    private ImageView user_center_video_lookme_iv;
+    private TextView user_center_video_state_tv;
+
+    private ImageView  user_center_setting_iv;
+
+    private View user_center_hint_line;
+
+    private BlurTransformation blurtransformation;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    private int userid;
+    int W;
+    int H;
+
+    private int attraction;
+    private int sex;
+    public UserCenterFragment() {
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View convertView = null;
+        int WS = UnitUtil.getScreenWidthPixels(getActivity());
+        int dip = (int) UnitUtil.getScreenDIP(getActivity());
+
+        if (WS <= 800 && dip < 2) {
+            convertView = inflater.inflate(R.layout.small_screen_usercenter_layout, container, false);
+        } else {
+            convertView = inflater.inflate(R.layout.usercenter_layout, container, false);
+        }
+
+        PushAgent.getInstance(getActivity()).onAppStart();
+        Display mDisplay = getActivity().getWindowManager().getDefaultDisplay();
+        W = mDisplay.getWidth();
+
+        initView(convertView);
+
+        userid = YPApplication.loginUser.getUserId();
+
+        return convertView;
+    }
+
+    private void initView(View view) {
+
+        user_center_root_layout= (FrameLayout) view.findViewById(R.id.user_center_root_layout);
+        user_center_bg_iv = (ImageView) view.findViewById(R.id.user_center_bg_iv);
+
+        user_center_setting_iv=(ImageView) view.findViewById(R.id.user_center_setting_iv);
+        user_center_setting_iv.setOnClickListener(this);
+
+        user_name_tv = (TextView) view.findViewById(R.id.user_center_name_tv);
+
+        user_center_done_hint_tv = (TextView) view.findViewById(R.id.user_center_done_hint_tv);
+
+        user_center_head_img_layout = (RelativeLayout) view.findViewById(R.id.user_center_head_img_layout);
+        user_head_img_iv = (ImageView) view.findViewById(R.id.user_center_head_img_iv);
+
+        LayoutParams para = user_center_head_img_layout.getLayoutParams();
+        para.height = (int) (W / 3.5);
+        para.width = (int) (W / 3.5);
+
+        user_center_head_img_layout.setLayoutParams(para);
+
+        user_head_img_iv.setOnClickListener(this);
+
+        bump_layout = (LinearLayout) view.findViewById(R.id.user_center_bump_num_layout);
+        bump_layout.setOnClickListener(this);
+        bump_num_tv = (TextView) view.findViewById(R.id.user_center_bump_num_tv);
+
+        look_layout = (RelativeLayout) view.findViewById(R.id.user_center_look_num_layout);
+        look_layout.setOnClickListener(this);
+        look_num_tv = (TextView) view.findViewById(R.id.user_center_look_num_tv);
+        add_look_num_tv = (TextView) view.findViewById(R.id.user_center_add_look_num_tv);
+
+        user_info_layout = (LinearLayout) view.findViewById(R.id.user_center_userinfo);
+        user_info_layout.setOnClickListener(this);
+
+        appointment_layout = (LinearLayout) view.findViewById(R.id.user_center_appointment);
+        appointment_layout.setOnClickListener(this);
+
+        bubble_layout = (LinearLayout) view.findViewById(R.id.user_center_bubble);
+        bubble_layout.setOnClickListener(this);
+
+        p_guo_layout = (LinearLayout) view.findViewById(R.id.user_center_P_guo);
+        p_guo_layout.setOnClickListener(this);
+
+        user_center_score = (LinearLayout) view.findViewById(R.id.user_center_score);
+        user_center_score.setOnClickListener(this);
+
+        user_center_hint_layout = (RelativeLayout) view.findViewById(R.id.user_center_hint_layout);
+        user_center_hint_layout.setOnClickListener(this);
+
+        user_center_video = (RelativeLayout) view.findViewById(R.id.user_center_video);
+        user_center_video.setOnClickListener(this);
+        user_center_video_lookme_iv = (ImageView) view.findViewById(R.id.user_center_video_lookme_iv);
+        user_center_video_state_tv = (TextView) view.findViewById(R.id.user_center_video_state_tv);
+
+        user_center_hint_line = view.findViewById(R.id.user_center_hint_line);
+    }
+
+    private void localUserInfo() {
+        LoginUserInfo loginUserInfo = DbHelperUtils.getUserInfo(userid);
+        if (loginUserInfo != null) {
+
+            UserDto dto = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+            if (dto != null) {
+                initData(dto);
+                return;
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initData(UserDto dto) {
+
+        mPool = Glide.get(getActivity()).getBitmapPool();
+        blurtransformation = new BlurTransformation(getActivity(), mPool, 15, 15);
+        transformation = new CropCircleTransformation(mPool);
+
+        if (dto == null) {
+            return;
+        }
+
+        LogUtils.e("密度=" + UnitUtil.getScreenDIP(getActivity()));
+
+        Display mDisplay = getActivity().getWindowManager().getDefaultDisplay();
+        int W = mDisplay.getWidth();
+
+        int H = UnitUtil.getScreentHeight(this.getActivity()) - UnitUtil.getNavigationBarHeight(this.getActivity());
+        int statusBarHeight = UnitUtil.getStatusBarHeight(this.getActivity());
+
+        int orther_H = UnitUtil.dip2px(getActivity(), 50) + statusBarHeight;
+
+        int h = (H - orther_H);
+
+
+        if (dto.getProfile() != null) {
+
+            if (!CheckUtil.isEmpty(dto.getProfile().getHeadImg())) {
+
+                String imageurl = ImgUtils.DealImageUrl(dto.getProfile().getHeadImg(), W, h);
+
+                Glide.with(getActivity()).load(imageurl).bitmapTransform(blurtransformation).into(user_center_bg_iv);
+                Glide.with(getActivity()).load(dto.getProfile().getHeadImg()).bitmapTransform(transformation).into(user_head_img_iv);
+            }
+
+            if (dto.getProfile().getCompletion() >= 80) {
+                user_center_hint_layout.setVisibility(View.GONE);
+                user_center_hint_line.setVisibility(View.VISIBLE);
+            } else {
+                user_center_hint_layout.setVisibility(View.VISIBLE);
+                user_center_hint_line.setVisibility(View.GONE);
+                user_center_done_hint_tv.setText("个人资料" + no_done_info_num(dto.getProfile().getCompletion()) + "0%未完善");
+            }
+
+            attraction=dto.getProfile().getAttraction();
+            sex=dto.getProfile().getSex();
+            bump_num_tv.setText(attraction + "");
+            user_name_tv.setText(dto.getProfile().getName());
+
+            //女性用户才显示颜值打分
+            if(sex==1){
+                user_center_score.setVisibility(View.INVISIBLE);
+            }else{
+                user_center_score.setVisibility(View.VISIBLE);
+            }
+
+        }
+        setLookme();
+        if (dto.getVideoVerification() != null) {
+            setLoginVideoStatus(dto.getVideoVerification().getStatus());
+        } else {
+            setLoginVideoStatus();
+        }
+
+
+    }
+
+
+    private void setLookme() {
+
+        Visits dto;
+        try {
+            dto = YPApplication.getInstance().db.findFirst(Selector.from(Visits.class).where("id", " =", userid));
+            if (dto != null) {
+                if (dto.getNewadded() != 0) {
+                    add_look_num_tv.setVisibility(View.VISIBLE);
+                    add_look_num_tv.setText("+" + dto.getNewadded());
+                } else {
+                    add_look_num_tv.setVisibility(View.GONE);
+                }
+
+                look_num_tv.setText(dto.getTotal() + "");
+
+            } else {
+                add_look_num_tv.setVisibility(View.GONE);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+            add_look_num_tv.setVisibility(View.GONE);
+        }
+
+    }
+
+
+    private void setLoginVideoStatus(int status) {
+
+        LoginVideoStatusDto dto;
+        try {
+            dto = YPApplication.getInstance().db.findFirst(Selector.from(LoginVideoStatusDto.class).where("id", " =", userid));
+            if (dto != null) {
+
+                if (dto.getIsVisible() == 0) {
+                    user_center_video_lookme_iv.setVisibility(View.GONE);
+                } else {
+                    user_center_video_lookme_iv.setVisibility(View.VISIBLE);
+                }
+                user_center_video_state_tv.setVisibility(View.VISIBLE);
+
+                if (status == 0) {
+                    user_center_video_state_tv.setText("未认证");
+                } else if (status == 1) {
+                    user_center_video_state_tv.setText("审核中");
+                } else if (status == 2) {
+                    user_center_video_state_tv.setVisibility(View.GONE);
+                } else if (status == 3) {
+                    user_center_video_state_tv.setText("未认证");
+                }
+            } else {
+                user_center_video_lookme_iv.setVisibility(View.VISIBLE);
+                user_center_video_state_tv.setText("未认证");
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private void setLoginVideoStatus() {
+
+        LoginVideoStatusDto dto;
+        try {
+            dto = YPApplication.getInstance().db.findFirst(Selector.from(LoginVideoStatusDto.class).where("id", " =", userid));
+            if (dto != null) {
+                LogUtils.e("laile=====" + dto.toString());
+
+                if (dto.getIsVisible() == 0) {
+                    user_center_video_lookme_iv.setVisibility(View.GONE);
+                } else {
+                    user_center_video_lookme_iv.setVisibility(View.VISIBLE);
+                }
+                user_center_video_state_tv.setVisibility(View.VISIBLE);
+                if (dto.getVideoVerificationStatus() == 0) {
+                    user_center_video_state_tv.setText("未认证");
+                } else if (dto.getVideoVerificationStatus() == 1) {
+                    user_center_video_state_tv.setText("审核中");
+                } else if (dto.getVideoVerificationStatus() == 2) {
+                    user_center_video_state_tv.setVisibility(View.GONE);
+                } else if (dto.getVideoVerificationStatus() == 3) {
+                    user_center_video_state_tv.setText("未认证");
+                }
+            } else {
+                user_center_video_lookme_iv.setVisibility(View.VISIBLE);
+                user_center_video_state_tv.setText("未认证");
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private void savaLoginVideoStatus() {
+
+        LoginVideoStatusDto dto;
+        try {
+            dto = YPApplication.getInstance().db.findFirst(Selector.from(LoginVideoStatusDto.class).where("id", " =", userid));
+            if (dto != null) {
+                dto.setIsVisible(0);
+                YPApplication.getInstance().db.update(dto);
+            } else {
+                dto = new LoginVideoStatusDto();
+                dto.setIsVisible(0);
+                dto.setId(userid);
+                dto.setVideoVerificationStatus(0);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private int no_done_info_num(int completionnum) {
+        int num = 0;
+        num = (100 - completionnum) / 10;
+        return num;
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("个人中心"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(getActivity());
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LogUtils.e("-------------个人中心------------");
+        MobclickAgent.onPageStart("个人中心"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(getActivity()); // 统计时长
+        localUserInfo();
+    }
+
+    @Override
+    public void onClick(View v) {
+        ViewsUtils.preventViewMultipleClick(v, 1000);
+        int id = v.getId();
+        Bundle bundle = new Bundle();
+        switch (id) {
+
+            case R.id.user_center_head_img_iv:// 头像--个人资料
+
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+                ActivityUtil.jump(getActivity(), UserInfoActivity.class, bundle, 0,100);
+
+                break;
+
+            case R.id.user_center_bump_num_layout:// 碰友数量
+                if(sex==1){
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Attraction/Male?v="+attraction);
+                    bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "魅力值");
+                    ActivityUtil.jump(getActivity(), SimpleWebViewActivity.class, bundle, 0, 100);
+                }else if(sex==2){
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Attraction/Female?v="+attraction);
+                    bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "魅力值");
+                    ActivityUtil.jump(getActivity(), SimpleWebViewActivity.class, bundle, 0, 100);
+                }
+
+                break;
+
+            case R.id.user_center_look_num_layout:// 看过我
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+
+                ActivityUtil.jump(getActivity(), VisitorsActivity.class, bundle, 0, 100);
+                break;
+
+            case R.id.user_center_userinfo:// 个人资料
+
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+
+                ActivityUtil.jump(getActivity(), UserInfoActivity.class, bundle, 0, 100);
+
+                break;
+
+            case R.id.user_center_appointment:// 约会
+                bundle.putInt(YpSettings.USER_APPOINT, YpSettings.USER_APPOINT_HISTORY);
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+                bundle.putInt(YpSettings.USER_APPOINT, YpSettings.USER_APPOINT_TODAY);
+                ActivityUtil.jump(getActivity(), UserAppointListActivity.class, bundle, 0, 100);
+                break;
+
+            case R.id.user_center_bubble:// 冒泡
+
+//						ActivityUtil.jump(getActivity(), CompileUserLableActivity.class, bundle,0, 100);
+
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+
+                ActivityUtil.jump(getActivity(), MyBubblingActivity.class, bundle, 0, 100);
+
+                break;
+
+            case R.id.user_center_P_guo:// P果
+
+//			ActivityUtil.jump(getActivity(), VideoCommitFinishActivity.class, bundle,0, 100);
+                ActivityUtil.jump(getActivity(), UserPFruitActivity.class, bundle, 0, 100);
+                break;
+
+            case R.id.user_center_setting_iv:// 设置
+
+                ActivityUtil.jump(getActivity(), SettingActivity.class, bundle, 0, 100);
+
+                break;
+
+            case R.id.user_center_hint_layout:// 个人信息编辑页面
+
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+                ActivityUtil.jump(this.getActivity(), UserInfoEditActivity.class, bundle, 0, 100);
+                break;
+
+            case R.id.user_center_video:// 视频详情
+
+                //必须放在官博通知前面
+                savaLoginVideoStatus();
+
+                Intent it = new Intent();
+                it.setAction("cn.yopper.chono.set.sync");
+                getActivity().sendBroadcast(it);
+
+
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+                ActivityUtil.jump(this.getActivity(), VideoDetailGetActivity.class, bundle, 0, 100);
+                break;
+
+            case R.id.user_center_score:// 打分
+
+                ActivityUtil.jump(getActivity(), ScoreAlreadyActivity.class, bundle, 0, 100);
+
+                break;
+
+            case R.id.user_center_root_layout:
+                break;
+        }
+    }
+}

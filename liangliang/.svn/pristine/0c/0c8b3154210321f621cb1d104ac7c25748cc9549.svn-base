@@ -1,0 +1,8 @@
+package cn.chono.yopper.utils;
+
+/**
+ * Created by zxb on 2015/12/11.
+ */
+public interface DiscoverPeopleScreenListener {
+    public void OnScreenSelectedBackStatus(int screen);
+}

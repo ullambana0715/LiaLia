@@ -1,0 +1,850 @@
+package cn.chono.yopper.activity.appointment;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.baidu.mapapi.model.LatLng;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.BiZarea.BiZareaBean;
+import cn.chono.yopper.Service.Http.BiZarea.BiZareaRespBean;
+import cn.chono.yopper.Service.Http.BiZarea.BiZareaService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsBean;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsRespBean;
+import cn.chono.yopper.Service.Http.ReleaseAppointments.ReleaseAppointmentsService;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoRespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.SportsDto;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.view.CityZareaWheelDialog;
+
+/**
+ * Created by zxb on 2016/1/4.
+ */
+public class PublishSportsDatingActivity extends MainFrameActivity implements CityZareaWheelDialog.OnSelectedListener,View.OnClickListener{
+
+
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    private EditText appoint_movement_et;
+
+    private TextView address_tv;
+
+    private LinearLayout publish_appoint_movement_layout;
+
+    private RadioButton publish_sports_video_ratiobutton;
+
+    private RadioGroup appoint_date_radio_group;
+    private RadioGroup appoint_tiem_radio_group;
+    private RadioGroup appoint_sex_radio_group;
+
+    private RadioButton run_radiobutton;
+    private RadioButton badminton_radiobutton;
+    private RadioButton tennis_radiobutton;
+
+    private RadioButton swim_radiobutton;
+    private RadioButton bowling_radiobutton;
+    private RadioButton snooker_radiobutton;
+
+    private RadioButton ping_pong_radiobutton;
+    private RadioButton yoga_radiobutton;
+    private RadioButton golf_radiobutton;
+
+    private Button release_but;
+
+    private int userid;
+
+    private int sex=0;
+
+    private int user_sex;
+    private int time_type=0;
+
+    private int day_type=6;
+
+    private String city="上海";
+
+    private boolean videoRequest=false;
+
+    private double longtitude = 121.478844;
+    private double latitude = 31.240517;
+
+    private String address="";
+
+    private ArrayList<String> citylist=new ArrayList<String>();
+    private Map<String,ArrayList<String>> mCitisDatasMap = new HashMap<String, ArrayList<String>>();
+
+    private CityZareaWheelDialog cityZareaWheelWindow;
+
+    private String frompage;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("发布约会（运动）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("发布约会（运动）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+
+        userid = YPApplication.getInstance().loginUser.getUserId();
+        frompage=getIntent().getExtras().getString(YpSettings.FROM_PAGE);
+
+        user_sex = DbHelperUtils.getDbUserSex(userid);
+        if(user_sex==1){
+            sex=2;
+        }else if(user_sex==2){
+            sex=1;
+        }
+
+        initView();
+
+        LocInfo myLoc = Loc.getLoc();
+        if(myLoc!=null && !CheckUtil.isEmpty(myLoc.getCity())){
+            city= myLoc.getCity();
+        }
+
+        String json=DbHelperUtils.getBiZareaData(city);
+        if(!CheckUtil.isEmpty(json)){
+            BiZareaRespBean biZareaRespBean= JsonUtils.fromJson(json, BiZareaRespBean.class);
+            mCitisDatasMap=biZareaRespBean.getResp();
+            for (Map.Entry<String, ArrayList<String>> entry : mCitisDatasMap.entrySet()){
+                citylist.add(entry.getKey());
+            }
+
+            if(mCitisDatasMap!=null){
+                LogUtils.e("mCitisDatasMap大小="+mCitisDatasMap.size());
+            }
+            if(citylist!=null){
+                LogUtils.e("citylist大小="+citylist.size());
+            }
+
+            if(mCitisDatasMap!=null &&  mCitisDatasMap.size()>0&& citylist!=null&&citylist.size()>0){
+
+            }else{
+                LogUtils.e("数据库内缓存的商圈数据是空的========");
+                get_bizarea_city(city);
+            }
+
+        }else{
+            get_bizarea_city(city);
+        }
+
+    }
+
+
+    private  void get_bizarea_city(final String citystr) {
+
+        loadingDiaog = DialogUtil.LoadingDialog(PublishSportsDatingActivity.this,null);
+
+        if (!isFinishing()) {
+            loadingDiaog.show();
+        }
+
+        BiZareaBean biZareaBean = new BiZareaBean();
+        biZareaBean.setCity(citystr);
+
+        BiZareaService biZareaService = new BiZareaService(this);
+
+        biZareaService.parameter(biZareaBean);
+        biZareaService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                loadingDiaog.dismiss();
+                BiZareaRespBean biZareaRespBean=(BiZareaRespBean) respBean;
+                String json= JsonUtils.toJson(biZareaRespBean);
+                DbHelperUtils.saveBiZareaData(citystr,json);
+                if(!CheckUtil.isEmpty(json)){
+                    BiZareaRespBean biZareaRespBeandto=JsonUtils.fromJson(json, BiZareaRespBean.class);
+                    mCitisDatasMap= new HashMap<String, ArrayList<String>>();
+                    mCitisDatasMap=biZareaRespBeandto.getResp();
+                    citylist.clear();
+                    for (Map.Entry<String, ArrayList<String>> entry : mCitisDatasMap.entrySet()){
+                        citylist.add(entry.getKey());
+                    }
+                }else{
+                    LogUtils.e("商圈数据请求回来是空的");
+                }
+            }
+        }, new OnCallBackFailListener(){
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+            }
+        });
+
+        biZareaService.enqueue();
+    }
+
+
+    private void initView() {
+
+        getBtnGoBack().setVisibility(View.GONE);
+        gettvBack().setVisibility(View.VISIBLE);
+        gettvBack().setText("取消");
+        getTvTitle().setText("运动");
+
+
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        contextView = mInflater.inflate(R.layout.release_movement_activity, null);
+
+        publish_appoint_movement_layout= (LinearLayout) contextView.findViewById(R.id.publish_appoint_movement_layout);
+        publish_appoint_movement_layout.setOnClickListener(this);
+
+        publish_sports_video_ratiobutton= (RadioButton) contextView.findViewById(R.id.publish_sports_video_ratiobutton);
+        publish_sports_video_ratiobutton.setOnClickListener(this);
+
+        run_radiobutton= (RadioButton) contextView.findViewById(R.id.run_radiobutton);
+        run_radiobutton.setOnClickListener(this);
+        badminton_radiobutton= (RadioButton) contextView.findViewById(R.id.badminton_radiobutton);
+        badminton_radiobutton.setOnClickListener(this);
+        tennis_radiobutton= (RadioButton) contextView.findViewById(R.id.tennis_radiobutton);
+        tennis_radiobutton.setOnClickListener(this);
+
+        swim_radiobutton= (RadioButton) contextView.findViewById(R.id.swim_radiobutton);
+        swim_radiobutton.setOnClickListener(this);
+        bowling_radiobutton= (RadioButton) contextView.findViewById(R.id.bowling_radiobutton);
+        bowling_radiobutton.setOnClickListener(this);
+        snooker_radiobutton= (RadioButton) contextView.findViewById(R.id.snooker_radiobutton);
+        snooker_radiobutton.setOnClickListener(this);
+
+        ping_pong_radiobutton= (RadioButton) contextView.findViewById(R.id.ping_pong_radiobutton);
+        ping_pong_radiobutton.setOnClickListener(this);
+        yoga_radiobutton= (RadioButton) contextView.findViewById(R.id.yoga_radiobutton);
+        yoga_radiobutton.setOnClickListener(this);
+        golf_radiobutton= (RadioButton) contextView.findViewById(R.id.golf_radiobutton);
+        golf_radiobutton.setOnClickListener(this);
+
+
+        appoint_movement_et = (EditText) contextView.findViewById(R.id.appoint_movement_et);
+        appoint_movement_et.requestFocus();
+
+        address_tv = (TextView) contextView.findViewById(R.id.address_tv);
+
+        appoint_date_radio_group=(RadioGroup) contextView.findViewById(R.id.appoint_date_radio_group);
+
+        appoint_tiem_radio_group=(RadioGroup) contextView.findViewById(R.id.appoint_tiem_radio_group);
+
+        appoint_sex_radio_group=(RadioGroup) contextView.findViewById(R.id.appoint_sex_radio_group);
+
+        release_but= (Button) contextView.findViewById(R.id.movement_release_but);
+
+        address_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mCitisDatasMap!=null&& mCitisDatasMap.size()>0&& citylist!=null && citylist.size()>0){
+                    cityZareaWheelWindow = new CityZareaWheelDialog(PublishSportsDatingActivity.this,PublishSportsDatingActivity.this,citylist,mCitisDatasMap);
+                    cityZareaWheelWindow.show();
+                }else{
+                    DialogUtil.showDisCoverNetToast(PublishSportsDatingActivity.this,"未获取到周边商圈数据");
+                }
+
+//                cityZareaWheelWindow.showAtLocation(contextView, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+            }
+        });
+
+
+        appoint_date_radio_group.check(R.id.date_seven_radiobutton);
+        appoint_tiem_radio_group.check(R.id.time_nolimit_radiobutton);
+
+        if(sex==1){
+            appoint_sex_radio_group.check(R.id.sex_man_radiobutton);
+        }else{
+            appoint_sex_radio_group.check(R.id.sex_women_radiobutton);
+        }
+
+        appoint_movement_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String inputstr=s.toString().trim();
+                if (!CheckUtil.isEmpty(inputstr)) {
+                    if(!isFixText(inputstr)){
+                        run_radiobutton.setChecked(false);
+                        badminton_radiobutton.setChecked(false);
+                        tennis_radiobutton.setChecked(false);
+                        swim_radiobutton.setChecked(false);
+                        bowling_radiobutton.setChecked(false);
+                        snooker_radiobutton.setChecked(false);
+                        ping_pong_radiobutton.setChecked(false);
+                        yoga_radiobutton.setChecked(false);
+                        golf_radiobutton.setChecked(false);
+                    }else{
+                        int type=sportType(inputstr);
+                        setMovementType(type);
+                    }
+
+                }else{
+                    run_radiobutton.setChecked(false);
+                    badminton_radiobutton.setChecked(false);
+                    tennis_radiobutton.setChecked(false);
+                    swim_radiobutton.setChecked(false);
+                    bowling_radiobutton.setChecked(false);
+                    snooker_radiobutton.setChecked(false);
+                    ping_pong_radiobutton.setChecked(false);
+                    yoga_radiobutton.setChecked(false);
+                    golf_radiobutton.setChecked(false);
+                }
+
+            }
+        });
+
+        appoint_date_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.date_seven_radiobutton://七天内
+                        day_type=6;
+                        break;
+                    case R.id.date_today_radiobutton://今天
+                        day_type=0;
+                        break;
+                    case R.id.date_tomorrow_radiobutton://明天
+                        day_type=1;
+                        break;
+                }
+
+            }
+        });
+        appoint_tiem_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                //约会时间，Unknown = 0, Morning = 1, Noon = 2, Afternoon = 3, Night = 4
+                switch (checkedId) {
+                    case R.id.time_nolimit_radiobutton://无限
+                        time_type=0;
+                        break;
+                    case R.id.time_midday_radiobutton://中午
+                        time_type=1;
+                        break;
+                    case R.id.time_pm_radiobutton://下午
+                        time_type=2;
+                        break;
+                    case R.id.time_night_radiobutton://晚上
+                        time_type=3;
+                        break;
+                }
+
+            }
+        });
+        appoint_sex_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.sex_man_radiobutton://1男
+                        sex=1;
+                        break;
+                    case R.id.sex_women_radiobutton://2女
+                        sex=2;
+                        break;
+                    case R.id.sex_nolimit_radiobutton://0无限
+                        sex=0;
+                        break;
+                }
+
+            }
+        });
+
+        release_but.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(CheckUtil.isEmpty(address)){
+                    DialogUtil.showDisCoverNetToast(PublishSportsDatingActivity.this,"请选择地点");
+                    return;
+                }
+                if(CheckUtil.isEmpty(appoint_movement_et.getText().toString().trim())){
+                    DialogUtil.showDisCoverNetToast(PublishSportsDatingActivity.this,"请选择运动项目或自填");
+                    return;
+                }
+
+                loadingDiaog = DialogUtil.LoadingDialog(PublishSportsDatingActivity.this,null);
+
+                if (!isFinishing()) {
+                    loadingDiaog.show();
+                }
+                publish_dating(appoint_movement_et.getText().toString().trim());
+            }
+        });
+
+        getGoBackLayout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        this.getMainLayout().addView(contextView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+    }
+
+    private boolean isFixText(String str){
+        boolean isFix=false;
+        if(str.equals("跑步")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("羽毛球")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("网球")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("游泳")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("保龄球")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("桌球")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("乒乓球")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("瑜伽")){
+            isFix=true;
+            return isFix;
+        }
+        if(str.equals("高尔夫")){
+            isFix=true;
+            return isFix;
+        }
+        return isFix;
+    }
+
+    private int sportType(String str){
+        int type=10;
+        if(str.equals("跑步")){
+            type=0;
+            return type;
+        }
+        if(str.equals("羽毛球")){
+            type=1;
+            return type;
+        }
+        if(str.equals("网球")){
+            type=2;
+            return type;
+        }
+        if(str.equals("游泳")){
+            type=3;
+            return type;
+        }
+        if(str.equals("保龄球")){
+            type=4;
+            return type;
+        }
+        if(str.equals("桌球")){
+            type=5;
+            return type;
+        }
+        if(str.equals("乒乓球")){
+            type=6;
+            return type;
+        }
+        if(str.equals("瑜伽")){
+            type=7;
+            return type;
+        }
+        if(str.equals("高尔夫")){
+            type=8;
+            return type;
+        }
+        return type;
+    }
+
+    @Override
+    public void onSelectedListener(String cityStr, String zareaStr) {
+
+        if(!CheckUtil.isEmpty(zareaStr)){
+            address=cityStr+"/"+zareaStr;
+        }else{
+            address=cityStr;
+        }
+        address_tv.setText(address);
+    }
+
+
+    private Dialog loadingDiaog;
+    private void publish_dating(String title){
+
+        LocInfo myLoc = Loc.getLoc();
+        if(myLoc!=null && myLoc.getLoc()!=null){
+            latitude=myLoc.getLoc().getLatitude();
+            longtitude=myLoc.getLoc().getLongitude();
+        }
+        LatLng pt = new LatLng(latitude, longtitude);
+        pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+
+        ReleaseAppointmentsBean releaseAppointmentsBean = new ReleaseAppointmentsBean();
+        releaseAppointmentsBean.setCity(city);
+        releaseAppointmentsBean.setActivityType(Constant.APPOINT_TYPE_FITNESS);
+        releaseAppointmentsBean.setCostType(0);
+        releaseAppointmentsBean.setSexRequired(sex);
+        releaseAppointmentsBean.setAvailableTime(time_type);
+        releaseAppointmentsBean.setVideoRequired(videoRequest);
+        releaseAppointmentsBean.setLat(pt.latitude);
+        releaseAppointmentsBean.setLng(pt.longitude);
+        releaseAppointmentsBean.setEndTime(TimeUtil.timeWithSettingDay(day_type));
+        LogUtils.e("结束时间="+TimeUtil.timeWithSettingDay(day_type));
+        SportsDto dto=new SportsDto();
+        dto.setAddress(address);
+        dto.setTitle(title);
+        releaseAppointmentsBean.setSports(dto);
+
+        ReleaseAppointmentsService releaseAppointmentsService = new ReleaseAppointmentsService(this);
+        releaseAppointmentsService.parameter(releaseAppointmentsBean);
+        releaseAppointmentsService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                ReleaseAppointmentsRespBean releaseAppointmentsRespBean=(ReleaseAppointmentsRespBean)respBean;
+                if(releaseAppointmentsRespBean.getResp()!=null){
+                    getUserInfo();
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(PublishSportsDatingActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(PublishSportsDatingActivity.this,msg);
+
+                }
+
+            }
+        });
+
+        releaseAppointmentsService.enqueue();
+    }
+
+
+    /***
+     * 获取用户信息及相册信息
+     *
+     */
+    private void getUserInfo() {
+
+        UserInfoBean userInfoBean = new UserInfoBean();
+        userInfoBean.setUserId(userid);
+        userInfoBean.setAlbum(true);
+        userInfoBean.setBubble(true);
+        userInfoBean.setBump(true);
+        userInfoBean.setForDating(false);
+        userInfoBean.setWish(true);
+        userInfoBean.setVerification(true);
+        userInfoBean.setAppointment(true);
+
+        UserInfoService userInfoService = new UserInfoService(this);
+        userInfoService.parameter(userInfoBean);
+        userInfoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UserInfoRespBean userInfoRespBean = (UserInfoRespBean) respBean;
+                UserDto userInfo = userInfoRespBean.getResp();
+                String jsonstr = JsonUtils.toJson(userInfo);
+                if (null != userInfo) {
+                    // 保存数据
+                    DbHelperUtils.saveUserInfo(userid, jsonstr);
+                    // 保存数据
+                    DbHelperUtils.saveBaseUser(userid, userInfo);
+                }
+                loadingDiaog.dismiss();
+
+                DialogUtil.showDisCoverNetToast(PublishSportsDatingActivity.this,"发布成功");
+                if(frompage.equals("UserAppointListActivity")){
+                    PublishSportsDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(2);
+                }else{
+                    PublishSportsDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(1);
+                }
+                finish();
+
+            }
+        }, new OnCallBackFailListener(){
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+                DialogUtil.showDisCoverNetToast(PublishSportsDatingActivity.this,"发布成功");
+                if(frompage.equals("UserAppointListActivity")){
+                    PublishSportsDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(2);
+                }else{
+                    PublishSportsDatingActivity.getOnAppointPublishBackListener().onAppointPublishBackListener(1);
+                }
+                finish();
+            }
+        });
+        userInfoService.enqueue();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id=v.getId();
+        switch (id){
+            case R.id.run_radiobutton:
+                setMovementType(0);
+                appoint_movement_et.setText("跑步");
+                hideSoftInputView();
+                break;
+
+            case R.id.badminton_radiobutton:
+                setMovementType(1);
+                appoint_movement_et.setText("羽毛球");
+                hideSoftInputView();
+                break;
+
+            case R.id.tennis_radiobutton:
+                setMovementType(2);
+                appoint_movement_et.setText("网球");
+                hideSoftInputView();
+                break;
+
+            case R.id.swim_radiobutton:
+                setMovementType(3);
+                appoint_movement_et.setText("游泳");
+                hideSoftInputView();
+                break;
+
+            case R.id.bowling_radiobutton:
+                setMovementType(4);
+                appoint_movement_et.setText("保龄球");
+                hideSoftInputView();
+                break;
+
+            case R.id.snooker_radiobutton:
+                setMovementType(5);
+                appoint_movement_et.setText("桌球");
+                hideSoftInputView();
+                break;
+
+            case R.id.ping_pong_radiobutton:
+                setMovementType(6);
+                appoint_movement_et.setText("乒乓球");
+                hideSoftInputView();
+                break;
+
+            case R.id.yoga_radiobutton:
+                setMovementType(7);
+                appoint_movement_et.setText("瑜伽");
+                hideSoftInputView();
+                break;
+
+            case R.id.golf_radiobutton:
+                hideSoftInputView();
+                setMovementType(8);
+                appoint_movement_et.setText("高尔夫");
+                break;
+
+            case R.id.publish_sports_video_ratiobutton:
+                hideSoftInputView();
+                if(videoRequest){
+                    videoRequest=false;
+                    publish_sports_video_ratiobutton.setChecked(false);
+                }else{
+                    videoRequest=true;
+                    publish_sports_video_ratiobutton.setChecked(true);
+                }
+                break;
+
+            case R.id.publish_appoint_movement_layout:
+                hideSoftInputView();
+                break;
+
+
+
+        }
+    }
+
+    private void setMovementType(int movementType) {
+        switch (movementType) {
+            case 0:
+                run_radiobutton.setChecked(true);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+            case 1:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(true);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+            case 2:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(true);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+            case 3:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(true);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+            case 4:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(true);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+
+            case 5:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(true);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+            case 6:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(true);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+            case 7:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(true);
+                golf_radiobutton.setChecked(false);
+                break;
+            case 8:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(true);
+                break;
+            case 9:
+                run_radiobutton.setChecked(false);
+                badminton_radiobutton.setChecked(false);
+                tennis_radiobutton.setChecked(false);
+                swim_radiobutton.setChecked(false);
+                bowling_radiobutton.setChecked(false);
+                snooker_radiobutton.setChecked(false);
+                ping_pong_radiobutton.setChecked(false);
+                yoga_radiobutton.setChecked(false);
+                golf_radiobutton.setChecked(false);
+                break;
+        }
+    }
+}

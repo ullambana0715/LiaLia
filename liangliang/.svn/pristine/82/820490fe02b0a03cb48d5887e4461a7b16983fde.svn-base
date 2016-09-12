@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/progress_recorder_qupai_content"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:fromDegrees="0"
+    android:toDegrees="360" />
+<!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/progress_qupai_circle.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/progress_qupai_circle.xml -->

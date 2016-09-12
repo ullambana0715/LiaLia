@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginLeft="12dp">
+
+            <ImageView
+                android:id="@+id/item_like_icon_img_iv"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:background="@drawable/message_head_default_icon"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:id="@+id/item_like_vip_level_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="3dp"
+                android:background="@drawable/ic_small_vip_diamond" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/item_like_name_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="Yopper"
+                    android:textColor="@color/color_666666"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/item_like_sex_constellation_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:paddingTop="1dp"
+                    android:drawablePadding="3dp"
+                    android:text=""
+                    android:textColor="@color/color_ffffff"
+                    android:textSize="12sp" />
+
+
+                <ImageView
+                    android:id="@+id/item_like_video_level_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:src="@drawable/video_icon" />
+
+                <ImageView
+                    android:id="@+id/item_like_activity_level_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:src="@drawable/ic_activity_talent" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/item_like_join_activity_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="4dp"
+                android:paddingTop="4dp">
+
+                <ImageView
+
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:background="@drawable/white_bg_ff_circle" />
+
+                <TextView
+                    android:id="@+id/item_like_join_activity_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="Ta最近在 参加周末桌游"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/item_like_join_datings_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="4dp"
+                android:paddingTop="4dp">
+
+                <ImageView
+
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:background="@drawable/white_bg_ff_circle" />
+
+                <TextView
+                    android:id="@+id/item_like_join_datings_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="Ta最近在 约人吃饭"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/item_like_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#e2e2e2" />
+
+</LinearLayout>

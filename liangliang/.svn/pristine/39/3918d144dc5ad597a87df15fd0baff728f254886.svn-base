@@ -1,0 +1,83 @@
+package cn.chono.yopper.Service.Http.Appointments;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/28.
+ */
+public class AppointmentsOwner implements Serializable {
+
+    private int id;
+    private String name;
+    private int horoscope;
+    private String headImg;
+    private int sex;
+    private int status;
+    private int level;
+    private String regTime;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getHoroscope() {
+        return horoscope;
+    }
+
+    public void setHoroscope(int horoscope) {
+        this.horoscope = horoscope;
+    }
+
+    public String getHeadImg() {
+        return headImg;
+    }
+
+    public void setHeadImg(String headImg) {
+        this.headImg = headImg;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public String getRegTime() {
+        return regTime;
+    }
+
+    public void setRegTime(String regTime) {
+        this.regTime = regTime;
+    }
+}

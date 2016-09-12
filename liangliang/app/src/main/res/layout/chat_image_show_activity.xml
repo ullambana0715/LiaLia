@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/chat_image_show_iv"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="invisible"
+        android:scaleType="fitCenter" />
+
+    <ImageView
+        android:id="@+id/chat_image_show_default_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/image_default"
+        android:scaleType="fitXY" />
+
+</LinearLayout>

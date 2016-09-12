@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="6dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp">
+
+        <!--排序-->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center_vertical"
+            android:text="@string/text_sequence"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp"
+
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:background="@drawable/corners_white_style"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_destination"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_9a9a9a"
+
+                    />
+
+                <TextView
+                    android:id="@+id/travel_layout_destination_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/text_please_choose"
+                    android:maxLines="1"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:id="@+id/travel_layout_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="44dp"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:textSize="14sp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:text="@string/label"
+                    android:textColor="@color/color_9a9a9a"
+
+                    />
+
+                <RelativeLayout
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="12dp">
+
+                    <TextView
+                        android:id="@+id/travel_layout_lael_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_weight="1"
+                        android:enabled="true"
+                        android:gravity="right"
+                        android:hint="@string/text_Optional"
+                        android:maxLines="1"
+                        android:textColor="@color/color_333333"
+                        android:textColorHint="@color/color_b2b2b2"
+                        android:textSize="15sp"
+
+                        />
+
+                    <cn.chono.yopper.view.FlowLeftLayout
+                        android:id="@+id/travel_layout_label_lable_flowlayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
+
+                    </cn.chono.yopper.view.FlowLeftLayout>
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <!--计划安排-->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center_vertical"
+            android:text="@string/text_plan_management"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp"
+
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:background="@drawable/corners_white_style"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_Objects"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_9a9a9a"
+
+                    />
+
+                <TextView
+                    android:id="@+id/travel_layout_objects_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/text_please_choose"
+                    android:maxLines="1"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_departure_time"
+                    android:textColor="@color/color_9a9a9a"
+                    android:textSize="14sp"
+                    />
+
+                <TextView
+                    android:id="@+id/travel_layout_departure_time_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/text_please_choose"
+                    android:maxLines="1"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_estimated_time"
+                    android:textColor="@color/color_9a9a9a"
+                    android:textSize="14sp"
+                    />
+
+                <TextView
+                    android:id="@+id/travel_layout_estimated_time_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/text_please_choose"
+                    android:maxLines="1"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_travel"
+                    android:textColor="@color/color_9a9a9a"
+                    android:textSize="14sp"
+                    />
+
+                <TextView
+                    android:id="@+id/travel_layout_travel_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/text_please_choose"
+                    android:maxLines="1"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="12dp"
+                android:background="@color/color_eeeeee"
+
+                ></View>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:gravity="center_vertical"
+                    android:text="@string/text_pay"
+                    android:textColor="@color/color_9a9a9a"
+                    android:textSize="14sp"
+                    />
+
+                <TextView
+                    android:id="@+id/travel_layout_pay_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_weight="1"
+                    android:enabled="true"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/text_please_choose"
+                    android:maxLines="1"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="15sp"
+
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/travel_arrow" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <!--补充说明-->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center_vertical"
+            android:text="@string/text_supplement_explanation"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp"
+
+            />
+
+
+       <include layout="@layout/appointment_write_info_layout"></include>
+
+    </LinearLayout>
+
+</ScrollView>
+
+

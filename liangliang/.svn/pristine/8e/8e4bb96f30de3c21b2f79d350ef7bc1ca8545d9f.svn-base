@@ -1,0 +1,533 @@
+package cn.chono.yopper.utils;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.data.AppointDatav2Db;
+import cn.chono.yopper.data.AppointFilterDto;
+import cn.chono.yopper.data.BannerDb;
+import cn.chono.yopper.data.BaseUser;
+import cn.chono.yopper.data.BiZareaDbDto;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.data.UserSelectBannerDb;
+
+/**
+ * Created by SQ on 2015/11/24.
+ */
+public class DbHelperUtils {
+
+    /**
+     * 根据id从数据库获取基本的用户信息
+     */
+    public static BaseUser getBaseUser(int id) {
+        BaseUser userDto = null;
+        try {
+            userDto = YPApplication.getInstance().db.findFirst(Selector.from(BaseUser.class).where(" id", " =", id));
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return userDto;
+    }
+
+    /**
+     * 将用户（并不单指登录用户）基本信息保存到数据库
+     */
+    public static void saveBaseUser(int id, String name, int horoscope, String headImg, int sex, String regTime) {
+        try {
+            BaseUser userDto = new BaseUser(id, name, horoscope, headImg, sex, regTime);
+            YPApplication.getInstance().db.save(userDto);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 更新数据库中用户（并不单指登录用户）基本信息
+     */
+    public static void updateBaseUser(BaseUser userDto) {
+        try {
+            YPApplication.getInstance().db.update(userDto);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 保存用户基本信息数据
+     *
+     * @param userId
+     * @param
+     * @return
+     */
+    public static void saveBaseUser(final int userId, final UserDto userInfo) {
+        try {
+            BaseUser baseUser = YPApplication.getInstance().db.findFirst(Selector.from(BaseUser.class).where("id", " =", userId));
+
+            if (userInfo != null) {
+                if (baseUser != null) {
+
+                    baseUser.setHeadImg(userInfo.getProfile().getHeadImg());
+                    baseUser.setName(userInfo.getProfile().getName());
+                    baseUser.setHoroscope(userInfo.getProfile().getHoroscope());
+                    baseUser.setSex(userInfo.getProfile().getSex());
+
+                    YPApplication.getInstance().db.update(baseUser);
+
+                } else {
+                    baseUser = new BaseUser();
+                    baseUser.setId(userId);
+                    baseUser.setHeadImg(userInfo.getProfile().getHeadImg());
+                    baseUser.setName(userInfo.getProfile().getName());
+                    baseUser.setHoroscope(userInfo.getProfile().getHoroscope());
+                    baseUser.setSex(userInfo.getProfile().getSex());
+                    baseUser.setRegTime(userInfo.getProfile().getRegTime());
+                    YPApplication.getInstance().db.save(baseUser);
+                }
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 根据id获取用户的性别
+     *
+     * @param userid
+     * @return
+     */
+    public static int getDbUserSex(int userid) {
+        int mysex = 1;
+        try {
+            LoginUserInfo loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userid));
+
+            if (loginUserInfo != null) {
+                UserDto userInfo = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+                if (userInfo != null) {
+                    mysex = userInfo.getProfile().getSex();
+                }
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return mysex;
+    }
+
+
+    /**
+     * 根据id获取用户星座
+     *
+     * @param userid
+     * @return
+     */
+    public static int getDbUserHor(int userid) {
+        int hor = 0;
+        try {
+            LoginUserInfo loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userid));
+
+            if (loginUserInfo != null) {
+                UserDto userInfo = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+                if (userInfo != null) {
+                    hor = userInfo.getProfile().getHoroscope();
+                }
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return hor;
+    }
+
+
+    /**
+     * 根据id获取用户
+     *
+     * @param userid
+     * @return
+     */
+    public static UserDto getDbUserInfo(int userid) {
+        UserDto dto = null;
+        try {
+            LoginUserInfo loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userid));
+
+            if (loginUserInfo != null) {
+                UserDto userInfo = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+                if (userInfo != null) {
+                    dto = userInfo;
+                }
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return dto;
+    }
+
+
+    /**
+     * 保存或更新用户信息数据到数据库
+     *
+     * @param userId
+     * @param data
+     * @return
+     */
+    public static void saveUserInfo(final int userId, final String data) {
+        try {
+            LoginUserInfo loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userId));
+            if (loginUserInfo != null) {
+                loginUserInfo.setId(userId);
+                loginUserInfo.setResp(data);
+                YPApplication.getInstance().db.update(loginUserInfo);
+            } else {
+                loginUserInfo = new LoginUserInfo();
+                loginUserInfo.setId(userId);
+                loginUserInfo.setResp(data);
+                YPApplication.getInstance().db.save(loginUserInfo);
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 根据id从数据库中获取用户信息数据
+     *
+     * @param userId
+     * @return
+     */
+    public static LoginUserInfo getUserInfo(final int userId) {
+        LoginUserInfo loginUserInfo = null;
+        try {
+            loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userId));
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return loginUserInfo;
+    }
+
+    public static UserDto getUserDto(final int userId) {
+        LoginUserInfo loginUserInfo = null;
+        UserDto userdto = null;
+        try {
+            loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userId));
+            if (loginUserInfo != null) {
+                userdto = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return userdto;
+    }
+
+    /**
+     * 缓存约会数据
+     */
+
+    public static void saveAppointV2FilterList(int userId, String results) {
+
+        try {
+            if (!CheckUtil.isEmpty(userId + "")) {
+                AppointDatav2Db dto = YPApplication.getInstance().db.findFirst(Selector.from(AppointDatav2Db.class).where("id", " =", userId));
+                if (dto != null) {
+                    dto.setAppointListStr(results);
+                    YPApplication.getInstance().db.update(dto);
+                } else {
+                    dto = new AppointDatav2Db();
+                    dto.setId(userId);
+                    dto.setAppointListStr(results);
+                    YPApplication.getInstance().db.save(dto);
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /**
+     * 获取缓存最新约会数据
+     */
+
+    public static String getAppointV2FilterList(int userId) {
+        String appointFFilterStr = "";
+        try {
+            if (!CheckUtil.isEmpty(userId + "")) {
+                AppointDatav2Db dto = YPApplication.getInstance().db.findFirst(Selector.from(AppointDatav2Db.class).where("id", " =", userId));
+                if (dto != null) {
+                    appointFFilterStr = dto.getAppointListStr();
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return appointFFilterStr;
+    }
+
+    /**
+     * 获取约会筛选条件
+     */
+    public static AppointFilterDto getAppointFilter(int userId) {
+        AppointFilterDto dto = null;
+        try {
+            dto = YPApplication.getInstance().db.findFirst(Selector.from(AppointFilterDto.class).where("id", " =", userId));
+
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return dto;
+    }
+
+    /**
+     * 缓存约会筛选条件
+     */
+
+    public static void saveAppointFilter(int appointType, int sexType, int daysOffset, int timeType, int minage, int maxage, int emoType, int horType, int sort, String city) {
+
+        try {
+            String id = YPApplication.loginUser.getUserId() + "";
+            if (!CheckUtil.isEmpty(id)) {
+                AppointFilterDto dto = YPApplication.getInstance().db.findFirst(Selector.from(AppointFilterDto.class).where("id", " =", id));
+                if (dto != null) {
+                    dto.setDatingType(appointType);
+                    dto.setSexType(sexType);
+                    dto.setSort(sort);
+                    dto.setCity(city);
+                    dto.setDaysOffset(daysOffset);
+                    dto.setDatingTimeType(timeType);
+                    dto.setMinAge(minage);
+                    dto.setMaxAge(maxage);
+                    dto.setEmoType(emoType);
+                    dto.setHorType(horType);
+//                    dto.setTabId(tab_Id);
+                    LogUtils.e("保存更新成功========");
+                    YPApplication.getInstance().db.update(dto);
+
+                } else {
+                    dto = new AppointFilterDto();
+                    dto.setId(YPApplication.loginUser.getUserId());
+
+                    dto.setDatingType(appointType);
+                    dto.setSexType(sexType);
+                    dto.setSort(sort);
+                    dto.setCity(city);
+                    dto.setDaysOffset(daysOffset);
+                    dto.setDatingTimeType(timeType);
+                    dto.setMinAge(minage);
+                    dto.setMaxAge(maxage);
+                    dto.setEmoType(emoType);
+                    dto.setHorType(horType);
+
+                    YPApplication.getInstance().db.save(dto);
+                    LogUtils.e("保存成功========");
+                }
+            }
+        } catch (DbException e) {
+            LogUtils.e("异常了========" + e.getMessage().toString());
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 数据中获取登录用户的头像通过状态
+     */
+    public static int getDbLoginUserHeadStatus() {
+        int status = 0;
+        try {
+            LoginUserInfo loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", YPApplication.getInstance().loginUser.getUserId()));
+            if (loginUserInfo != null) {
+
+                UserDto loginuserdto = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+                if (loginuserdto != null) {
+                    status = loginuserdto.getProfile().getStatus();
+                }
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
+
+
+    public static boolean isExistBiZareaDatawithCity(String city) {
+
+        try {
+            if (!CheckUtil.isEmpty(city)) {
+                BiZareaDbDto dto = YPApplication.getInstance().db.findFirst(Selector.from(BiZareaDbDto.class).where("name", " =", city));
+                if (dto == null) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    /**
+     * 缓存城市商圈数据数据
+     */
+
+    public static void saveBiZareaData(String city, String results) {
+
+        try {
+            if (!CheckUtil.isEmpty(results)) {
+                BiZareaDbDto dto = YPApplication.getInstance().db.findFirst(Selector.from(BiZareaDbDto.class).where("name", " =", city));
+                if (dto == null) {
+                    dto = new BiZareaDbDto();
+                    dto.setName(city);
+                    dto.setZareaStr(results);
+                    YPApplication.getInstance().db.save(dto);
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static String getBiZareaData(String city) {
+
+        String zareaStr = "";
+        try {
+            if (!CheckUtil.isEmpty(city)) {
+                BiZareaDbDto dto = YPApplication.getInstance().db.findFirst(Selector.from(BiZareaDbDto.class).where("name", " =", city));
+                if (dto != null) {
+                    zareaStr = dto.getZareaStr();
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return zareaStr;
+    }
+
+
+    /**
+     * 保存服务器返回的banner数据
+     *
+     * @param bannerId
+     * @param bannerStr
+     */
+
+    public static void saveBannersToDb(String bannerId, String bannerStr) {
+        try {
+            BannerDb bannerDb = YPApplication.getInstance().db.findFirst(Selector.from(BannerDb.class).where("bannerId", " =", bannerId));
+
+            if (bannerDb != null) {
+                bannerDb.setRespStr(bannerStr);
+                YPApplication.getInstance().db.update(bannerDb);
+
+            } else {
+                bannerDb = new BannerDb();
+                bannerDb.setBannerId(bannerId);
+                bannerDb.setRespStr(bannerStr);
+                YPApplication.getInstance().db.save(bannerDb);
+
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    /**
+     * 从本地数据库中获取banner数据
+     *
+     * @param bannerId
+     */
+
+    public static String getBannersFromDb(String bannerId) {
+
+        String bannersStr = "";
+        try {
+            BannerDb bannerDb = YPApplication.getInstance().db.findFirst(Selector.from(BannerDb.class).where("bannerId", " =", bannerId));
+
+            if (bannerDb != null) {
+                bannersStr = bannerDb.getRespStr();
+
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return bannersStr;
+
+    }
+
+
+    /**
+     * 保存用户选择banner数据
+     *
+     * @param bannerIdAddUserID
+     * @param bannerStr
+     */
+
+    public static void saveUserBannersToDb(String bannerIdAddUserID, String bannerStr) {
+        try {
+            UserSelectBannerDb userbannerDb = YPApplication.getInstance().db.findFirst(Selector.from(UserSelectBannerDb.class).where("bannerIdAddUserID", " =", bannerIdAddUserID));
+
+            if (userbannerDb != null) {
+                userbannerDb.setRespStr(bannerStr);
+                YPApplication.getInstance().db.update(userbannerDb);
+
+            } else {
+                userbannerDb = new UserSelectBannerDb();
+                userbannerDb.setBannerIdAddUserID(bannerIdAddUserID);
+                userbannerDb.setRespStr(bannerStr);
+                YPApplication.getInstance().db.save(userbannerDb);
+
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    /**
+     * 从本地数据库中获取用户选择的banner数据
+     *
+     * @param bannerIdAddUserID
+     */
+
+    public static String getUserBannersFromDb(String bannerIdAddUserID) {
+
+        String bannersStr = "";
+        try {
+            UserSelectBannerDb userbannerDb = YPApplication.getInstance().db.findFirst(Selector.from(UserSelectBannerDb.class).where("bannerIdAddUserID", " =", bannerIdAddUserID));
+
+            if (userbannerDb != null) {
+                bannersStr = userbannerDb.getRespStr();
+
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+        return bannersStr;
+
+    }
+
+
+}

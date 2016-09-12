@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/user_appoint_already_evaluation_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:background="@color/text_color_eeeeee"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:id="@+id/user_appoint_already_evaluation_from_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/user_appoint_already_evaluation_from_title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:padding="10dp"
+            android:text="我的评价"
+            android:textColor="@color/text_color_b2b2b2"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/text_color_e2e2e2"></View>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/user_appoint_already_evaluation_from_user_icon_iv"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/appoint_user_info_icon" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/user_appoint_already_evaluation_from_tiem_tv"
+                android:layout_toRightOf="@+id/user_appoint_already_evaluation_from_user_icon_iv"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/user_appoint_already_evaluation_from_user_name_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+
+                    android:textColor="@color/text_color_9a9a9a"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/user_appoint_already_evaluation_from_comment_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+
+                    android:textColor="@color/text_color_333333"
+
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/user_appoint_already_evaluation_from_tiem_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/text_color_b2b2b2"
+
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/user_appoint_already_evaluation_other_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:orientation="vertical">
+
+        <TextView
+
+            android:id="@+id/user_appoint_already_evaluation_other_title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/text_color_white"
+            android:padding="10dp"
+            android:text="对方评价"
+            android:textColor="@color/text_color_b2b2b2"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/text_color_e2e2e2"></View>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/user_appoint_already_evaluation_other_user_icon_iv"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp" />
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/user_appoint_already_evaluation_other_tiem_tv"
+                android:layout_toRightOf="@+id/user_appoint_already_evaluation_other_user_icon_iv"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/user_appoint_already_evaluation_other_user_name_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_color_9a9a9a"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/user_appoint_already_evaluation_other_comment_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/text_color_333333"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+
+            <TextView
+
+                android:id="@+id/user_appoint_already_evaluation_other_tiem_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+
+                android:textColor="@color/text_color_b2b2b2"
+                android:textSize="12sp" />
+
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

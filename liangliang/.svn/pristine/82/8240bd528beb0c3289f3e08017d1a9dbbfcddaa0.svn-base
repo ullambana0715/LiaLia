@@ -1,0 +1,46 @@
+package cn.chono.yopper.Service.Http.DaillyFaceratingCandidates;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/7.
+ */
+public class DaillyFaceratingCandidatesLevelDto implements Serializable {
+
+    private DaillyFaceratingCandidatesDto daillyFaceratingCandidatesDto;
+    private int level;
+    private int targetUserId;
+    private boolean isLevelState;
+
+    public DaillyFaceratingCandidatesDto getDaillyFaceratingCandidatesDto() {
+        return daillyFaceratingCandidatesDto;
+    }
+
+    public void setDaillyFaceratingCandidatesDto(DaillyFaceratingCandidatesDto daillyFaceratingCandidatesDto) {
+        this.daillyFaceratingCandidatesDto = daillyFaceratingCandidatesDto;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getTargetUserId() {
+        return targetUserId;
+    }
+
+    public void setTargetUserId(int targetUserId) {
+        this.targetUserId = targetUserId;
+    }
+
+    public boolean isLevelState() {
+        return isLevelState;
+    }
+
+    public void setLevelState(boolean levelState) {
+        isLevelState = levelState;
+    }
+}

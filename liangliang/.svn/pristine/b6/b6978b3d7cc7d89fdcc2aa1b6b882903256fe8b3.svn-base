@@ -1,0 +1,47 @@
+package cn.chono.yopper.activity.find;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.view.CircleEnergy;
+
+/**
+ * Created by yangjinyu on 16/3/4.
+ */
+public class MyEnergyActivity extends Activity{
+
+    public CircleEnergy mCircle;
+    float progress = 0;
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(progress < 0.5){
+                progress += 0.01;
+                mHandler.sendEmptyMessageDelayed(0,20);
+                mCircle.setProgress(progress);
+                mCircle.setInnerText((int) (progress * 500));
+            }
+
+            System.out.println(progress);
+        }
+    };
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.my_energy_activity);
+        mCircle = (CircleEnergy)findViewById(R.id.my_energy);
+
+        mCircle.setStatus(CircleEnergy.STATUS_DOWNLODING);
+        mCircle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.sendEmptyMessageDelayed(0, 100);
+            }
+        });
+    }
+}

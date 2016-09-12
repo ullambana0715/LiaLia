@@ -1,0 +1,32 @@
+package cn.chono.yopper.Service.Http.SignUpManagementMore;
+
+import android.content.Context;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementRespBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementMoreService extends HttpService {
+    public SignUpManagementMoreService(Context context) {
+        super(context);
+    }
+
+    private SignUpManagementMoreBean managementMoreBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = SignUpManagementRespBean.class;
+
+        callWrap = OKHttpUtils.get(context, managementMoreBean.getNextQuery(), okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        managementMoreBean = (SignUpManagementMoreBean) iBean;
+    }
+}

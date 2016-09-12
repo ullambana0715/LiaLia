@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+
+        android:id="@+id/item_user_order_feekback_photo_iv_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+    <ImageView
+        android:id="@+id/item_user_order_feekback_photo_iv_delete"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignRight="@+id/item_user_order_feekback_photo_iv_img"
+        android:padding="5dp"
+        android:src="@drawable/appointment_write_image_fillet_delete"
+        android:visibility="visible" />
+
+
+</RelativeLayout>

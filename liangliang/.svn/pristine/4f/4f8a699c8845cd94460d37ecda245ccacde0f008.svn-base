@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/score_update_data_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.zhy.autolayout.AutoRelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_top_lift_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_bg"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:src="@drawable/score_update_user_hear_default_icon" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_top_lift_ereer_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_ereer_icon"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_top_lift_attribute_iv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/score_update_data_layout_top_lift_iv"
+                android:layout_alignRight="@+id/score_update_data_layout_top_lift_iv"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+        </com.zhy.autolayout.AutoRelativeLayout>
+
+        <com.zhy.autolayout.AutoRelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_top_right_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_bg"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:src="@drawable/score_update_user_hear_default_icon" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_top_right_ereer_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_ereer_icon"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_top_right_attribute_iv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/score_update_data_layout_top_right_iv"
+                android:layout_alignRight="@+id/score_update_data_layout_top_right_iv"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+        </com.zhy.autolayout.AutoRelativeLayout>
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_lift_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_bg"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:src="@drawable/score_update_user_hear_default_icon" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_lift_ereer_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_ereer_icon"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_lift_attribute_iv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/score_update_data_layout_bottom_lift_iv"
+                android:layout_alignRight="@+id/score_update_data_layout_bottom_lift_iv"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_middle_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_bg"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:src="@drawable/score_update_user_hear_default_icon" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_middle_ereer_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_ereer_icon"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_middle_attribute_iv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/score_update_data_layout_bottom_middle_iv"
+                android:layout_alignRight="@+id/score_update_data_layout_bottom_middle_iv"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_right_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_bg"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:src="@drawable/score_update_user_hear_default_icon" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_right_ereer_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/score_update_user_hear_ereer_icon"
+                android:padding="5dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/score_update_data_layout_bottom_right_attribute_iv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/score_update_data_layout_bottom_right_iv"
+                android:layout_alignRight="@+id/score_update_data_layout_bottom_right_iv"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_auto_baseheight="width"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/score_update_data_layout_hini_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="@string/addiction_str"
+        android:textColor="@color/text_color_white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/score_update_data_layout_hini_more_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/text_color_white"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+
+
+
+    <Button
+        android:id="@+id/score_update_data_layout_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35px"
+        android:layout_marginRight="35px"
+        android:layout_marginTop="50px"
+        android:background="@drawable/corners_orange_selected_style"
+        android:gravity="center"
+        android:text="@string/again_update_str"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="32px" />
+
+
+</com.zhy.autolayout.AutoLinearLayout>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_e3e3e3"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/like_hint_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f1f1f1"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:singleLine="true"
+        android:text="长按取消喜欢"
+        android:textColor="#c6c6c6"
+        android:textSize="16sp" />
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/like_xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/like_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_f8f8f7" />
+    </com.andview.refreshview.XRefreshView>
+
+
+
+</LinearLayout>

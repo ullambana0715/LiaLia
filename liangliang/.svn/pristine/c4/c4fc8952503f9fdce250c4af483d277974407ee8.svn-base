@@ -1,0 +1,606 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.app.Dialog;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.Appointments.AppointmentsBean;
+import cn.chono.yopper.Service.Http.Appointments.AppointmentsData;
+import cn.chono.yopper.Service.Http.Appointments.AppointmentsResp;
+import cn.chono.yopper.Service.Http.Appointments.AppointmentsRespBean;
+import cn.chono.yopper.Service.Http.Appointments.AppointmentsService;
+import cn.chono.yopper.Service.Http.AppointmentsMore.AppointmentsMoreBean;
+import cn.chono.yopper.Service.Http.AppointmentsMore.AppointmentsMoreService;
+import cn.chono.yopper.Service.Http.DatingRequirment.DatingRequirmentBean;
+import cn.chono.yopper.Service.Http.DatingRequirment.DatingRequirmentRespBean;
+import cn.chono.yopper.Service.Http.DatingRequirment.DatingRequirmentService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.appointment.AppointPublishTypeSelectActivity;
+import cn.chono.yopper.activity.appointment.AppointmentDetailActivity;
+import cn.chono.yopper.adapter.UserAppointAdapter;
+import cn.chono.yopper.adapter.UserAppointAdapter.OnItemClickLitener;
+import cn.chono.yopper.data.DatingRequirementListDto;
+import cn.chono.yopper.data.DatingRequirment;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+import cn.chono.zxb.xrefreshview.XRefreshView.SimpleXRefreshListener;
+
+/**
+ * 我的约会列表
+ * 历史约会列表
+ */
+public class UserAppointListActivity extends MainFrameActivity implements OnItemClickLitener,MainFrameActivity.OnAppointPublishBackListener {
+
+
+    private UserAppointAdapter mAdapter;
+
+    /**
+     * 开始位置
+     */
+    private int location = 0;
+
+
+    /**
+     * 加载的条数
+     */
+    private int number = 20;
+
+
+    private RecyclerView user_appoint_recyclerview;// 地点列表
+
+    private XRefreshView user_appoint_xrefreshview;
+
+
+    private LinearLayout no_appoint_list_hint_layout;
+    private LinearLayout error_to_load_layout;
+    private ImageView error_to_load_img;
+    private LinearLayout user_appoint_layout;
+    private TextView error_no_apoint_next_text_view;
+
+
+    private boolean isOnRefresh = false;
+    private boolean isOnLoadMore = false;
+    private String nextQuery;
+
+    private int USER_APPOINT_TAG = 0;
+
+    private int userId;
+
+    private Button user_appoint_view;
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (USER_APPOINT_TAG == YpSettings.USER_APPOINT_HISTORY) {
+            MobclickAgent.onPageStart("约会历史"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        } else {
+            MobclickAgent.onPageStart("我的约会"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        }
+
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (USER_APPOINT_TAG == YpSettings.USER_APPOINT_HISTORY) {
+            MobclickAgent.onPageEnd("约会历史"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        } else {
+            MobclickAgent.onPageEnd("我的约会"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        }
+
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.user_appoint_list_activity);
+
+        USER_APPOINT_TAG = getIntent().getExtras().getInt(YpSettings.USER_APPOINT);
+        userId = getIntent().getExtras().getInt(YpSettings.USERID);
+        setOnAppointPublishBackListener(this);
+        PushAgent.getInstance(this).onAppStart();
+
+        initView();
+        setXrefreshListener();
+
+        user_appoint_layout.setVisibility(View.GONE);
+        no_appoint_list_hint_layout.setVisibility(View.GONE);
+        error_to_load_layout.setVisibility(View.VISIBLE);
+        //启动动画
+        initRotateAnimation();
+
+        if (USER_APPOINT_TAG == YpSettings.USER_APPOINT_HISTORY) {
+            getOnRefresh(location, number, true, userId);
+        } else {
+            getOnRefresh(location, number, false, userId);
+        }
+
+
+    }
+
+
+    private void initView() {
+        error_no_apoint_next_text_view = (TextView) findViewById(R.id.error_no_apoint_next_text_view);
+        user_appoint_view = (Button) findViewById(R.id.user_appoint_view);
+
+        if (USER_APPOINT_TAG == YpSettings.USER_APPOINT_HISTORY) {
+            //   设置标题栏
+            this.getTvTitle().setText("约会历史");
+
+            error_no_apoint_next_text_view.setVisibility(View.GONE);
+            user_appoint_view.setVisibility(View.GONE);
+            this.getBtnOption().setVisibility(View.GONE);
+            this.gettvOption().setVisibility(View.GONE);
+
+        } else {
+            // 设置标题栏
+            this.getTvTitle().setText("我的约会");
+
+            error_no_apoint_next_text_view.setVisibility(View.VISIBLE);
+            user_appoint_view.setVisibility(View.VISIBLE);
+            this.getBtnOption().setVisibility(View.VISIBLE);
+            this.getBtnOption().setImageResource(R.drawable.appoint_publish_icon);
+            this.gettvOption().setVisibility(View.GONE);
+
+        }
+
+        this.getOptionLayout().setVisibility(View.VISIBLE);
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+
+
+        no_appoint_list_hint_layout = (LinearLayout) findViewById(R.id.no_appoint_list_hint_layout);
+        error_to_load_layout = (LinearLayout) findViewById(R.id.error_to_load_layout);
+        error_to_load_img = (ImageView) findViewById(R.id.error_to_load_img);
+        user_appoint_layout = (LinearLayout) findViewById(R.id.user_appoint_layout);
+
+        user_appoint_xrefreshview = (XRefreshView) findViewById(R.id.user_appoint_xrefreshview);
+        user_appoint_recyclerview = (RecyclerView) findViewById(R.id.user_appoint_recyclerview);
+
+        user_appoint_recyclerview.setLayoutManager(new LinearLayoutManager(this));
+        user_appoint_recyclerview.setItemAnimator(new DefaultItemAnimator());
+        mAdapter = new UserAppointAdapter(this);
+        user_appoint_recyclerview.setAdapter(mAdapter);
+        mAdapter.setOnItemClickLitener(this);
+
+
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                finish();
+            }
+        });
+
+        this.getOptionLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                isCan_publish_dating();
+
+            }
+        });
+
+        user_appoint_view.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ViewsUtils.preventViewMultipleClick(v, 500);
+                Bundle bundle = new Bundle();
+                bundle.putInt(YpSettings.USER_APPOINT, YpSettings.USER_APPOINT_HISTORY);
+                bundle.putInt(YpSettings.USERID, userId);
+                ActivityUtil.jump(UserAppointListActivity.this, UserAppointListActivity.class, bundle, 0, 100);
+
+            }
+        });
+
+
+    }
+
+
+    private Dialog loadingDiaog;
+
+    /**
+     *判断是否满足约会发布条件
+     */
+    private void isCan_publish_dating() {
+
+        loadingDiaog = DialogUtil.LoadingDialog(UserAppointListActivity.this,null);
+
+        if (!isFinishing()) {
+            loadingDiaog.show();
+        }
+
+
+        DatingRequirmentBean datingRequirmentBean = new DatingRequirmentBean();
+        datingRequirmentBean.setUserId(YPApplication.loginUser.getUserId());
+
+
+        DatingRequirmentService datingRequirmentService = new DatingRequirmentService(UserAppointListActivity.this);
+
+        datingRequirmentService.parameter(datingRequirmentBean);
+        datingRequirmentService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                loadingDiaog.dismiss();
+                DatingRequirmentRespBean datingRequirmentRespBean=(DatingRequirmentRespBean)respBean;
+                DatingRequirementListDto datingRequirementListDto=datingRequirmentRespBean.getResp();
+                if(datingRequirementListDto.getRequirements()!=null && datingRequirementListDto.getRequirements().size()>=0){
+                    boolean haveNotIsReady=false;
+                    for(int i=0;i<datingRequirementListDto.getRequirements().size();i++){
+                        DatingRequirment datingRequirment=datingRequirementListDto.getRequirements().get(i);
+                        if(!datingRequirment.isReady()){
+                            haveNotIsReady=true;
+                            break;
+                        }
+                    }
+                    if(haveNotIsReady){
+                        canNotPublishDatingDialog=DialogUtil.createNotCanPublishDatingHintDialog(UserAppointListActivity.this,datingRequirementListDto.getRequirements(),canNotPublishDatingDialogbackCallListener);
+                        canNotPublishDatingDialog.show();
+                    }else{
+                        Bundle bundle=new Bundle();
+                        bundle.putString(YpSettings.FROM_PAGE,"UserAppointListActivity");
+                        ActivityUtil.jump(UserAppointListActivity.this, AppointPublishTypeSelectActivity.class, bundle, 0,100);
+                    }
+                }
+
+            }
+        }, new OnCallBackFailListener(){
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserAppointListActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserAppointListActivity.this,msg);
+                }
+            }
+        });
+
+        datingRequirmentService.enqueue();
+    }
+
+
+    private Dialog canNotPublishDatingDialog;
+    private BackCallListener canNotPublishDatingDialogbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+
+            if (!UserAppointListActivity.this.isFinishing()) {
+                canNotPublishDatingDialog.dismiss();
+            }
+            Bundle bundle=new Bundle();
+            bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+            ActivityUtil.jump(UserAppointListActivity.this, UserInfoActivity.class, bundle, 0,100);
+
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!UserAppointListActivity.this.isFinishing()) {
+                canNotPublishDatingDialog.dismiss();
+            }
+        }
+    };
+
+
+    private void setXrefreshListener() {
+        // 设置静默加载模式
+        user_appoint_xrefreshview.setSlienceLoadMore();
+        user_appoint_xrefreshview.setAutoLoadMore(true);
+        user_appoint_xrefreshview.setPinnedTime(1000);
+        user_appoint_xrefreshview.setMoveForHorizontal(true);
+        user_appoint_xrefreshview.setCustomHeaderView(new CustomHeaderAnim(this));
+        user_appoint_xrefreshview.setXRefreshViewListener(new SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (!isOnRefresh) {
+                            isOnRefresh = true;
+                            location = 0;
+                            number = 20;
+
+                            if (USER_APPOINT_TAG == YpSettings.USER_APPOINT_HISTORY) {
+                                getOnRefresh(location, number, true, userId);
+                            } else {
+                                getOnRefresh(location, number, false, userId);
+                            }
+
+                        }
+
+                        user_appoint_xrefreshview.stopRefresh();
+                    }
+                }, 1500);
+            }
+
+            @Override
+            public void onLoadMore(boolean isSlience) {
+                super.onLoadMore(isSlience);
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+
+                        if (!isOnLoadMore) {
+                            isOnLoadMore = true;
+                            getOnLoadMore(nextQuery);
+                        }
+
+                        //刷新完成必须调用此方法停止加载
+                        user_appoint_xrefreshview.stopLoadMore();
+                    }
+                }, 1000);
+            }
+
+        });
+
+
+        user_appoint_xrefreshview.setOnAbsListViewScrollListener(new OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
+    }
+
+
+    /**
+     * 获取用户约会数据
+     * IsHistory 是否历史约会
+     * Start
+     * Rows
+     */
+
+    private void getOnRefresh(final int start, int nummber, boolean isHistory, int userID) {
+
+
+        final AppointmentsBean appointmentsBean = new AppointmentsBean();
+        appointmentsBean.setUserId(userID);
+        appointmentsBean.setStart(start);
+        appointmentsBean.setIsHistory(isHistory);
+        appointmentsBean.setRows(nummber);
+
+        AppointmentsService dataService = new AppointmentsService(this);
+        dataService.parameter(appointmentsBean);
+        dataService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                AppointmentsRespBean appointmentsRespBean = (AppointmentsRespBean) respBean;
+
+                AppointmentsResp appointmentsResp = appointmentsRespBean.getResp();
+
+
+                if (null != appointmentsResp) {
+                    LogUtils.e("--appointmentsResp--");
+
+                    nextQuery = appointmentsResp.getNextQuery();
+
+                    if (null != appointmentsResp.getList() && appointmentsResp.getList().size() > 0) {
+                        LogUtils.e("--appointmentsResp--" + appointmentsResp.getList().size());
+                        mAdapter.setData(appointmentsResp.getList());
+                        mAdapter.notifyDataSetChanged();
+
+                        user_appoint_layout.setVisibility(View.VISIBLE);
+                        no_appoint_list_hint_layout.setVisibility(View.GONE);
+                        error_to_load_layout.setVisibility(View.GONE);
+                    } else {
+                        LogUtils.e("--appointmentsResp--" + appointmentsResp.getList().toString());
+                        List<AppointmentsData> list = mAdapter.getDatas();
+
+                        if (null == list || list.size() <= 0) {
+                            user_appoint_layout.setVisibility(View.GONE);
+                            no_appoint_list_hint_layout.setVisibility(View.VISIBLE);
+                            error_to_load_layout.setVisibility(View.GONE);
+
+                        }
+
+
+                    }
+                }
+                removeRotateAnimation();
+                isOnRefresh = false;
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                isOnRefresh = false;
+                List<AppointmentsData> list = mAdapter.getDatas();
+
+                if (null == list || list.size() <= 0) {
+                    user_appoint_layout.setVisibility(View.GONE);
+                    no_appoint_list_hint_layout.setVisibility(View.VISIBLE);
+                    error_to_load_layout.setVisibility(View.GONE);
+                    removeRotateAnimation();
+                    return;
+                }
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserAppointListActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserAppointListActivity.this, msg);
+
+            }
+        });
+        dataService.enqueue();
+
+
+    }
+
+    private void getOnLoadMore(String nextQueryUrl) {
+        if (TextUtils.isEmpty(nextQueryUrl)) {
+            isOnLoadMore = false;
+            return;
+        }
+
+        AppointmentsMoreBean moreBean = new AppointmentsMoreBean();
+        moreBean.setNextQuery(nextQueryUrl);
+
+        AppointmentsMoreService moreService = new AppointmentsMoreService(this);
+        moreService.parameter(moreBean);
+        moreService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                AppointmentsRespBean appointmentsRespBean = (AppointmentsRespBean) respBean;
+                AppointmentsResp appointmentsResp = appointmentsRespBean.getResp();
+
+                if (null != appointmentsResp && null != appointmentsResp.getList() && appointmentsResp.getList().size() > 0) {
+                    nextQuery = appointmentsResp.getNextQuery();
+                    mAdapter.addData(appointmentsResp.getList());
+                    mAdapter.notifyDataSetChanged();
+
+
+                }
+
+                isOnLoadMore = false;
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+
+                isOnLoadMore = false;
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserAppointListActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserAppointListActivity.this, msg);
+            }
+        });
+
+        moreService.enqueue();
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // 动画回收
+        removeRotateAnimation();
+    }
+
+
+    private Animation mRotateAnimation;
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        // mRotateAnimation.setDuration(ROTATION_ANIMATION_DURATION);
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        error_to_load_img.setAnimation(mRotateAnimation);
+    }
+
+    /**
+     * 正在加载动画回收
+     */
+    private void removeRotateAnimation() {
+        // 动画回收
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            error_to_load_img.clearAnimation();
+        }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        String appointId = mAdapter.getDatas().get(position).getId();
+        int userID = mAdapter.getDatas().get(position).getOwner().getId();
+
+
+        Bundle bundle = new Bundle();
+        bundle.putString(YpSettings.APPOINTMENT_ID, appointId);
+        bundle.putInt(YpSettings.USERID, userID);
+
+        ActivityUtil.jump(UserAppointListActivity.this, AppointmentDetailActivity.class, bundle, 0, 100);
+
+    }
+
+    @Override
+    public void onItemUserIconClick(View view, int position) {
+        int userID = mAdapter.getDatas().get(position).getOwner().getId();
+        Bundle userbundle = new Bundle();
+        userbundle.putInt(YpSettings.USERID, userID);
+        ActivityUtil.jump(UserAppointListActivity.this, UserInfoActivity.class, userbundle, 0, 100);
+    }
+
+
+    @Override
+    public void onAppointPublishBackListener(int page) {
+        if(page==2){
+            if(user_appoint_xrefreshview.getVisibility()==View.GONE){
+                if (USER_APPOINT_TAG == YpSettings.USER_APPOINT_HISTORY) {
+                    getOnRefresh(location, number, true, userId);
+                } else {
+                    getOnRefresh(location, number, false, userId);
+                }
+            }else{
+                user_appoint_xrefreshview.startRefresh();
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+package cn.chono.yopper.view.ScoreCord;
+
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import java.util.List;
+
+/**
+ * Created by zxb on 2015/12/4.
+ */
+public interface OnScoreCordLayoutListener {
+
+    void onScoreCordLeftEvent(final int score_cord_layout_list_size,final int level,final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onScoreCordRightEvent(final int score_cord_layout_list_size,final int level,final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onScoreCordTopEvent(final int score_cord_layout_list_size,final int level,final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onScoreCordBottomEvent(final int score_cord_layout_list_size,final int level,final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onLevelClownImageView(final int score_cord_layout_list_size,final int level,final ImageView clown_iv, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onLevelGeneralImageView(final int score_cord_layout_list_size,final int level,final ImageView general_iv, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onLevelHandsomeImageView(final int score_cord_layout_list_size,final int level,final ImageView handsome_iv, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onLevelVeryHandsomeImageView(final int score_cord_layout_list_size,final int level,final ImageView very_handsome_iv, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta,final String username);
+
+    void onPhotoAlbumOne(final ImageView photo_album_one,final List<String> score_layout_album);
+
+    void onPhotoAlbumTwo(final ImageView photo_album_two,final List<String> score_layout_album);
+
+    void onPhotoAlbumThree(final ImageView photo_album_Three,final List<String> score_layout_album);
+}

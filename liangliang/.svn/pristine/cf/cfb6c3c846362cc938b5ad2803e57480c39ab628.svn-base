@@ -1,0 +1,114 @@
+package cn.chono.yopper.Service.Http.UserInfo;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/11/20.
+ */
+public class UserInfoBean extends ParameterBean{
+
+    private int userId;
+
+    private boolean Album;
+
+    private boolean Wish;
+    private boolean Bump;
+    private boolean Bubble;
+    private boolean ForDating;
+    private boolean Verification;
+
+    private double Lng=-1;
+    private double Lat=-1;
+
+    private boolean faceRating;
+
+    private boolean Appointment;
+
+    public boolean isAppointment() {
+        return Appointment;
+    }
+
+    public void setAppointment(boolean appointment) {
+        Appointment = appointment;
+    }
+
+    public boolean isFaceRating() {
+        return faceRating;
+    }
+
+    public void setFaceRating(boolean faceRating) {
+        this.faceRating = faceRating;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public boolean isAlbum() {
+        return Album;
+    }
+
+    public void setAlbum(boolean album) {
+        Album = album;
+    }
+
+    public boolean isWish() {
+        return Wish;
+    }
+
+    public void setWish(boolean wish) {
+        Wish = wish;
+    }
+
+    public boolean isBump() {
+        return Bump;
+    }
+
+    public void setBump(boolean bump) {
+        Bump = bump;
+    }
+
+    public boolean isBubble() {
+        return Bubble;
+    }
+
+    public void setBubble(boolean bubble) {
+        Bubble = bubble;
+    }
+
+    public boolean isForDating() {
+        return ForDating;
+    }
+
+    public void setForDating(boolean forDating) {
+        ForDating = forDating;
+    }
+
+    public boolean isVerification() {
+        return Verification;
+    }
+
+    public void setVerification(boolean verification) {
+        Verification = verification;
+    }
+
+    public double getLng() {
+        return Lng;
+    }
+
+    public void setLng(double lng) {
+        Lng = lng;
+    }
+
+    public double getLat() {
+        return Lat;
+    }
+
+    public void setLat(double lat) {
+        Lat = lat;
+    }
+}

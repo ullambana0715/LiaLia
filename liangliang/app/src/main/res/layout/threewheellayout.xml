@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/color_ffffff"
+    android:orientation="horizontal">
+
+
+    <cn.chono.yopper.view.wheel.WheelView
+        android:id="@+id/edit_hometown_provinces_wheel"
+        android:layout_width="0dip"
+        android:layout_height="120dip"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1" />
+
+    <cn.chono.yopper.view.wheel.WheelView
+        android:id="@+id/edit_hometown_city_wheel"
+        android:layout_width="0dip"
+        android:layout_height="120dip"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1" />
+
+    <cn.chono.yopper.view.wheel.WheelView
+        android:id="@+id/edit_hometown_district_wheel"
+        android:layout_width="0dip"
+        android:layout_height="120dip"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1" />
+
+</LinearLayout>

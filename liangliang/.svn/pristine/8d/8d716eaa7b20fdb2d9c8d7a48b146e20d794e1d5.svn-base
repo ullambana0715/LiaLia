@@ -1,0 +1,144 @@
+package cn.chono.yopper.Service.Http.DaingsNearest;
+
+import android.content.Context;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+import java.util.HashMap;
+import java.util.List;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.data.AppointListDto;
+import cn.chono.yopper.data.AppointmentDto;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.Profile;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.utils.JsonUtils;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class DaingsNearestService extends HttpService {
+    public DaingsNearestService(Context context) {
+        super(context);
+    }
+
+    private DaingsNearestBean nearestBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass=DaingsNearestRespBean.class;
+
+        HashMap<String,Object> HashMap=new HashMap<>();
+        HashMap.put("Lng",nearestBean.getLng());
+        HashMap.put("Lat",nearestBean.getLat());
+
+        if(nearestBean.getSex()!=0){
+            HashMap.put("Sex",nearestBean.getSex());
+        }
+        HashMap.put("Sort",nearestBean.getSort());
+
+        if(nearestBean.getType()!=0){
+            HashMap.put("ActivityType",nearestBean.getType());
+        }
+        if(nearestBean.getTime()!=0){
+            HashMap.put("Time",nearestBean.getTime());
+        }
+
+        HashMap.put("DaysOffset",nearestBean.getDaysOffset());
+
+        if(nearestBean.getAgeMin()==0 && nearestBean.getAgeMax()==99){
+
+        }else{
+            HashMap.put("AgeMin",nearestBean.getAgeMin());
+            HashMap.put("AgeMax",nearestBean.getAgeMax());
+        }
+
+        if(nearestBean.getRelationship()!=0){
+            HashMap.put("Relationship",nearestBean.getRelationship());
+        }
+
+        if(nearestBean.getHoroscope()!=0){
+            HashMap.put("Horoscope",nearestBean.getHoroscope());
+        }
+
+
+        if(!CheckUtil.isEmpty(nearestBean.getCity()) && !nearestBean.getCity().equals("全国")){
+            String city="上海";
+            LocInfo myLoc = Loc.getLoc();
+            if(myLoc!=null && !CheckUtil.isEmpty(myLoc.getCity())){
+                city= myLoc.getCity();
+            }
+            HashMap.put("City",city);
+        }
+
+        if(nearestBean.getStart()!=0){
+            HashMap.put("Start",nearestBean.getStart());
+        }
+        LogUtils.e("过来了=====");
+        callWrap= OKHttpUtils.get(context, HttpURL.daings_nearest,HashMap,okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        nearestBean= (DaingsNearestBean) iBean;
+    }
+
+
+    @Override
+    protected void onCallSucceed(RespBean respBean) {
+        DaingsNearestRespBean nearestRespBean = (DaingsNearestRespBean) respBean;
+        AppointListDto appointListDto = nearestRespBean.getResp();
+        try {
+            if (appointListDto != null) {
+                List<AppointmentDto> list =appointListDto.getList();
+                if (list != null && list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        AppointmentDto dto = list.get(i);
+                        LoginUserInfo loginUserInfo = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", dto.getOwner().getId()));
+                        if (loginUserInfo != null) {
+                            UserDto userInfo = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+                            userInfo.getProfile().setName(dto.getOwner().getName());
+                            userInfo.getProfile().setHeadImg(dto.getOwner().getHeadImg());
+                            userInfo.getProfile().setSex(dto.getOwner().getSex());
+                            userInfo.getProfile().setHoroscope(dto.getOwner().getHoroscope());
+                            String str = JsonUtils.toJson(userInfo);
+                            loginUserInfo.setResp(str);
+                            YPApplication.getInstance().db.update(loginUserInfo);
+
+                        } else {
+                            loginUserInfo = new LoginUserInfo();
+                            loginUserInfo.setId(dto.getOwner().getId());
+                            UserDto userDto = new UserDto();
+                            Profile profile = new Profile();
+                            profile.setName(dto.getOwner().getName());
+                            profile.setId(dto.getOwner().getId());
+                            profile.setHeadImg(dto.getOwner().getHeadImg());
+                            profile.setHoroscope(dto.getOwner().getHoroscope());
+                            profile.setSex(dto.getOwner().getSex());
+                            userDto.setProfile(profile);
+                            String str = JsonUtils.toJson(userDto);
+                            loginUserInfo.setResp(str);
+                            YPApplication.getInstance().db.save(loginUserInfo);
+
+                        }
+                    }
+                }
+            }
+        }catch (DbException e) {
+            LogUtils.e("laile-------------------"+e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}

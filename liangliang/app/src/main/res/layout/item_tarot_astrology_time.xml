@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/item_tarot_astrology_tv_time"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:background="@color/color_ffffff"
+        android:gravity="center"
+        android:textColor="@color/color_666666"
+
+        android:textSize="15sp"
+        />
+
+</LinearLayout>

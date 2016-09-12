@@ -1,0 +1,38 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+public class Stats implements Serializable{
+
+
+	/**
+	* @Fields serialVersionUID : TODO(用一句话描述这个变量表示什么)
+	*/
+	
+	private static final long serialVersionUID = 1L;
+	private int attraction;
+	private int totalRewards;
+	private int totalPoints;
+	
+	
+	public int getAttraction() {
+		return attraction;
+	}
+	public void setAttraction(int attraction) {
+		this.attraction = attraction;
+	}
+	public int getTotalRewards() {
+		return totalRewards;
+	}
+	public void setTotalRewards(int totalRewards) {
+		this.totalRewards = totalRewards;
+	}
+	public int getTotalPoints() {
+		return totalPoints;
+	}
+	public void setTotalPoints(int totalPoints) {
+		this.totalPoints = totalPoints;
+	}
+
+
+}

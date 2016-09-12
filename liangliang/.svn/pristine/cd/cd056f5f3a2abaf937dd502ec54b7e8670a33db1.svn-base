@@ -1,0 +1,223 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class BumpPoll implements Serializable {
+	private long timestamp;
+	private double timeCost;
+	private BumpResult bumpResult;
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public BumpResult getBumpResult() {
+		return bumpResult;
+	}
+
+	public void setBumpResult(BumpResult bumpResult) {
+		this.bumpResult = bumpResult;
+	}
+
+	public double getTimeCost() {
+		return timeCost;
+	}
+
+	public void setTimeCost(double timeCost) {
+		this.timeCost = timeCost;
+	}
+
+	@Override
+	public String toString() {
+		return "BumpPoll [timestamp=" + timestamp + ", timeCost=" + timeCost
+				+ ", bumpResult=" + bumpResult + "]";
+	}
+	
+
+	public class BumpResult implements Serializable{
+		private BumpFriend bumpFriend;
+		private List<Rewards> rewards;
+		private int pointsGet;
+		private int totalPoints;
+		private String msg;
+		private boolean isNewFriend;
+		private double timeCost;
+		public BumpFriend getBumpFriend() {
+			return bumpFriend;
+		}
+		public void setBumpFriend(BumpFriend bumpFriend) {
+			this.bumpFriend = bumpFriend;
+		}
+		public List<Rewards> getRewards() {
+			return rewards;
+		}
+		public void setRewards(List<Rewards> rewards) {
+			this.rewards = rewards;
+		}
+		public int getPointsGet() {
+			return pointsGet;
+		}
+		public void setPointsGet(int pointsGet) {
+			this.pointsGet = pointsGet;
+		}
+		public int getTotalPoints() {
+			return totalPoints;
+		}
+		public void setTotalPoints(int totalPoints) {
+			this.totalPoints = totalPoints;
+		}
+		public String getMsg() {
+			return msg;
+		}
+		public void setMsg(String msg) {
+			this.msg = msg;
+		}
+		public boolean isNewFriend() {
+			return isNewFriend;
+		}
+		public void setNewFriend(boolean isNewFriend) {
+			this.isNewFriend = isNewFriend;
+		}
+		public double getTimeCost() {
+			return timeCost;
+		}
+		public void setTimeCost(double timeCost) {
+			this.timeCost = timeCost;
+		}
+		@Override
+		public String toString() {
+			return "BumpResult [bumpFriend=" + bumpFriend + ", rewards="
+					+ rewards + ", pointsGet=" + pointsGet + ", totalPoints="
+					+ totalPoints + ", msg=" + msg + ", isNewFriend="
+					+ isNewFriend + ", timeCost=" + timeCost + "]";
+		}
+
+	
+	}
+
+	public class BumpFriend implements Serializable{
+		private int id;
+		private String name;
+		private int horoscope;
+		private String headImg;
+		private int sex;
+		private String regTime;
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getHoroscope() {
+			return horoscope;
+		}
+
+		public void setHoroscope(int horoscope) {
+			this.horoscope = horoscope;
+		}
+
+		public String getHeadImg() {
+			return headImg;
+		}
+
+		public void setHeadImgString(String headImg) {
+			this.headImg = headImg;
+		}
+
+		public int getSex() {
+			return sex;
+		}
+
+		public void setSex(int sex) {
+			this.sex = sex;
+		}
+
+		public String getRegTime() {
+			return regTime;
+		}
+
+		public void setRegTime(String regTime) {
+			this.regTime = regTime;
+		}
+
+		@Override
+		public String toString() {
+			return "BumpFriend [id=" + id + ", name=" + name + ", horoscope="
+					+ horoscope + ", headImg=" + headImg + ", sex=" + sex
+					+ ", regTime=" + regTime + "]";
+		}
+
+	}
+
+	public class Rewards implements Serializable{
+		private int type;
+		private int id;
+		private int coupontId;
+		private String title;
+		private String icon;
+
+		public int getType() {
+			return type;
+		}
+
+		public void setType(int type) {
+			this.type = type;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		public int getCoupontId() {
+			return coupontId;
+		}
+
+		public void setCoupontId(int coupontId) {
+			this.coupontId = coupontId;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public void setTitle(String title) {
+			this.title = title;
+		}
+
+		public String getIcon() {
+			return icon;
+		}
+
+		public void setIcon(String icon) {
+			this.icon = icon;
+		}
+
+		@Override
+		public String toString() {
+			return "Rewards [type=" + type + ", id=" + id + ", coupontId="
+					+ coupontId + ", title=" + title + ", icon=" + icon + "]";
+		}
+
+	}
+
+}

@@ -1,0 +1,545 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.BlockList.BlockListBean;
+import cn.chono.yopper.Service.Http.BlockList.BlockListRespBean;
+import cn.chono.yopper.Service.Http.BlockList.BlockListService;
+import cn.chono.yopper.Service.Http.BlockListMore.BlockListMoreBean;
+import cn.chono.yopper.Service.Http.BlockListMore.BlockListMoreService;
+import cn.chono.yopper.Service.Http.BlockRequest.BlockRequestBean;
+import cn.chono.yopper.Service.Http.BlockRequest.BlockRequestRespBean;
+import cn.chono.yopper.Service.Http.BlockRequest.BlockRequestService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.BlockListAdapter;
+import cn.chono.yopper.data.BlockDto;
+import cn.chono.yopper.data.BlockListDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.MyDialog;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+import cn.chono.zxb.xrefreshview.XRefreshView.SimpleXRefreshListener;
+
+/**
+ * 黑名单
+ *
+ * @author sam.sun
+ */
+public class BlockActivity extends MainFrameActivity {
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    private ListView block_listview;// 地点列表
+
+    private XRefreshView xrefreshView;
+
+    private BlockListAdapter mAdapter;
+
+    // 开始的位置
+    private int location = 0;
+
+    private Animation mRotateAnimation;
+
+    private TextView block_hint_tv;
+
+    private TextView error_network_tv;
+    private TextView error_no_data_tv;
+    private ImageView error_to_load_img;
+
+    private LinearLayout error_network_layout;
+    private LinearLayout error_no_data_layout;
+    private LinearLayout error_to_load_layout;
+
+    private String nextQuery;
+    //haveGeting只有赋值为false的地方,没有为true的地方.
+    private boolean haveGeting = false;
+
+    private int userId;
+
+    // 解除黑名单
+    private Dialog blockDialog;
+
+    private Dialog netDialog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+        userId = YPApplication.loginUser.getUserId();
+        initComponent();
+        initRotateAnimation();
+        block_hint_tv.setVisibility(View.GONE);
+
+        getNewBlockList(location);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("黑名单列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("黑名单列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("黑名单列表");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.INVISIBLE);
+
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                finish();
+
+            }
+        });
+
+        // 内容部分
+        mInflater = (LayoutInflater) this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        contextView = mInflater.inflate(R.layout.block_activity, null);
+
+        block_listview = (ListView) contextView
+                .findViewById(R.id.block_listview);
+
+        xrefreshView = (XRefreshView) contextView
+                .findViewById(R.id.block_xrefreshview);
+        xrefreshView.setAutoLoadMore(true);
+        setXrefreshListener();
+
+        mAdapter = new BlockListAdapter(this);
+
+        block_listview.setAdapter(mAdapter);
+
+        block_hint_tv = (TextView) contextView.findViewById(R.id.block_hint_tv);
+
+        error_network_tv = (TextView) contextView
+                .findViewById(R.id.error_network_tv);
+        error_no_data_tv = (TextView) contextView
+                .findViewById(R.id.error_no_data_tv);
+        error_to_load_img = (ImageView) contextView
+                .findViewById(R.id.error_to_load_img);
+
+        error_no_data_tv.setText("暂无拉黑名单");
+
+        error_network_layout = (LinearLayout) contextView
+                .findViewById(R.id.error_network_layout);
+        error_no_data_layout = (LinearLayout) contextView
+                .findViewById(R.id.error_no_data_layout);
+        error_to_load_layout = (LinearLayout) contextView
+                .findViewById(R.id.error_to_load_layout);
+
+        error_network_tv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                ViewsUtils.preventViewMultipleClick(arg0, 1000);
+                error_network_layout.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+                block_hint_tv.setVisibility(View.GONE);
+                xrefreshView.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.VISIBLE);
+                initRotateAnimation();
+                location = 0;
+                getNewBlockList(location);
+
+            }
+        });
+
+        block_listview
+                .setOnItemLongClickListener(new OnItemLongClickListener() {
+
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> parent,
+                                                   View view, int position, long id) {
+                        BlockDto dto = mAdapter.getList().get(position);
+
+                        showBlockDialog(dto.getUser().getId(), position);
+                        return true;
+                    }
+                });
+
+        block_listview.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                BlockDto dto = mAdapter.getList().get(position);
+                Bundle bundle = new Bundle();
+                bundle.putInt(YpSettings.USERID, dto.getUser().getId());
+                ActivityUtil.jump(BlockActivity.this, UserInfoActivity.class,
+                        bundle, 0, 100);
+            }
+        });
+
+        this.getMainLayout().addView(contextView, LayoutParams.FILL_PARENT,
+                LayoutParams.FILL_PARENT);
+
+    }
+
+    public void showBlockDialog(final int id, final int position) {
+
+        // 初始化一个自定义的Dialog
+        blockDialog = new MyDialog(BlockActivity.this, R.style.MyDialog, R.layout.select_operate_dialog_layout,
+                new MyDialog.DialogEventListener() {
+
+                    @Override
+                    public void onInit(View contentView) {
+
+                        TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                        LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                        LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                        LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+
+                        TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+
+                        select_operate_dialog_title_tv.setText("操作");
+                        select_operate_dialog_one_tv.setText("解除黑名单");
+
+                        select_operate_dialog_one_layout.setVisibility(View.VISIBLE);
+
+                        select_operate_dialog_two_layout.setVisibility(View.GONE);
+
+                        select_operate_dialog_three_layout.setVisibility(View.GONE);
+
+
+                        // 点击升级按钮
+                        select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                                BlockActivity.this.blockDialog.dismiss();
+
+                                doDeleteBlockRequest(id, position);
+
+                            }
+
+                        });
+                    }
+                });
+        blockDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog消失
+        blockDialog.show();
+
+    }
+
+    private void setXrefreshListener() {
+        // 设置静默加载模式
+        xrefreshView.setSlienceLoadMore();
+        xrefreshView.setAutoLoadMore(true);
+        xrefreshView.setPinnedTime(1000);
+        xrefreshView.setMoveForHorizontal(true);
+        xrefreshView.setCustomHeaderView(new CustomHeaderAnim(this));
+        xrefreshView.setXRefreshViewListener(new SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        location = 0;
+                        getNewBlockList(location);
+                        xrefreshView.stopRefresh();
+                    }
+                }, 1000);
+            }
+
+            @Override
+            public void onLoadMore(boolean isSlience) {
+                super.onLoadMore(isSlience);
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+
+                        loadMoregetNewBlockList();
+                        // 刷新完成必须调用此方法停止加载
+                        xrefreshView.stopLoadMore();
+                    }
+                }, 1000);
+            }
+        });
+
+        xrefreshView.setOnAbsListViewScrollListener(new OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+    }
+
+    /**
+     * 获取约会列表
+     */
+
+    private void getNewBlockList(final int start) {
+
+        if (haveGeting) {
+            return;
+        }
+
+
+        BlockListBean listBean = new BlockListBean();
+
+        listBean.setUserId(userId);
+        listBean.setStart(start);
+
+        BlockListService listService = new BlockListService(this);
+
+        listService.parameter(listBean);
+
+        listService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BlockListRespBean listRespBean = (BlockListRespBean) respBean;
+                BlockListDto blockListDto = listRespBean.getResp();
+
+                // 定位视图隐藏 网络加载失败视图隐藏-小圆圈视图隐藏
+                // 如果没有数据，则显示无数据视图，如果有数据则刷新视图
+                // 动画回收
+                haveGeting = false;
+                if (mRotateAnimation != null) {
+                    mRotateAnimation.cancel();
+                    error_to_load_img.clearAnimation();
+                }
+                block_hint_tv.setVisibility(View.VISIBLE);
+                error_network_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+                List<BlockDto> list = new ArrayList<BlockDto>();
+
+                if (blockListDto != null) {
+                    list = blockListDto.getList();
+
+                    if (list != null && list.size() > 0) {
+                        error_no_data_layout
+                                .setVisibility(View.GONE);
+                        xrefreshView
+                                .setVisibility(View.VISIBLE);
+                        nextQuery = blockListDto.getNextQuery();
+
+                        mAdapter.setList(list);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        error_no_data_layout
+                                .setVisibility(View.VISIBLE);
+                        xrefreshView.setVisibility(View.GONE);
+                        block_hint_tv.setVisibility(View.GONE);
+                    }
+                } else {
+                    error_no_data_layout
+                            .setVisibility(View.VISIBLE);
+                    xrefreshView.setVisibility(View.GONE);
+                    block_hint_tv.setVisibility(View.GONE);
+                }
+
+
+            }
+        }
+                , new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                // 定位视图隐藏 无数据视图隐藏-小圆圈视图隐藏-
+                // 如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                // 动画回收
+                // 动画回收
+                haveGeting = false;
+                if (mRotateAnimation != null) {
+                    mRotateAnimation.cancel();
+                    error_to_load_img.clearAnimation();
+                }
+                block_hint_tv.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+                error_network_layout.setVisibility(View.VISIBLE);
+                xrefreshView.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+            }
+        });
+
+        listService.enqueue();
+
+    }
+
+    /**
+     * 获取约会列表
+     */
+
+    private void loadMoregetNewBlockList() {
+
+        if (haveGeting) {
+            return;
+        }
+
+        if (CheckUtil.isEmpty(nextQuery)) {
+            return;
+        }
+
+
+        BlockListMoreBean listMoreBean = new BlockListMoreBean();
+
+        listMoreBean.setNextQuery(nextQuery);
+
+        BlockListMoreService listMoreService = new BlockListMoreService(this);
+
+        listMoreService.parameter(listMoreBean);
+
+        listMoreService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BlockListRespBean listRespBean = (BlockListRespBean) respBean;
+                BlockListDto blockListDto = listRespBean.getResp();
+
+
+                haveGeting = false;
+
+                List<BlockDto> list = new ArrayList<BlockDto>();
+
+
+                if (blockListDto != null) {
+
+                    list = blockListDto.getList();
+
+                    if (list != null && list.size() > 0) {
+
+                        nextQuery = blockListDto.getNextQuery();
+                        List<BlockDto> curlist = mAdapter.getList();
+                        curlist.addAll(list);
+                        mAdapter.setList(curlist);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                // 定位视图隐藏 无数据视图隐藏-小圆圈视图隐藏-
+                // 如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                haveGeting = false;
+                error_network_layout.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+                // 提示连接失败
+                DialogUtil.showDisCoverNetToast(BlockActivity.this);
+            }
+        });
+
+        listMoreService.enqueue();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            error_to_load_img.clearAnimation();
+        }
+        super.onDestroy();
+    }
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        error_to_load_img.setAnimation(mRotateAnimation);
+    }
+
+    /**
+     * 解除拉黑
+     */
+    private void doDeleteBlockRequest(int id, final int position) {
+
+
+        BlockRequestBean requestBean = new BlockRequestBean();
+        requestBean.setBlock(false);
+        requestBean.setUserId(userId);
+        requestBean.setId(id);
+
+        BlockRequestService requestService = new BlockRequestService(this);
+        requestService.parameter(requestBean);
+        requestService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BlockRequestRespBean requestRespBean = (BlockRequestRespBean) respBean;
+
+                mAdapter.getList().remove(position);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+        requestService.enqueue();
+
+
+    }
+
+}

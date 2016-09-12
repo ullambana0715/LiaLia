@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/white_bg_10_corners"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/ic_chat_dlg_key"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/dlg_chat_broken_key_need_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="14dp"
+        android:text="解锁需1把钥匙"
+        android:textColor="@color/color_666666"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/dlg_chat_broken_key_have_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="10dp"
+        android:text="您现在有9把钥匙"
+        android:textColor="@color/color_666666"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="10dp"
+        android:text="(系统会每天送你钥匙)"
+        android:textColor="@color/color_b2b2b2"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="12dp"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/dlg_chat_broken_key_cancel_tv"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="14dp"
+            android:gravity="center"
+            android:background="@drawable/ff7462_2_border_5_corners_white_bg"
+            android:text="取消"
+            android:textColor="@color/color_ff7462"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dlg_chat_broken_key_use_tv"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="14dp"
+            android:layout_marginRight="14dp"
+            android:gravity="center"
+            android:background="@drawable/ff7462_bg_5_corners"
+            android:text="立即使用"
+            android:textColor="@color/color_ffffff"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+</LinearLayout>

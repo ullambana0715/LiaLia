@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/publish_appoint_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/text_color_white"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/cannot_publish_dating_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:singleLine="true"
+            android:layout_marginTop="5dp"
+            android:text="在发起约会之前，"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:singleLine="true"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:text="请先确保已完成以下要求："
+            android:layout_marginTop="3dp"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/can_not_publish_info_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp">
+
+
+        </LinearLayout>
+
+
+
+
+
+        <TextView
+            android:id="@+id/can_not_publish_dating_sure_tv"
+            android:layout_width="match_parent"
+            android:layout_height="35dip"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/publish_appoint_hint_sure_bg"
+            android:gravity="center"
+            android:text="前往查看"
+            android:textColor="@color/text_color_white"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

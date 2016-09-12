@@ -1,0 +1,190 @@
+package cn.chono.yopper.Service.Http.FaceratingList;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/8.
+ */
+public class FaceratingListDate implements Serializable{
+
+    private int  groupingId=0;
+    private String groupingTimedirectory;
+
+    private int result;
+    private String rateTime;
+    private TargetUser targetUser;
+
+    public String getGroupingTimedirectory() {
+        return groupingTimedirectory;
+    }
+
+    public void setGroupingTimedirectory(String groupingTimedirectory) {
+        this.groupingTimedirectory = groupingTimedirectory;
+    }
+
+    public int getGroupingId() {
+        return groupingId;
+    }
+
+    public void setGroupingId(int groupingId) {
+        this.groupingId = groupingId;
+    }
+
+    public int getResult() {
+        return result;
+    }
+
+    public void setResult(int result) {
+        this.result = result;
+    }
+
+    public String getRateTime() {
+        return rateTime;
+    }
+
+    public void setRateTime(String rateTime) {
+        this.rateTime = rateTime;
+    }
+
+    public TargetUser getTargetUser() {
+        return targetUser;
+    }
+
+    public void setTargetUser(TargetUser targetUser) {
+        this.targetUser = targetUser;
+    }
+
+
+
+
+    public class TargetUser implements Serializable {
+        private int id;
+        private String mobile;
+        private String hashedPassword;
+        private String name;
+        private int horoscope;
+        private String headImg;
+        private String headImgInternal;
+        private int sex;
+        private int status;
+        private int level;
+        private String regTime;
+        private int cityCode;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getMobile() {
+            return mobile;
+        }
+
+        public void setMobile(String mobile) {
+            this.mobile = mobile;
+        }
+
+        public String getHashedPassword() {
+            return hashedPassword;
+        }
+
+        public void setHashedPassword(String hashedPassword) {
+            this.hashedPassword = hashedPassword;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getHoroscope() {
+            return horoscope;
+        }
+
+        public void setHoroscope(int horoscope) {
+            this.horoscope = horoscope;
+        }
+
+        public String getHeadImg() {
+            return headImg;
+        }
+
+        public void setHeadImg(String headImg) {
+            this.headImg = headImg;
+        }
+
+        public String getHeadImgInternal() {
+            return headImgInternal;
+        }
+
+        public void setHeadImgInternal(String headImgInternal) {
+            this.headImgInternal = headImgInternal;
+        }
+
+        public int getSex() {
+            return sex;
+        }
+
+        public void setSex(int sex) {
+            this.sex = sex;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(int level) {
+            this.level = level;
+        }
+
+        public String getRegTime() {
+            return regTime;
+        }
+
+        public void setRegTime(String regTime) {
+            this.regTime = regTime;
+        }
+
+        public int getCityCode() {
+            return cityCode;
+        }
+
+        public void setCityCode(int cityCode) {
+            this.cityCode = cityCode;
+        }
+
+        @Override
+        public String toString() {
+            return "TargetUser{" +
+                    "id=" + id +
+                    ", mobile='" + mobile + '\'' +
+                    ", hashedPassword='" + hashedPassword + '\'' +
+                    ", name='" + name + '\'' +
+                    ", horoscope=" + horoscope +
+                    ", headImg='" + headImg + '\'' +
+                    ", headImgInternal='" + headImgInternal + '\'' +
+                    ", sex=" + sex +
+                    ", status=" + status +
+                    ", level=" + level +
+                    ", regTime='" + regTime + '\'' +
+                    ", cityCode=" + cityCode +
+                    '}';
+        }
+    }
+
+
+}

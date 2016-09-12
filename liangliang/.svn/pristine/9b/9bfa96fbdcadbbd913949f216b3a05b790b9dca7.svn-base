@@ -1,0 +1,11 @@
+package cn.chono.yopper.smack.service;
+
+import cn.chono.yopper.smack.entity.ChatDto;
+
+public interface IConnectionStatusCallback {
+	public void connectionStatusChanged(int connectedState, String reason);
+	
+	public void ReceiveNewMsg(ChatDto dto);
+	
+	public void ListenSendStatus(int send_status,String packetId);
+}

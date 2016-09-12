@@ -1,0 +1,2802 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.text.TextUtils;
+import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.baidu.mapapi.model.LatLng;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.BlockRequest.BlockRequestBean;
+import cn.chono.yopper.Service.Http.BlockRequest.BlockRequestService;
+import cn.chono.yopper.Service.Http.BubblingReport.BubblingReportBean;
+import cn.chono.yopper.Service.Http.BubblingReport.BubblingReportRespBean;
+import cn.chono.yopper.Service.Http.BubblingReport.BubblingReportService;
+import cn.chono.yopper.Service.Http.ChatAttampt.ChatAttamptBean;
+import cn.chono.yopper.Service.Http.ChatAttampt.ChatAttamptRespBean;
+import cn.chono.yopper.Service.Http.ChatAttampt.ChatAttamptService;
+import cn.chono.yopper.Service.Http.Facerating.FaceratingBean;
+import cn.chono.yopper.Service.Http.Facerating.FaceratingRespBean;
+import cn.chono.yopper.Service.Http.Facerating.FaceratingService;
+import cn.chono.yopper.Service.Http.InviteType.InviteTypeBean;
+import cn.chono.yopper.Service.Http.InviteType.InviteTypeRespBean;
+import cn.chono.yopper.Service.Http.InviteType.InviteTypeService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.SendAttraction.SendAttractionBean;
+import cn.chono.yopper.Service.Http.SendAttraction.SendAttractionRespBean;
+import cn.chono.yopper.Service.Http.SendAttraction.SendAttractionService;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoRespBean;
+import cn.chono.yopper.Service.Http.UserInfo.UserInfoService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.appointment.AppointmentDetailActivity;
+import cn.chono.yopper.activity.base.SimpleWebViewActivity;
+import cn.chono.yopper.activity.chat.ChatActivity;
+import cn.chono.yopper.activity.near.ZoomViewerActivity;
+import cn.chono.yopper.activity.video.VideoDetailGetActivity;
+import cn.chono.yopper.adapter.UserInfoAblumAdapter;
+import cn.chono.yopper.data.AttamptRespDto;
+import cn.chono.yopper.data.AttractionResultDto;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.data.UserInfoAppointment;
+import cn.chono.yopper.data.ZoomViewerDto;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.utils.UnitUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.MyDialog;
+import cn.chono.yopper.view.MyGridView;
+import cn.chono.yopper.view.FlowLeftLayout;
+
+public class UserInfoActivity extends MainFrameActivity implements
+        OnClickListener {
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    // 顶部右侧功能布局
+    private LinearLayout user_info_option_layout;
+    // 顶部左侧返回布局
+    private LinearLayout user_info_goback_layout;
+    // 顶部标题
+    private TextView title_tv;
+
+    // ID
+    private TextView user_id_tv;
+
+    // 魅力值
+    private TextView charm_tv;
+
+    // 讨厌
+    private TextView dislike_tv;
+    // 喜欢
+    private TextView like_tv;
+    // 家乡
+    private TextView home_tv;
+    //交友资料未完善提示，只有自己的查看自己如果没有完善才会出现
+    private TextView user_info_isprofilecomplete_tv;
+    // 年龄
+    private TextView age_tv;
+    private TextView age_level_tv;
+    // 身高
+    private TextView height_tv;
+    // 体重
+    private TextView weight_tv;
+    // 情感状态
+    private TextView emotional_tv;
+    // 收入
+    private TextView income_tv;
+    // 职业
+    private TextView profession_tv;
+    // 标签
+    private LinearLayout lable_layout;
+    private FlowLeftLayout albe_flow_layout;
+    private TextView user_info_no_lable_tv;
+
+    // 冒泡
+    private RelativeLayout bubble_layout;
+    private RelativeLayout user_info_bubble_img_layout;
+    private ImageView user_info_bubble_img_iv;
+
+    private TextView bubble_num_tv;
+    private TextView bubble_title_tv;
+    private TextView bubble_content_tv;
+
+    // 约会
+    private LinearLayout appoint_layout;
+
+    //    private TextView appoint_content_tv;
+//    private ImageView appoint_type_iv;
+    // 相册
+    private MyGridView ablum_recyclerView;
+
+    // 距离
+    private TextView distance_tv;
+    // 时间
+    private TextView online_time_tv;
+    // 性别星座
+    private TextView sex_coll_tv;
+
+    // 提示布局
+    private RelativeLayout hint_layout;
+
+    private ImageView user_info_p_success_iv;
+
+    private ImageView user_info_bottom_chat_edit_iv;
+
+    private ImageView user_info_bottom_send_iv;
+
+    private LinearLayout user_info_bottom_chat_layout;
+
+    private LinearLayout user_info_bottom_send_layout;
+
+    // 头像
+    private ImageView head_img_tv;
+
+    private RelativeLayout user_info_head_img_layout;
+
+    private View user_lable_line;
+
+    private View user_dating_line;
+
+    private View user_bubble_line;
+
+    private View user_info_bottom_line;
+
+    private ImageView user_info_video_state_iv;
+    private RelativeLayout user_info_video_layout;
+    private TextView user_info_video_state_tv;
+    private TextView user_info_video_invite_purpose_tv;
+    private ImageView user_info_video_left_iv;
+
+
+    private RelativeLayout user_info_phone_layout;
+    private TextView user_info_phone_state_tv;
+    private TextView user_info_phone_change_tv;
+
+    private View user_info_time_distance_line;
+
+    private TextView user_info_detail_name_tv;
+
+    private TextView user_info_hor_tv;
+    private ImageView user_info_hor_iv;
+
+    private View user_info_match_line_view;
+    private LinearLayout user_info_everyday_match_layout;
+    private TextView user_info_everyday_match_tv;
+    private ImageView user_info_everyday_match_one_star;
+    private ImageView user_info_everyday_match_two_star;
+    private ImageView user_info_everyday_match_three_star;
+    private ImageView user_info_everyday_match_four_star;
+    private ImageView user_info_everyday_match_five_star;
+
+
+    private View user_video_line;
+
+    private LinearLayout user_info_charm_layout;
+
+    private int userID;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    private UserInfoAblumAdapter adapter;
+
+    private Dialog hintdialog;
+
+    private UserDto userdto;
+    private int mDisplay_width;
+
+    private double latitude = 0;
+    private double longtitude = 0;
+
+    private Dialog loadingDiaog;
+
+    private Dialog helpdialog, uploaddialog;
+
+    private boolean isPostchating = false;
+    private boolean isPostinvite = false;
+
+    private LinearLayout user_info_p_success_layout;
+
+    private Animation p_animation = null;
+
+    private ImageView user_info_faceRating_iv;
+    private ImageView user_info_faceRating_chou_iv;
+    private ImageView user_info_faceRating_yiban_iv;
+    private ImageView user_info_faceRating_shuai_iv;
+    private ImageView user_info_faceRating_henshuai_iv;
+    private ImageView user_info_face_lable_iv;
+
+    private RelativeLayout user_info_frame_score_layout;
+    private ImageView user_info_frame_faceRating_iv;
+    private LinearLayout user_info_frame_faceRating_layout;
+
+    private FaceratingService faceratingService;
+
+//    private int WS;
+//    private int dip;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+//         WS = UnitUtil.getScreenWidthPixels(this);
+//         dip = (int) UnitUtil.getScreenDIP(this);
+
+//        if (WS >= 1080 && dip == 2) {
+//            contextView = mInflater.inflate(R.layout.user_info_big_screen_activity, null);
+//        } else {
+        contextView = mInflater.inflate(R.layout.user_info_activity, null);
+//        }
+
+        setContentView(contextView);
+
+        Display mDisplay = this.getWindowManager().getDefaultDisplay();
+        mDisplay_width = mDisplay.getWidth();
+
+        initComponent();
+        //		user_info_scrollview.post(new Runnable() {
+        //			// 防止布局自动定位
+        //			@Override
+        //			public void run() {
+        //				while (isStop) {
+        //					user_info_scrollview.fullScroll(ScrollView.FOCUS_UP);
+        //					isStop = false;
+        //				}
+        //			}
+        //		});
+
+        Bundle bunble = this.getIntent().getExtras();
+        if (bunble != null) {
+            userID = bunble.getInt(YpSettings.USERID);
+        }
+
+        mPool = Glide.get(this).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+
+        LocInfo myLoc = Loc.getLoc();
+        if (myLoc != null && myLoc.getLoc() != null) {
+            latitude = myLoc.getLoc().getLatitude();
+            longtitude = myLoc.getLoc().getLongitude();
+        }
+
+    }
+
+    private void initLableViews(String[] lableList) {
+        albe_flow_layout.removeAllViews();
+
+        MarginLayoutParams lp = new MarginLayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = 10;
+        lp.rightMargin = 10;
+        lp.topMargin = 5;
+        lp.bottomMargin = 5;
+
+        if (lableList != null && lableList.length > 0) {
+
+            for (int i = 0; i < lableList.length; i++) {
+                TextView view = new TextView(this);
+                view.setText(lableList[i]);
+                view.setTextSize(12);
+                view.setTextColor(getResources().getColor(
+                        R.color.text_color_818fb7));
+                view.setBackgroundDrawable(getResources().getDrawable(
+                        R.drawable.lable_show_bg));
+                albe_flow_layout.addView(view, lp);
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("用户资料"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+        if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+            // 数据中读取
+            getDbUserData(userID);
+            get_user_info(userID);
+            user_info_option_layout.setVisibility(View.INVISIBLE);
+            user_info_bottom_line.setVisibility(View.GONE);
+
+            user_info_bottom_send_layout.setVisibility(View.GONE);
+            user_info_bottom_chat_layout.setVisibility(View.VISIBLE);
+            user_info_bottom_chat_edit_iv.setBackgroundResource(R.drawable.user_info_edit_icon);
+
+        } else {
+
+            getDbUserData(userID);
+            get_user_info(userID);
+            user_info_option_layout.setVisibility(View.VISIBLE);
+
+            user_info_bottom_chat_layout.setVisibility(View.VISIBLE);
+
+            if (DbHelperUtils.getDbUserSex(YPApplication.getInstance().loginUser.getUserId()) == 1) {
+                user_info_bottom_line.setVisibility(View.VISIBLE);
+                user_info_bottom_send_layout.setVisibility(View.VISIBLE);
+                user_info_bottom_send_iv.setBackgroundResource(R.drawable.user_info_send_p_icon);
+            } else {
+                user_info_bottom_line.setVisibility(View.GONE);
+                user_info_bottom_send_layout.setVisibility(View.GONE);
+            }
+            user_info_bottom_chat_edit_iv.setBackgroundResource(R.drawable.user_info_chat_icon);
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("用户资料"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 内容部分
+
+        title_tv = (TextView) contextView.findViewById(R.id.user_info_title_tv);
+
+        user_info_option_layout = (LinearLayout) contextView.findViewById(R.id.user_info_option_layout);
+        user_info_option_layout.setOnClickListener(this);
+
+        user_info_goback_layout = (LinearLayout) contextView.findViewById(R.id.user_info_goback_layout);
+        user_info_goback_layout.setOnClickListener(this);
+
+        user_id_tv = (TextView) contextView.findViewById(R.id.user_info_id_tv);
+
+        charm_tv = (TextView) contextView.findViewById(R.id.user_info_charm_tv);
+
+        dislike_tv = (TextView) contextView.findViewById(R.id.user_info_dislike_tv);
+
+        like_tv = (TextView) contextView.findViewById(R.id.user_info_like_tv);
+
+        home_tv = (TextView) contextView.findViewById(R.id.user_info_home_tv);
+
+
+        user_info_isprofilecomplete_tv = (TextView) contextView.findViewById(R.id.user_info_isprofilecomplete_tv);
+
+        age_tv = (TextView) contextView.findViewById(R.id.user_info_age_tv);
+        age_level_tv = (TextView) contextView.findViewById(R.id.user_info_age_level_tv);
+
+        height_tv = (TextView) contextView.findViewById(R.id.user_info_height_tv);
+
+        weight_tv = (TextView) contextView.findViewById(R.id.user_info_weight_tv);
+
+        emotional_tv = (TextView) contextView.findViewById(R.id.user_info_emotional_tv);
+
+        income_tv = (TextView) contextView.findViewById(R.id.user_info_income_tv);
+
+        profession_tv = (TextView) contextView.findViewById(R.id.user_info_profession_tv);
+
+        lable_layout = (LinearLayout) contextView.findViewById(R.id.user_info_lable_layout);
+        albe_flow_layout = (FlowLeftLayout) contextView.findViewById(R.id.user_info_lable_flowlayout);
+        user_info_no_lable_tv = (TextView) contextView.findViewById(R.id.user_info_no_lable_tv);
+
+        bubble_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_bubble_layout);
+        user_info_bubble_img_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_bubble_img_layout);
+        user_info_bubble_img_iv = (ImageView) contextView.findViewById(R.id.user_info_bubble_img_iv);
+        bubble_num_tv = (TextView) contextView.findViewById(R.id.user_info_bubble_num_tv);
+        bubble_title_tv = (TextView) contextView.findViewById(R.id.user_info_bubble_title_tv);
+        bubble_content_tv = (TextView) contextView.findViewById(R.id.user_info_bubble_content_tv);
+
+
+        user_info_time_distance_line = contextView.findViewById(R.id.user_info_time_distance_line);
+
+        user_info_detail_name_tv = (TextView) contextView.findViewById(R.id.user_info_detail_name_tv);
+
+        user_info_hor_tv = (TextView) contextView.findViewById(R.id.user_info_hor_tv);
+        user_info_hor_iv = (ImageView) contextView.findViewById(R.id.user_info_hor_iv);
+
+        user_info_match_line_view = contextView.findViewById(R.id.user_info_match_line_view);
+        user_info_everyday_match_layout = (LinearLayout) contextView.findViewById(R.id.user_info_everyday_match_layout);
+        user_info_everyday_match_layout.setOnClickListener(this);
+        user_info_everyday_match_tv = (TextView) contextView.findViewById(R.id.user_info_everyday_match_tv);
+        user_info_everyday_match_one_star = (ImageView) contextView.findViewById(R.id.user_info_everyday_match_one_star);
+        user_info_everyday_match_two_star = (ImageView) contextView.findViewById(R.id.user_info_everyday_match_two_star);
+        user_info_everyday_match_three_star = (ImageView) contextView.findViewById(R.id.user_info_everyday_match_three_star);
+        user_info_everyday_match_four_star = (ImageView) contextView.findViewById(R.id.user_info_everyday_match_four_star);
+        user_info_everyday_match_five_star = (ImageView) contextView.findViewById(R.id.user_info_everyday_match_five_star);
+
+
+        bubble_layout.setOnClickListener(this);
+
+        appoint_layout = (LinearLayout) contextView.findViewById(R.id.user_info_appoint_layout);
+
+        ablum_recyclerView = (MyGridView) contextView.findViewById(R.id.user_info_album_gridview);
+
+        distance_tv = (TextView) contextView.findViewById(R.id.user_info_distance_tv);
+        online_time_tv = (TextView) contextView.findViewById(R.id.user_info_time_tv);
+        sex_coll_tv = (TextView) contextView.findViewById(R.id.user_info_sex_tv);
+
+        hint_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_hint_tv);
+        hint_layout.setOnClickListener(this);
+
+        head_img_tv = (ImageView) contextView.findViewById(R.id.user_info_head_img_iv);
+
+        user_info_head_img_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_head_img_layout);
+
+        LayoutParams linearParams = (LayoutParams) user_info_head_img_layout.getLayoutParams();
+        linearParams.height = mDisplay_width;
+        linearParams.width = mDisplay_width;
+        user_info_head_img_layout.setLayoutParams(linearParams);
+
+
+        RelativeLayout.LayoutParams head_img_tv_Params = (RelativeLayout.LayoutParams) head_img_tv.getLayoutParams();
+        head_img_tv_Params.height = mDisplay_width;
+        head_img_tv_Params.width = mDisplay_width;
+        head_img_tv.setLayoutParams(head_img_tv_Params);
+        head_img_tv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        user_info_frame_faceRating_layout = (LinearLayout) contextView.findViewById(R.id.user_info_frame_faceRating_layout);
+        user_info_frame_faceRating_layout.setOnClickListener(this);
+
+        user_info_frame_score_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_frame_score_layout);
+        user_info_frame_score_layout.setLayoutParams(linearParams);
+
+        user_info_frame_faceRating_iv = (ImageView) contextView.findViewById(R.id.user_info_frame_faceRating_iv);
+        user_info_frame_faceRating_iv.setOnClickListener(this);
+
+        user_info_bottom_chat_layout = (LinearLayout) contextView.findViewById(R.id.user_info_bottom_chat_layout);
+        user_info_bottom_send_layout = (LinearLayout) contextView.findViewById(R.id.user_info_bottom_send_layout);
+
+        user_info_bottom_chat_edit_iv = (ImageView) contextView.findViewById(R.id.user_info_bottom_chat_edit_iv);
+        user_info_bottom_send_iv = (ImageView) contextView.findViewById(R.id.user_info_bottom_send_iv);
+        user_info_bottom_chat_layout.setOnClickListener(this);
+        user_info_bottom_send_layout.setOnClickListener(this);
+
+        user_info_p_success_layout = (LinearLayout) contextView.findViewById(R.id.user_info_p_success_layout);
+        user_info_p_success_iv = (ImageView) contextView.findViewById(R.id.user_info_p_success_iv);
+
+        user_lable_line = contextView.findViewById(R.id.user_lable_line);
+        user_bubble_line = contextView.findViewById(R.id.user_bubble_line);
+
+        user_dating_line = contextView.findViewById(R.id.user_dating_line);
+
+        user_info_bottom_line = contextView.findViewById(R.id.user_info_bottom_line);
+
+        adapter = new UserInfoAblumAdapter(this);
+
+        ablum_recyclerView.setAdapter(adapter);
+
+
+        user_info_phone_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_phone_layout);
+        user_info_phone_state_tv = (TextView) contextView.findViewById(R.id.user_info_phone_state_tv);
+        user_info_phone_change_tv = (TextView) contextView.findViewById(R.id.user_info_phone_change_tv);
+        user_info_phone_layout.setOnClickListener(this);
+
+        user_info_video_state_iv = (ImageView) contextView.findViewById(R.id.user_info_video_state_iv);
+        user_info_video_layout = (RelativeLayout) contextView.findViewById(R.id.user_info_video_layout);
+        user_info_video_state_tv = (TextView) contextView.findViewById(R.id.user_info_video_state_tv);
+        user_info_video_invite_purpose_tv = (TextView) contextView.findViewById(R.id.user_info_video_invite_purpose_tv);
+        user_info_video_left_iv = (ImageView) contextView.findViewById(R.id.user_info_video_left_iv);
+        user_video_line = contextView.findViewById(R.id.user_video_line);
+        user_info_video_layout.setOnClickListener(this);
+        user_info_video_state_iv.setOnClickListener(this);
+
+        user_info_charm_layout = (LinearLayout) contextView.findViewById(R.id.user_info_charm_layout);
+        user_info_charm_layout.setOnClickListener(this);
+
+        user_info_face_lable_iv = (ImageView) contextView.findViewById(R.id.user_info_face_lable_iv);
+
+        user_info_faceRating_iv = (ImageView) contextView.findViewById(R.id.user_info_faceRating_iv);
+        user_info_faceRating_iv.setOnClickListener(this);
+
+        user_info_faceRating_chou_iv = (ImageView) contextView.findViewById(R.id.user_info_faceRating_chou_iv);
+        user_info_faceRating_chou_iv.setOnClickListener(this);
+
+        user_info_faceRating_yiban_iv = (ImageView) contextView.findViewById(R.id.user_info_faceRating_yiban_iv);
+        user_info_faceRating_yiban_iv.setOnClickListener(this);
+
+        user_info_faceRating_shuai_iv = (ImageView) contextView.findViewById(R.id.user_info_faceRating_shuai_iv);
+        user_info_faceRating_shuai_iv.setOnClickListener(this);
+
+        user_info_faceRating_henshuai_iv = (ImageView) contextView.findViewById(R.id.user_info_faceRating_henshuai_iv);
+        user_info_faceRating_henshuai_iv.setOnClickListener(this);
+
+        ablum_recyclerView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                if (TextUtils.equals(adapter.getData().get(position).toString().trim(), YpSettings.suppose)) {
+
+                } else if (TextUtils.equals(adapter.getData().get(position).toString().trim(), YpSettings.album_invite)) {
+
+                    if (!isPostinvite) {
+                        isPostinvite = true;
+                        loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                        if (!isFinishing()) {
+                            loadingDiaog.show();
+                        }
+                        postAlbumInviteRequest(false);
+                    }
+
+                } else {
+                    if (userdto != null) {
+                        if (iscanLook(userdto, position)) {
+
+                            //可以查看
+                            List<String> list = new ArrayList<String>();
+                            int size = userdto.getAlbum().size();
+                            String url = userdto.getAlbum().get(position);
+                            String s = userdto.getAlbum().get(size - 1);
+                            if (TextUtils.equals(s, YpSettings.album_invite)) {
+                                userdto.getAlbum().remove(s);
+                            }
+
+                            list = getCanLookList(userdto.getAlbum(), userdto.getAlbumMask());
+                            int lookposition = getPosition(list, url);
+
+                            if (list != null && list.size() > 0) {
+                                ZoomViewerDto sq = new ZoomViewerDto();
+                                sq.setList(list);
+                                sq.setPosition(lookposition);
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable(YpSettings.ZOOM_LIST_DTO, sq);
+                                ActivityUtil.jump(UserInfoActivity.this, ZoomViewerActivity.class, bundle, 0, 200);
+                            }
+
+                        } else {
+                            int status = DbHelperUtils.getDbLoginUserHeadStatus();
+                            if (((status >> 0) & 1) == 0) {
+                                //登录用户头像审核不通过
+                                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", "你的头像尚未通过审核,无法查看更多对方照片", "查看帮助", "确定", helpbackCallListener);
+                                if (!isFinishing()) {
+                                    helpdialog.show();
+                                }
+                            } else {
+                                //登录用户头像审核通过
+                                uploaddialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", "公平起见,你需要上传更多的个人照片才能解锁查看更多对方照片", "取消", "立即上传", UploadbackCallListener);
+                                if (!isFinishing()) {
+                                    uploaddialog.show();
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+        });
+
+    }
+
+
+    private List<String> getCanLookList(List<String> albumlist, String albumMask) {
+
+        List<String> newlist = new ArrayList<String>();
+
+        for (int i = 0; i < albumlist.size(); i++) {
+            String mask = String.valueOf(albumMask.charAt(i));
+            if (Integer.valueOf(mask) == 1) {
+                newlist.add(albumlist.get(i));
+            }
+        }
+        return newlist;
+    }
+
+    private int getPosition(List<String> albumlist, String url) {
+
+        int position = 0;
+
+        for (int i = 0; i < albumlist.size(); i++) {
+            if (url.equals(albumlist.get(i))) {
+                position = i;
+                break;
+            }
+        }
+        return position;
+
+    }
+
+    private BackCallListener helpbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            //跳转到web 查看帮助
+
+            Bundle bundle = new Bundle();
+            bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Standard/AvatarAudit");
+            bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "头像审核规范");
+            bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+
+            ActivityUtil.jump(UserInfoActivity.this, SimpleWebViewActivity.class, bundle, 0, 100);
+
+        }
+    };
+    //
+    private BackCallListener UploadbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                uploaddialog.dismiss();
+            }
+            Bundle bundle = new Bundle();
+            bundle.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+            ActivityUtil.jump(UserInfoActivity.this, UserInfoEditActivity.class, bundle, 0, 100);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                uploaddialog.dismiss();
+            }
+
+        }
+    };
+
+    private boolean iscanLook(UserDto dto, int position) {
+
+        if (dto != null && !CheckUtil.isEmpty(dto.getAlbumMask())) {
+            String albumMask = dto.getAlbumMask();
+            char mask = albumMask.charAt(position);
+
+            if (Integer.valueOf(String.valueOf(mask)) == 1) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 给控件视图设置数据
+     *
+     * @param dto fromtype判断是数据库获取还是网络获取的数据 0代表本地 1代表网络
+     */
+    private void setDateToView(UserDto dto, int fromtype) {
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getName())) {
+            title_tv.setText(dto.getProfile().getName());
+            user_info_detail_name_tv.setText(dto.getProfile().getName());
+        }
+
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getHeadImg())) {
+
+            String imageurl = ImgUtils.DealImageUrl(dto.getProfile().getHeadImg(), 640, 640);
+
+            Glide.with(this).load(imageurl).into(head_img_tv);
+        }
+
+        int status = dto.getProfile().getStatus();
+
+
+        if (((status >> 0) & 1) == 0) {
+
+            if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+                hint_layout.setVisibility(View.VISIBLE);
+            } else {
+                hint_layout.setVisibility(View.GONE);
+            }
+        } else {
+            hint_layout.setVisibility(View.GONE);
+        }
+
+        if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+            if (((status >> 2) & 1) == 0) {
+                user_info_phone_state_tv.setText("手机号码未认证");
+                user_info_phone_change_tv.setText("立即认证");
+                user_info_phone_change_tv.setVisibility(View.VISIBLE);
+            } else {
+                user_info_phone_state_tv.setText("手机号码已认证");
+                if (!CheckUtil.isEmpty(dto.getProfile().getUid())) {
+                    user_info_phone_change_tv.setText("更换");
+                } else {
+                    user_info_phone_change_tv.setVisibility(View.INVISIBLE);
+                }
+
+            }
+
+        } else {
+            user_info_phone_change_tv.setVisibility(View.INVISIBLE);
+            if (((status >> 2) & 1) == 0) {
+                user_info_phone_state_tv.setText("手机号码未认证");
+            } else {
+                user_info_phone_state_tv.setText("手机号码已认证");
+            }
+
+        }
+
+
+        if (dto.getVideoVerification() != null) {
+            user_info_video_state_iv.setVisibility(View.VISIBLE);
+            user_info_video_layout.setVisibility(View.VISIBLE);
+            if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+                switch (dto.getVideoVerification().getStatus()) {
+                    //未认证
+                    case 0:
+
+                        user_info_video_state_iv.setBackgroundResource(R.drawable.user_info_video_no_passed_icon);
+                        user_info_video_state_tv.setText("尚未通过视频认证");
+                        user_info_video_left_iv.setVisibility(View.GONE);
+                        user_info_video_invite_purpose_tv.setText("立即认证");
+                        break;
+                    //审核中
+                    case 1:
+
+                        user_info_video_state_iv.setBackgroundResource(R.drawable.user_info_video_inauditing_icon);
+                        user_info_video_state_tv.setText("视频审核中...");
+                        user_info_video_left_iv.setVisibility(View.VISIBLE);
+                        user_info_video_invite_purpose_tv.setVisibility(View.GONE);
+                        break;
+                    //已认证
+                    case 2:
+
+                        user_info_video_state_iv.setBackgroundResource(R.drawable.user_info_video_passed_icon);
+                        user_info_video_state_tv.setText("已通过视频认证");
+                        user_info_video_left_iv.setVisibility(View.VISIBLE);
+                        if (dto.getVideoVerification().getPurpose() == 1) {
+                            user_info_video_invite_purpose_tv.setText("结交知己好友");
+                        } else if (dto.getVideoVerification().getPurpose() == 2) {
+                            user_info_video_invite_purpose_tv.setText("邂逅浪漫爱情");
+                        } else if (dto.getVideoVerification().getPurpose() == 3) {
+                            user_info_video_invite_purpose_tv.setText("寻找结婚对象");
+                        }
+                        break;
+                    //未通过
+                    case 3:
+                        user_info_video_state_iv.setBackgroundResource(R.drawable.user_info_video_no_passed_icon);
+                        user_info_video_state_tv.setText("尚未通过视频认证");
+                        user_info_video_left_iv.setVisibility(View.GONE);
+                        user_info_video_invite_purpose_tv.setText("立即认证");
+                        break;
+                }
+            } else {
+                if (dto.getVideoVerification().getStatus() == 2) {
+                    user_info_video_state_iv.setBackgroundResource(R.drawable.user_info_video_passed_icon);
+                    user_info_video_state_tv.setText("已通过视频认证");
+                    user_info_video_left_iv.setVisibility(View.VISIBLE);
+                    if (dto.getVideoVerification().getPurpose() == 1) {
+                        user_info_video_invite_purpose_tv.setText("结交知己好友");
+                    } else if (dto.getVideoVerification().getPurpose() == 2) {
+                        user_info_video_invite_purpose_tv.setText("邂逅浪漫爱情");
+                    } else if (dto.getVideoVerification().getPurpose() == 3) {
+                        user_info_video_invite_purpose_tv.setText("寻找结婚对象");
+                    }
+                } else {
+
+                    user_info_video_state_iv.setBackgroundResource(R.drawable.user_info_video_invite_icon);
+                    user_info_video_state_tv.setText("尚未通过视频认证");
+                    user_info_video_left_iv.setVisibility(View.GONE);
+                    user_info_video_invite_purpose_tv.setText("邀请");
+                }
+            }
+        }
+
+        if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+
+            if (!dto.isProfileComplete()) {
+                user_info_isprofilecomplete_tv.setVisibility(View.VISIBLE);
+            } else {
+                user_info_isprofilecomplete_tv.setVisibility(View.GONE);
+            }
+
+            distance_tv.setVisibility(View.GONE);
+            online_time_tv.setVisibility(View.GONE);
+            user_info_time_distance_line.setVisibility(View.GONE);
+
+            user_info_bottom_line.setVisibility(View.GONE);
+        } else {
+
+            user_info_isprofilecomplete_tv.setVisibility(View.GONE);
+
+            distance_tv.setVisibility(View.VISIBLE);
+            online_time_tv.setVisibility(View.VISIBLE);
+            user_info_time_distance_line.setVisibility(View.VISIBLE);
+
+            String location_str = CheckUtil.getSpacingTool(dto.getDistance());
+
+            distance_tv.setText(location_str);
+
+            long time = ISO8601.getTime(dto.getLastActiveTime());
+            String timestr = TimeUtil.LivelyTimeFormat(time);
+            online_time_tv.setText(timestr);
+
+        }
+
+        if (fromtype == 1) {
+            if (DbHelperUtils.getDbUserSex(YPApplication.getInstance().loginUser.getUserId()) == 2 && userID != YPApplication.getInstance().loginUser.getUserId() && dto.getProfile().getSex() == 1) {
+                if (dto.getFaceRating() == null) {
+                    String ishaveScore = SharedprefUtil.get(UserInfoActivity.this, YPApplication.getInstance().loginUser.getUserId() + "UserInfoFirstScore", "");
+                    if (CheckUtil.isEmpty(ishaveScore)) {
+                        user_info_frame_faceRating_layout.setVisibility(View.VISIBLE);
+                    }
+                    user_info_faceRating_iv.setVisibility(View.VISIBLE);
+                } else {
+                    user_info_faceRating_iv.setVisibility(View.GONE);
+                }
+            } else {
+                user_info_faceRating_iv.setVisibility(View.GONE);
+            }
+        }
+
+        if (dto.getProfile().getSex() == 1) {
+            //男性
+            sex_coll_tv.setBackgroundResource(R.drawable.discover_male_bg);
+
+            if (dto.getProfile().getLevel() == 1) {
+                user_info_face_lable_iv.setVisibility(View.VISIBLE);
+            } else {
+                user_info_face_lable_iv.setVisibility(View.GONE);
+            }
+        } else {
+            // 女性
+            sex_coll_tv.setBackgroundResource(R.drawable.discover_female_bg);
+            user_info_face_lable_iv.setVisibility(View.GONE);
+        }
+
+
+        int horoscope = dto.getProfile().getHoroscope();
+
+        user_info_hor_tv.setText(CheckUtil.ConstellationMatching(horoscope));
+
+        if (horoscope == 1) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_baiyang);
+        }
+        if (horoscope == 2) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_jinniu);
+        }
+
+        if (horoscope == 3) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_shuangzi);
+        }
+
+        if (horoscope == 4) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_juxie);
+        }
+        if (horoscope == 5) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_shizi);
+        }
+        if (horoscope == 6) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_chunv);
+        }
+        if (horoscope == 7) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_tianchen);
+        }
+        if (horoscope == 8) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_tianxie);
+        }
+        if (horoscope == 9) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_sheshou);
+        }
+        if (horoscope == 10) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_mojie);
+        }
+        if (horoscope == 11) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_shuiping);
+        }
+        if (horoscope == 12) {
+            user_info_hor_iv.setBackgroundResource(R.drawable.user_info_hor_shuangyu);
+        }
+
+        if (userID != YPApplication.getInstance().loginUser.getUserId()) {
+            if (DbHelperUtils.getDbUserSex(YPApplication.getInstance().loginUser.getUserId()) == dto.getProfile().getSex()) {
+                user_info_match_line_view.setVisibility(View.GONE);
+                user_info_everyday_match_layout.setVisibility(View.GONE);
+
+            } else {
+
+                user_info_match_line_view.setVisibility(View.VISIBLE);
+                user_info_everyday_match_layout.setVisibility(View.VISIBLE);
+                user_info_everyday_match_tv.setText("星座匹配");
+                setMatchView(dto.getHoroscopeMatch());
+            }
+
+        } else {
+            user_info_match_line_view.setVisibility(View.VISIBLE);
+            user_info_everyday_match_layout.setVisibility(View.VISIBLE);
+            user_info_everyday_match_tv.setText("星座运势");
+            setMatchView(dto.getTodayLucky());
+        }
+
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getDislikes())) {
+            dislike_tv.setText(dto.getProfile().getDislikes());
+            dislike_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            dislike_tv.setText("未填写");
+            dislike_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getLikes())) {
+            like_tv.setText(dto.getProfile().getLikes());
+            like_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            like_tv.setText("未填写");
+            like_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+
+        }
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getHometown())) {
+            home_tv.setText(dto.getProfile().getHometown());
+            home_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            home_tv.setText("未填写");
+            home_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+        if (dto.getProfile().getAttraction() != 0) {
+            charm_tv.setText(dto.getProfile().getAttraction() + "");
+            charm_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            charm_tv.setText("0");
+            charm_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        }
+
+        user_id_tv.setText(dto.getProfile().getId() + "");
+
+        if (dto.getProfile().getIncomeLevel() != null) {
+            setIncomeData(dto.getProfile().getIncomeLevel());
+        } else {
+            income_tv.setText("未填写");
+            income_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getCareer())) {
+            profession_tv.setText(dto.getProfile().getCareer());
+            profession_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        } else {
+            profession_tv.setText("未填写");
+            profession_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        }
+
+        if (dto.getProfile().getRelationship() == null) {
+            emotional_tv.setText("未填写");
+            emotional_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+
+        } else {
+            setEmotionalData(dto.getProfile().getRelationship());
+        }
+
+        if (dto.getBubble() != null) {
+
+            bubble_layout.setVisibility(View.VISIBLE);
+            user_bubble_line.setVisibility(View.VISIBLE);
+
+            if (dto.getBubble().getTotal() == 0) {
+                bubble_layout.setVisibility(View.GONE);
+                user_bubble_line.setVisibility(View.GONE);
+            } else {
+                bubble_layout.setVisibility(View.VISIBLE);
+                bubble_num_tv.setText(dto.getBubble().getTotal() + "");
+            }
+
+            if (!CheckUtil.isEmpty(dto.getBubble().getImageUrl())) {
+                user_info_bubble_img_layout.setVisibility(View.VISIBLE);
+                user_info_bubble_img_iv.setVisibility(View.VISIBLE);
+                String imageurl = ImgUtils.DealImageUrl(dto.getBubble().getImageUrl(), 150, 150);
+
+                Glide.with(this).load(imageurl).into(user_info_bubble_img_iv);
+            } else {
+                user_info_bubble_img_iv.setVisibility(View.GONE);
+                user_info_bubble_img_layout.setVisibility(View.GONE);
+            }
+
+            if (!CheckUtil.isEmpty(dto.getBubble().getAddressName())) {
+                bubble_content_tv.setVisibility(View.VISIBLE);
+                bubble_title_tv.setText(dto.getBubble().getAddressName());
+            } else {
+                bubble_title_tv.setVisibility(View.GONE);
+            }
+
+            if (!CheckUtil.isEmpty(dto.getBubble().getContent())) {
+                bubble_content_tv.setVisibility(View.VISIBLE);
+                bubble_content_tv.setText(dto.getBubble().getContent());
+            } else {
+                bubble_content_tv.setVisibility(View.GONE);
+            }
+
+        } else {
+            user_bubble_line.setVisibility(View.GONE);
+            bubble_layout.setVisibility(View.GONE);
+        }
+
+        if (dto.getProfile().getHeight() == null) {
+            height_tv.setText("未填写");
+            height_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        } else {
+            height_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+            height_tv.setText(dto.getProfile().getHeight() + "cm");
+        }
+
+        if (dto.getProfile().getWeight() == null) {
+            weight_tv.setText("未填写");
+            weight_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+        } else {
+            weight_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+            weight_tv.setText(dto.getProfile().getWeight() + "kg");
+        }
+
+        if (dto.getProfile().getAge() == null) {
+            age_tv.setText("未填写");
+            age_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+            age_level_tv.setVisibility(View.GONE);
+
+        } else {
+
+            if (dto.getProfile().isBirthdayPrivacy()) {
+                age_level_tv.setVisibility(View.GONE);
+                age_tv.setText("保密");
+            } else {
+                age_level_tv.setVisibility(View.VISIBLE);
+                age_tv.setVisibility(View.VISIBLE);
+                age_level_tv.setText(transAgeToStr(dto.getProfile().getAge()));
+                LogUtils.e("年龄=" + dto.getProfile().getAge());
+                age_tv.setText(dto.getProfile().getAge() + "");
+            }
+            age_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+        }
+
+        if (dto.getAppointments() != null && dto.getAppointments().size() > 0) {
+            appoint_layout.setVisibility(View.VISIBLE);
+            user_dating_line.setVisibility(View.VISIBLE);
+
+            if (appoint_layout.getChildCount() > 0) {
+                appoint_layout.removeAllViews();
+            }
+            for (int i = 0; i < dto.getAppointments().size(); i++) {
+                UserInfoAppointment appointmentdto = dto.getAppointments().get(i);
+                appoint_layout.addView(initAppointmentView(appointmentdto, i, dto.getAppointments().size()), LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            }
+        } else {
+            appoint_layout.setVisibility(View.GONE);
+            user_dating_line.setVisibility(View.GONE);
+        }
+
+        if (dto.getAlbum() != null && dto.getAlbum().size() > 0) {
+            ablum_recyclerView.setVisibility(View.VISIBLE);
+            if (dto.getAlbum().size() > dto.getAlbumMax()) {
+                adapter.setData(dto.getAlbum().subList(0, dto.getAlbumMax()));
+            } else {
+                if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+                    adapter.setData(dto.getAlbum());
+                } else {
+                    adapter.setData(changeAlbumData(dto.getAlbum(), dto.getAlbumMax()));
+                }
+            }
+            adapter.notifyDataSetChanged();
+
+
+        } else {
+            if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+                ablum_recyclerView.setVisibility(View.GONE);
+            } else {
+                ablum_recyclerView.setVisibility(View.VISIBLE);
+                adapter.setData(changeAlbumData(dto.getAlbum(), dto.getAlbumMax()));
+                adapter.notifyDataSetChanged();
+            }
+
+        }
+
+        //		isFirst++;
+
+        if (!CheckUtil.isEmpty(dto.getProfile().getTags()) && !dto.getProfile().getTags().equals("null")) {
+            user_info_no_lable_tv.setVisibility(View.GONE);
+            lable_layout.setVisibility(View.VISIBLE);
+            albe_flow_layout.setVisibility(View.VISIBLE);
+            user_lable_line.setVisibility(View.VISIBLE);
+            String tagStr = dto.getProfile().getTags();
+            String tas[] = tagStr.split(",");
+            initLableViews(tas);
+
+        } else {
+            if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+                user_info_no_lable_tv.setVisibility(View.VISIBLE);
+                albe_flow_layout.setVisibility(View.GONE);
+                lable_layout.setVisibility(View.VISIBLE);
+                user_lable_line.setVisibility(View.VISIBLE);
+            } else {
+                user_info_no_lable_tv.setVisibility(View.GONE);
+                lable_layout.setVisibility(View.GONE);
+                user_lable_line.setVisibility(View.GONE);
+            }
+        }
+    }
+
+
+    private void setMatchView(int score) {
+
+        if (score == 0) {
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score > 0 && score < 20) {
+
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_half_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score == 20) {
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score > 20 && score < 40) {
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_half_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score == 40) {
+
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score > 40 && score < 60) {
+
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_half_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score == 60) {
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_none_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score > 60 && score < 80) {
+
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_half_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score == 80) {
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_none_star);
+
+        } else if (score > 80 && score < 100) {
+
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_half_star);
+
+        } else if (score == 100) {
+
+            user_info_everyday_match_one_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_two_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_three_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_four_star.setBackgroundResource(R.drawable.score_star);
+            user_info_everyday_match_five_star.setBackgroundResource(R.drawable.score_star);
+
+        }
+
+    }
+
+    /**
+     * 数据中获取用户的资料
+     *
+     * @param userid
+     */
+    private void getDbUserData(int userid) {
+        LoginUserInfo loginUserInfo = DbHelperUtils.getUserInfo(userid);
+        if (loginUserInfo != null) {
+
+            userdto = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+            if (userdto != null) {
+                setDateToView(userdto, 0);
+            }
+        }
+    }
+
+
+    private View initAppointmentView(final UserInfoAppointment dto, final int position, int length) {
+        View appoint_item_layoutView = mInflater.inflate(R.layout.user_info_appoint_item_layout, null);
+        LinearLayout user_info_appoint_item_layout = (LinearLayout) appoint_item_layoutView.findViewById(R.id.user_info_appoint_item_layout);
+        LinearLayout user_info_ta_layout = (LinearLayout) appoint_item_layoutView.findViewById(R.id.user_info_ta_layout);
+
+        ImageView user_info_appoint_type_iv = (ImageView) appoint_item_layoutView.findViewById(R.id.user_info_appoint_type_iv);
+        TextView user_info_appoint_title_iv = (TextView) appoint_item_layoutView.findViewById(R.id.user_info_appoint_title_iv);
+        TextView user_info_appoint_content_iv = (TextView) appoint_item_layoutView.findViewById(R.id.user_info_appoint_content_iv);
+
+        View user_info_appoint_item_line = appoint_item_layoutView.findViewById(R.id.user_info_appoint_item_line);
+
+        if (position == 0) {
+            user_info_ta_layout.setVisibility(View.VISIBLE);
+        } else {
+            user_info_ta_layout.setVisibility(View.INVISIBLE);
+        }
+        if (position + 1 == length) {
+            user_info_appoint_item_line.setVisibility(View.GONE);
+        } else {
+            user_info_appoint_item_line.setVisibility(View.VISIBLE);
+        }
+        switch (dto.getActivityType()) {
+            case Constant.APPOINT_TYPE_BAR:
+                user_info_appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_bar);
+                break;
+
+            case Constant.APPOINT_TYPE_EAT:
+                user_info_appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_eat);
+                break;
+
+            case Constant.APPOINT_TYPE_COFFEE:
+                user_info_appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_coffee);
+                break;
+
+            case Constant.APPOINT_TYPE_MOVIE:
+                user_info_appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_movie);
+                break;
+
+            case Constant.APPOINT_TYPE_FITNESS:
+                user_info_appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_fitness);
+                break;
+
+            case Constant.APPOINT_TYPE_DOG:
+                user_info_appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_dog);
+                break;
+
+            case Constant.APPOINT_TYPE_KTV:
+                user_info_appoint_type_iv.setBackgroundResource(R.drawable.chat_appoint_ktv);
+                break;
+        }
+
+        if (!CheckUtil.isEmpty(dto.getTitle())) {
+            user_info_appoint_title_iv.setText(dto.getTitle());
+        }
+
+        if (!CheckUtil.isEmpty(dto.getContent())) {
+            user_info_appoint_content_iv.setText(dto.getContent());
+        }
+
+        user_info_appoint_item_layout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString(YpSettings.APPOINTMENT_ID, dto.getId());
+                bundle.putInt(YpSettings.USERID, userID);
+                ActivityUtil.jump(UserInfoActivity.this, AppointmentDetailActivity.class, bundle, 0, 100);
+            }
+        });
+
+        return appoint_item_layoutView;
+    }
+
+    // 获取用户资料
+
+
+    private void get_user_info(final int userid) {
+
+        LatLng pt = new LatLng(latitude, longtitude);
+        pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+
+        UserInfoBean userInfoBean = new UserInfoBean();
+
+        userInfoBean.setUserId(userid);
+        userInfoBean.setAlbum(true);
+        userInfoBean.setBubble(true);
+        userInfoBean.setBump(true);
+        userInfoBean.setForDating(false);
+        userInfoBean.setWish(true);
+        userInfoBean.setVerification(true);
+        userInfoBean.setFaceRating(true);
+        userInfoBean.setAppointment(true);
+
+        if (latitude != 0 && longtitude != 0 && latitude != longtitude) {
+            userInfoBean.setLat(pt.latitude);
+            userInfoBean.setLng(pt.longitude);
+
+
+        }
+
+
+        UserInfoService userInfoService = new UserInfoService(this);
+        userInfoService.parameter(userInfoBean);
+        userInfoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UserInfoRespBean userInfoRespBean = (UserInfoRespBean) respBean;
+                userdto = userInfoRespBean.getResp();
+                String jsonstr = JsonUtils.toJson(userdto);
+                if (null != userdto) {
+                    setDateToView(userdto, 1);
+                    // 保存数据
+                    DbHelperUtils.saveUserInfo(userid, jsonstr);
+                    // 保存数据
+                    DbHelperUtils.saveBaseUser(userid, userdto);
+                }
+
+
+            }
+        }, new OnCallBackFailListener());
+        userInfoService.enqueue();
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.user_info_option_layout:// 顶部右侧功能键
+                showOptionsDialog();
+                break;
+
+            case R.id.user_info_goback_layout:// 返回
+                this.finish();
+                break;
+
+            case R.id.user_info_bottom_chat_layout:// 查看别人资料是聊天；查看自己资料是编辑
+
+                if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+
+                    Bundle bundle = new Bundle();
+
+                    bundle.putInt(YpSettings.USERID, userID);
+
+                    ActivityUtil.jump(UserInfoActivity.this, UserInfoEditActivity.class, bundle, 0, 100);
+
+
+                } else {
+
+                    if (!isPostchating) {
+                        //
+                        isPostchating = true;
+                        loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                        if (!isFinishing()) {
+                            loadingDiaog.show();
+                        }
+                        postChatRequest(false);
+                    }
+
+                }
+
+                break;
+
+            case R.id.user_info_bubble_layout:// 冒泡
+
+                Bundle dle = new Bundle();
+                dle.putInt(YpSettings.USERID, userdto.getProfile().getId());
+                ActivityUtil.jump(UserInfoActivity.this, MyBubblingActivity.class, dle, 0, 100);
+                break;
+
+            case R.id.user_info_video_state_iv:// 视频认证
+                videoOperate();
+                break;
+            case R.id.user_info_video_layout:// 视频认证
+                videoOperate();
+                break;
+
+
+            case R.id.user_info_phone_layout:// 手机认证
+
+                if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+                    if (((userdto.getProfile().getStatus() >> 2) & 1) == 0) {
+                        //去认证手机
+                        Bundle buns = new Bundle();
+                        buns.putInt(YpSettings.FROM_PAGE, 1);
+                        ActivityUtil.jump(UserInfoActivity.this, SettingPhoneActivity.class, buns, 0, 100);
+
+                    } else {
+                        if (!CheckUtil.isEmpty(userdto.getProfile().getUid())) {
+                            //更换手机号码页面
+                            Bundle buns = new Bundle();
+                            buns.putInt(YpSettings.FROM_PAGE, 2);
+                            buns.putString("mobile", userdto.getProfile().getMobile());
+                            ActivityUtil.jump(UserInfoActivity.this, SettingPhoneActivity.class, buns, 0, 100);
+                        }
+
+                    }
+
+                }
+
+                break;
+
+
+            case R.id.user_info_hint_tv:
+                //跳转到web 查看帮助
+
+                Bundle bun = new Bundle();
+                bun.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Standard/AvatarAudit");
+                bun.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "头像审核规范");
+                bun.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                ActivityUtil.jump(UserInfoActivity.this, SimpleWebViewActivity.class, bun, 0, 100);
+                break;
+            case R.id.user_info_charm_layout:
+                Bundle buns = new Bundle();
+                if (userdto != null && userdto.getProfile() != null) {
+                    if (userdto.getProfile().getSex() == 1) {
+                        buns.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Attraction/Male?v=" + userdto.getProfile().getAttraction());
+                    } else {
+                        buns.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Attraction/Female?v=" + userdto.getProfile().getAttraction());
+                    }
+                    buns.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                    buns.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "魅力值");
+                    ActivityUtil.jump(UserInfoActivity.this, SimpleWebViewActivity.class, buns, 0, 100);
+                }
+                break;
+
+            case R.id.user_info_bottom_send_layout:
+
+                String userInfoSendP = SharedprefUtil.get(UserInfoActivity.this, YPApplication.getInstance().loginUser.getUserId() + "UserInfoSendP", "");
+                if (CheckUtil.isEmpty(userInfoSendP)) {
+                    helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", "赠送P果会为对方增加魅力值", "取消", "赠送", sendPHintBackCallListener);
+                    if (!isFinishing()) {
+                        helpdialog.show();
+                    }
+                } else {
+                    loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                    if (!isFinishing()) {
+                        loadingDiaog.show();
+                    }
+                    send_attraction();
+                }
+                break;
+
+            case R.id.user_info_faceRating_iv:
+                AnimatorSet set = new AnimatorSet();
+                ObjectAnimator one = ObjectAnimator.ofFloat(user_info_faceRating_iv, "translationX", 0, 20);
+                ObjectAnimator two = ObjectAnimator.ofFloat(user_info_faceRating_iv, "translationX", 0, -400);
+                one.setDuration(100);
+                two.setDuration(800);
+                set.playSequentially(one, two);
+                set.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        anim_face();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+                set.start();
+                break;
+
+            case R.id.user_info_faceRating_chou_iv:
+                loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                if (!isFinishing()) {
+                    loadingDiaog.show();
+                }
+                postFaceRating(0);
+                break;
+
+            case R.id.user_info_faceRating_yiban_iv:
+                loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                if (!isFinishing()) {
+                    loadingDiaog.show();
+                }
+                postFaceRating(1);
+                break;
+
+            case R.id.user_info_faceRating_shuai_iv:
+                loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                if (!isFinishing()) {
+                    loadingDiaog.show();
+                }
+                postFaceRating(2);
+                break;
+
+            case R.id.user_info_faceRating_henshuai_iv:
+                loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                if (!isFinishing()) {
+                    loadingDiaog.show();
+                }
+                postFaceRating(3);
+                break;
+
+            case R.id.user_info_frame_faceRating_iv:
+                SharedprefUtil.save(UserInfoActivity.this, YPApplication.getInstance().loginUser.getUserId() + "UserInfoFirstScore", "yes");
+                user_info_frame_faceRating_layout.setVisibility(View.GONE);
+                break;
+
+            case R.id.user_info_frame_faceRating_layout:
+
+                break;
+
+
+            case R.id.user_info_everyday_match_layout:
+                Bundle bundle = new Bundle();
+
+                if (userID != YPApplication.getInstance().loginUser.getUserId()) {
+                    //星座匹配
+                    UserDto mydto = DbHelperUtils.getDbUserInfo(YPApplication.getInstance().loginUser.getUserId());
+                    int myhor = mydto.getProfile().getHoroscope();
+                    String myheadimg = mydto.getProfile().getHeadImg();
+                    int hor = userdto.getProfile().getHoroscope();
+                    int mysex = mydto.getProfile().getSex();
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL,
+                            "Constellation/Matching?first_horoscope=" + myhor + "&second_horoscope=" + hor + "&first_headimg=" + myheadimg + "&second_headimg=" + userdto.getProfile().getHeadImg() + "&first_sex=" + mysex);
+                    bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "星座匹配");
+                    ActivityUtil.jump(UserInfoActivity.this, SimpleWebViewActivity.class, bundle, 0, 100);
+
+                } else {
+                    //跳转到每日星运
+                    int hor = userdto.getProfile().getHoroscope();
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Constellation/Luck?id=" + hor + "&userid=" + userID + "&AuthToken=" + YPApplication.getInstance().loginUser.getAuthToken());
+                    bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                    bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "每日星运");
+                    ActivityUtil.jump(UserInfoActivity.this, SimpleWebViewActivity.class, bundle, 0, 100);
+                }
+                break;
+
+
+        }
+
+    }
+
+    private void videoOperate() {
+        if (userdto != null && userdto.getVideoVerification() != null) {
+            user_info_video_state_iv.setVisibility(View.VISIBLE);
+            user_info_video_layout.setVisibility(View.VISIBLE);
+            if (userID == YPApplication.getInstance().loginUser.getUserId()) {
+                Bundle bundle = new Bundle();
+                bundle.putInt(YpSettings.USERID, userID);
+                ActivityUtil.jump(UserInfoActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+            } else {
+                if (userdto.getVideoVerification().getStatus() == 2) {
+                    //进ta人视频详情页面
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(YpSettings.USERID, userID);
+                    ActivityUtil.jump(UserInfoActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+                } else {
+                    //邀请
+                    if (!isPostinvite) {
+                        isPostinvite = true;
+                        loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+                        if (!isFinishing()) {
+                            loadingDiaog.show();
+                        }
+                        postVideoInviteRequest(false);
+                    }
+                }
+            }
+        }
+    }
+
+    private String transAgeToStr(int age) {
+        String age_str = "";
+        String lone_str = "";
+        int born_year = getYear() - age;
+
+        int shiwei_num = (born_year / 10) % 10;
+        int gewei_num = born_year % 10;
+
+
+        if (gewei_num >= 0 && gewei_num < 5) {
+            lone_str = "0后";
+        } else {
+            lone_str = "5后";
+        }
+        age_str = shiwei_num + lone_str;
+        return age_str;
+
+    }
+
+    public int getYear() {
+        Calendar c = Calendar.getInstance();
+        return c.get(Calendar.YEAR);
+    }
+
+    private void setEmotionalData(int emotional_id) {
+
+        emotional_tv.setTextColor(getResources().getColor(
+                R.color.text_color_black));
+
+        switch (emotional_id) {
+            case Constant.Emotional_Type_secrecy:
+
+                emotional_tv.setText("保密");
+                break;
+
+            case Constant.Emotional_Type_lone:
+                emotional_tv.setText("单身");
+                break;
+
+            case Constant.Emotional_Type_married:
+                emotional_tv.setText("已婚");
+                break;
+
+            case Constant.Emotional_Type_loving:
+                emotional_tv.setText("恋爱中");
+                break;
+
+            case Constant.Emotional_Type_Gay:
+                emotional_tv.setText("同性");
+                break;
+
+            default:
+                emotional_tv.setText("未填写");
+                emotional_tv.setTextColor(getResources().getColor(
+                        R.color.text_color_light_grey));
+                break;
+
+        }
+    }
+
+    private void setIncomeData(int income_id) {
+
+        income_tv.setTextColor(getResources().getColor(R.color.text_color_black));
+
+        switch (income_id) {
+            case Constant.Income_Type_secrecy:
+                income_tv.setText("保密");
+                break;
+
+            case Constant.Income_Type_3000down:
+                income_tv.setText("3000元以下");
+                break;
+
+            case Constant.Income_Type_3000up:
+                income_tv.setText("3000元以上");
+                break;
+
+            case Constant.Income_Type_5000up:
+                income_tv.setText("5000元以上");
+                break;
+
+            case Constant.Income_Type_10000up:
+                income_tv.setText("10000元以上");
+                break;
+
+            case Constant.Income_Type_20000up:
+                income_tv.setText("20000元以上");
+                break;
+
+            case Constant.Income_Type_50000up:
+                income_tv.setText("50000元以上");
+                break;
+            default:
+                income_tv.setText("未填写");
+                income_tv.setTextColor(getResources().getColor(R.color.text_color_light_grey));
+                break;
+
+        }
+    }
+
+
+    private Dialog optionsDialog, reportDialog;
+
+    public void showOptionsDialog() {
+        // 初始化一个自定义的Dialog
+        optionsDialog = new MyDialog(UserInfoActivity.this, R.style.MyDialog, R.layout.select_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+
+                TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+
+                TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+
+                TextView select_operate_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_two_tv);
+
+
+                select_operate_dialog_title_tv.setText("操作");
+                select_operate_dialog_one_tv.setText("举报");
+                select_operate_dialog_two_tv.setText("拉黑");
+
+
+                select_operate_dialog_one_layout.setVisibility(View.VISIBLE);
+                select_operate_dialog_two_layout.setVisibility(View.VISIBLE);
+                select_operate_dialog_three_layout.setVisibility(View.GONE);
+
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        optionsDialog.dismiss();
+                        showRePortDialog();
+
+                    }
+
+                });
+
+                select_operate_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        optionsDialog.dismiss();
+                        helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "提示", "拉黑后将不会收到对方发来的消息,可在“设置->黑名单”中解除,是否确认?", "取消", "确认", doBackCallListener);
+                        if (!isFinishing()) {
+                            helpdialog.show();
+                        }
+                    }
+
+                });
+            }
+        });
+        optionsDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+        optionsDialog.show();
+
+    }
+
+
+    private BackCallListener doBackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            doBlockRequest();
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+
+        }
+    };
+
+    public void showRePortDialog() {
+        // 初始化一个自定义的Dialog
+        reportDialog = new MyDialog(UserInfoActivity.this, R.style.MyDialog, R.layout.select_operate_post_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+
+                TextView select_operate_post_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_title_tv);
+                LinearLayout select_operate_post_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_one_layout);
+                LinearLayout select_operate_post_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_two_layout);
+                LinearLayout select_operate_post_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_three_layout);
+                LinearLayout select_operate_post_dialog_four_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_four_layout);
+                LinearLayout select_operate_post_dialog_five_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_post_dialog_five_layout);
+
+                TextView select_operate_post_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_one_tv);
+
+                TextView select_operate_post_dialog_two_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_two_tv);
+
+                TextView select_operate_post_dialog_three_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_three_tv);
+
+                TextView select_operate_post_dialog_four_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_four_tv);
+
+                TextView select_operate_post_dialog_five_tv = (TextView) contentView.findViewById(R.id.select_operate_post_dialog_five_tv);
+
+                select_operate_post_dialog_title_tv.setText("举报原因");
+                select_operate_post_dialog_one_tv.setText("诽谤谩骂");
+                select_operate_post_dialog_two_tv.setText("色情骚扰");
+                select_operate_post_dialog_three_tv.setText("垃圾广告");
+                select_operate_post_dialog_four_tv.setText("欺诈(酒托、饭托等)");
+                select_operate_post_dialog_five_tv.setText("违法(涉毒、暴恐等)");
+
+                select_operate_post_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+                        doReportRequest("诽谤谩骂");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_two_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+                        doReportRequest("色情骚扰");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_three_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+
+                        doReportRequest("垃圾广告");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_four_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+
+                        doReportRequest("欺诈(酒托、饭托等)");
+
+                    }
+
+                });
+
+                select_operate_post_dialog_five_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        reportDialog.dismiss();
+                        doReportRequest("违法(涉毒、暴恐等)");
+                    }
+                });
+
+
+            }
+        });
+        reportDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+        reportDialog.show();
+
+    }
+
+    /**
+     * 举报
+     */
+    private void doReportRequest(String content) {
+
+//		String url = "Type=2&Id=" + userID + "&Content=涉黄";
+
+
+        loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+        if (!isFinishing()) {
+            loadingDiaog.show();
+        }
+
+        BubblingReportBean reportBean = new BubblingReportBean();
+        reportBean.setId(userID + "");
+        reportBean.setType("2");
+        reportBean.setContent(content);
+
+
+        BubblingReportService reportService = new BubblingReportService(this);
+        reportService.parameter(reportBean);
+        reportService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                BubblingReportRespBean reportRespBean = (BubblingReportRespBean) respBean;
+
+                loadingDiaog.dismiss();
+
+                hintdialog = DialogUtil.createSuccessHintDialog(
+                        UserInfoActivity.this, "举报成功!");
+                if (!UserInfoActivity.this.isFinishing()) {
+                    hintdialog.show();
+                    successtimer = new SuccessTimer(2000, 1000);
+                    successtimer.start();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserInfoActivity.this, msg);
+            }
+        });
+        reportService.enqueue();
+
+    }
+
+    private SuccessTimer successtimer;
+
+    private class SuccessTimer extends CountDownTimer {
+
+        public SuccessTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+
+        }
+
+        @Override
+        public void onFinish() {
+            if (hintdialog != null) {
+                hintdialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+        }
+    }
+
+
+    /**
+     * 拉黑
+     */
+    private void doBlockRequest() {
+
+        loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+        if (!isFinishing()) {
+            loadingDiaog.show();
+        }
+
+        BlockRequestBean blockRequestBean = new BlockRequestBean();
+        blockRequestBean.setId(userID);
+        blockRequestBean.setUserId(YPApplication.getInstance().loginUser.getUserId());
+        blockRequestBean.setBlock(true);
+
+        BlockRequestService blockRequestService = new BlockRequestService(this);
+        blockRequestService.parameter(blockRequestBean);
+        blockRequestService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                loadingDiaog.dismiss();
+
+                hintdialog = DialogUtil.createSuccessHintDialog(UserInfoActivity.this, "拉黑成功!");
+                if (!UserInfoActivity.this.isFinishing()) {
+                    hintdialog.show();
+                    successtimer = new SuccessTimer(2000, 1000);
+                    successtimer.start();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    // 没有网络的场合，去提示页
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserInfoActivity.this, msg);
+            }
+        });
+        blockRequestService.enqueue();
+
+    }
+
+
+    /**
+     * 聊天
+     */
+    private void postChatRequest(boolean isconfirm) {
+
+
+        ChatAttamptBean attamptBean = new ChatAttamptBean();
+        attamptBean.setTargetUserId(userID);
+        attamptBean.setConfirm(isconfirm);
+
+
+        ChatAttamptService attamptService = new ChatAttamptService(this);
+        attamptService.parameter(attamptBean);
+        attamptService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                loadingDiaog.dismiss();
+                isPostchating = false;
+
+                ChatAttamptRespBean attamptRespBean = (ChatAttamptRespBean) respBean;
+                AttamptRespDto dto = attamptRespBean.getResp();
+
+                chatPostResultHint(dto);
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                isPostchating = false;
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    // 没有网络的场合，去提示页
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this);
+                    return;
+                }
+                // 没有网络的场合，去提示页
+                DialogUtil.showDisCoverNetToast(UserInfoActivity.this, msg);
+            }
+        });
+        attamptService.enqueue();
+
+
+    }
+
+    /**
+     * 聊天结果判断显示提示dialog
+     *
+     * @param dto
+     */
+    private void chatPostResultHint(AttamptRespDto dto) {
+
+        if (dto != null) {
+            if (dto.getViewStatus() == 0) {
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "无法发起聊天");
+                }
+            } else if (dto.getViewStatus() == 1) {
+                Bundle bundle = new Bundle();
+                bundle.putInt(YpSettings.USERID, userID);
+
+                ActivityUtil.jump(UserInfoActivity.this, ChatActivity.class, bundle, 0, 100);
+
+            } else if (dto.getViewStatus() == 2) {
+                //头像不通过 帮助 取消
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "查看帮助", "立即上传", helpAndUploadBackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+            } else if (dto.getViewStatus() == 3) {
+                // 对方拒绝接收非视频认证用户消息
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "取消", "立即认证", verficationBackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+
+            } else if (dto.getViewStatus() == 4) {
+
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "使用P果", "立即认证", chatPandVerficationBackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+
+            } else if (dto.getViewStatus() == 5) {
+                //消耗p果 取消
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "取消", "消耗P果", chatuserPbackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+            }
+        }
+    }
+
+    //聊天使用p果和视频认证 dialog回调
+    private BackCallListener chatPandVerficationBackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            Bundle bundle = new Bundle();
+            bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+            ActivityUtil.jump(UserInfoActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+            if (!isFinishing()) {
+                loadingDiaog.show();
+            }
+            postChatRequest(true);
+
+        }
+    };
+
+    //视频认证 dialog回调
+    private BackCallListener verficationBackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            Bundle bundle = new Bundle();
+            bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+            ActivityUtil.jump(UserInfoActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+        }
+    };
+
+
+    //聊天使用p果 dialog回调
+    private BackCallListener chatuserPbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+            if (!isFinishing()) {
+                loadingDiaog.show();
+            }
+            postChatRequest(true);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+
+        }
+    };
+
+    //帮助以及上传头像 dialog回调
+    private BackCallListener helpAndUploadBackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            Bundle bundles = new Bundle();
+            bundles.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+            ActivityUtil.jump(UserInfoActivity.this, UserInfoEditActivity.class, bundles, 0, 100);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            //跳转到web 查看帮助
+
+            Bundle bundle = new Bundle();
+            bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Standard/AvatarAudit");
+            bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "头像审核规范");
+            bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+
+            ActivityUtil.jump(UserInfoActivity.this, SimpleWebViewActivity.class, bundle, 0, 100);
+
+        }
+    };
+
+    /**
+     * 如果长度大于等于max 截取前max张，如果小于max，则造一个空邀请的
+     *
+     * @param ablumList
+     * @return
+     */
+    private List<String> changeAlbumData(List<String> ablumList, int max) {
+
+        List<String> dolist = new ArrayList<String>();// 包括标记符的
+
+        if (ablumList == null) {
+            dolist.add(YpSettings.album_invite);
+
+        } else if (ablumList.size() < max) {
+            dolist = ablumList;
+            // 判断是否有标示suppose
+            for (int i = 0; i < dolist.size(); i++) {// 清空所有的标识
+                if (TextUtils.equals(dolist.get(i).toString().trim(), YpSettings.album_invite)) {
+                    dolist.remove(i);
+                    break;
+                }
+            }
+
+            // 设置 userInfo对象
+            dolist.add(YpSettings.album_invite);
+        } else if (ablumList.size() >= max) {
+            dolist = ablumList.subList(0, max);
+        }
+        return dolist;
+    }
+
+
+    /**
+     * 相册邀请
+     */
+    private void postAlbumInviteRequest(boolean isconfirm) {
+
+
+        InviteTypeBean typeBean = new InviteTypeBean();
+        typeBean.setConfirm(isconfirm);
+        typeBean.setInviteeId(userID);
+        typeBean.setInviteType(1);
+
+        InviteTypeService typeService = new InviteTypeService(this);
+        typeService.parameter(typeBean);
+        typeService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                InviteTypeRespBean typeRespBean = (InviteTypeRespBean) respBean;
+
+                AttamptRespDto dto = typeRespBean.getResp();
+
+                loadingDiaog.dismiss();
+
+                isPostinvite = false;
+                AlbumInvitePostResultHint(dto);
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                isPostinvite = false;
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserInfoActivity.this, msg);
+            }
+        });
+        typeService.enqueue();
+
+
+    }
+
+    /**
+     * 相册邀请
+     */
+    private void AlbumInvitePostResultHint(AttamptRespDto dto) {
+
+        if (dto != null) {
+            if (dto.getViewStatus() == 0) {
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "邀请失败");
+                }
+            } else if (dto.getViewStatus() == 1) {
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "邀请成功");
+                }
+
+            } else if (dto.getViewStatus() == 2) {
+                //需要P果
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "取消", "邀请", albumPbackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+            } else if (dto.getViewStatus() == 3) {
+                //已经邀请
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "已经邀请过了");
+                }
+
+            } else if (dto.getViewStatus() == 4) {
+
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "取消", "立即认证", VerficationBackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+
+            }
+        }
+    }
+
+
+    /**
+     * 视频邀请
+     */
+    private void postVideoInviteRequest(boolean isconfirm) {
+
+
+        InviteTypeBean typeBean = new InviteTypeBean();
+        typeBean.setConfirm(isconfirm);
+        typeBean.setInviteeId(userID);
+        typeBean.setInviteType(2);
+
+        InviteTypeService typeService = new InviteTypeService(this);
+        typeService.parameter(typeBean);
+        typeService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                InviteTypeRespBean typeRespBean = (InviteTypeRespBean) respBean;
+
+                AttamptRespDto dto = typeRespBean.getResp();
+
+                loadingDiaog.dismiss();
+
+                isPostinvite = false;
+                videoInvitePostResultHint(dto);
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+
+                loadingDiaog.dismiss();
+
+                isPostinvite = false;
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserInfoActivity.this, msg);
+            }
+        });
+        typeService.enqueue();
+
+
+    }
+
+    /**
+     * 视频邀请结果判断显示提示dialog
+     *
+     * @param dto
+     */
+    private void videoInvitePostResultHint(AttamptRespDto dto) {
+
+        if (dto != null) {
+            if (dto.getViewStatus() == 0) {
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "邀请失败");
+                }
+            } else if (dto.getViewStatus() == 1) {
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "邀请成功");
+                }
+
+            } else if (dto.getViewStatus() == 2) {
+                //需要P果
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "取消", "邀请", VideoPbackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+            } else if (dto.getViewStatus() == 3) {
+                //已经邀请
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "已经邀请过了");
+                }
+
+            } else if (dto.getViewStatus() == 4) {
+
+                helpdialog = DialogUtil.createHintOperateDialog(UserInfoActivity.this, "", dto.getMessage(), "取消", "立即认证", VerficationBackCallListener);
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+
+            }
+        }
+    }
+
+    private BackCallListener VerficationBackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            Bundle bundle = new Bundle();
+            bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+            ActivityUtil.jump(UserInfoActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+        }
+    };
+
+
+    private BackCallListener albumPbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+            if (!isFinishing()) {
+                loadingDiaog.show();
+            }
+            postAlbumInviteRequest(true);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+
+        }
+    };
+
+    private BackCallListener VideoPbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+            if (!isFinishing()) {
+                loadingDiaog.show();
+            }
+            postVideoInviteRequest(true);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+
+        }
+    };
+
+
+    /**
+     * 发送P果
+     */
+    public void send_attraction() {
+
+        SendAttractionBean sendAttractionBean = new SendAttractionBean();
+        sendAttractionBean.setUserId(YPApplication.loginUser.getUserId());
+
+        sendAttractionBean.setTargetUserId(userID);
+        sendAttractionBean.setNotify(true);
+
+        SendAttractionService attractionService = new SendAttractionService(this);
+        attractionService.parameter(sendAttractionBean);
+        attractionService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                loadingDiaog.dismiss();
+                SendAttractionRespBean attractionRespBean = (SendAttractionRespBean) respBean;
+                AttractionResultDto dto = attractionRespBean.getResp();
+                if (dto.getResultCode() == 5) {
+                    //p果不足
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this, "抱歉,你没有足够的P果");
+
+                } else if (dto.getResultCode() == 6) {
+                    //成功
+                    user_info_p_success_layout.setVisibility(View.VISIBLE);
+//                    ObjectAnimator.
+                    p_animation = AnimationUtils.loadAnimation(UserInfoActivity.this, R.anim.user_info_p_success);
+                    p_animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            user_info_p_success_layout.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    user_info_p_success_layout.startAnimation(p_animation);
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserInfoActivity.this, msg);
+            }
+        });
+
+        attractionService.enqueue();
+    }
+
+
+    private BackCallListener sendPHintBackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+            loadingDiaog = DialogUtil.LoadingDialog(UserInfoActivity.this, null);
+            if (!isFinishing()) {
+                loadingDiaog.show();
+            }
+            SharedprefUtil.save(UserInfoActivity.this, YPApplication.getInstance().loginUser.getUserId() + "UserInfoSendP", "yesSended");
+            send_attraction();
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                helpdialog.dismiss();
+            }
+        }
+    };
+
+
+    private void anim_face() {
+
+        ObjectAnimator chou = ObjectAnimator.ofFloat(user_info_faceRating_chou_iv, "translationY", 0, -(UnitUtil.dip2px(UserInfoActivity.this, 115)));
+        chou.setDuration(500);
+
+
+        ObjectAnimator shuai = ObjectAnimator.ofFloat(user_info_faceRating_shuai_iv, "translationY", 0, -(UnitUtil.dip2px(UserInfoActivity.this, 115)));
+        shuai.setDuration(500);
+
+
+        ObjectAnimator yiban = ObjectAnimator.ofFloat(user_info_faceRating_yiban_iv, "translationY", 0, -(UnitUtil.dip2px(UserInfoActivity.this, 115)));
+        yiban.setDuration(500);
+
+
+        ObjectAnimator henshuai = ObjectAnimator.ofFloat(user_info_faceRating_henshuai_iv, "translationY", 0, -(UnitUtil.dip2px(UserInfoActivity.this, 115)));
+        henshuai.setDuration(500);
+
+        user_info_faceRating_chou_iv.setVisibility(View.VISIBLE);
+        chou.start();
+
+        user_info_faceRating_yiban_iv.setVisibility(View.VISIBLE);
+        yiban.start();
+
+        user_info_faceRating_shuai_iv.setVisibility(View.VISIBLE);
+        shuai.start();
+
+        user_info_faceRating_henshuai_iv.setVisibility(View.VISIBLE);
+        henshuai.start();
+    }
+
+
+    private void anim_face_success(final int type) {
+
+        final PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("alpha", 1f, 0.1f);
+        final PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("scaleX", 1f, 1.2f);
+        final PropertyValuesHolder pvhZ = PropertyValuesHolder.ofFloat("scaleY", 1f, 1.2f);
+        ObjectAnimator faced_anim;
+
+        ObjectAnimator faceone;
+        ObjectAnimator facetwo;
+        ObjectAnimator facethree;
+
+        if (type == 0) {
+            faceone = ObjectAnimator.ofFloat(user_info_faceRating_yiban_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facetwo = ObjectAnimator.ofFloat(user_info_faceRating_shuai_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facethree = ObjectAnimator.ofFloat(user_info_faceRating_henshuai_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+
+            faced_anim = ObjectAnimator.ofPropertyValuesHolder(user_info_faceRating_chou_iv, pvhX, pvhY, pvhZ);
+        } else if (type == 1) {
+            faceone = ObjectAnimator.ofFloat(user_info_faceRating_chou_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facetwo = ObjectAnimator.ofFloat(user_info_faceRating_shuai_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facethree = ObjectAnimator.ofFloat(user_info_faceRating_henshuai_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            faced_anim = ObjectAnimator.ofPropertyValuesHolder(user_info_faceRating_yiban_iv, pvhX, pvhY, pvhZ);
+        } else if (type == 2) {
+            faceone = ObjectAnimator.ofFloat(user_info_faceRating_chou_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facetwo = ObjectAnimator.ofFloat(user_info_faceRating_yiban_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facethree = ObjectAnimator.ofFloat(user_info_faceRating_henshuai_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+
+            faced_anim = ObjectAnimator.ofPropertyValuesHolder(user_info_faceRating_shuai_iv, pvhX, pvhY, pvhZ);
+        } else {
+            faceone = ObjectAnimator.ofFloat(user_info_faceRating_chou_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facetwo = ObjectAnimator.ofFloat(user_info_faceRating_yiban_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+            facethree = ObjectAnimator.ofFloat(user_info_faceRating_shuai_iv, "translationY", 0, UnitUtil.dip2px(UserInfoActivity.this, 115));
+
+            faced_anim = ObjectAnimator.ofPropertyValuesHolder(user_info_faceRating_henshuai_iv, pvhX, pvhY, pvhZ);
+        }
+
+        faceone.setDuration(1000);
+        facetwo.setDuration(1000);
+        facethree.setDuration(1000);
+        faceone.setStartDelay(200);
+        facetwo.setStartDelay(200);
+        facethree.setStartDelay(200);
+
+        faced_anim.setDuration(1000);
+        faced_anim.setStartDelay(400);
+        faced_anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (type == 0) {
+                    user_info_faceRating_chou_iv.setVisibility(View.GONE);
+                } else if (type == 1) {
+                    user_info_faceRating_yiban_iv.setVisibility(View.GONE);
+                } else if (type == 2) {
+                    user_info_faceRating_shuai_iv.setVisibility(View.GONE);
+                } else if (type == 3) {
+                    user_info_faceRating_henshuai_iv.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        faceone.start();
+        facetwo.start();
+        facethree.start();
+        faced_anim.start();
+    }
+
+    private void postFaceRating(final int level) {
+        final FaceratingBean faceratingBean = new FaceratingBean();
+        faceratingBean.setTargetUserId(userID);
+        faceratingBean.setLevel(level);
+        faceratingService = new FaceratingService(UserInfoActivity.this);
+        faceratingService.parameter(faceratingBean);
+        faceratingService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                FaceratingRespBean faceratingRespBean = (FaceratingRespBean) respBean;
+                FaceratingRespBean.FaceratingResp faceratingResp = faceratingRespBean.getResp();
+
+                if (null != faceratingResp) {
+                    loadingDiaog.dismiss();
+                    anim_face_success(level);
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(UserInfoActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(UserInfoActivity.this, msg);
+            }
+        });
+
+        faceratingService.enqueue();
+    }
+
+}

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/publish_appoint_bg"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/text_color_white"
+        
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/publish_app_hint_exit_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:padding="10dp"
+            android:src="@drawable/x_off_icon" />
+
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/publish_hint_icon"    
+            />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="完善交友约会资料,让对方更了解你"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:layout_gravity="center_horizontal"
+            android:text="会大大增加约会的成功率喔"
+            android:layout_marginTop="5dp"
+            android:textColor="#ff8424"
+            android:textSize="16sp" />
+         
+        <TextView
+            android:id="@+id/publish_app_hint_sure_tv"
+            android:layout_width="match_parent"
+            android:layout_height="40dip"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/publish_appoint_hint_sure_bg"
+            android:gravity="center"
+            android:text="现在就去"
+            android:textColor="@color/text_color_white"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

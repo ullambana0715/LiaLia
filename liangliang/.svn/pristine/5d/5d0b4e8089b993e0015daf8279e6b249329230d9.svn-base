@@ -1,0 +1,27 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+public class HeadImgUrl implements Serializable {
+
+	/**
+	* @Fields serialVersionUID : TODO(用一句话描述这个变量表示什么)
+	*/
+	
+	private static final long serialVersionUID = 1L;
+	private String headImgUrl;
+
+	public String getHeadImgUrl() {
+		return headImgUrl;
+	}
+
+	public void setHeadImgUrl(String headImgUrl) {
+		this.headImgUrl = headImgUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "HeadImgUrl [headImgUrl=" + headImgUrl + "]";
+	}
+
+}

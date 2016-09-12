@@ -1,0 +1,737 @@
+package cn.chono.yopper.activity.appointment;
+
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.activity.base.IndexActivity;
+import cn.chono.yopper.data.AppointFilterDto;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.DatingFilterWheelDialog;
+
+/**
+ * 约会条件筛选页面
+ *
+ * @author sam.sun
+ */
+public class AppointmentFilterActivity extends MainFrameActivity implements OnClickListener,DatingFilterWheelDialog.OnSelectedListener {
+
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    private LinearLayout dating_filter_root_layout;
+    private TextView dating_filter_dating_reset_tv;
+
+    private TextView dating_filter_dating_object_reset_tv;
+
+    private TextView dating_filter_range_sort_reset_tv;
+
+    private RelativeLayout dating_filter_dating_type_layout;
+    private TextView dating_filter_dating_type_tv;
+
+    private RelativeLayout dating_filter_age_layout;
+    private TextView dating_filter_age_tv;
+
+    private RelativeLayout dating_filter_emotional_layout;
+    private TextView dating_filter_emotional_tv;
+
+    private TextView dating_filter_constellation_tv;
+    private RelativeLayout dating_filter_constellation_layout;
+
+    private RadioGroup dating_filter_sex_radiogroup;
+    private RadioGroup dating_filter_time_radiogroup;
+    private RadioGroup dating_filter_range_radiogroup;
+    private RadioGroup dating_filter_sort_radiogroup;
+
+
+    private DatingFilterWheelDialog datingFilterWheelWindow;
+    private int sexType=0;
+    private int appointType=0;
+    private int sortType=0;
+    private String city="同城";
+    private  int daysOffset=6;
+    private int timeType=0;
+    private int horType=0;
+    private int emoType=0;
+    private int minage=0;
+    private int maxage=99;
+
+    private String horStr;
+    private String ageStr;
+    private String emoStr;
+    private String datingStr;
+
+    private ArrayList<String> datingTypeList=new ArrayList<String>();
+    private ArrayList<String> ageTypeList=new ArrayList<String>();
+    private ArrayList<String> emoTypeList=new ArrayList<String>();
+    private ArrayList<String> horTypeList=new ArrayList<String>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+
+        initData();
+        initComponent();
+        AppointFilterDto dto=DbHelperUtils.getAppointFilter(YPApplication.getInstance().loginUser.getUserId());
+        if(dto!=null){
+            sortType=dto.getSort();
+            appointType=dto.getDatingType();
+            sexType=dto.getSexType();
+            if(!CheckUtil.isEmpty(dto.getCity())){
+                city=dto.getCity();
+            }
+            daysOffset=dto.getDaysOffset();
+            timeType=dto.getDatingTimeType();
+            horType=dto.getHorType();
+            emoType=dto.getEmoType();
+            if(dto.getMinAge()==0&&dto.getMaxAge()==0){
+
+            }else{
+                minage=dto.getMinAge();
+                maxage=dto.getMaxAge();
+            }
+        }
+
+        horStr=horTypeList.get(horType);
+        dating_filter_constellation_tv.setText(horStr);
+
+        initAgeStr();
+        dating_filter_age_tv.setText(ageStr);
+
+        emoStr=emoTypeList.get(emoType);
+        dating_filter_emotional_tv.setText(emoStr);
+
+        initDatingTypeStr();
+        dating_filter_dating_type_tv.setText(datingStr);
+
+        if(city.equals("全国")){
+            setRangType(0);
+        }else{
+            setRangType(1);
+        }
+        setSexType(sexType);
+        setSortType(sortType);
+        setTimeType(timeType);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("约会筛选"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("约会筛选"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("筛选");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.VISIBLE);
+        this.getBtnOption().setVisibility(View.GONE);
+        this.gettvOption().setVisibility(View.VISIBLE);
+        this.gettvOption().setText("完成");
+        this.gettvOption().setTextColor(getResources().getColor(R.color.text_color_ff7462));
+
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                finish();
+            }
+        });
+
+
+        this.getOptionLayout().setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IndexActivity.getOnAppointFilterBackListener().onAppointFilterBackListener(appointType,sexType,daysOffset,timeType,minage,maxage,emoType,horType,sortType,city);
+                finish();
+            }
+        });
+
+        // 内容部分
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        contextView = mInflater.inflate(R.layout.appointment_filter_layout, null);
+
+        dating_filter_root_layout= (LinearLayout) contextView.findViewById(R.id.dating_filter_root_layout);;
+
+        dating_filter_dating_reset_tv= (TextView) contextView.findViewById(R.id.dating_filter_dating_reset_tv);
+        dating_filter_dating_reset_tv.setOnClickListener(this);
+
+        dating_filter_dating_object_reset_tv= (TextView) contextView.findViewById(R.id.dating_filter_dating_object_reset_tv);
+        dating_filter_dating_object_reset_tv.setOnClickListener(this);
+
+        dating_filter_range_sort_reset_tv= (TextView) contextView.findViewById(R.id.dating_filter_range_sort_reset_tv);
+        dating_filter_range_sort_reset_tv.setOnClickListener(this);
+
+        dating_filter_dating_type_layout= (RelativeLayout) contextView.findViewById(R.id.dating_filter_dating_type_layout);
+        dating_filter_dating_type_tv= (TextView) contextView.findViewById(R.id.dating_filter_dating_type_tv);
+        dating_filter_dating_type_layout.setOnClickListener(this);
+
+        dating_filter_age_layout= (RelativeLayout) contextView.findViewById(R.id.dating_filter_age_layout);
+        dating_filter_age_tv= (TextView) contextView.findViewById(R.id.dating_filter_age_tv);
+        dating_filter_age_layout.setOnClickListener(this);
+
+        dating_filter_emotional_layout= (RelativeLayout) contextView.findViewById(R.id.dating_filter_emotional_layout);
+        dating_filter_emotional_tv= (TextView) contextView.findViewById(R.id.dating_filter_emotional_tv);
+        dating_filter_emotional_layout.setOnClickListener(this);
+
+        dating_filter_constellation_tv= (TextView) contextView.findViewById(R.id.dating_filter_constellation_tv);
+        dating_filter_constellation_layout= (RelativeLayout) contextView.findViewById(R.id.dating_filter_constellation_layout);
+        dating_filter_constellation_layout.setOnClickListener(this);
+
+        dating_filter_sex_radiogroup= (RadioGroup) contextView.findViewById(R.id.dating_filter_sex_radiogroup);
+        dating_filter_time_radiogroup= (RadioGroup) contextView.findViewById(R.id.dating_filter_time_radiogroup);
+        dating_filter_range_radiogroup= (RadioGroup) contextView.findViewById(R.id.dating_filter_range_radiogroup);
+        dating_filter_sort_radiogroup= (RadioGroup) contextView.findViewById(R.id.dating_filter_sort_radiogroup);
+
+        dating_filter_sex_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.dating_filter_sex_man_radiobutton://男
+                        sexType = 1;
+                        break;
+
+                    case R.id.dating_filter_sex_women_radiobutton://女
+                        sexType = 2;
+                        break;
+
+                    case R.id.dating_filter_sex_nolimit_radiobutton://不限
+                        sexType = 0;
+                        break;
+
+                }
+
+
+            }
+        });
+
+
+        dating_filter_time_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.dating_filter_time_nolimit_radiobutton://不限
+                        timeType = 0;
+                        break;
+
+                    case R.id.dating_filter_time_midday_radiobutton://中午
+                        timeType = 1;
+                        break;
+
+                    case R.id.dating_filter_time_pm_radiobutton://下午
+                        timeType = 2;
+                        break;
+                    case R.id.dating_filter_time_night_radiobutton://晚上
+                        timeType = 3;
+                        break;
+                }
+            }
+        });
+
+        dating_filter_range_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.dating_filter_range_all_radiobutton://全国
+                        city="全国";
+                        break;
+
+                    case R.id.dating_filter_range_city_radiobutton://同城
+                        city="同城";
+                        break;
+                }
+            }
+        });
+
+        dating_filter_sort_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                switch (checkedId) {
+                    case R.id.dating_filter_sort_near_radiobutton://最近
+                        sortType = 1;
+                        break;
+
+                    case R.id.dating_filter_sort_new_radiobutton://最新
+                        sortType = 0;
+                        break;
+
+
+                }
+            }
+        });
+
+
+        this.getMainLayout().addView(contextView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch(id){
+            case R.id.dating_filter_dating_type_layout:
+                datingFilterWheelWindow = new DatingFilterWheelDialog(this,0, this,datingTypeList,datingStr);
+                datingFilterWheelWindow.show();
+                break;
+
+            case R.id.dating_filter_age_layout:
+                datingFilterWheelWindow = new DatingFilterWheelDialog(this,1, this,ageTypeList,ageStr);
+                datingFilterWheelWindow.show();
+                break;
+
+            case R.id.dating_filter_emotional_layout:
+                datingFilterWheelWindow = new DatingFilterWheelDialog(this,2, this,emoTypeList,emoStr);
+                datingFilterWheelWindow.show();
+                break;
+
+            case R.id.dating_filter_constellation_layout:
+                datingFilterWheelWindow = new DatingFilterWheelDialog(this,3, this,horTypeList,horStr);
+                datingFilterWheelWindow.show();
+                break;
+
+            //约会时间主题等重置
+            case R.id.dating_filter_dating_reset_tv:
+                setDatingType("不限");
+                dating_filter_dating_type_tv.setText("不限");
+                datingStr="不限";
+                setTimeType(0);
+                setSexType(0);
+                break;
+
+            //约会对象条件重置
+            case R.id.dating_filter_dating_object_reset_tv:
+
+                setDatingAge("不限");
+                ageStr="不限";
+                dating_filter_age_tv.setText("不限");
+
+                emoStr="不限";
+                setEmoType("不限");
+                dating_filter_emotional_tv.setText("不限");
+
+                horStr="不限";
+                setHorType("不限");
+                dating_filter_constellation_tv.setText("不限");
+
+                break;
+
+            //约会范围和排序重置
+            case R.id.dating_filter_range_sort_reset_tv:
+                setRangType(1);
+                setSortType(0);
+                break;
+        }
+    }
+
+    private void setTimeType(int timetype){
+        switch(timetype) {
+            case 0:
+                timeType = 0;
+                dating_filter_time_radiogroup.check(R.id.dating_filter_time_nolimit_radiobutton);
+                break;
+
+            case 1:
+                timeType = 1;
+                dating_filter_time_radiogroup.check(R.id.dating_filter_time_midday_radiobutton);
+                break;
+
+            case 2:
+                dating_filter_time_radiogroup.check(R.id.dating_filter_time_pm_radiobutton);
+                timeType = 2;
+                break;
+
+            case 3:
+                dating_filter_time_radiogroup.check(R.id.dating_filter_time_night_radiobutton);
+                timeType = 3;
+                break;
+        }
+    }
+
+
+    private void setRangType(int rangtype){
+        switch(rangtype) {
+            case 0:
+                dating_filter_range_radiogroup.check(R.id.dating_filter_range_all_radiobutton);
+                city="全国";
+                break;
+            case 1:
+                dating_filter_range_radiogroup.check(R.id.dating_filter_range_city_radiobutton);
+                city="同城";
+                break;
+        }
+    }
+
+    private void setSortType(int sorttype){
+        switch(sorttype) {
+            case 0:
+                dating_filter_sort_radiogroup.check(R.id.dating_filter_sort_new_radiobutton);
+                sortType=0;
+                break;
+            case 1:
+                dating_filter_sort_radiogroup.check(R.id.dating_filter_sort_near_radiobutton);
+                sortType=1;
+                break;
+        }
+    }
+
+    private void setSexType(int sextype){
+        switch(sextype) {
+            case 1:
+                dating_filter_sex_radiogroup.check(R.id.dating_filter_sex_man_radiobutton);
+                sexType = 1;
+                break;
+            case 2:
+                sexType = 2;
+                dating_filter_sex_radiogroup.check(R.id.dating_filter_sex_women_radiobutton);
+
+                break;
+            case 0:
+                sexType = 0;
+                dating_filter_sex_radiogroup.check(R.id.dating_filter_sex_nolimit_radiobutton);
+                break;
+        }
+    }
+
+    @Override
+    public void onSelectedListener(int wheeltype, String currentText) {
+        switch (wheeltype){
+            case 0:
+                setDatingType(currentText);
+                datingStr=currentText;
+                dating_filter_dating_type_tv.setText(currentText);
+                break;
+
+            case 1:
+                setDatingAge(currentText);
+                ageStr=currentText;
+                dating_filter_age_tv.setText(currentText);
+                break;
+
+            case 2:
+                setEmoType(currentText);
+                emoStr=currentText;
+                dating_filter_emotional_tv.setText(currentText);
+                break;
+
+            case 3:
+                setHorType(currentText);
+                LogUtils.e("星座="+horType);
+                horStr=currentText;
+                dating_filter_constellation_tv.setText(currentText);
+                break;
+        }
+    }
+
+
+    private void setDatingType(String str){
+        if(str.equals("不限")){
+            appointType= Constant.APPOINT_TYPE_NO_LIMIT;
+            return;
+        }
+        if(str.equals("吃饭")){
+            appointType= Constant.APPOINT_TYPE_EAT;
+            return;
+        }
+        if(str.equals("看电影")){
+            appointType= Constant.APPOINT_TYPE_MOVIE;
+            return;
+        }
+        if(str.equals("唱歌")){
+            appointType= Constant.APPOINT_TYPE_KTV;
+            return;
+        }
+        if(str.equals("喝咖啡")){
+            appointType= Constant.APPOINT_TYPE_COFFEE;
+            return;
+        }
+        if(str.equals("喝酒")){
+            appointType= Constant.APPOINT_TYPE_BAR;
+            return;
+        }
+        if(str.equals("运动")){
+            appointType= Constant.APPOINT_TYPE_FITNESS;
+            return;
+        }
+        if(str.equals("遛狗")){
+            appointType= Constant.APPOINT_TYPE_DOG;
+            return;
+        }
+    }
+
+
+    private void setDatingAge(String str){
+        if(str.equals("不限")){
+            minage=0;
+            maxage=99;
+            return;
+        }
+        if(str.equals("20岁及以下")){
+            minage=0;
+            maxage=20;
+            return;
+        }
+        if(str.equals("21-25岁")){
+            minage=21;
+            maxage=25;
+            return;
+        }
+        if(str.equals("26-30岁")){
+            minage=26;
+            maxage=30;
+            return;
+        }
+        if(str.equals("31-40岁")){
+            minage=31;
+            maxage=40;
+            return;
+        }
+        if(str.equals("41岁及以上")){
+            minage=41;
+            maxage=99;
+            return;
+        }
+    }
+
+
+
+    private void setEmoType(String str){
+
+        if(str.equals("不限")){
+            emoType=0;
+            return;
+        }
+        if(str.equals("单身")){
+            emoType=1;
+            return;
+        }
+        if(str.equals("已婚")){
+            emoType=2;
+            return;
+        }
+        if(str.equals("恋爱中")){
+            emoType=3;
+            return;
+        }
+        if(str.equals("同性")){
+            emoType=4;
+            return;
+        }
+    }
+
+    private void setHorType(String str){
+
+        if(str.equals("不限")){
+            horType=0;
+            return;
+        }
+        if(str.equals("白羊座")){
+            horType=1;
+            return;
+        }
+        if(str.equals("金牛座")){
+            horType=2;
+            return;
+        }
+        if(str.equals("双子座")){
+            horType=3;
+            return;
+        }
+        if(str.equals("巨蟹座")){
+            horType=4;
+            return;
+        }
+
+        if(str.equals("狮子座")){
+            horType=5;
+            return;
+        }
+
+        if(str.equals("处女座")){
+            horType=6;
+            return;
+        }
+
+        if(str.equals("天秤座")){
+            horType=7;
+            return;
+        }
+
+        if(str.equals("天蝎座")){
+            horType=8;
+            return;
+        }
+
+        if(str.equals("射手座")){
+            horType=9;
+            return;
+        }
+
+        if(str.equals("摩羯座")){
+            horType=10;
+            return;
+        }
+
+        if(str.equals("水瓶座")){
+            horType=11;
+            return;
+        }
+
+        if(str.equals("双鱼座")){
+            horType=12;
+            return;
+        }
+
+    }
+
+    private void initDatingTypeStr(){
+        if(appointType==Constant.APPOINT_TYPE_NO_LIMIT){
+            datingStr="不限";
+            return;
+        }
+
+        if(appointType==Constant.APPOINT_TYPE_EAT){
+            datingStr="吃饭";
+            return;
+        }
+
+        if(appointType==Constant.APPOINT_TYPE_MOVIE){
+            datingStr="看电影";
+            return;
+        }
+
+        if(appointType==Constant.APPOINT_TYPE_KTV){
+            datingStr="唱歌";
+            return;
+        }
+
+        if(appointType==Constant.APPOINT_TYPE_COFFEE){
+            datingStr="喝咖啡";
+            return;
+        }
+
+        if(appointType==Constant.APPOINT_TYPE_BAR){
+            datingStr="喝酒";
+            return;
+        }
+
+        if(appointType==Constant.APPOINT_TYPE_FITNESS){
+            datingStr="运动";
+            return;
+        }
+
+        if(appointType==Constant.APPOINT_TYPE_DOG){
+            datingStr="遛狗";
+            return;
+        }
+    }
+
+
+
+
+    private void initAgeStr(){
+        if(minage==0 && maxage==99){
+            ageStr="不限";
+            return;
+        }
+        if(minage==0 && maxage==20){
+            ageStr="20岁及以下";
+            return;
+        }
+        if(minage==21 && maxage==25){
+            ageStr="21-25岁";
+            return;
+        }
+        if(minage==26 && maxage==30){
+            ageStr="26-30岁";
+            return;
+        }
+        if(minage==31 && maxage==40){
+            ageStr="31-40岁";
+            return;
+        }
+
+        if(minage==41 && maxage==99){
+            ageStr="41岁及以上";
+            return;
+        }
+    }
+
+    private void initData(){
+        datingTypeList.add("不限");
+        datingTypeList.add("吃饭");
+        datingTypeList.add("看电影");
+        datingTypeList.add("唱歌");
+        datingTypeList.add("喝咖啡");
+        datingTypeList.add("喝酒");
+        datingTypeList.add("运动");
+        datingTypeList.add("遛狗");
+
+        ageTypeList.add("不限");
+        ageTypeList.add("20岁及以下");
+        ageTypeList.add("21-25岁");
+        ageTypeList.add("26-30岁");
+        ageTypeList.add("31-40岁");
+        ageTypeList.add("41岁及以上");
+
+        emoTypeList.add("不限");
+        emoTypeList.add("单身");
+        emoTypeList.add("已婚");
+        emoTypeList.add("恋爱中");
+        emoTypeList.add("同性");
+
+        horTypeList.add("不限");
+        horTypeList.add("白羊座");
+        horTypeList.add("金牛座");
+        horTypeList.add("双子座");
+        horTypeList.add("巨蟹座");
+        horTypeList.add("狮子座");
+        horTypeList.add("处女座");
+        horTypeList.add("天秤座");
+        horTypeList.add("天蝎座");
+        horTypeList.add("射手座");
+        horTypeList.add("摩羯座");
+        horTypeList.add("水瓶座");
+        horTypeList.add("双鱼座");
+    }
+}

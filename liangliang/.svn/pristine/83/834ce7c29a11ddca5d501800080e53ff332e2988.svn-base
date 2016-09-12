@@ -1,0 +1,49 @@
+package cn.chono.yopper.Service.Http.SignUpManagement;
+
+import java.io.Serializable;
+import java.util.List;
+
+import cn.chono.yopper.Service.Http.SignUpManagementMore.SignUpManagementMoreService;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementResp implements Serializable {
+
+    private SignUpManagementData targetUser;
+    private List<SignUpManagementData> list;
+    private String nextQuery;
+    private int start;
+
+    public SignUpManagementData getTargetUser() {
+        return targetUser;
+    }
+
+    public void setTargetUser(SignUpManagementData targetUser) {
+        this.targetUser = targetUser;
+    }
+
+    public List<SignUpManagementData> getList() {
+        return list;
+    }
+
+    public void setList(List<SignUpManagementData> list) {
+        this.list = list;
+    }
+
+    public String getNextQuery() {
+        return nextQuery;
+    }
+
+    public void setNextQuery(String nextQuery) {
+        this.nextQuery = nextQuery;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+}

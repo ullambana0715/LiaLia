@@ -1,0 +1,27 @@
+package cn.chono.yopper.Service.Http.Facerating;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/12/7.
+ */
+public class FaceratingBean extends ParameterBean {
+    private int targetUserId;
+    private int level;
+
+    public int getTargetUserId() {
+        return targetUserId;
+    }
+
+    public void setTargetUserId(int targetUserId) {
+        this.targetUserId = targetUserId;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+}

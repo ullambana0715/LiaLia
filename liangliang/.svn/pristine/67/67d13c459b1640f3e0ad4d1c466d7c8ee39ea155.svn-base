@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/message_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/text_color_e3e3e3" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:background="@color/text_color_white"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/message_bump_icon"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/message_title_tv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="消息"
+            android:textColor="@color/text_color_black"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/message_bump_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:src="@drawable/message_bump_icon" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/message_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/text_color_e3e3e3"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:visibility="visible" />
+
+    <include layout="@layout/error_no_message_layout"></include>
+
+
+</LinearLayout>

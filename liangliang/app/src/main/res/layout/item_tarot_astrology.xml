@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/shadow"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/item_tarot_astrology_iv_icon"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+
+            <TextView
+                android:id="@+id/item_tarot_astrology_tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="9dp"
+                android:layout_marginLeft="13dp"
+                android:layout_toRightOf="@id/item_tarot_astrology_iv_icon"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/color_333333"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/item_tarot_astrology_tv_price_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_tarot_astrology_tv_name"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="right"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="5dp"
+                android:text="555"
+                android:textColor="@color/color_666666"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/item_tarot_astrology_tv_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_tarot_astrology_tv_price_unit"
+                android:layout_toLeftOf="@+id/item_tarot_astrology_tv_price_unit"
+                android:text="5555"
+                android:textColor="@color/color_ff7462"
+                android:textSize="17sp" />
+
+
+            <TextView
+                android:id="@+id/item_tarot_astrology_tv_price_unit_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_tarot_astrology_tv_price"
+                android:layout_toLeftOf="@+id/item_tarot_astrology_tv_price"
+                android:text="￥"
+                android:textColor="@color/color_ff7462"
+                android:textSize="12sp" />
+
+            <RatingBar
+                android:id="@+id/item_tarot_astrology_rbar_score"
+                style="@style/score_rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/item_tarot_astrology_tv_name"
+                android:layout_below="@+id/item_tarot_astrology_tv_name"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:rating="3" />
+
+            <LinearLayout
+                android:id="@+id/item_tarot_astrology_ll_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/item_tarot_astrology_rbar_score"
+                android:layout_below="@+id/item_tarot_astrology_rbar_score"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/item_tarot_astrology_tv_reply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/item_tarot_astrology_tv_price_unit"
+                android:layout_alignRight="@+id/item_tarot_astrology_tv_price_unit"
+                android:layout_below="@+id/item_tarot_astrology_tv_price_unit"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="5dp"
+
+                android:text="5555"
+                android:textColor="@color/color_666666"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/item_tarot_astrology_tv_reply_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_tarot_astrology_tv_reply"
+                android:layout_toLeftOf="@+id/item_tarot_astrology_tv_reply"
+                android:text=""
+                android:textColor="@color/color_ff7462"
+                android:textSize="12dp" />
+
+
+        </RelativeLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="73dp"
+            android:background="@color/color_eeeeee" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:layout_marginTop="13dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="73dp"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:paddingRight="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_diviner_info" />
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/diviner_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/item_tarot_astrology_view"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        android:visibility="gone" />
+
+
+</LinearLayout>

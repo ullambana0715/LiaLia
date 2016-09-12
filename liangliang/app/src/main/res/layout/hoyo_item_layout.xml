@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/hoyo_item_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/hoyo_tv"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="她的\n壕友"
+            android:textColor="@color/color_939393"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/hoyo_head_img"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/dating_eat_icon"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/hoyo_name_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="宛如"
+                android:lines="1"
+                android:singleLine="true"
+                android:textColor="@color/color_333333"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/hoyo_pguo_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="宛如"
+                android:lines="1"
+                android:singleLine="true"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/hoyo_sort_tv"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/hoyo_sort_round"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/color_ffffff"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/hoyo_item_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="60dp"
+        android:background="#e1e1e1"
+        />
+</LinearLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="150px"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_white"
+            android:textSize="40px"
+            android:text="选择"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_ff7462"
+            android:textSize="40px"
+            android:text="交友目的"/>
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <ImageView
+        android:layout_marginTop="35px"
+        android:id="@+id/video_window_purpose_friend"
+        android:layout_width="200px"
+        android:layout_height="200px"
+
+        android:src="@drawable/video_window_purpose_friend_btn_bg"
+        app:layout_auto_basewidth="width"
+        />
+    <ImageView
+        android:layout_marginTop="35px"
+        android:id="@+id/video_window_purpose_love"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        app:layout_auto_basewidth="width"
+
+        android:src="@drawable/video_window_purpose_love_btn_bg"
+        />
+    <ImageView
+        android:layout_marginTop="35px"
+        android:id="@+id/video_window_purpose_married"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        app:layout_auto_basewidth="width"
+
+        android:src="@drawable/video_window_purpose_married_btn_bg"
+        />
+</com.zhy.autolayout.AutoLinearLayout>

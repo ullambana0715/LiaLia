@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/bonus_title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_margin="10dip"
+        android:background="@drawable/shape_corner"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="当前拥有苹果："
+            android:textColor="@color/color_333333"
+            android:textSize="12.0sp" />
+
+        <TextView
+            android:id="@+id/my_apple_no"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:paddingLeft="5.0dip"
+            android:text="0"
+            android:textColor="@color/color_ff7462"
+            android:textSize="15.0sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text=" 个"
+            android:textColor="@color/color_333333"
+            android:textSize="12.0sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@color/color_eeeeee"
+        android:paddingLeft="15dp"
+        android:text="试试手气"
+        android:textColor="@color/qupai_black_opacity_40pct" />
+
+    <RelativeLayout
+        android:id="@+id/apple_draw"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dip"
+        android:background="@color/color_ffffff">
+
+        <ImageView
+            android:id="@+id/bonus_img"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/ic_apple" />
+
+        <TextView
+            android:id="@+id/bonus_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/bonus_img"
+            android:text="苹果抽奖"
+            android:textColor="@color/color_333333"
+            android:textSize="16.0sp" />
+
+        <TextView
+            android:id="@+id/bonus_exchanage_btn"
+            android:layout_width="65.0dp"
+            android:layout_height="20.0dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/address_manager_btn_bg"
+            android:gravity="center"
+            android:text="20000苹果/次"
+            android:textSize="10.0sp" />
+    </RelativeLayout>
+
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/exchanage_bonus_xresh_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/apple_draw"
+        android:layout_marginTop="15dp"
+        android:background="@color/color_00000000"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/exchanage_bonus_rv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_00000000"
+            android:padding="2.0dip"
+            android:scrollbars="none" />
+    </com.andview.refreshview.XRefreshView>
+
+    <LinearLayout
+        android:id="@+id/exchanage_no_data_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/bonus_title_layout"
+        android:background="@color/color_eeeeee"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/error_no_data_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="暂时可兑换的奖品"
+            android:textColor="@color/color_918b97"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/error_no_data_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="点击刷新>"
+            android:textColor="@color/color_635d6b"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/exchanage_bonus_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/bonus_title_layout"
+        android:background="@color/color_ffffff"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <include layout="@layout/error_network_layout" />
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+</LinearLayout>

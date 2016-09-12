@@ -1,0 +1,20 @@
+package cn.chono.yopper.Service.Http.BumpPoll;
+
+import cn.chono.yopper.data.BumpPoll;
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class BumpPollRespBean extends RespBean {
+
+    private BumpPoll resp;
+
+    public BumpPoll getResp() {
+        return resp;
+    }
+
+    public void setResp(BumpPoll resp) {
+        this.resp = resp;
+    }
+}

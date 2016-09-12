@@ -1,0 +1,157 @@
+package cn.chono.yopper.data;
+
+public class AppointmentDto {
+
+	private String id;
+	private AppointOwner owner;
+	private String city;
+	private int activityType;
+	private String title;
+	//消费类型，0 我请， 1 AA， 2 他请
+	private int costType;
+	private double lat;
+	private double lng;
+	private String endTime;
+	private String content;
+	//约会时间，Unknown = 0, Morning = 1, Noon = 2, Afternoon = 3, Night = 4
+	private int availableTime;
+	//创建时间
+	private String  createTime;
+	//查看人数
+	private int pageView;
+	//参与总数
+	private int totalCandidates;
+	//约会状态
+	private int status;
+	//匹配指数
+	private MatchScore matchScore;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public AppointOwner getOwner() {
+		return owner;
+	}
+
+	public void setOwner(AppointOwner owner) {
+		this.owner = owner;
+	}
+
+	public int getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(int activityType) {
+		this.activityType = activityType;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public int getCostType() {
+		return costType;
+	}
+
+	public void setCostType(int costType) {
+		this.costType = costType;
+	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public double getLng() {
+		return lng;
+	}
+
+	public void setLng(double lng) {
+		this.lng = lng;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public int getAvailableTime() {
+		return availableTime;
+	}
+
+	public void setAvailableTime(int availableTime) {
+		this.availableTime = availableTime;
+	}
+
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
+	public int getPageView() {
+		return pageView;
+	}
+
+	public void setPageView(int pageView) {
+		this.pageView = pageView;
+	}
+
+	public int getTotalCandidates() {
+		return totalCandidates;
+	}
+
+	public void setTotalCandidates(int totalCandidates) {
+		this.totalCandidates = totalCandidates;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public MatchScore getMatchScore() {
+		return matchScore;
+	}
+
+	public void setMatchScore(MatchScore matchScore) {
+		this.matchScore = matchScore;
+	}
+}

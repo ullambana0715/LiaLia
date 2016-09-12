@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_gift_ly"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_ffffff">
+
+    <ImageView
+        android:id="@+id/item_gift_icon"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"/>
+
+
+    <TextView
+        android:id="@+id/item_gift_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_gift_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="玫瑰花"
+        android:textColor="@color/color_666666"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/item_gift_attract"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_gift_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:text="魅力值+5"
+        android:textColor="@color/color_b2b2b2"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/item_gift_apple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_gift_attract"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:text="10个苹果"
+        android:textColor="@color/color_b2b2b2"
+        android:textSize="12sp" />
+</RelativeLayout>

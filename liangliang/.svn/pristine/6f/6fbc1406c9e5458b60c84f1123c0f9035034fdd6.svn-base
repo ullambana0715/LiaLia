@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/toast_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="连接失败，请稍后重试"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:textColor="@color/text_color_white"
+        android:background="@drawable/toast_hint_bg"
+        android:gravity="center" />
+
+</LinearLayout>

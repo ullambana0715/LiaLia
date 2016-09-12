@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_f8f8f7">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:padding="16dp"
+        android:text="第三方登录账号（微博、微信、QQ）无法找到自己报名参加的活动，请用报名活动时所填写的手机号码登录查询 登录后点击&#168;我—我的活动&#168;"
+        android:textColor="@color/color_b2b2b2" />
+</LinearLayout>

@@ -1,0 +1,19 @@
+package cn.chono.yopper.Service.Http.SigUpTarget;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/12/31.
+ */
+public class SigUpTargetRespBean extends RespBean {
+
+    private SigUpTargetResp resp;
+
+    public SigUpTargetResp getResp() {
+        return resp;
+    }
+
+    public void setResp(SigUpTargetResp resp) {
+        this.resp = resp;
+    }
+}

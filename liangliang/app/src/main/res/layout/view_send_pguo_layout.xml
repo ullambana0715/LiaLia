@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_circle_bg"
+    android:orientation="vertical"
+    android:paddingBottom="20dp">
+
+
+    <ImageView
+        android:id="@+id/cancle_send_apple_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:padding="10dp"
+        android:src="@drawable/dailly_score_layout_back_icon" />
+
+    <TextView
+        android:id="@+id/send_one_apple_tv"
+        android:layout_width="165dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rectangle_bg"
+        android:gravity="center"
+        android:text="1个苹果"
+        android:textColor="@color/color_ff7462"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:id="@+id/send_five_apple_tv"
+        android:layout_width="165dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rectangle_bg"
+        android:gravity="center"
+        android:text="5个苹果"
+        android:textColor="@color/color_ff7462"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:id="@+id/send_twenty_apple_tv"
+        android:layout_width="165dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rectangle_bg"
+        android:gravity="center"
+        android:text="20个苹果"
+        android:textColor="@color/color_ff7462"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:id="@+id/send_one_hundred_apple_tv"
+        android:layout_width="165dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rectangle_bg"
+        android:gravity="center"
+        android:text="100个苹果"
+        android:textColor="@color/color_ff7462"
+        android:textSize="16sp" />
+
+</LinearLayout>

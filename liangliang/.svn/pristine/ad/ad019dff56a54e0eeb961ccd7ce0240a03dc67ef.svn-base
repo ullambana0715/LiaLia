@@ -1,0 +1,30 @@
+package cn.chono.yopper.data;
+
+/**
+ * Created by SQ on 2015/12/9.
+ */
+public class NotificationType {
+    /// 系统通知类型，点击后无动作
+    private static int SystemDefault = 0;
+
+    /// 送P果点击后个人资料
+    private static int  SendAttraction = 1;
+
+    /// 颜值打分 点击后个人资料
+    private static int  FaceRating = 2;
+
+    /// 邀请上传图片 点击后个人资料编辑
+    private static int  InvitationUploadPhotos = 3;
+
+    /// 邀请认证视频 点击后视频中转页
+    private static int  InvitationUploadVideo = 4;
+
+    /// 邀请公开视频 击后视频中转页
+    private static int  InvitationPublicVideo = 5;
+
+    /// 冒泡评论通知 点击后冒泡详情
+    private static int  BubbleComment = 6;
+
+    /// 冒泡点赞通知 点击后冒泡详情
+    private static int BubbleLike = 7;
+}

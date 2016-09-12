@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item >
+        <color android:color="#00ccaa"/>
+    </item>
+    
+    <item android:drawable="@drawable/qupai_color_selected"/>
+    
+</layer-list><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/textcolor_qupai_default_shape.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/textcolor_qupai_default_shape.xml -->

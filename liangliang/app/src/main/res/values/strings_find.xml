@@ -1,0 +1,16 @@
+<resources>
+    
+    <string name="basic_info">基本信息</string>
+    <string name="stores_info">门店信息</string>
+    <string name="photo_wall">照片墙</string>
+    <string name="look_photo">查看全部照片 ></string>
+    <string name="straightway_advisory">立即咨询</string>
+    <string name="reservation">预约</string>
+    <string name="reservation_full">预约已满</string>
+    <string name="answer_problem">已解答次数</string>
+    <string name="answer">已解答</string>
+    <string name="hour">小时</string>
+
+    
+    
+    </resources>

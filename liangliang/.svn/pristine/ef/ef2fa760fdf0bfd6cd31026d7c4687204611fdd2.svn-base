@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/user_info_eidt_lable_layouts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/part_bg_color_war"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/user_info_eidt_lable_title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="可选择多个兴趣标签"
+        android:textColor="@color/text_color_999999" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" >
+
+        <cn.chono.yopper.view.FlowCenterLayout
+            android:id="@+id/user_info_eidt_lable_flowlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" >
+        </cn.chono.yopper.view.FlowCenterLayout>
+    </ScrollView>
+
+</LinearLayout>

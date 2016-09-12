@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_f8f8f7">
+
+
+    <!-- ViewStub 占用资源少，不占用布局位置只有设置为可见的时候布局才会实例化，只能控制一次，之后就被置空-->
+
+    <TextView
+        android:id="@+id/activities_nofound_tv"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginRight="16dp"
+        android:drawablePadding="6dp"
+        android:drawableRight="@drawable/question_icon"
+        android:gravity="center_vertical|right"
+        android:text="找不到我的活动"
+        android:textColor="@color/color_007aff"
+        android:textSize="12sp" />
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/xrefreshview_View"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/activities_nofound_tv"
+        android:background="@color/color_f8f8f7"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.andview.refreshview.XRefreshView>
+</RelativeLayout>

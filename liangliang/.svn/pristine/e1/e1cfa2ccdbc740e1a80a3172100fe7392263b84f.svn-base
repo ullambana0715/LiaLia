@@ -1,0 +1,53 @@
+package cn.chono.yopper.data;
+
+/**
+ * Created by SQ on 2016/1/12.
+ */
+public class AppointmentMsg {
+    private String type;
+    private String dateContent;
+    private int dateType;
+    private String dateId;
+    private String id;
+
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getDateType() {
+        return dateType;
+    }
+
+    public void setDateType(int dateType) {
+        this.dateType = dateType;
+    }
+
+    public String getDateContent() {
+        return dateContent;
+    }
+
+    public void setDateContent(String dateContent) {
+        this.dateContent = dateContent;
+    }
+
+    public String getDateId() {
+        return dateId;
+    }
+
+    public void setDateId(String dateId) {
+        this.dateId = dateId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+}

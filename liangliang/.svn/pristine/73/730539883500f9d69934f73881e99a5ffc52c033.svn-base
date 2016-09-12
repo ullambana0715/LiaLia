@@ -1,0 +1,40 @@
+package cn.chono.yopper.Service.Http.SigUpTarget;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+/**
+ * Created by zxb on 2015/12/31.
+ */
+public class SigUpTargetService extends HttpService {
+    public SigUpTargetService(Context context) {
+        super(context);
+    }
+
+    private SigUpTargetBean targetBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = SigUpTargetRespBean.class;
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id", targetBean.getId());
+        map.put("targetUserId", targetBean.getTargetUserId());
+
+        String url = HttpURL.appointments_comment + targetBean.getId() + "/targetUser";
+
+        callWrap = OKHttpUtils.put(context, url, map, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        targetBean = (SigUpTargetBean) iBean;
+    }
+}

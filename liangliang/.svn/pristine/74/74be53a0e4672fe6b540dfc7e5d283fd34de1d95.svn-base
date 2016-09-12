@@ -1,0 +1,116 @@
+package cn.chono.yopper.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import cn.chono.yopper.R;
+import cn.chono.yopper.photo.OneImageBucket;
+import cn.chono.yopper.photo.OneImageItem;
+import cn.chono.yopper.photo.OneImageSelectedDto;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.lidroid.xutils.util.LogUtils;
+
+public class SelectOneAlbumTypeAdapter extends RecyclerView.Adapter<ViewHolder> {
+	final String TAG = getClass().getSimpleName();
+
+	public interface OnItemClickLitener {
+
+		/**
+		 * 内容图片点击监听
+		 * 
+		 * @param view
+		 * @param position
+		 * @param iconUrl
+		 */
+		void onItemClick(View view, int position, OneImageBucket imageBucket, List<OneImageItem> imageList);
+
+	}
+
+	private OnItemClickLitener mOnItemClickLitener;
+
+	public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+		this.mOnItemClickLitener = mOnItemClickLitener;
+	}
+
+	private Context context;
+
+	public SelectOneAlbumTypeAdapter(Context context) {
+		this.context = context;
+	}
+
+
+	@Override
+	public int getItemCount() {
+
+		return OneImageSelectedDto.dataList == null ? 0 : OneImageSelectedDto.dataList.size();
+	}
+
+	@Override
+	public void onBindViewHolder(ViewHolder holder, int arg1) {
+		final NewViewHolder newViewHolder = (NewViewHolder) holder;
+		final int pos = newViewHolder.getLayoutPosition();
+
+		final OneImageBucket imageBucket = OneImageSelectedDto.dataList.get(pos);
+		newViewHolder.name.setText(imageBucket.bucketName);
+		newViewHolder.fileNum.setText("(" + imageBucket.count + ")");
+		
+		final List<OneImageItem> imageList = OneImageSelectedDto.dataList.get(pos).imageList;
+
+		if (imageList != null && imageList.size() > 0) {
+			String imagePaht = imageList.get(0).imagePath;
+			LogUtils.e("文件路径="+imagePaht);
+			Glide.with(context).load(imagePaht).error(R.drawable.error_default_icon).centerCrop().into(newViewHolder.imageView);
+		}
+
+		// 如果设置了回调，则设置点击事件
+		if (mOnItemClickLitener != null) {
+
+			newViewHolder.itemView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+
+					mOnItemClickLitener.onItemClick(newViewHolder.itemView, pos,imageBucket,imageList);
+				}
+			});
+		}
+
+	}
+
+	@Override
+	public ViewHolder onCreateViewHolder(ViewGroup arg0, int arg1) {
+		View v = LayoutInflater.from(arg0.getContext()).inflate(
+				R.layout.album_type_item_layout, null);
+		NewViewHolder holder = new NewViewHolder(v);
+		return holder;
+	}
+
+	public class NewViewHolder extends ViewHolder {
+		public ImageView imageView;
+		public ImageView imageBut;
+		// 文件夹名称
+		public TextView name;
+		// 文件夹里面的图片数量
+		public TextView fileNum;
+
+		public NewViewHolder(View v) {
+			super(v);
+			imageView = (ImageView) v.findViewById(R.id.imageView);
+			imageBut = (ImageView) v.findViewById(R.id.imageBut);
+			name = (TextView) v.findViewById(R.id.name);
+			fileNum = (TextView) v.findViewById(R.id.fileNum);
+
+		}
+
+	}
+
+}

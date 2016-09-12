@@ -1,0 +1,115 @@
+package cn.chono.yopper.adapter;
+
+import java.util.List;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.BumpPoll;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.ImgUtils;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+/**
+ * @ClassName: DiscoverListAdapter
+ * @Description:我的碰友(这里用一句话描述这个类的作用)
+ * @author: xianbin.zou
+ * @date: 2015年4月1日 上午10:54:19
+ */
+public class BumpWinAdapter extends BaseAdapter {
+
+    private List<BumpPoll.Rewards> list;
+
+    private LayoutInflater mInflater = null;
+    private Context context;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    public BumpWinAdapter(Context c) {
+        this.context = c;
+
+        mInflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+
+    }
+
+    public void setDatas(List<BumpPoll.Rewards> list) {
+        this.list = list;
+    }
+
+    public List<BumpPoll.Rewards> getDatas() {
+        return list;
+    }
+
+    @Override
+    public int getCount() {
+        return list == null ? 0 : list.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    private class ViewHolder {
+        /**
+         * 头像
+         */
+        private ImageView bump_win_icon;
+        /**
+         *
+         */
+        private TextView bump_win_context;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.widget.Adapter#getView(int, android.view.View,
+     * android.view.ViewGroup)
+     */
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder holder = null;
+
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = mInflater.inflate(R.layout.bump_win_layout,
+                    null);
+            //
+            holder.bump_win_icon = (ImageView) convertView
+                    .findViewById(R.id.bump_win_icon);
+            holder.bump_win_context = (TextView) convertView.findViewById(R.id.bump_win_context);
+
+            convertView.setTag(holder);
+
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        String imageurl = ImgUtils.DealImageUrl(list.get(position).getIcon(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+        // 绑定数据
+        Glide.with(context).load(imageurl).bitmapTransform(transformation).into(holder.bump_win_icon);
+
+        holder.bump_win_context.setText(list.get(position).getTitle());
+
+        return convertView;
+    }
+}

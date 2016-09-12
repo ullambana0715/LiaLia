@@ -1,0 +1,15 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="cursor_height">2dp</dimen>
+    <dimen name="tab_height">45dp</dimen>
+    <dimen name="margin_chat_top">10dip</dimen>
+    <dimen name="chat_head_img">38dp</dimen>
+    <dimen name="chat_item__margin_top">10dp</dimen>
+    <dimen name="delete_action_len">90dip</dimen>
+    <dimen name="px_150">150px</dimen>
+    <dimen name="dp_500">333dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+
+            >
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:text="@string/text_sports_dating_theme_hint"
+                android:textColor="@color/color_9a9a9a"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="6dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <TextView
+                    android:id="@+id/appoint_drinking_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/corners_white_style"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:hint="请选择饮酒项目"
+                    android:paddingLeft="12dp"
+                    android:singleLine="true"
+                    android:textColor="@color/color_333333"
+                    android:textColorHint="@color/color_b2b2b2"
+                    android:textSize="13sp" />
+
+                <ImageView
+                    android:id="@+id/appoint_drinking_et_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="12dp"
+                    android:padding="10dp"
+                    android:src="@drawable/empty_icon"
+                    android:visibility="visible"
+
+                    />
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/corners_white_style"
+                android:orientation="vertical">
+
+                <cn.chono.yopper.view.MyGridView
+                    android:id="@+id/drinking_gridView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_marginTop="10dp"
+                    android:numColumns="2"
+
+                    >
+
+                </cn.chono.yopper.view.MyGridView>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="50dp"
+            android:layout_marginTop="50dp"
+            android:gravity="center"
+            android:text="以上如无,请自填（请明确描述，以利于检索）"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

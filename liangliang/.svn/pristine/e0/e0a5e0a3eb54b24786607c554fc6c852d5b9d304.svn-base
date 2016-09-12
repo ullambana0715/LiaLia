@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="62dp"
+    android:background="@drawable/dating_rectangle_filter_shape"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/appoint_radioButton_name_style"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textSize="14sp"
+        android:textColor="#5e5e5e"
+        android:text="约会对象" />
+
+    <RadioGroup
+        android:id="@+id/appoint_sex_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="28dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/sex_man_radiobutton"
+            style="@style/appoint_radioButton_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="男" />
+
+        <RadioButton
+            android:id="@+id/sex_women_radiobutton"
+            style="@style/appoint_radioButton_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="女" />
+
+        <RadioButton
+            android:id="@+id/sex_nolimit_radiobutton"
+            style="@style/appoint_radioButton_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="不限"
+            />
+
+    </RadioGroup>
+
+</RelativeLayout>

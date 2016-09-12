@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f1f1f1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#f1f1f1">
+
+        <RelativeLayout
+            android:id="@+id/others_video_detail_video_layout"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp">
+            <SurfaceView
+                android:id="@+id/others_video_detail_videoview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <ImageView
+                android:id="@+id/others_video_detail_coverimg_iv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"/>
+
+            <ImageView
+                android:id="@+id/others_video_detail_video_start_iv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <ProgressBar
+                android:id="@+id/others_video_detail_video_loading_pb"
+                android:layout_width="45dip"
+                android:layout_height="45dip"
+                android:layout_gravity="center"
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:id="@+id/others_video_detail_hint_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="12px"
+                android:layout_height="match_parent"
+                android:background="@color/color_cad7d7"
+                />
+
+            <TextView
+                android:id="@+id/others_video_detail_hint_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_ffffff"
+                android:padding="24px"
+                android:text="用户通过录制手机并上传一段简短的自拍视频，工作人员会在24小时之内对其进行审核。我们会努力保障用户的真实性。"
+                android:textColor="@color/color_333333"
+                />
+
+        </com.zhy.autolayout.AutoLinearLayout>
+    </LinearLayout>
+</ScrollView>

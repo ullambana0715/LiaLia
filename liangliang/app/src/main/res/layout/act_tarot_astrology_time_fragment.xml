@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/color_f8f8f7"
+              android:orientation="vertical"
+
+    >
+
+
+    <cn.chono.yopper.view.MyGridView
+
+        android:id="@+id/tarotAstrologyTime_gv_time"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+
+    </cn.chono.yopper.view.MyGridView>
+
+</LinearLayout>

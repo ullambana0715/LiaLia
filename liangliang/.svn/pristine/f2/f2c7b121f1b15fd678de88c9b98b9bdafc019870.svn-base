@@ -1,0 +1,359 @@
+package cn.chono.yopper.activity.bubble;
+
+
+
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.near.BubblingInfoActivity;
+import cn.chono.yopper.adapter.BubbleMessageAdapter;
+import cn.chono.yopper.data.BubbleMsgDto;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.smack.service.XXService;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.CommonObservable;
+import cn.chono.yopper.utils.CommonObserver;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.ViewsUtils;
+
+
+/**
+ * 消息列表
+ *
+ * @author sam.sun
+ *
+ */
+public class BubbleMessageActivity extends MainFrameActivity implements IConnectionStatusCallback{
+
+
+
+	// 本地缓存数据
+	private LayoutInflater mInflater;
+	private View contextView;
+
+
+	private ListView bubble_message_listview;// 消息列表
+
+
+	private List<ChatDto> bubble_messagedtoList=new ArrayList<ChatDto>();
+
+
+	private BubbleMessageAdapter bubbleMessageAdapter;
+
+
+	public XXService mXxService;// Main服务
+
+	private String mid;
+	private DisplayMetrics dm;
+
+
+	// 删除
+	private Dialog deleteDialog;
+
+	private Runnable deleteMsgRun = new Runnable() {
+
+		@Override
+		public void run() {
+			getMessageDto();
+		}
+	};
+	private CommonObserver.DeleteStrangeMessageObserver deleteMessageObserver = new CommonObserver.DeleteStrangeMessageObserver(deleteMsgRun);
+
+	private int scroll_postiton=0;
+
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		PushAgent.getInstance(this).onAppStart();
+		initComponent();
+		mid=YPApplication.loginUser.getUserId()+"@chono";
+
+		if(YpSettings.xxservice!=null){
+			YpSettings.xxservice.registerConnectionStatusCallback(BubbleMessageActivity.this);
+		}
+
+		//判断网络       
+		CommonObservable.getInstance().addObserver(deleteMessageObserver);
+
+	}
+
+
+	/**
+	 * 初始化
+	 */
+	private void initComponent() {
+
+		// 设置标题栏
+		this.getTvTitle().setText("冒泡通知");
+		this.getBtnGoBack().setVisibility(View.VISIBLE);
+		this.getOptionLayout().setVisibility(View.VISIBLE);
+		this.getBtnOption().setVisibility(View.GONE);
+		this.gettvOption().setVisibility(View.VISIBLE);
+		this.gettvOption().setText("忽略未读");
+
+		this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				ViewsUtils.preventViewMultipleClick(arg0, 1000);
+				finish();
+			}
+		});
+
+
+		this.getOptionLayout().setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				ViewsUtils.preventViewMultipleClick(arg0, 1000);
+
+				try {
+					List<ChatDto> chatdtoList = YPApplication.getInstance().db.findAll((Selector.from(ChatDto.class).where("jid", " =", "system_bubble@chono")).and("mid", " =", mid));
+					if (chatdtoList != null && chatdtoList.size() > 0) {
+						for (int j = 0; j < chatdtoList.size(); j++) {
+							ChatDto chatdto = chatdtoList.get(j);
+							if (chatdto != null) {
+								chatdto.setStatus(ChatDto.readed_status);
+								YPApplication.getInstance().db.update(chatdto);
+							}
+						}
+					}
+
+				} catch (DbException e1) {
+					e1.printStackTrace();
+				}
+				getMessageDto();
+
+			}
+		});
+
+
+		// 内容部分
+		mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		contextView = mInflater.inflate(R.layout.strange_message_activity, null);
+		bubble_message_listview=(ListView) contextView.findViewById(R.id.strange_message_listview);
+
+		bubbleMessageAdapter = new BubbleMessageAdapter(this);
+		bubble_message_listview.setAdapter(bubbleMessageAdapter);
+
+
+
+
+//		bubble_message_listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+//
+//			@Override
+//			public boolean onItemLongClick(AdapterView<?> parent, View view,int position, long id) {
+//				MessageDto dto =bubble_messagedtoList.get(position);
+//				String jid = dto.getJid();
+//				showDeleteDialog(jid);
+//				return true;
+//			}
+//		});
+
+
+		bubble_message_listview.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+									int position, long id) {
+				ChatDto dto =bubble_messagedtoList.get(position);
+				try {
+				dto.setStatus(ChatDto.readed_status);
+				YPApplication.getInstance().db.update(dto);
+				} catch (DbException e1) {
+					e1.printStackTrace();
+				}
+				BubbleMsgDto bubbleMsgDto = JsonUtils.fromJson(dto.getMessage(),BubbleMsgDto.class);
+
+				Bundle bundle = new Bundle();
+				bundle.putString(YpSettings.BUBBLING_LIST_ID, bubbleMsgDto.getBubbleId()+"");
+				ActivityUtil.jump(BubbleMessageActivity.this, BubblingInfoActivity.class,bundle, 0, 100);
+			}
+		});
+
+
+
+		this.getMainLayout().addView(contextView, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+
+
+	}
+
+
+	/**
+	 *
+	 *
+	 */
+
+//	public void showDeleteDialog(final String jid) {
+//
+//		// 初始化一个自定义的Dialog
+//		deleteDialog = new MyDialog(BubbleMessageActivity.this,R.style.MyDialog, R.layout.select_operate_dialog_layout,new MyDialog.DialogEventListener() {
+//
+//			@Override
+//			public void onInit(View contentView) {
+//
+//				TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+//				LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+//				LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+//				LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+//
+//				TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+//
+//				select_operate_dialog_title_tv.setText("操作");
+//				select_operate_dialog_one_tv.setText("删除对话");
+//
+//				select_operate_dialog_one_layout.setVisibility(View.VISIBLE);
+//
+//				select_operate_dialog_two_layout.setVisibility(View.GONE);
+//
+//				select_operate_dialog_three_layout.setVisibility(View.GONE);
+//
+//
+//				// 点击升级按钮
+//				select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						ViewsUtils.preventViewMultipleClick(v,3000);
+//
+//						deleteDialog.dismiss();
+//						try {
+//
+//							YPApplication.getInstance().db.delete(ChatDto.class,WhereBuilder.b("jid", " =", jid).and("mid"," =", mid));
+//
+//							YPApplication.getInstance().db.delete(MessageDto.class, WhereBuilder.b("jid", " =", jid).and("mid"," =", mid));
+//
+//							// list.remove(position);
+//							CommonObservable.getInstance().notifyObservers(CommonObserver.DeleteStrangeMessageObserver.class);
+//
+//							CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+//
+//						} catch (DbException e) {
+//							e.printStackTrace();
+//						}
+//					}
+//
+//				});
+//			}
+//		});
+//		deleteDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+//		deleteDialog.show();
+//
+//	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onPageStart("冒泡通知列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+		MobclickAgent.onResume(this); // 统计时长
+		getMessageDto();
+	}
+
+
+
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPageEnd("冒泡通知列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+		MobclickAgent.onPause(this); // 统计时长
+	}
+
+
+
+
+	@Override
+	public void ReceiveNewMsg(ChatDto dto) {
+
+
+		getMessageDto();
+		CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+	}
+
+
+
+	private void getMessageDto(){
+		try {
+			//allmessagedtoList= YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("mid", " =", mid).orderBy("date DESC"));
+
+			bubble_message_listview.setVisibility(View.VISIBLE);
+			bubble_messagedtoList= YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("mid", " =", mid).and("jid", " =", "system_bubble@chono").orderBy("date",true));
+
+			if(bubble_messagedtoList!=null && bubble_messagedtoList.size()>0){
+
+				if(bubbleMessageAdapter!=null){
+
+					bubbleMessageAdapter.setList(bubble_messagedtoList);
+					bubbleMessageAdapter.notifyDataSetChanged();
+				}else{
+
+					bubbleMessageAdapter = new BubbleMessageAdapter(this);
+					bubbleMessageAdapter.setList(bubble_messagedtoList);
+					bubble_message_listview.setAdapter(bubbleMessageAdapter);
+					bubble_message_listview.setSelection(scroll_postiton);
+				}
+
+			}else{
+				bubble_message_listview.setVisibility(View.GONE);
+
+			}
+
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+
+
+	protected void onDestroy() {
+		super.onDestroy();
+		// 注销广播
+		//this.unregisterReceiver(mReceiver);
+	};
+
+
+	@Override
+	public void connectionStatusChanged(int connectedState, String reason) {
+
+	}
+
+
+	@Override
+	public void ListenSendStatus(int send_status, String packetid) {
+
+	}
+
+
+	private int dp2px(int dp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+				getResources().getDisplayMetrics());
+	}
+
+
+}

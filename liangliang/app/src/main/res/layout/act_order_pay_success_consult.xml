@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_consult_pay_success" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:text="@string/pay_success"
+        android:textColor="@color/color_ff735d"
+        android:textSize="18sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginBottom="18dp"
+        android:layout_marginLeft="27dp"
+        android:layout_marginRight="27dp"
+        android:layout_marginTop="25dp"
+        android:background="@color/color_eeeeee" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="27dp"
+        android:layout_marginRight="27dp">
+
+        <TextView
+            android:layout_width="60sp"
+            android:layout_height="wrap_content"
+            android:text="订单编号"
+            android:gravity="center"
+            android:textColor="@color/color_666666"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/order_pay_success_consult_orderId_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/color_666666"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="27dp"
+        android:layout_marginRight="27dp">
+
+        <TextView
+            android:id="@+id/order_pay_success_consult_tv_name_title"
+            android:layout_width="60sp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="塔  罗  师"
+            android:textSize="14sp"
+            android:textColor="@color/color_666666"
+           />
+
+        <TextView
+            android:id="@+id/order_pay_success_consult_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/color_666666"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="18dp"
+        android:layout_marginLeft="27dp"
+        android:layout_marginRight="27dp">
+
+        <TextView
+            android:layout_width="60sp"
+            android:layout_height="wrap_content"
+            android:text="@string/consultant_time"
+            android:id="@+id/time"
+            android:gravity="center"
+            android:textColor="@color/color_666666"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/order_pay_success_consult_time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/color_666666"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_f8f8f7">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="27dp"
+            android:layout_marginRight="27dp"
+            android:layout_marginTop="18dp"
+            android:gravity="center_horizontal"
+            android:text="@string/consult_order_pay_success_hint"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,147 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+import org.xbill.DNS.utils.base32;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.glide.CropCircleTransformation;
+
+/**
+ * Created by yangjinyu on 16/2/29.
+ */
+public class ClimbingListAdapter extends BaseAdapter {
+    List<String> mList = new ArrayList<>();
+    Context mContext;
+    private BitmapPool mPool;
+    private CropCircleTransformation transformation;
+
+    public ClimbingListAdapter(Context c) {
+        mContext = c;
+        mPool = Glide.get(c).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+        mList.add("http://f.hiphotos.baidu.com/news/q%3D100/sign=db073b5b8094a4c20c23e32b3ef51bac/cefc1e178a82b901471f1967748da9773912ef30.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=b3f270ac0d46f21fcf345a53c6256b31/caef76094b36acaf4ae5a8ab7bd98d1001e99c5b.jpg");
+        mList.add("http://c.hiphotos.baidu.com/news/q%3D100/sign=1eb694601a950a7b73354ac43ad0625c/6159252dd42a28346625f95d5cb5c9ea14cebfe1.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=a7143a66263fb80e0ad165d706d02ffb/bd3eb13533fa828b00e3abb4fa1f4134960a5aa0.jpg");
+        mList.add("http://d.hiphotos.baidu.com/news/q%3D100/sign=8fa0bf9dfcedab64727249c0c737af81/7af40ad162d9f2d37c83e5b9aeec8a136227ccd2.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=9d70b936ff1986184747eb847aec2e69/472309f7905298225c650594d0ca7bcb0a46d416.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=276bffb765d9f2d3261120ef99ed8a53/023b5bb5c9ea15ce6a4c205fb1003af33b87b2c2.jpg");
+        mList.add("http://f.hiphotos.baidu.com/news/q%3D100/sign=db073b5b8094a4c20c23e32b3ef51bac/cefc1e178a82b901471f1967748da9773912ef30.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=b3f270ac0d46f21fcf345a53c6256b31/caef76094b36acaf4ae5a8ab7bd98d1001e99c5b.jpg");
+        mList.add("http://c.hiphotos.baidu.com/news/q%3D100/sign=1eb694601a950a7b73354ac43ad0625c/6159252dd42a28346625f95d5cb5c9ea14cebfe1.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=a7143a66263fb80e0ad165d706d02ffb/bd3eb13533fa828b00e3abb4fa1f4134960a5aa0.jpg");
+        mList.add("http://d.hiphotos.baidu.com/news/q%3D100/sign=8fa0bf9dfcedab64727249c0c737af81/7af40ad162d9f2d37c83e5b9aeec8a136227ccd2.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=9d70b936ff1986184747eb847aec2e69/472309f7905298225c650594d0ca7bcb0a46d416.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=276bffb765d9f2d3261120ef99ed8a53/023b5bb5c9ea15ce6a4c205fb1003af33b87b2c2.jpg");
+        mList.add("http://f.hiphotos.baidu.com/news/q%3D100/sign=92f34a5e9c504fc2a45fb405d5dce7f0/4034970a304e251f281722aea086c9177e3e5380.jpg");
+        mList.add("222");
+        mList.add("333");
+        mList.add("444");
+        mList.add("555");
+        mList.add("666");
+        mList.add("777");
+        mList.add("http://f.hiphotos.baidu.com/news/q%3D100/sign=db073b5b8094a4c20c23e32b3ef51bac/cefc1e178a82b901471f1967748da9773912ef30.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=b3f270ac0d46f21fcf345a53c6256b31/caef76094b36acaf4ae5a8ab7bd98d1001e99c5b.jpg");
+        mList.add("http://c.hiphotos.baidu.com/news/q%3D100/sign=1eb694601a950a7b73354ac43ad0625c/6159252dd42a28346625f95d5cb5c9ea14cebfe1.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=a7143a66263fb80e0ad165d706d02ffb/bd3eb13533fa828b00e3abb4fa1f4134960a5aa0.jpg");
+        mList.add("http://d.hiphotos.baidu.com/news/q%3D100/sign=8fa0bf9dfcedab64727249c0c737af81/7af40ad162d9f2d37c83e5b9aeec8a136227ccd2.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=9d70b936ff1986184747eb847aec2e69/472309f7905298225c650594d0ca7bcb0a46d416.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=276bffb765d9f2d3261120ef99ed8a53/023b5bb5c9ea15ce6a4c205fb1003af33b87b2c2.jpg");
+        mList.add("http://f.hiphotos.baidu.com/news/q%3D100/sign=92f34a5e9c504fc2a45fb405d5dce7f0/4034970a304e251f281722aea086c9177e3e5380.jpg");
+        mList.add("222");
+        mList.add("http://f.hiphotos.baidu.com/news/q%3D100/sign=db073b5b8094a4c20c23e32b3ef51bac/cefc1e178a82b901471f1967748da9773912ef30.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=b3f270ac0d46f21fcf345a53c6256b31/caef76094b36acaf4ae5a8ab7bd98d1001e99c5b.jpg");
+        mList.add("http://c.hiphotos.baidu.com/news/q%3D100/sign=1eb694601a950a7b73354ac43ad0625c/6159252dd42a28346625f95d5cb5c9ea14cebfe1.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=a7143a66263fb80e0ad165d706d02ffb/bd3eb13533fa828b00e3abb4fa1f4134960a5aa0.jpg");
+        mList.add("http://d.hiphotos.baidu.com/news/q%3D100/sign=8fa0bf9dfcedab64727249c0c737af81/7af40ad162d9f2d37c83e5b9aeec8a136227ccd2.jpg");
+        mList.add("http://g.hiphotos.baidu.com/news/q%3D100/sign=9d70b936ff1986184747eb847aec2e69/472309f7905298225c650594d0ca7bcb0a46d416.jpg");
+        mList.add("http://e.hiphotos.baidu.com/news/q%3D100/sign=276bffb765d9f2d3261120ef99ed8a53/023b5bb5c9ea15ce6a4c205fb1003af33b87b2c2.jpg");
+        mList.add("http://f.hiphotos.baidu.com/news/q%3D100/sign=92f34a5e9c504fc2a45fb405d5dce7f0/4034970a304e251f281722aea086c9177e3e5380.jpg");
+        mList.add("222");
+    }
+
+    @Override
+    public int getCount() {
+        return mList.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return mList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if(null == convertView){
+            holder = new ViewHolder();
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_climbing_list,null);
+            holder.mBonusView = (ImageView)convertView.findViewById(R.id.bonus);
+            holder.mEnergyBar = (SeekBar)convertView.findViewById(R.id.energy_bar);
+            holder.mPlaceView = (ImageView)convertView.findViewById(R.id.placeicon);
+            holder.mUserConstellationView = (TextView)convertView.findViewById(R.id.userconstellation);
+            holder.mUserNameView = (TextView)convertView.findViewById(R.id.username);
+            holder.mUserEnergyView = (TextView)convertView.findViewById(R.id.energy_no);
+            holder.mUserPortraitView = (ImageView)convertView.findViewById(R.id.portraiticon);
+            holder.mEnergyBar = (SeekBar)convertView.findViewById(R.id.energy_bar);
+
+            convertView.setTag(holder);
+        }else{
+            holder = (ViewHolder)convertView.getTag();
+        }
+
+        Glide.with(mContext).load(mList.get(position)).bitmapTransform(transformation).into(holder.mUserPortraitView);
+
+        holder.mUserNameView.setText(mList.get(position));
+        holder.mEnergyBar.setProgress(60);
+        holder.mEnergyBar.setEnabled(false);
+
+        return convertView;
+    }
+
+    public void updateSpecificItemByPosition(ListView lv ,int position,int data){
+        int firstVisiblePosition = lv.getFirstVisiblePosition();
+        int lastVisiblePosition = lv.getLastVisiblePosition();
+
+        if((position >= firstVisiblePosition) && (position <= lastVisiblePosition)){
+            View v = lv.getChildAt(position - firstVisiblePosition);
+            ViewHolder holder = (ViewHolder)v.getTag();
+            holder.mEnergyBar.setProgress(data);
+        }
+    }
+
+    class ViewHolder {
+        public TextView mUserNameView;
+        public TextView mUserConstellationView;
+        public TextView mUserEnergyView;
+        public ImageView mUserPortraitView;
+        public ImageView mBonusView;
+        public ImageView mPlaceView;
+        public SeekBar mEnergyBar;
+    }
+}

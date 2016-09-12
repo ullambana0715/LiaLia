@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_white">
+
+    <cn.chono.yopper.view.CircleEnergy
+        android:id="@+id/my_energy"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:background="@color/qupai_transparent" />
+
+    <TextView
+        android:id="@+id/energy_info"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/my_energy"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="能量满100后是不会继续增长的哦,记得及时用来爬榜"
+        android:textColor="@color/text_color_black"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/goto_climbing"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/energy_info"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@color/text_color_ff7462"
+        android:gravity="center"
+        android:text="去爬榜"
+        android:textSize="20sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/goto_climbing"
+        android:layout_marginTop="20dp"
+        android:background="@color/text_color_b2b2b2">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="nenglianghuoqumiji"
+                android:textColor="@color/text_color_black"
+                android:textSize="16sp"
+                android:id="@+id/miji"/>
+
+            <TextView
+                android:id="@+id/title1"
+                android:layout_below="@+id/miji"
+                style="@style/climb_dynamic_text_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="zhudongjineng" />
+
+            <TextView
+                android:id="@+id/textcontent0"
+                android:layout_below="@+id/title1"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent0"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+
+            <TextView
+                android:id="@+id/textcontent1"
+                android:layout_below="@+id/textcontent0"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent1"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+
+            <TextView
+                android:id="@+id/textcontent2"
+                android:layout_below="@+id/textcontent1"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent2"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+
+            <TextView
+                android:id="@+id/textcontent3"
+                android:layout_below="@+id/textcontent2"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent3"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+
+            <TextView
+                android:id="@+id/textcontent4"
+                android:layout_below="@+id/textcontent3"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent4"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+
+            <TextView
+                android:id="@+id/textcontent5"
+                android:layout_below="@+id/textcontent4"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent5"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+
+            <TextView
+                android:id="@+id/textcontent6"
+                android:layout_below="@+id/textcontent5"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent6"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/climb_dynamic_text_title"
+                android:id="@+id/title2"
+                android:layout_below="@+id/textcontent6"
+                android:text="beidongjineng"/>
+            <TextView
+                android:id="@+id/textcontent7"
+                android:layout_below="@+id/title2"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent7"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+
+                />
+            <TextView
+                android:id="@+id/textcontent8"
+                android:layout_below="@+id/textcontent7"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent8"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+            <TextView
+                android:id="@+id/textcontent9"
+                android:layout_below="@+id/textcontent8"
+                style="@style/climb_dynamic_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="meiridenglu"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textcontent9"
+                android:text="+20dian"
+                style="@style/climb_dynamic_text_content_num"
+                />
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

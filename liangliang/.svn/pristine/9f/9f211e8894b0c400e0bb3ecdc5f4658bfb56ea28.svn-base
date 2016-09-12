@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20px"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+
+
+        >
+
+
+        <ImageView
+            android:id="@+id/find_gridview_context_icon"
+            android:layout_width="88px"
+            android:layout_height="88px"
+            app:layout_auto_baseheight="width" />
+
+        <com.zhy.autolayout.AutoRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12px"
+            android:orientation="vertical">
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:id="@+id/find_gridview_context_naem_iv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+
+                    android:id="@+id/find_gridview_context_name_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/text_color_333333"
+                    android:textSize="30px"
+
+                    />
+
+                <View
+                    android:id="@+id/find_gridview_prompt_view"
+                    android:layout_width="10px"
+                    android:layout_height="10px"
+                    android:background="@drawable/bg_bubble"
+                    android:visibility="gone"
+                    android:gravity="center" />
+            </com.zhy.autolayout.AutoLinearLayout>
+
+
+            <TextView
+
+                android:id="@+id/find_gridview_context_tv"
+                android:layout_below="@+id/find_gridview_context_naem_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12px"
+                android:textColor="@color/text_color_9a9a9a"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textSize="22px"
+
+                />
+
+        </com.zhy.autolayout.AutoRelativeLayout>
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <View
+        android:id="@+id/find_gridview_dividing_line_view"
+        android:layout_width="2px"
+        android:layout_marginTop="20px"
+        android:layout_marginBottom="20px"
+        android:layout_height="match_parent"
+        android:background="@color/text_color_eeeeee" />
+</com.zhy.autolayout.AutoLinearLayout>

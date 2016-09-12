@@ -1,0 +1,24 @@
+package cn.chono.yopper.photo;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ImageSelectedDto implements Serializable {
+
+	/**
+	 * 一个目录的相册集合
+	 */
+	public static List<ImageBucket> dataList = new ArrayList<ImageBucket>();
+	/**
+	 * 所有图片的集合
+	 */
+	public static List<ImageItem> imageList = new ArrayList<ImageItem>();
+
+	public static int maximum = 9;
+	public static List<ImageItem> selectedList = new ArrayList<ImageItem>();
+	public static List<ImageItem> okselectedList = new ArrayList<ImageItem>();
+	
+	public static String NO_IMAGE="NO_IMAGE";
+
+}

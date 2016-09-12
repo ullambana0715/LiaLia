@@ -1,0 +1,11 @@
+package cn.chono.yopper.view.ScoreCord;
+
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+
+/**
+ * Created by zxb on 2015/12/7.
+ */
+public interface OnScordCordLayoutUpdateListener {
+    void onUpdateData( int score_cord_layout_list_size,DaillyFaceratingCandidatesDto dto,int level);
+    void onComplete();
+}

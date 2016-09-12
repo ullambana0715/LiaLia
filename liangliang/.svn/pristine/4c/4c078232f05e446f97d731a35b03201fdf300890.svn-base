@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/cn.chono.yopper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/chat_bg"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/margin_chat_top" >
+
+    <TextView
+        android:id="@+id/chat_item_time_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/chat_item_time_bg"
+        android:gravity="center"
+        android:padding="2dp"
+        android:singleLine="true"
+        android:text="12:45"
+        android:textColor="@color/text_color_white"
+        android:textSize="14dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="@dimen/margin_chat_top" >
+
+        <ImageView
+            android:id="@+id/chat_item_user_img_iv"
+            android:layout_width="@dimen/chat_head_img"
+            android:layout_height="@dimen/chat_head_img"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/message_head_default_icon"
+            android:scaleType="fitXY"
+            />
+
+        <RelativeLayout
+            android:id="@+id/chat_item_voice_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="@dimen/margin_chat_top"
+            android:layout_toRightOf="@id/chat_item_user_img_iv"
+            android:background="@drawable/chat_item_text_receive_bg" >
+
+            <ImageView
+                android:id="@+id/chat_item_voice_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:paddingBottom="5dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="70dp"
+                android:paddingTop="5dp"
+                
+                android:visibility="visible" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/chat_item_voice_length_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toRightOf="@+id/chat_item_voice_layout"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:text="11" />
+
+        <TextView
+            android:id="@+id/chat_item_voice_receive_no_listen_tv"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/chat_item_voice_layout"
+            android:background="@drawable/bg_bubble"
+            android:gravity="center"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+</LinearLayout>

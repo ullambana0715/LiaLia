@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/user_info_appoint_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/user_info_ta_layout"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Ta正"
+            android:gravity="center"
+            android:textColor="@color/text_color_939393"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_info_ta_tv"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_marginTop="-5dp"
+            android:text="在约"
+            android:textColor="@color/text_color_939393"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/user_info_appoint_type_iv"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/chat_appoint_eat"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/user_info_appoint_title_iv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="约人吃饭"
+            android:textColor="@color/text_color_black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/user_info_appoint_content_iv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="约人吃饭"
+            android:textColor="#a3a3a3"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="8dp"
+        android:text="去报名"
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/text_color_ff7462"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/user_info_appoint_arrow_left" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/user_info_appoint_item_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#e1e1e1"
+        android:layout_marginLeft="60dp"
+        android:layout_alignParentBottom="true"
+        />
+</LinearLayout>

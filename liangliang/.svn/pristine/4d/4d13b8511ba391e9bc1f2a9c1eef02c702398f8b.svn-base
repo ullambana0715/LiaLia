@@ -1,0 +1,732 @@
+package cn.chono.yopper.activity.register;
+
+import android.app.Dialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.method.KeyListener;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.tendcloud.appcpa.TalkingDataAppCpa;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.GainVerifiCode.GainVerifiCodeBean;
+import cn.chono.yopper.Service.Http.GainVerifiCode.GainVerifiCodeService;
+import cn.chono.yopper.Service.Http.LoginVCode.LoginVcodeBean;
+import cn.chono.yopper.Service.Http.LoginVCode.LoginVcodeRespBean;
+import cn.chono.yopper.Service.Http.LoginVCode.LoginVcodeService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.VerifiCation.VerifiCationBean;
+import cn.chono.yopper.Service.Http.VerifiCation.VerifiCationRespBean;
+import cn.chono.yopper.Service.Http.VerifiCation.VerifiCationService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.base.IndexActivity;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.smack.service.XXService;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.Constants;
+import cn.chono.yopper.utils.CountDownHelper;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.SHA;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.zxb.xrefreshview.utils.LogUtils;
+
+
+public class RegisterVerificationCodeActivity extends MainFrameActivity
+        implements OnClickListener, OnTouchListener, IConnectionStatusCallback {
+
+    private String mobile;
+    private String verifyCode;
+
+
+    /**
+     * 验证码输入框
+     */
+    private EditText register_verification_code_et;
+    /**
+     * 手机号文本
+     */
+    private TextView register_verification_code_phone_tv;
+
+    private LinearLayout register_verification_loyout;
+
+    private ImageView register_verification_code_empty_iv;
+
+    private Button register_verification_code_to_obtain_but;
+
+    private Button register_verification_code_next_but;
+
+    private RelativeLayout register_verification_code_phone_layout;
+
+    private EditText register_verification_code_phone_et;
+
+    private ImageView register_verification_code_phone_et_empty_iv;
+
+
+    private Dialog dialog;
+
+
+    private Dialog loadingDiaog;
+
+    private Dialog finishDialog;
+
+    private int fromtag;
+
+
+    private boolean reigister_next_but_control = true;
+
+
+    private boolean verification_code_login_fromtag=false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.register_verification_code_activity);
+        PushAgent.getInstance(this).onAppStart();
+
+        mobile = getIntent().getExtras().getString("mobile");
+        fromtag = getIntent().getExtras().getInt(YpSettings.FROM_TAG);
+
+        initView();// 组件初始化
+
+        if (fromtag == YpSettings.FROM_REGIDTER) {
+            countDownHelper();
+        }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (fromtag == YpSettings.FROM_LOGIN) {
+            MobclickAgent.onPageStart(getString(R.string.verification_code_login_title)); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        } else {
+            MobclickAgent.onPageStart(getString(R.string.verification_code_title)); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        }
+
+
+        MobclickAgent.onResume(this); // 统计时长
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (fromtag == YpSettings.FROM_LOGIN) {
+            MobclickAgent.onPageEnd(getString(R.string.verification_code_login_title)); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        } else {
+            MobclickAgent.onPageEnd(getString(R.string.verification_code_title)); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        }
+
+
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    private void initView() {
+
+        register_verification_loyout = (LinearLayout) findViewById(R.id.register_verification_loyout);
+        register_verification_code_phone_tv = (TextView) findViewById(R.id.register_verification_code_phone_tv);
+
+        register_verification_code_et = (EditText) findViewById(R.id.register_verification_code_et);
+        register_verification_code_empty_iv = (ImageView) findViewById(R.id.register_verification_code_empty_iv);
+
+        register_verification_code_to_obtain_but = (Button) findViewById(R.id.register_verification_code_to_obtain_but);
+
+
+        register_verification_code_next_but = (Button) findViewById(R.id.register_verification_code_next_but);
+
+
+        register_verification_code_phone_layout = (RelativeLayout) findViewById(R.id.register_verification_code_phone_layout);
+        register_verification_code_phone_et = (EditText) findViewById(R.id.register_verification_code_phone_et);
+        register_verification_code_phone_et_empty_iv = (ImageView) findViewById(R.id.register_verification_code_phone_et_empty_iv);
+
+
+        if (fromtag == YpSettings.FROM_LOGIN) {
+            // 设置标题栏
+            getTvTitle().setText(R.string.verification_code_login_title);
+            register_verification_code_next_but.setText(getString(R.string.login));
+
+            register_verification_code_phone_layout.setVisibility(View.VISIBLE);
+            register_verification_code_phone_tv.setVisibility(View.GONE);
+
+        } else {
+            // 设置标题栏
+            getTvTitle().setText(R.string.verification_code_title);
+
+            register_verification_code_phone_layout.setVisibility(View.GONE);
+            register_verification_code_phone_tv.setVisibility(View.VISIBLE);
+        }
+
+
+        getBtnGoBack().setVisibility(View.VISIBLE);
+        getBtnOption().setVisibility(View.GONE);
+        getGoBackLayout().setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ViewsUtils.preventViewMultipleClick(v, 1500);
+                hideSoftInputView();
+
+
+                ////使用短信验证码登录时，验证码没有发送成功时。直接返回。只要一发送成功就有提示
+                if (fromtag==YpSettings.FROM_LOGIN && !verification_code_login_fromtag){
+                    finish();
+                    return;
+                }
+
+
+
+
+                if (null == finishDialog) {
+                    finishDialog = DialogUtil.createHintOperateDialog(RegisterVerificationCodeActivity.this, "", "验证码短信可能略有延迟，确定返回并重新开始?", "返回", "等待", new BackCallListener() {
+
+                        @Override
+                        public void onEnsure(View view, Object... obj) {
+                            finishDialog.dismiss();
+
+
+                        }
+
+                        @Override
+                        public void onCancel(View view, Object... obj) {
+                            finish();
+
+                        }
+                    });
+                }
+
+
+                if (!isFinishing()) {
+                    finishDialog.show();
+                }
+            }
+        });
+
+
+        register_verification_code_phone_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                if (!TextUtils.isEmpty(s)) {
+                    mobile = s.toString().trim();
+                } else {
+                    mobile = "";
+                }
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    mobile = s.toString().trim();
+                } else {
+                    mobile = "";
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!TextUtils.isEmpty(mobile)) {
+                    register_verification_code_phone_et_empty_iv.setVisibility(View.VISIBLE);
+                    register_verification_code_to_obtain_but.setEnabled(true);
+
+                } else {
+                    register_verification_code_phone_et_empty_iv.setVisibility(View.GONE);
+                    register_verification_code_to_obtain_but.setEnabled(false);
+
+                }
+
+                setNextButtonStyle();
+
+            }
+        });
+
+
+        register_verification_code_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                if (!TextUtils.isEmpty(s)) {
+                    verifyCode = s.toString().trim();
+                } else {
+                    verifyCode = "";
+                }
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    verifyCode = s.toString().trim();
+                } else {
+                    verifyCode = "";
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (!TextUtils.isEmpty(verifyCode)) {
+
+                    register_verification_code_empty_iv.setVisibility(View.VISIBLE);
+
+
+                } else {
+                    register_verification_code_empty_iv.setVisibility(View.GONE);
+
+                }
+                setNextButtonStyle();
+
+
+            }
+        });
+
+        register_verification_code_phone_tv.setText(mobile);
+
+
+        register_verification_loyout.setOnTouchListener(this);
+        register_verification_loyout.setOnClickListener(this);
+
+        register_verification_code_to_obtain_but.setOnClickListener(this);
+        register_verification_code_empty_iv.setOnClickListener(this);
+        register_verification_code_next_but.setOnClickListener(this);
+
+        register_verification_code_phone_et_empty_iv.setOnClickListener(this);
+
+
+    }
+
+
+    private void setNextButtonStyle() {
+        LogUtils.e("mobile=" + mobile);
+        LogUtils.e("verifyCode=" + verifyCode);
+        if (!TextUtils.isEmpty(mobile) && !TextUtils.isEmpty(verifyCode)&& verifyCode.length()>5) {//可以下一步
+            register_verification_code_next_but.setEnabled(true);
+
+        } else {//不可以进入
+            register_verification_code_next_but.setEnabled(false);
+        }
+
+
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.register_verification_loyout:
+
+                hideSoftInputView();
+
+                break;
+
+            case R.id.register_verification_code_empty_iv://清空输入框
+                register_verification_code_et.setText("");
+                register_verification_code_empty_iv.setVisibility(View.GONE);
+                register_verification_code_next_but.setEnabled(false);
+
+                break;
+
+            case R.id.register_verification_code_to_obtain_but:// 验证码
+
+
+
+                if (CheckUtil.isEmpty(mobile)) {
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this,"请输入手机号码");
+                    return;
+                }
+
+                if(!CheckUtil.isCellPhone(mobile)){
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this,"请输入正确手机号码");
+                    return;
+                }
+
+
+                if (fromtag == YpSettings.FROM_LOGIN) {
+                    register_verification_code_phone_layout.setVisibility(View.GONE);
+                    register_verification_code_phone_tv.setText(mobile);
+                    register_verification_code_phone_tv.setVisibility(View.VISIBLE);
+                }
+
+                countDownHelper();
+                hideSoftInputView();
+                enqueueGainVerifinCodeService();
+
+                break;
+
+            case R.id.register_verification_code_next_but:// 下一步
+
+                hideSoftInputView();
+
+                verifyCode = register_verification_code_et.getText().toString().trim();
+
+                if (TextUtils.isEmpty(verifyCode)) {
+                    return;
+                }
+
+                if (verifyCode.length() < 6) {
+
+                    DialogUtil.showDisCoverNetToast(this, "验证码不正确");
+                    return;
+                }
+
+                if (!reigister_next_but_control) {
+                    return;
+                }
+
+                if (loadingDiaog == null) {
+                    loadingDiaog = DialogUtil.LoadingDialog(this, null);
+                }
+                if (!isFinishing()) {
+                    loadingDiaog.show();
+                }
+
+                reigister_next_but_control = false;
+                enqueueVerifiCationService(mobile, verifyCode);
+
+
+                break;
+            case R.id.register_verification_code_phone_et_empty_iv:
+
+                register_verification_code_phone_et.setText("");
+                register_verification_code_phone_et_empty_iv.setVisibility(View.GONE);
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        hideSoftInputView();
+        return false;
+    }
+
+    private String mAccount;
+    private String mPassword;
+
+    @Override
+    public void connectionStatusChanged(int connectedState, String reason) {
+        if (connectedState == XXService.CONNECTED) {
+            SharedprefUtil.save(this, Constants.ACCOUNT, mAccount);// 帐号是一直保存的
+            SharedprefUtil.save(this, Constants.PASSWORD, mPassword);
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(this, Constants.MJD, mAccount + "@chono");
+
+        } else if (connectedState == XXService.DISCONNECTED) {
+            // 失败
+
+            SharedprefUtil.save(this, Constants.ACCOUNT, "");// 帐号是一直保存的
+            SharedprefUtil.save(this, Constants.PASSWORD, "");
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(this, Constants.MJD, "");
+
+        }
+
+    }
+
+    @Override
+    public void ReceiveNewMsg(ChatDto dto) {
+
+    }
+
+    @Override
+    public void ListenSendStatus(int send_status, String packetId) {
+
+    }
+
+    private CountDownHelper countDownHelper;//倒计时
+
+
+    private BackCallListener RegisterbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                dialog.dismiss();
+            }
+            loginVcode();
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                dialog.dismiss();
+            }
+            finish();
+        }
+    };
+
+
+    /**
+     * 倒计时
+     */
+    public void countDownHelper() {
+        if (null == countDownHelper) {
+            countDownHelper = new CountDownHelper(RegisterVerificationCodeActivity.this, register_verification_code_to_obtain_but, getString(R.string.resend_again_verification_code), 60, 1);
+        }
+        countDownHelper.start();
+        // 设置倒计时监听
+        countDownHelper.setOnFinishListener(new CountDownHelper.OnFinishListener() {
+
+            @Override
+            public void finish() {
+
+                if (fromtag == YpSettings.FROM_LOGIN) {
+                    register_verification_code_phone_layout.setVisibility(View.VISIBLE);
+                    register_verification_code_phone_tv.setText("");
+                    register_verification_code_phone_tv.setVisibility(View.GONE);
+                }
+
+
+            }
+        });
+    }
+
+    /**
+     * 获取验证码
+     */
+    public void enqueueGainVerifinCodeService() {
+        GainVerifiCodeBean gainVerifiCodeBean = new GainVerifiCodeBean();
+        gainVerifiCodeBean.setMobile(mobile);
+        GainVerifiCodeService gainVerifiCodeService = new GainVerifiCodeService(RegisterVerificationCodeActivity.this);
+        gainVerifiCodeService.parameter(gainVerifiCodeBean);
+
+
+
+        gainVerifiCodeService.callBack(new OnCallBackSuccessListener(){
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+
+                //使用短信验证码登录时，需要一个标记，作为返回上一个界面是否有提示
+                if (fromtag==YpSettings.FROM_LOGIN){
+                    verification_code_login_fromtag=true;
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    // 没有网络的场合，去提示页
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this, msg);
+                }
+            }
+        });
+        gainVerifiCodeService.enqueue();
+
+    }
+
+    /**
+     * 验证 手机验证码
+     */
+    public void enqueueVerifiCationService(final String mobile, final String verifyCode) {
+
+
+        VerifiCationBean verifiCationBean = new VerifiCationBean();
+        verifiCationBean.setMobile(mobile);
+        verifiCationBean.setVerifyCode(verifyCode);
+
+        VerifiCationService verifiCationService = new VerifiCationService(RegisterVerificationCodeActivity.this);
+        verifiCationService.parameter(verifiCationBean);
+        verifiCationService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                reigister_next_but_control = true;
+
+                VerifiCationRespBean bean = (VerifiCationRespBean) respBean;
+
+                boolean isAvailable = bean.getResp().isAvailable();
+
+                loadingDiaog.dismiss();
+
+                // 需要清理task 所以传入flagtype=2
+                if (isAvailable) {
+
+
+                    Bundle de = new Bundle();
+                    de.putString("mobile", mobile);
+                    de.putString("verifyCode", verifyCode);
+                    // 友盟自定义事件统计
+                    MobclickAgent.onEvent(RegisterVerificationCodeActivity.this, "reg_code_next");
+
+                    ActivityUtil.jump(RegisterVerificationCodeActivity.this, RegisterWriteInfoActivity.class, de, 0, 100);
+
+
+                    return;
+                } else {
+
+                    //通过短信验证码登录时。直接登录。不需要提示
+                    if (fromtag==YpSettings.FROM_LOGIN){
+
+                        loginVcode();
+
+                        return;
+                    }
+
+
+                    //手机号注册时。需要提示
+                    dialog = DialogUtil.createHintOperateDialog(RegisterVerificationCodeActivity.this, "", "手机号已注册", "返回", "直接登录", RegisterbackCallListener);
+                    dialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+                    if (!isFinishing()) {
+                        dialog.show();
+                    }
+                }
+            }
+        });
+        verifiCationService.callBack(new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                loadingDiaog.dismiss();
+                reigister_next_but_control = true;
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this, msg);
+                }
+
+            }
+        });
+        verifiCationService.enqueue();
+    }
+
+
+    /**
+     * 验证码登陆哦
+     */
+    public void loginVcode() {
+
+
+        LoginVcodeBean loginVcodeBean = new LoginVcodeBean();
+        loginVcodeBean.setMobile(mobile);
+        loginVcodeBean.setVerifyCode(verifyCode);
+
+        LoginVcodeService loginVcodeService = new LoginVcodeService(RegisterVerificationCodeActivity.this);
+        loginVcodeService.parameter(loginVcodeBean);
+        loginVcodeService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                LoginVcodeRespBean loginVcodeRespBean = (LoginVcodeRespBean) respBean;
+
+                YPApplication.getInstance().saveUserInfo(RegisterVerificationCodeActivity.this, loginVcodeRespBean.getResp());
+
+                SharedprefUtil.save(RegisterVerificationCodeActivity.this, Constants.Server, "@chono");
+
+                if (YpSettings.xxservice != null) {
+
+                    LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
+                    loginAsyncTask.execute();
+
+                }
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    // 没有网络的场合，去提示页
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(RegisterVerificationCodeActivity.this, msg);
+                }
+            }
+        });
+        loginVcodeService.enqueue();
+    }
+
+    public class LoginAsyncTask extends AsyncTask<Void, Integer, String> {
+
+        // 该方法并不运行在UI线程内，所以在方法内不能对UI当中的控件进行设置和修改
+        // 主要用于进行异步操作
+        @Override
+        protected String doInBackground(Void... params) {
+
+            try {
+                PushAgent mPushAgent = PushAgent.getInstance(RegisterVerificationCodeActivity.this);
+                mPushAgent.addAlias(YPApplication.loginUser.getUserId() + "", "chono");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            TalkingDataAppCpa.onLogin(YPApplication.loginUser.getUserId() + "");
+
+            SharedprefUtil.save(RegisterVerificationCodeActivity.this, Constants.ACCOUNT, YPApplication.loginUser.getUserId() + "");// 帐号是一直保存的
+            SharedprefUtil.save(RegisterVerificationCodeActivity.this, Constants.PASSWORD, YPApplication.loginUser.getAuthToken());
+            String mAccount = YPApplication.loginUser.getUserId() + "";
+            String mPassword = YPApplication.loginUser.getAuthToken();
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(RegisterVerificationCodeActivity.this, Constants.MJD, mAccount + "@chono");
+            YpSettings.xxservice.Login(mAccount, SHA.encodeByMD5(mPassword));
+
+            return null;
+
+        }
+
+        // 该方法运行在Ui线程内，可以对UI线程内的控件设置和修改其属性
+        @Override
+        protected void onPreExecute() {
+        }
+
+        // 在doInBackground方法当中，每次调用publishProgrogress()方法之后，都会触发该方法
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+
+        // 在doInBackground方法执行结束后再运行，并且运行在UI线程当中
+        // 主要用于将异步操作任务执行的结果展示给用户
+        @Override
+        protected void onPostExecute(String result) {
+
+            Bundle de = new Bundle();
+
+            // 需要清理task 所以传入flagtype=2
+            ActivityUtil.jump(RegisterVerificationCodeActivity.this, IndexActivity.class, de, 2, 0);
+
+
+        }
+    }
+
+
+}

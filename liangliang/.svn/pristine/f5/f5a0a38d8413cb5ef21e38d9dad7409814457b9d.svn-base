@@ -1,0 +1,38 @@
+package cn.chono.yopper.Service.Http.UserLogout;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.ResetPassWord.ResetPassWordBean;
+import cn.chono.yopper.Service.Http.ResetPassWord.ResetPassWordRespBean;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+/**
+ * 退出登录
+ * Created by zxb on 2015/11/20.
+ */
+public class LogoutService extends HttpService {
+    public LogoutService(Context context) {
+        super(context);
+    }
+
+    private ParameterBean iBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass=RespBean.class;
+
+        callWrap= OKHttpUtils.post(context, HttpURL.user_logout, null, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        this.iBean =iBean;
+    }
+}

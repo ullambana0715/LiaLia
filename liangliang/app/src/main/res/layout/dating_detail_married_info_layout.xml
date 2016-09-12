@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/dating_detail_married_img_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+         />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="寄语"
+            android:textColor="@color/color_ff7462"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dating_detail_married_jiyu_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text=""
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:textColor="@color/color_333333"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="基本资料"
+            android:textColor="@color/color_ff7462"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="何时结婚"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_time_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="父母是否健在"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_shuangqin_jianzai_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="是否独生子女"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_dushengzinv_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="户籍所在地"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_hujisuozai_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="现居地"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_xianjudi_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="身高"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_height_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="体重"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_weight_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="职业"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_zhiye_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="月收入"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_xinzi_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="学历"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_xueli_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="既往恋爱史"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_lianai_jingli_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="有无婚史"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_hunshi_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="有无子女"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_zinv_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="饮酒"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_yinjiu_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="健康自评"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_jiankang_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/white_bg_top_ee_line"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="婚后住房"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dating_detail_married_hunhou_zhufang_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|right"
+            android:text=""
+            android:layout_marginRight="12dp"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

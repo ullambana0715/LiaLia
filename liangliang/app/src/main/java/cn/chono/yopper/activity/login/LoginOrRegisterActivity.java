@@ -1,0 +1,1202 @@
+package cn.chono.yopper.activity.login;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.andbase.tractor.http.HttpBase;
+import com.andbase.tractor.http.OKHttp;
+import com.andbase.tractor.listener.LoadListener;
+import com.lidroid.xutils.util.LogUtils;
+import com.orhanobut.logger.Logger;
+import com.sina.weibo.sdk.auth.AuthInfo;
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.sina.weibo.sdk.auth.WeiboAuthListener;
+import com.sina.weibo.sdk.auth.sso.SsoHandler;
+import com.sina.weibo.sdk.exception.WeiboException;
+import com.sina.weibo.sdk.net.RequestListener;
+import com.tencent.TIMCallBack;
+import com.tencent.TIMManager;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+import com.tendcloud.appcpa.TalkingDataAppCpa;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.GainVerifiCode.GainVerifiCodeBean;
+import cn.chono.yopper.Service.Http.GainVerifiCode.GainVerifiCodeService;
+import cn.chono.yopper.Service.Http.Login3rd.Login3rdBean;
+import cn.chono.yopper.Service.Http.Login3rd.Login3rdDto;
+import cn.chono.yopper.Service.Http.Login3rd.Login3rdLogicService;
+import cn.chono.yopper.Service.Http.Login3rd.Login3rdRespBean;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UserLogin.UserLoginBean;
+import cn.chono.yopper.Service.Http.UserLogin.UserLoginRespBean;
+import cn.chono.yopper.Service.Http.UserLogin.UserLoginService;
+import cn.chono.yopper.activity.base.IndexActivity;
+import cn.chono.yopper.activity.base.SimpleWebViewActivity;
+import cn.chono.yopper.activity.register.RegisterVerificationCodeActivity;
+import cn.chono.yopper.activity.register.RegisterWriteInfoActivity;
+import cn.chono.yopper.common.YpSettings;
+import cn.chono.yopper.data.LoginUser;
+import cn.chono.yopper.im.OfflinePushUtils;
+import cn.chono.yopper.im.PushUtil;
+import cn.chono.yopper.im.imEvent.MessageEvent;
+import cn.chono.yopper.im.imbusiness.LoginBusiness;
+import cn.chono.yopper.tencent.TencentShareUtil;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.AppUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.CommonObservable;
+import cn.chono.yopper.utils.CommonObserver;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.SHA;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.weibo.SinaWeiBoUtil;
+import cn.chono.yopper.weibo.User;
+import cn.chono.yopper.weibo.UsersAPI;
+import cn.chono.yopper.wxapi.WeixinUtils;
+
+public class LoginOrRegisterActivity extends MainFrameActivity implements OnClickListener, View.OnTouchListener, TIMCallBack {
+
+
+    // 登录
+
+    private Button login_next_but;
+
+    private LinearLayout login_info_layout;
+
+
+    private RelativeLayout login_password_layout;
+
+    // 输入手机号
+
+    private EditText login_phone_et;
+
+    private ImageView login_phone_et_empty_iv;
+
+    // 输入密码
+    private EditText login_password_et;
+
+    private ImageView login_password_et_empty_iv;
+
+    private LinearLayout protocol_specification_layout;
+
+    private TextView login_verification_code_login;
+
+    private TextView protocol_specification_but;
+
+    private ImageView login_weibo_iv;
+    private ImageView login_wechat_iv;
+    private ImageView login_qq_iv;
+
+    private String login_str = "login_str";
+
+    private String connectiongOnError = "";
+    private String connectiongOnErrormsg = "";
+
+
+    private Dialog loadingDiaog;
+
+    private Dialog net_tokenDialog;
+
+    private String mobile;
+    private String password;
+
+    SsoHandler ssoHandler;
+
+    private Dialog loginImErrorDialog;
+
+    private boolean isLogining = false;
+
+    private Runnable weiXinRunnable = new Runnable() {
+        @Override
+        public void run() {
+            isLogining = false;
+            login3RD(1, WeixinUtils.weiXin_sendAuth.code, WeixinUtils.weiXin_sendAuth.openId, WeixinUtils.weiXin_sendAuth.code);
+
+        }
+    };
+
+    private CommonObserver.WeiXinObserver weiXinObserver = new CommonObserver.WeiXinObserver(weiXinRunnable);
+
+
+    /**
+     * 0为手机号码登录页面；1为注册页面
+     */
+    private int frompage = 0;
+
+
+    private boolean register_control = true;
+    private boolean login_control = true;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentLayout(R.layout.login_activity);
+        PushAgent.getInstance(this).onAppStart();
+
+        Bundle bundle = this.getIntent().getExtras();
+
+        frompage = bundle.getInt(YpSettings.FROM_PAGE);
+
+        if (bundle.containsKey(YpSettings.ConnectionClosedOnErrorMsg)) {
+            connectiongOnErrormsg = bundle.getString(YpSettings.ConnectionClosedOnErrorMsg);
+            if (connectiongOnError != null) {
+                if (CheckUtil.isEmpty(connectiongOnErrormsg)) {
+                    net_tokenDialog = DialogUtil.createHintOperateDialog(LoginOrRegisterActivity.this, "", "账号在另外一台设备登录了", "", "确定", backCallListener);
+                } else {
+                    net_tokenDialog = DialogUtil.createHintOperateDialog(LoginOrRegisterActivity.this, "", connectiongOnErrormsg, "", "确定", backCallListener);
+                }
+                net_tokenDialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+//					 tokenDialog = DialogUtil.showNetDialog(LoginOrRegisterActivity.this, "账号在另外一台设备登录了");
+                if (LoginOrRegisterActivity.this instanceof Activity) {
+                    Activity activity = (Activity) LoginOrRegisterActivity.this;
+                    if (!activity.isFinishing()) {
+                        net_tokenDialog.show();
+                    }
+                }
+            }
+        }
+
+        initView();
+        loadingDiaog = DialogUtil.LoadingDialog(LoginOrRegisterActivity.this, null);
+
+    }
+
+
+    private BackCallListener backCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                net_tokenDialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                net_tokenDialog.dismiss();
+            }
+
+        }
+    };
+
+
+    /**
+     * 组件初始化
+     */
+    private void initView() {
+
+        login_info_layout = (LinearLayout) findViewById(R.id.login_info_layout);
+
+        login_phone_et = (EditText) this.findViewById(R.id.login_phone_et);
+        login_phone_et_empty_iv = (ImageView) this.findViewById(R.id.login_phone_et_empty_iv);
+
+        login_password_layout = (RelativeLayout) this.findViewById(R.id.login_password_layout);
+        login_password_et = (EditText) this.findViewById(R.id.login_password_et);
+        login_password_et_empty_iv = (ImageView) this.findViewById(R.id.login_password_et_empty_iv);
+
+
+        login_next_but = (Button) this.findViewById(R.id.login_next_but);
+
+        login_verification_code_login = (TextView) findViewById(R.id.login_verification_code_login);
+        protocol_specification_layout = (LinearLayout) findViewById(R.id.protocol_specification_layout);
+        protocol_specification_but = (TextView) findViewById(R.id.protocol_specification_but);
+
+        login_weibo_iv = (ImageView) findViewById(R.id.login_weibo_iv);
+        login_wechat_iv = (ImageView) findViewById(R.id.login_wechat_iv);
+        login_qq_iv = (ImageView) findViewById(R.id.login_qq_iv);
+
+
+        if (frompage == 0) {
+            getTvTitle().setText(getString(R.string.login_phone));
+            login_next_but.setText("登录");
+            login_password_layout.setVisibility(View.VISIBLE);
+            login_verification_code_login.setVisibility(View.VISIBLE);
+            protocol_specification_layout.setVisibility(View.GONE);
+
+            mobile = SharedprefUtil.get(this, login_str, "");
+            login_phone_et.setText(mobile);
+
+            login_password_et.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    if (!TextUtils.isEmpty(s)) {
+                        password = s.toString().trim();
+                    } else {
+                        password = "";
+                    }
+                }
+
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (!TextUtils.isEmpty(s)) {
+                        password = s.toString().trim();
+                    } else {
+                        password = "";
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                    if (!TextUtils.isEmpty(password)) {
+
+                        login_password_et_empty_iv.setVisibility(View.VISIBLE);
+
+                    } else {
+                        login_password_et_empty_iv.setVisibility(View.GONE);
+                    }
+                    setNextButtonStyle();
+
+                }
+            });
+
+
+        } else {
+            getTvTitle().setText(getString(R.string.register_phone_register));
+            login_password_layout.setVisibility(View.GONE);
+            login_verification_code_login.setVisibility(View.GONE);
+            protocol_specification_layout.setVisibility(View.VISIBLE);
+            login_next_but.setText("下一步");
+        }
+
+
+        getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ViewsUtils.preventViewMultipleClick(v, 1500);
+                hideSoftInputView();
+                finish();
+
+            }
+        });
+
+        login_phone_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (!TextUtils.isEmpty(s)) {
+                    mobile = s.toString().trim();
+                } else {
+                    mobile = "";
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    mobile = s.toString().trim();
+                } else {
+                    mobile = "";
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (!TextUtils.isEmpty(mobile)) {
+
+                    login_phone_et_empty_iv.setVisibility(View.VISIBLE);
+
+                } else {
+                    login_phone_et_empty_iv.setVisibility(View.GONE);
+                }
+                setNextButtonStyle();
+
+            }
+        });
+
+
+        login_info_layout.setOnClickListener(this);
+        login_info_layout.setOnTouchListener(this);
+
+        login_phone_et_empty_iv.setOnClickListener(this);
+        login_password_et_empty_iv.setOnClickListener(this);
+
+        login_next_but.setOnClickListener(this);
+        login_verification_code_login.setOnClickListener(this);
+        protocol_specification_but.setOnClickListener(this);
+
+
+        login_weibo_iv.setOnClickListener(this);
+        login_wechat_iv.setOnClickListener(this);
+        login_qq_iv.setOnClickListener(this);
+
+
+    }
+
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.login_info_layout:
+                hideSoftInputView();
+
+                break;
+            case R.id.login_phone_et_empty_iv:
+                login_phone_et.setText("");
+
+                break;
+            case R.id.login_password_et_empty_iv:
+                login_password_et.setText("");
+
+                break;
+
+            case R.id.login_next_but:
+
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+
+                hideSoftInputView();
+
+                mobile = login_phone_et.getText().toString().trim();
+                if (frompage == 0) {
+                    password = login_password_et.getText().toString().trim();
+
+                    if (TextUtils.isEmpty(mobile) || TextUtils.isEmpty(password)) {// 不是手机号
+
+                        DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "手机号码或密码有误");
+
+
+                    } else {
+
+                        if (!login_control) {
+                            return;
+                        }
+
+                        if (!isFinishing()) {
+                            loadingDiaog.show();
+                        }
+
+                        setLogin(mobile, password);
+                    }
+                } else {
+                    if (TextUtils.isEmpty(mobile)) {
+                        DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "请输入手机号码");
+                        return;
+                    }
+                    // 友盟自定义事件统计
+                    MobclickAgent.onEvent(LoginOrRegisterActivity.this, "btn_reg_mobile");
+
+                    if (!CheckUtil.isCellPhone(mobile)) {
+                        DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "手机号码不正确");
+                        return;
+                    }
+
+                    if (!register_control) {
+                        return;
+                    }
+
+                    if (!isFinishing()) {
+                        loadingDiaog = DialogUtil.LoadingDialog(LoginOrRegisterActivity.this, null);
+                        loadingDiaog.show();
+                    }
+                    enqueueGainVerifinCodeService(mobile);
+                }
+
+
+                break;
+
+            case R.id.login_verification_code_login:
+
+                hideSoftInputView();
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+                Bundle bundle = new Bundle();
+                bundle.putString("mobile", "");
+                bundle.putInt(YpSettings.FROM_TAG, YpSettings.FROM_LOGIN);
+                ActivityUtil.jump(LoginOrRegisterActivity.this, RegisterVerificationCodeActivity.class, bundle, 0, 100);
+
+                break;
+
+
+            case R.id.protocol_specification_but:// 用户协议
+
+                hideSoftInputView();
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+
+
+                Bundle bd = new Bundle();
+                bd.putString(YpSettings.BUNDLE_KEY_WEB_URL, "agreement");
+                bd.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "用户协议");
+                bd.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+
+                ActivityUtil.jump(LoginOrRegisterActivity.this, SimpleWebViewActivity.class, bd, 0, 100);
+
+                break;
+
+
+            //微博登录注册：授权成功后，做第三方登录，如果已经注册则跳转到应用内，如果没注册过，则通过token获取用户昵称等信息然后跳转到注册信息填写页面
+            case R.id.login_weibo_iv:
+
+                if (!isLogining) {
+
+                    AuthInfo authInfo = new AuthInfo(this, "428166326", "https://api.weibo.com/oauth2/default.html", SinaWeiBoUtil.SCOPE);
+
+                    ssoHandler = new SsoHandler(this, authInfo);
+                    ssoHandler.authorize(new AuthListener());
+                    isLogining = true;
+                }
+
+
+                break;
+
+            //微信登录注册：授权成功后，做第三方登录，如果已经注册则跳转到应用内，如果没注册过，则通过token获取用户昵称等信息然后跳转到注册信息填写页面
+            case R.id.login_wechat_iv:
+
+                if (!isLogining) {
+                    try {
+                        if (WeixinUtils.isWeixinAvailable()) {
+
+                            CommonObservable.getInstance().addObserver(weiXinObserver);
+
+                            WeixinUtils.WeixinLogin(this);
+
+                            isLogining = true;
+
+                        } else {
+                            isLogining = false;
+                            DialogUtil.showTopToast(LoginOrRegisterActivity.this, "您没有安装微信或者微信版本过低");
+                        }
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        isLogining = false;
+
+                    }
+                }
+
+                break;
+
+            //QQ登录注册：授权成功后，做第三方登录，如果已经注册则跳转到应用内，如果没注册过，则通过token获取用户昵称等信息然后跳转到注册信息填写页面
+            case R.id.login_qq_iv:
+                if (!isLogining) {
+                    TencentShareUtil.loginToQQ(this, LoginiUiListener);
+                    isLogining = true;
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
+    /**
+     * 手机号登录是如果手机输入框有内容则改变下一步背景设置为可点击
+     */
+    private void setNextButtonStyle() {
+        if (frompage == 0) {
+            if (!TextUtils.isEmpty(mobile) && !TextUtils.isEmpty(password) && password.length() >= 6) {//可以下一步
+                login_next_but.setEnabled(true);
+
+            } else {//不可以进入
+                login_next_but.setEnabled(false);
+            }
+        } else {
+            if (!TextUtils.isEmpty(mobile)) {//可以下一步
+                login_next_but.setEnabled(true);
+
+            } else {//不可以进入
+                login_next_but.setEnabled(false);
+            }
+        }
+
+    }
+
+
+    /**
+     * 手机号登录
+     *
+     * @return void 返回类型
+     * @throws
+     * @Title: getHttp
+     */
+
+    private void setLogin(final String mobile, String hashedPassword) {
+
+        UserLoginBean userLoginBean = new UserLoginBean();
+        userLoginBean.setMobile(mobile);
+        userLoginBean.setHashedPassword(SHA.encodeSHA1(hashedPassword));
+
+        UserLoginService userLoginService = new UserLoginService(this);
+        userLoginService.parameter(userLoginBean);
+        userLoginService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+
+                UserLoginRespBean iBean = (UserLoginRespBean) respBean;
+                LoginUser loginUser = iBean.getResp();
+                if (loginUser != null) {
+
+                    Logger.e("卧槽请求回来了＝"+loginUser.toString());
+
+                    saveUserInfoGoIndex(loginUser);
+
+                } else {
+                    login_control = true;
+                    loadingDiaog.dismiss();
+                }
+
+            }
+
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                login_control = true;
+                loadingDiaog.dismiss();
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    // 没有网络的场合，去提示页
+                    DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this);
+                    return;
+                }
+
+                net_tokenDialog = DialogUtil.createHintOperateDialog(LoginOrRegisterActivity.this, "", msg, "", "确定", backCallListener);
+                net_tokenDialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+
+                if (!isFinishing()) {
+                    net_tokenDialog.show();
+                }
+            }
+        });
+        userLoginService.enqueue();
+
+    }
+
+
+    public void enqueueGainVerifinCodeService(final String mobile) {
+
+        GainVerifiCodeBean gainVerifiCodeBean = new GainVerifiCodeBean();
+        gainVerifiCodeBean.setMobile(mobile);
+        GainVerifiCodeService gainVerifiCodeService = new GainVerifiCodeService(this);
+        gainVerifiCodeService.parameter(gainVerifiCodeBean);
+
+
+        gainVerifiCodeService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                register_control = true;
+                loadingDiaog.dismiss();
+                Bundle de = new Bundle();
+                de.putString("mobile", mobile);
+                if (frompage == 1) {
+                    de.putInt(YpSettings.FROM_TAG, YpSettings.FROM_REGIDTER);
+                }
+                ActivityUtil.jump(LoginOrRegisterActivity.this, RegisterVerificationCodeActivity.class, de, 0, 100);
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                register_control = true;
+                loadingDiaog.dismiss();
+                String msg = respBean.getMsg();
+                if (!TextUtils.isEmpty(msg)) {
+
+                    DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, msg);
+                    return;
+                } else {
+                    DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this);
+                }
+            }
+        });
+        gainVerifiCodeService.enqueue();
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        hideSoftInputView();
+        return false;
+    }
+
+
+    private void login3RD(final int vendor, final String code, String openId, String token) {
+
+        if (vendor == 1) {
+
+            if (CheckUtil.isEmpty(code)) {
+                DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "登录出现异常，请重试");
+                return;
+            }
+
+        } else {
+
+            if (CheckUtil.isEmpty(openId) || CheckUtil.isEmpty(token)) {
+                DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "登录出现异常，请重试");
+                return;
+            }
+
+        }
+
+        loadingDiaog.show();
+
+        Login3rdBean login3rdBean = new Login3rdBean();
+
+        login3rdBean.setVendor(vendor);
+
+        login3rdBean.setCode(code);
+
+        login3rdBean.setOpenId(openId);
+
+        if (vendor == 1) {
+            login3rdBean.setToken(code);
+        } else {
+            login3rdBean.setToken(token);
+        }
+
+        Login3rdLogicService login3rdService = new Login3rdLogicService(this);
+
+        login3rdService.parameter(login3rdBean);
+
+        login3rdService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                Login3rdRespBean login3rdRespBean = (Login3rdRespBean) respBean;
+
+                Login3rdDto login3rdDto = login3rdRespBean.getResp();
+                if (null != login3rdDto) {
+
+                    Logger.e(login3rdDto.toString());
+
+
+                    if (!TextUtils.isEmpty(login3rdDto.getErrorCode()) && login3rdDto.getErrorCode().equals("InvalidAccount")) {//没有注册
+
+                        switch (vendor) {
+                            //微信
+                            case 1:
+                                getWeiXinUserInfoName(code, login3rdDto.getOpenId(), login3rdDto.getToken());
+                                break;
+                            //QQ
+                            case 2:
+                                LogUtils.e("QQz注册");
+
+                                getQQUserInfo(login3rdDto.getOpenId(), login3rdDto.getToken());
+                                break;
+                            //微博
+                            case 3:
+                                getWeiboUserInfoName(login3rdDto.getOpenId(), login3rdDto.getToken());
+                                break;
+
+                        }
+
+
+                    } else {//已经注册
+
+                        LoginUser loginUser = new LoginUser();
+                        loginUser.setUserId(login3rdDto.getUserId());
+                        loginUser.setAuthToken(login3rdDto.getAuthToken());
+                        loginUser.setExpiration(login3rdDto.getExpiration());
+                        loginUser.setUserSig(login3rdDto.getUserSig());
+                        loginUser.setRefreshToken(login3rdDto.getRefreshToken());
+                        saveUserInfoGoIndex(loginUser);
+
+                    }
+
+
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                LogUtils.e(respBean.toString());
+
+                String msg = respBean.getMsg();
+                loadingDiaog.dismiss();
+
+                if (!TextUtils.isEmpty(msg)) {
+
+                    DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, msg);
+
+                } else {
+                    DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this);
+                }
+
+            }
+        });
+
+        login3rdService.enqueue();
+    }
+
+
+    /**
+     * 根据code获取微信用户信息
+     *
+     * @param code
+     * @param openId
+     * @param token
+     */
+    private void getWeiXinUserInfoName(final String code, final String openId, final String token) {
+
+        String url = WeixinUtils.getUserInfoURL(token, openId);
+
+        HttpBase mHttpBase = new OKHttp();
+
+
+        mHttpBase.get(url, new LoadListener() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onLoading(Object result) {
+
+            }
+
+            @Override
+            public void onFail(Object result) {
+
+                loadingDiaog.dismiss();
+                jump(1, code, openId, token, "");
+
+
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+
+
+                loadingDiaog.dismiss();
+
+
+                String nickName = "";
+
+                try {
+                    JSONObject json = new JSONObject(result.toString());
+                    nickName = json.getString("nickname");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                jump(1, code, openId, token, nickName);
+
+
+            }
+
+            @Override
+            public void onCancel(Object result) {
+
+            }
+
+            @Override
+            public void onTimeout(Object result) {
+
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        });
+
+    }
+
+
+    /**
+     * 根据code获取微博用户信息
+     *
+     * @param openId
+     */
+    private void getWeiboUserInfoName(final String openId, final String token) {
+
+        long uid = Long.parseLong(openId);
+        UsersAPI usersAPI = new UsersAPI(this, SinaWeiBoUtil.app_id, mAccessToken);
+        usersAPI.show(uid, new RequestListener() {
+            @Override
+            public void onComplete(String response) {
+                loadingDiaog.dismiss();
+                if (!TextUtils.isEmpty(response)) {
+
+                    // 调用 User#parse 将JSON串解析成User对象
+                    User user = User.parse(response);
+                    if (user != null) {
+                        jump(3, "", openId, token, user.screen_name);
+                    } else {
+                        jump(3, "", openId, token, "");
+                    }
+                }
+            }
+
+            @Override
+            public void onWeiboException(WeiboException e) {
+                loadingDiaog.dismiss();
+                jump(3, "", openId, token, "");
+            }
+        });
+
+    }
+
+
+    private void jump(int vendor, String code, String openId, String token, String nickname) {
+        Bundle de = new Bundle();
+        de.putString("mobile", "");
+        de.putString("verifyCode", "");
+
+        de.putInt("vendor", vendor);
+        de.putString("openId", openId);
+        de.putString("code", code);
+        de.putString("token", token);
+
+        de.putString("nickname", nickname);
+
+
+        ActivityUtil.jump(LoginOrRegisterActivity.this, RegisterWriteInfoActivity.class, de, 0, 100);
+    }
+
+
+    private void saveUserInfoGoIndex(LoginUser dto) {
+
+        AppUtil.setRefreshTokenExpiration(LoginOrRegisterActivity.this, dto.getExpiration());
+
+        LoginUser.getInstance().setLoginUser(dto);
+
+        SharedprefUtil.save(LoginOrRegisterActivity.this, login_str, mobile);
+//
+//        //登录之前要初始化群和好友关系链缓存
+        if (YpSettings.isTest) {
+            LoginBusiness.loginIm(dto.getUserId() + "@test", dto.getUserSig(), this);
+        } else {
+            LoginBusiness.loginIm(dto.getUserId()+"", dto.getUserSig(), this);
+        }
+
+
+    }
+
+
+    private BackCallListener loginIMErrorbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                loginImErrorDialog.dismiss();
+            }
+
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                loginImErrorDialog.dismiss();
+            }
+
+        }
+    };
+
+
+    @Override
+    public void onError(int i, String s) {
+
+        loadingDiaog.dismiss();
+        login_control = true;
+
+        Logger.e("i="+i);
+        Logger.e("s="+s);
+
+        String msg = "";
+        switch (i) {
+            case 6208:
+                //离线状态下被其他终端踢下线
+                msg = getString(R.string.kick_logout);
+                break;
+            default:
+                msg = getString(R.string.login_error);
+                break;
+        }
+        loginImErrorDialog = DialogUtil.createHintOperateDialog(LoginOrRegisterActivity.this, "", msg, "", "确定", loginIMErrorbackCallListener);
+        if (!isFinishing()) {
+            loginImErrorDialog.show();
+        }
+    }
+
+
+    @Override
+    public void onSuccess() {
+
+        loadingDiaog.dismiss();
+        login_control = true;
+
+        AddAliasAsyncTask addAliasAsyncTask = new AddAliasAsyncTask();
+        addAliasAsyncTask.execute();
+
+        Logger.e("登录成功");
+        //初始化程序后台后消息推送
+        PushUtil.getInstance();
+        //初始化消息监听
+        MessageEvent.getInstance();
+
+        OfflinePushUtils.initPush(LoginOrRegisterActivity.this);
+
+        Bundle bundle = new Bundle();
+        // 需要清理task 所以传入flagtype=2
+        ActivityUtil.jump(LoginOrRegisterActivity.this, IndexActivity.class, bundle, 2, 0);
+
+    }
+
+
+    /**
+     * 异步线程  添加友盟alias以及TalkingData的统计登录
+     */
+    public class AddAliasAsyncTask extends AsyncTask<Void, Integer, String> {
+
+        // 该方法并不运行在UI线程内，所以在方法内不能对UI当中的控件进行设置和修改
+        // 主要用于进行异步操作
+        @Override
+        protected String doInBackground(Void... params) {
+
+            PushAgent mPushAgent = PushAgent.getInstance(LoginOrRegisterActivity.this);
+            try {
+
+                mPushAgent.removeAlias(LoginUser.getInstance().getUserId() + "", "chono");
+                mPushAgent.addAlias(LoginUser.getInstance().getUserId() + "", "chono");
+
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+
+            TalkingDataAppCpa.onLogin(LoginUser.getInstance().getUserId() + "");
+
+
+            return null;
+
+        }
+
+        // 在doInBackground方法执行结束后再运行，并且运行在UI线程当中
+        // 主要用于将异步操作任务执行的结果展示给用户
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+        if (requestCode == com.tencent.connect.common.Constants.REQUEST_LOGIN ||
+                requestCode == com.tencent.connect.common.Constants.REQUEST_APPBAR) {
+            Tencent.onActivityResultData(requestCode, resultCode, data, LoginiUiListener);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (ssoHandler != null) {
+            ssoHandler.authorizeCallBack(requestCode, resultCode, data);
+        }
+
+
+    }
+
+    private JSONObject QQjsonResponse;
+
+    public IUiListener LoginiUiListener = new IUiListener() {
+        @Override
+        public void onComplete(Object response) {
+
+            isLogining = false;
+
+            if (null == response) {
+                DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "QQ授权登录失败");
+                return;
+            }
+            QQjsonResponse = (JSONObject) response;
+
+            if (null != QQjsonResponse && QQjsonResponse.length() == 0) {
+                DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "QQ授权登录失败");
+                return;
+            }
+            try {
+
+                String token = QQjsonResponse.getString(com.tencent.connect.common.Constants.PARAM_ACCESS_TOKEN);
+                String openId = QQjsonResponse.getString(com.tencent.connect.common.Constants.PARAM_OPEN_ID);
+                login3RD(2, "", openId, token);
+
+            } catch (Exception e) {
+
+            }
+        }
+
+        @Override
+        public void onError(UiError uiError) {
+
+            isLogining = false;
+        }
+
+        @Override
+        public void onCancel() {
+
+            isLogining = false;
+        }
+    };
+
+
+    private void getQQUserInfo(final String openId, final String token) {
+
+        TencentShareUtil.initOpenidAndToken(QQjsonResponse);
+        TencentShareUtil.updateUserInfo(this, new IUiListener() {
+            @Override
+            public void onComplete(Object response) {
+
+                loadingDiaog.dismiss();
+
+                String nickname = "";
+                if (null != response) {
+                    JSONObject JsonObject = (JSONObject) response;
+                    if (JsonObject.has("nickname")) {
+                        try {
+                            nickname = JsonObject.getString("nickname");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+                jump(2, "", openId, token, nickname);
+
+            }
+
+            @Override
+            public void onError(UiError uiError) {
+                loadingDiaog.dismiss();
+                jump(2, "", openId, token, "");
+            }
+
+            @Override
+            public void onCancel() {
+                loadingDiaog.dismiss();
+            }
+        });
+
+    }
+
+
+    /**
+     * 封装了 "access_token"，"expires_in"，"refresh_token"，并提供了他们的管理功能
+     */
+    public Oauth2AccessToken mAccessToken;
+
+    /**
+     * 微博认证授权回调类。
+     * 1. SSO 授权时，需要在 {@link #onActivityResult} 中调用 {@link SsoHandler#authorizeCallBack} 后，
+     * 该回调才会被执行。
+     * 2. 非 SSO 授权时，当授权结束后，该回调就会被执行。
+     * 当授权成功后，请保存该 access_token、expires_in、uid 等信息到 SharedPreferences 中。
+     */
+    public class AuthListener implements WeiboAuthListener {
+
+        @Override
+        public void onComplete(Bundle values) {
+
+            isLogining = false;
+
+            // 从 Bundle 中解析 Token
+            mAccessToken = Oauth2AccessToken.parseAccessToken(values);
+            if (mAccessToken.isSessionValid()) {
+                String uuid = mAccessToken.getUid();
+                String token = mAccessToken.getToken();
+                login3RD(3, "", uuid, token);
+
+            } else {
+                String code = values.getString("code");
+                DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "授权失败：" + code);
+            }
+            ssoHandler = null;
+        }
+
+        @Override
+        public void onCancel() {
+            ssoHandler = null;
+            isLogining = false;
+            DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "授权取消");
+        }
+
+        @Override
+        public void onWeiboException(WeiboException e) {
+            ssoHandler = null;
+            isLogining = false;
+            DialogUtil.showDisCoverNetToast(LoginOrRegisterActivity.this, "授权失败");
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 注销广播
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        isLogining = false;
+
+        if (0 == frompage) {
+            MobclickAgent.onPageStart("登录"); // 统计页面
+        } else {
+            MobclickAgent.onPageStart("使用手机号码注册页面"); // 统计页面
+        }
+
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (0 == frompage) {
+            MobclickAgent.onPageEnd("登录"); // 统计页面
+        } else {
+            MobclickAgent.onPageEnd("使用手机号码注册页面"); // 统计页面
+        }
+
+        MobclickAgent.onPause(this); // 统计时长
+
+    }
+
+}

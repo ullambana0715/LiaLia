@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <RelativeLayout
+        android:id="@+id/appoint_list_item_root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="25dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/appoint_list_item_name_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="28dp"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:text="yopper"
+                    android:singleLine="true"
+                    android:maxWidth="90sp"
+                    android:ellipsize="end"
+                    android:textColor="@color/text_color_545159" />
+
+                <TextView
+                    android:id="@+id/appoint_list_item_sex_hor_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:gravity="center"
+                    android:textSize="10sp"
+                    android:drawablePadding="2dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:text="星座"
+                    android:textColor="@color/text_color_white" />
+
+                <ImageView
+                    android:id="@+id/appoint_list_item_video_lable_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:visibility="gone"
+                    android:background="@drawable/video_authentication"
+                    />
+
+                <ImageView
+                    android:id="@+id/appoint_list_item_level_men_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:src="@drawable/level_men_icon"
+                    android:visibility="gone"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:id="@+id/appoint_list_item_dating_layout"
+                android:background="@drawable/appoint_item_normal_card_bg">
+
+                <LinearLayout
+                    android:id="@+id/appoint_list_item_dating_info_layout"
+                    android:layout_width="0px"
+                    android:layout_weight="1"
+                    android:layout_height="100dp"
+                    android:visibility="visible"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginLeft="28dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/appoint_list_item_datingtype_iv"
+                            android:layout_width="17dp"
+                            android:layout_height="17dp"
+                            android:layout_gravity="center_vertical"
+                            android:background="@drawable/chat_appoint_eat"
+                            />
+
+                        <TextView
+                            android:id="@+id/appoint_list_item_datingtype_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="15sp"
+                            android:layout_marginLeft="7dp"
+                            android:layout_gravity="center_vertical"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:textColor="@color/text_color_45424c"/>
+
+                        <TextView
+                            android:id="@+id/appoint_list_item_costtype_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="14dp"
+                            android:gravity="center_vertical"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_color_6e6e6e"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginLeft="28dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/appoint_list_item_address_iv"
+                            android:layout_width="17dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/appoint_item_address_icon"/>
+
+                        <TextView
+                            android:id="@+id/appoint_list_item_address_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:text=""
+                            android:layout_marginLeft="7dp"
+                            android:gravity="center_vertical"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_color_ff735d"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginLeft="28dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="17dp"
+                            android:layout_height="16dp"
+                            android:background="@drawable/appoint_item_time_icon"/>
+                    <TextView
+                        android:id="@+id/appoint_list_item_time_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="7dp"
+                        android:textSize="13sp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textColor="@color/text_color_6e6e6e"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/appoint_list_item_pb_layout"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="100dp"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="56sp"
+                            android:layout_height="wrap_content"
+                            android:text="资料匹配"
+                            android:layout_marginLeft="28dp"
+                            android:gravity="center_vertical"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_45424c"/>
+
+                        <ProgressBar
+                            android:id="@+id/appoint_list_item_info_pb"
+                            android:layout_width="130dp"
+                            android:layout_height="15dp"
+                            android:layout_marginLeft="8dp"
+                            android:max="100"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:progressDrawable="@drawable/appoint_horizontal_pb_style"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="56sp"
+                            android:layout_height="wrap_content"
+                            android:text="安全指数"
+                            android:layout_marginLeft="28dp"
+                            android:gravity="center_vertical"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_45424c"/>
+
+                        <ProgressBar
+                            android:id="@+id/appoint_list_item_safe_pb"
+                            android:layout_width="130dp"
+                            android:layout_height="15dp"
+                            android:layout_marginLeft="8dp"
+                            android:max="100"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:progressDrawable="@drawable/appoint_horizontal_pb_style"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="56sp"
+                            android:layout_height="wrap_content"
+                            android:text="亲密度"
+                            android:layout_marginLeft="28dp"
+                            android:gravity="center_vertical"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_45424c"/>
+
+                        <ProgressBar
+                            android:id="@+id/appoint_list_item_qinmi_pb"
+                            android:layout_width="130dp"
+                            android:layout_height="14sp"
+                            android:layout_marginLeft="8dp"
+                            android:max="100"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:progressDrawable="@drawable/appoint_horizontal_pb_style"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <cn.chono.yopper.view.ProgressBarView
+                    android:id="@+id/appoint_list_item_all_pbv"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginRight="12dp"
+                    app:layout_auto_baseheight="width"
+                    app:outside_round_width="2dp"
+                    app:outside_round_color="#ffd3cc"
+                    app:outside_round_progress_color="#ff735d"
+                    app:inside_round_color="#ff735d"
+                    app:inside_round_moment_from="4dp"
+                    app:prompt_text_moment_from="4dp"
+                    app:textColor="#ffffff"
+                    app:promptTextColor="#ffffff"
+                    app:promptTextSize="7sp"
+                    app:textSize="13sp">
+                </cn.chono.yopper.view.ProgressBarView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="31dp"
+                android:gravity="center"
+                android:background="@drawable/appoint_item_card_bottom_bg"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/appoint_list_item_look_num_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/appoint_look_icon"
+                    android:text="0"
+                    android:gravity="center_vertical"
+                    android:textSize="12sp"
+                    android:drawablePadding="4dp"
+                    android:textColor="@color/text_color_959492"
+                    />
+                <TextView
+                    android:id="@+id/appoint_list_item_join_num_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/appoint_join_icon"
+                    android:text="0"
+                    android:layout_marginLeft="30dp"
+                    android:gravity="center_vertical"
+                    android:drawablePadding="4dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_color_959492"
+                    />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/appoint_list_item_userImg_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/message_head_default_icon" />
+    </RelativeLayout>
+</RelativeLayout>

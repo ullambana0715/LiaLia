@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="315dp"
+      android:layout_height="250dp"
+      android:layout_gravity="center"
+      android:background="@drawable/dialog_qupai_radius_bg_white"
+      android:orientation="vertical">
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:text="该气泡需要下载指定字体"
+            android:textColor="@android:color/black"/>
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            >
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="5dp"
+                android:scaleType="fitXY"
+                android:id="@+id/banner"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|bottom"
+                android:padding="10dp"
+                android:textColor="@color/qupai_black_opacity_50pct"
+                android:textSize="10sp"
+                android:id="@+id/font_item_name"/>
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/qupai_translucent_0x7f"/>
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:id="@+id/download_immediately"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="@string/qupai_download_immediately"
+            android:textColor="@color/qupai_theme_default_background_color"/>
+
+</LinearLayout>

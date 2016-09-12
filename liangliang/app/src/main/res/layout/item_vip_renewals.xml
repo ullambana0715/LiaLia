@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    android:background="@drawable/eeeeee_border_corners_ffffff_default"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+
+    <TextView
+        android:id="@+id/item_vip_renewals_tv_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/ff7462_bg_10_corners"
+        android:gravity="center"
+        android:minWidth="80dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:textColor="@color/color_ffffff"
+        android:textSize="14sp" />
+
+
+    <TextView
+        android:id="@+id/item_vip_renewals_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_666666"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/item_vip_renewals_tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/item_vip_renewals_tv_title"
+        android:layout_alignStart="@+id/item_vip_renewals_tv_title"
+        android:layout_below="@+id/item_vip_renewals_tv_title"
+        android:layout_marginTop="9dp"
+        android:textColor="@color/color_b2b2b2"
+        android:textSize="12sp" />
+
+    <View
+        android:id="@+id/item_vip_renewals_v"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_alignLeft="@+id/item_vip_renewals_tv_date"
+        android:layout_alignStart="@+id/item_vip_renewals_tv_date"
+        android:layout_below="@+id/item_vip_renewals_tv_date"
+        android:layout_marginTop="5dp"
+        android:background="@color/color_b2b2b2"
+
+        ></View>
+
+
+    <ImageView
+        android:id="@+id/item_vip_renewals_iv_icon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignLeft="@+id/item_vip_renewals_v"
+        android:layout_alignStart="@+id/item_vip_renewals_v"
+        android:layout_below="@+id/item_vip_renewals_v"
+        android:layout_marginTop="10dp"
+        android:scaleType="centerCrop"
+
+        />
+
+    <LinearLayout
+        android:id="@+id/item_vip_renewals_ll_privilege"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/item_vip_renewals_iv_icon"
+        android:layout_marginLeft="22dp"
+        android:layout_toEndOf="@+id/item_vip_renewals_iv_icon"
+        android:layout_toRightOf="@+id/item_vip_renewals_iv_icon"
+        android:orientation="vertical"></LinearLayout>
+
+</RelativeLayout>

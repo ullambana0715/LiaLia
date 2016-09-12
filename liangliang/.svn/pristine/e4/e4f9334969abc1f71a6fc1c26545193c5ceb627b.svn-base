@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_white"
+    android:scrollbars="none"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/dating_filter_root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/text_color_white"
+        android:paddingBottom="50dp"
+        android:orientation="vertical"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="39dp"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_b2b2b2"
+                android:layout_marginLeft="12dp"
+                android:layout_centerVertical="true"
+                android:textSize="12sp"
+                android:text="约会"/>
+
+            <TextView
+                android:id="@+id/dating_filter_dating_reset_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/text_color_ff7462"
+                android:layout_alignParentRight="true"
+                android:gravity="right|center_vertical"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:layout_centerVertical="true"
+                android:textSize="12sp"
+                android:text="重置"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dating_filter_dating_type_layout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="约会主题"/>
+
+            <TextView
+                android:id="@+id/dating_filter_dating_type_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_889697"
+                android:layout_marginRight="24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="12sp"
+                android:text="不限"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/dating_filter_left_icon"
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="发起人性别"/>
+
+            <RadioGroup
+                android:id="@+id/dating_filter_sex_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="19dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/dating_filter_sex_man_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="男"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+                <RadioButton
+                    android:id="@+id/dating_filter_sex_women_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="女"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+                <RadioButton
+                    android:id="@+id/dating_filter_sex_nolimit_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不限"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+            </RadioGroup>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="约会时间"/>
+
+            <RadioGroup
+                android:id="@+id/dating_filter_time_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="19dp"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/dating_filter_time_nolimit_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不限"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+                <RadioButton
+                    android:id="@+id/dating_filter_time_midday_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="中午"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+                <RadioButton
+                    android:id="@+id/dating_filter_time_pm_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="下午"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+                <RadioButton
+                    android:id="@+id/dating_filter_time_night_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="晚上"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+            </RadioGroup>
+
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_b2b2b2"
+                android:layout_marginLeft="12dp"
+                android:layout_centerVertical="true"
+                android:textSize="12sp"
+                android:text="约会对象"/>
+
+            <TextView
+                android:id="@+id/dating_filter_dating_object_reset_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/text_color_ff7462"
+                android:layout_alignParentRight="true"
+                android:gravity="right|center_vertical"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:layout_centerVertical="true"
+                android:textSize="12sp"
+                android:text="重置"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dating_filter_age_layout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="年龄"/>
+
+            <TextView
+                android:id="@+id/dating_filter_age_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_889697"
+                android:layout_marginRight="24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="12sp"
+                android:text="不限"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/dating_filter_left_icon"
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dating_filter_emotional_layout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="情感状况"/>
+
+            <TextView
+                android:id="@+id/dating_filter_emotional_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_889697"
+                android:layout_marginRight="24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="12sp"
+                android:text="不限"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/dating_filter_left_icon"
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dating_filter_constellation_layout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="星座"/>
+
+            <TextView
+                android:id="@+id/dating_filter_constellation_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_889697"
+                android:layout_marginRight="24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="12sp"
+                android:text="不限"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/dating_filter_left_icon"
+                android:layout_marginRight="12dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_b2b2b2"
+                android:layout_marginLeft="12dp"
+                android:layout_centerVertical="true"
+                android:textSize="12sp"
+                android:text="距离和排序"/>
+
+            <TextView
+                android:id="@+id/dating_filter_range_sort_reset_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/text_color_ff7462"
+                android:layout_alignParentRight="true"
+                android:gravity="right|center_vertical"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:layout_centerVertical="true"
+                android:textSize="12sp"
+                android:text="重置"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="搜索范围"/>
+
+            <RadioGroup
+                android:id="@+id/dating_filter_range_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="19dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/dating_filter_range_all_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="全国"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+                <RadioButton
+                    android:id="@+id/dating_filter_range_city_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="同城"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+            </RadioGroup>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/dating_rectangle_filter_shape">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_5e5e5e"
+                android:layout_marginLeft="14dp"
+                android:layout_centerVertical="true"
+                android:textSize="14sp"
+                android:text="排序"/>
+
+            <RadioGroup
+                android:id="@+id/dating_filter_sort_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="19dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/dating_filter_sort_near_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="离我最近"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+
+                <RadioButton
+                    android:id="@+id/dating_filter_sort_new_radiobutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="最新发布"
+                    android:textSize="15sp"
+                    style="@style/appoint_radioButton_style"
+                    />
+            </RadioGroup>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</ScrollView>

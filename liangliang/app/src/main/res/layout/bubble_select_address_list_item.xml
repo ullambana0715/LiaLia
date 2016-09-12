@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/select_address_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/dating_type_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity=""
+             />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" >
+
+            <TextView
+                android:id="@+id/select_address_item_name_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:ellipsize="end"
+                android:maxEms="12"
+                android:singleLine="true"
+                android:textColor="@color/color_000000" />
+
+            <TextView
+                android:id="@+id/select_address_item_distance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/color_c6c6c6" />
+
+            <TextView
+                android:id="@+id/select_address_item_address_tv"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/select_address_item_name_tv"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@color/color_999999" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/select_address_big_type_line"
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="10dip"
+        android:visibility="gone"
+        android:background="@color/color_eeeeee" />
+
+    <View
+        android:id="@+id/select_address_item_line"
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="10dip"
+        android:background="@color/color_eeeeee" />
+
+</LinearLayout>

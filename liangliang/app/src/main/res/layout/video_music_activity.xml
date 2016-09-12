@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_e3e3e3"
+    android:orientation="vertical" >
+
+    <include layout="@layout/qupai_title_layout"></include>
+
+    <include layout="@layout/error_network_layout" />
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/video_xRefreshView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false"
+        android:background="@color/color_e3e3e3"
+
+         >
+
+        <GridView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/gridView"
+            android:numColumns="4"
+            />
+    </com.andview.refreshview.XRefreshView>
+
+
+
+</LinearLayout>

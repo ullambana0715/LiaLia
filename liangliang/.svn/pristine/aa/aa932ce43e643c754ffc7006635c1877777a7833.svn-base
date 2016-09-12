@@ -1,0 +1,132 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.BumpResults;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.UnitUtil;
+
+public class UserBumpFriendAdapter extends
+        RecyclerView.Adapter<UserBumpFriendAdapter.ViewHolder> {
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position);
+
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
+    private Context context;
+
+    private BitmapPool mPool;
+
+    private CropCircleTransformation transformation;
+
+    private List<BumpResults> list;
+
+    public UserBumpFriendAdapter(Context context) {
+        this.context = context;
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+
+    }
+
+    public void setData(List<BumpResults> list) {
+        this.list = list;
+    }
+
+    public List<BumpResults> getDatas() {
+        return list;
+    }
+
+    @Override
+    public int getItemCount() {
+        // TODO Auto-generated method stub
+        return list == null ? 0 : list.size();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onBindViewHolder(final ViewHolder holder, int i) {
+
+        int position = holder.getLayoutPosition();
+        BumpResults dto = list.get(position);
+
+        String imgUrl = dto.getHeadImg();
+        if (TextUtils.isEmpty(imgUrl) && dto.getId() == 000000) {
+            Glide.with(context).load(R.drawable.bump_add_friends_icon)
+                    .bitmapTransform(transformation)
+                    .into(holder.userIcon);
+
+
+        } else {
+            String url = ImgUtils.DealImageUrl(imgUrl, YpSettings.IMG_SIZE_150,
+                    YpSettings.IMG_SIZE_150);
+            Glide.with(context).load(url).bitmapTransform(transformation)
+                    .into(holder.userIcon);
+        }
+
+        // 如果设置了回调，则设置点击事件
+        if (mOnItemClickLitener != null) {
+            holder.linearLayout_bump.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = holder.getLayoutPosition();
+                    mOnItemClickLitener.onItemClick(holder.linearLayout_bump,
+                            pos);
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int arg1) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.bump_gridview_item_layout, null);
+        ViewHolder holder = new ViewHolder(v);
+        return holder;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView userIcon;
+
+        public LinearLayout linearLayout_bump;
+
+        public ViewHolder(View v) {
+            super(v);
+            int width = UnitUtil.getScreenWidthPixels(v.getContext());
+            userIcon = (ImageView) v.findViewById(R.id.icon);
+            linearLayout_bump = (LinearLayout) v
+                    .findViewById(R.id.linearLayout_bump);
+            LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) userIcon
+                    .getLayoutParams();
+            params.width = width / 3 - UnitUtil.dip2px(25, v.getContext());
+            params.height = width / 3 - UnitUtil.dip2px(25, v.getContext());
+            userIcon.setLayoutParams(params);
+        }
+
+    }
+
+}

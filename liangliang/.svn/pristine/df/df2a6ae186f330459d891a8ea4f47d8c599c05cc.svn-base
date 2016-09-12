@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/qupai_btn_clip_delete_last_disabled" android:state_enabled="false"/>
+    <item android:drawable="@drawable/qupai_btn_clip_delete_last_checked" android:state_activated="true"/>
+    <item android:drawable="@drawable/qupai_btn_clip_delete_last_normal"/>
+
+</selector>
+<!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/btn_qupai_clip_delete_last.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/btn_qupai_clip_delete_last.xml -->

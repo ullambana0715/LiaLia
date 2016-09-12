@@ -1,0 +1,36 @@
+package cn.chono.yopper.Service.Http.FaceratingList;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/12/8.
+ */
+public class FaceratingListBean extends ParameterBean {
+    private boolean IsToday;
+    private int Start;
+    private int Rows;
+
+    public boolean isToday() {
+        return IsToday;
+    }
+
+    public void setToday(boolean today) {
+        IsToday = today;
+    }
+
+    public int getStart() {
+        return Start;
+    }
+
+    public void setStart(int start) {
+        Start = start;
+    }
+
+    public int getRows() {
+        return Rows;
+    }
+
+    public void setRows(int rows) {
+        Rows = rows;
+    }
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/white_bg_5_corners"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="请选择回复语"
+        android:textColor="@color/color_ff7462"
+        android:textSize="16sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:id="@+id/key_deal_respond_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,20 @@
+package cn.chono.yopper.Service.Http.SendAttraction;
+
+import cn.chono.yopper.data.AttractionResultDto;
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class SendAttractionRespBean extends RespBean {
+
+    private AttractionResultDto resp;
+
+    public AttractionResultDto getResp() {
+        return resp;
+    }
+
+    public void setResp(AttractionResultDto resp) {
+        this.resp = resp;
+    }
+}

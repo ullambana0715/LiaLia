@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_f8f8f7"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/order_pay_timeRemaining_tv"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:background="@color/color_fff7df"
+        android:gravity="center"
+        android:text="@string/order_pay_timeRemaining"
+        android:textColor="@color/color_ff7462"
+        android:textSize="12sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/order_pay_sure_layout"
+        android:layout_below="@+id/order_pay_timeRemaining_tv"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/white_bg_10_corners"
+                android:orientation="vertical"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/order_detail"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="15sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/order_id"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/order_pay_order_id_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textColor="@color/color_666666"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/color_eeeeee" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+
+                    <TextView
+                        android:id="@+id/order_pay_consultant_type_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="塔罗师"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/order_pay_consultant_name_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="25dp"
+                        android:layout_toRightOf="@+id/order_pay_consultant_type_tv"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical|right"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textColor="@color/color_666666"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/color_eeeeee" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+
+                    <TextView
+                        android:id="@+id/order_pay_time_text_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/consultant_time"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/order_pay_consultant_time_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textColor="@color/color_ff7462"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/layout_hasfee"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:visibility="gone">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/color_eeeeee" />
+
+                    <TextView
+                        android:id="@+id/hasFreetv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="是否使用免费机会"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/hasFee"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/hasFreetv"
+                        android:layout_centerVertical="true"
+                        android:text="(还有3次免费机会)"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="8sp" />
+
+                    <ImageView
+                        android:id="@+id/isFree"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_pay_type_default" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/color_eeeeee" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/consultant_cost"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/order_pay_consultant_cost_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textColor="@color/color_ff7462"
+                        android:textSize="15sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/vip_cost_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:visibility="gone">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="@color/color_eeeeee" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/vip_cost"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/order_pay_vip_cost_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center_vertical"
+                        android:text="$999(9.5折)"
+                        android:textColor="@color/color_ff7462"
+                        android:textSize="15sp" />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="right"
+                android:layout_marginRight="20dp"
+                android:layout_gravity="end"
+                android:id="@+id/youhui"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:text="优惠说明 ?"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/white_bg_10_corners"
+                android:orientation="vertical"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/pay_type"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:id="@+id/order_pay_alipay_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="12dp"
+                        android:src="@drawable/alipay_pay_icon"
+                        />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="12dp"
+                        android:background="@color/color_eeeeee" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pay_with_alipay"
+                            android:textColor="@color/color_666666"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pay_with_alipay_hint"
+                            android:textColor="@color/color_b2b2b2"
+                            android:textSize="10sp" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/order_pay_alipay_select_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_pay_type_default" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/color_eeeeee" />
+
+                <LinearLayout
+                    android:id="@+id/order_pay_wechat_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="12dp"
+                        android:src="@drawable/wechat_pay_icon"
+                        />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="12dp"
+                        android:background="@color/color_eeeeee" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pay_with_wechat"
+                            android:textColor="@color/color_666666"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pay_with_wechat_hint"
+                            android:textColor="@color/color_b2b2b2"
+                            android:textSize="10sp" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/order_pay_wechat_select_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_pay_type_default" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/order_pay_hint"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="12sp" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="40dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/order_pay_service_read_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/evaluation_selected_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center"
+                    android:text="@string/pay_had_readed"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/order_pay_service_hint_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/need_know_service"
+                    android:textColor="@color/color_ff7462"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/order_pay_sure_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_ffffff"
+        android:gravity="center_vertical">
+
+
+        <TextView
+            android:id="@+id/order_pay_sure_tv"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/ff7462_bg_10_corners"
+            android:gravity="center"
+            android:text="@string/pay_sure_text"
+            android:textColor="@color/color_ffffff"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</RelativeLayout>

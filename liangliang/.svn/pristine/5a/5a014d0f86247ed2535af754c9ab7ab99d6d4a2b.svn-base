@@ -1,0 +1,23 @@
+package cn.chono.yopper.photo;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class OneImageSelectedDto implements Serializable {
+
+	/**
+	 * 一个目录的相册集合
+	 */
+	public static List<OneImageBucket> dataList = new ArrayList<OneImageBucket>();
+	/**
+	 * 所有图片的集合
+	 */
+	public static List<OneImageItem> imageList = new ArrayList<OneImageItem>();
+
+
+	public static String select_image_path ;
+	public static int select_image_w ;
+	public static int select_image_h ;
+
+}

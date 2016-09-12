@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    android:orientation="vertical"
+    >
+
+
+    <TextView
+        android:id="@+id/item_vip_privilege_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:drawableLeft="@drawable/privilege_red_dot"
+        android:drawablePadding="10dp"
+        android:text=""
+        android:textColor="@color/color_ff7462"
+        android:textSize="16sp" />
+
+    <ImageView
+
+        android:id="@+id/item_vip_privilege_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

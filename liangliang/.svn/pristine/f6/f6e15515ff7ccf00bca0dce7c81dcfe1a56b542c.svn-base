@@ -1,0 +1,42 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+/**
+ * Created by SQ on 2015/12/28.
+ */
+public class AppointComment implements Serializable{
+    private static final transient  long serialVersionUID = 1L;
+    //是否完成
+    private boolean complete;
+    //评论内容
+    private String  comment;
+    //评价时间
+    private String  createTime;
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
+
+
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+}

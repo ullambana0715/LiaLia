@@ -1,0 +1,708 @@
+package cn.chono.yopper.activity.video;
+
+import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import com.alibaba.sdk.android.media.upload.UploadListener;
+import com.alibaba.sdk.android.media.upload.UploadOptions;
+import com.alibaba.sdk.android.media.upload.UploadTask;
+import com.alibaba.sdk.android.media.utils.FailReason;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.SubmitVideo.SubmitVideoBean;
+import cn.chono.yopper.Service.Http.SubmitVideo.SubmitVideoService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.UUIDGenerator;
+import cn.chono.yopper.utils.UnitUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.gesture.GestureSlideView;
+
+/**
+ * 设置视频封面图
+ *
+ * @author zxb
+ */
+public class VideoCoverActivity extends MainFrameActivity implements View.OnClickListener,
+        GestureSlideView.OnValueListener {
+    String TAG = VideoCoverActivity.this.toString();
+    /**
+     * 滑动杆
+     */
+    private GestureSlideView gestureSlideView;
+    /**
+     * 大图片显示
+     */
+    private ImageView videoView;
+    /**
+     * 提交按钮
+     */
+    private Button submit_but;
+
+
+    private String _videoPath;
+
+    private String[] _videoImage;
+    private String[] _videoImage8;
+
+    private int _index_bitmaps = 0;
+
+    private LinearLayout linearLayout;
+
+    private Dialog _analysisDialog;
+
+
+    private LinearLayout btnGoBack_container;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+        setContentView(R.layout.video_cover_activity);
+
+        initView();
+        //接收传递过来的视频地址
+        _videoPath = getIntent().getExtras().getString(YpSettings.VIDEO_PATH_NAME);
+        _videoImage = getIntent().getExtras().getStringArray(YpSettings.VIDEO_PATH_NAME_IMG);
+        if (_analysisDialog == null) {
+            _analysisDialog = DialogUtil.LoadingDialog(VideoCoverActivity.this, null);
+        }
+        _analysisDialog.show();
+
+        _videoImage8 = formerData(_videoImage);
+        svaeBitmap(_videoPath);
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("设置视频封面"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("设置视频封面"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+    private void initView() {
+        btnGoBack_container = (LinearLayout) findViewById(R.id.btnGoBack_container);
+
+        btnGoBack_container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
+
+
+        gestureSlideView = (GestureSlideView) findViewById(R.id.gestureSlideView);
+        gestureSlideView.setOnValueListener(this);
+        videoView = (ImageView) findViewById(R.id.videoView);
+
+        submit_but = (Button) findViewById(R.id.submit_but);
+        submit_but.setOnClickListener(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        params.width = UnitUtil.getScreenWidthPixels(this);
+        params.height = UnitUtil.getScreenWidthPixels(this);
+
+        videoView.setLayoutParams(params);
+
+    }
+
+
+    private void svaeBitmap(final String videoPath) {
+
+        Message msg = new Message();
+        msg.what = 2;
+        _handle.sendMessage(msg);
+
+
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(300);
+//                    ExtractMpegFrames frames = new ExtractMpegFrames();
+//                    frames.setOnExtractMpegFramesListener(VideoCoverActivity.this);
+//                    frames.extractMpegFrames(new File(videoPath), 480, 480, 64);
+//
+//                } catch (Exception e) {
+//
+//                    Message msg = new Message();
+//                    msg.what = 2;
+//                    _handle.sendMessage(msg);
+//                }
+//            }
+//        }.start();
+    }
+
+    private Handler _handle = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            switch (msg.what) {
+                case 1:
+                    _isformerData = true;
+
+                    if (_analysisDialog != null)
+                        _analysisDialog.dismiss();
+
+                    linearLayout.setVisibility(View.VISIBLE);
+                    getVideoBitmap(_index_bitmaps);
+
+                    gestureSlideView.setData(_videoImage8);
+
+                    gestureSlideView.setVideoSeekTo(_Videobitmap);
+
+                    break;
+                case 2://生成图片失败后，使用原本的10图片
+                    _isformerData = false;
+
+                    _BitmapListFormer = formerDataBitmap(_videoImage);
+                    _index_bitmaps = 0;
+                    isBitmapsExist();
+
+                    if (_analysisDialog != null)
+                        _analysisDialog.dismiss();
+
+                    linearLayout.setVisibility(View.VISIBLE);
+                    getformerDataBitmap(_index_bitmaps);
+                    gestureSlideView.setData(_videoImage8);
+                    gestureSlideView.setVideoSeekTo(_Videobitmap);
+
+                    break;
+                case 3:
+
+
+                    break;
+            }
+
+        }
+    };
+
+
+    private int _bitmapsSize = 0;
+    /**
+     * true--生成。false--本地
+     */
+    private boolean _isformerData = false;
+    private List<byte[]> _BitmapList = new ArrayList<>();
+    private List<Bitmap> _BitmapListFormer = new ArrayList<>();
+
+    /**
+     * 判断图片数据是否存在。和获取图片数据的长度
+     *
+     * @return
+     */
+    private void isBitmapsExist() {
+
+        if (_isformerData) {//生成的
+            if (_BitmapList != null && _BitmapList.size() > 0) {
+                _bitmapsSize = _BitmapList.size();
+                LogUtils.e("别说话--------_bitmapsSize=" + _bitmapsSize);
+
+            }
+        } else {//本地的
+            if (_BitmapListFormer != null && _BitmapListFormer.size() > 0) {
+                _bitmapsSize = _BitmapListFormer.size();
+            }
+        }
+
+
+    }
+
+    /**
+     * 从趣拍中提取8张
+     *
+     * @param formerBitmap
+     * @return
+     */
+    private String[] formerData(String[] formerBitmap) {
+        String[] videoImage = new String[8];
+        for (int i = 0; i < formerBitmap.length; i++) {
+            if (i < videoImage.length) {
+                videoImage[i] = formerBitmap[i];
+            }
+
+        }
+        return videoImage;
+    }
+
+    private List<Bitmap> formerDataBitmap(String[] formerBitmap) {
+        List<Bitmap> bit_list = new ArrayList<>();
+        for (int i = 0; i < formerBitmap.length; i++) {
+            Bitmap bitmap = ImgUtils.getDiskBitmap(formerBitmap[i]);
+            bit_list.add(bitmap);
+        }
+        return bit_list;
+    }
+
+    @Override
+    public Bitmap onValueScale(int intervalSize, int currentValue) {
+
+
+        float interval = (intervalSize) / (_bitmapsSize);
+        float currentIndex = (currentValue) / interval;
+
+        int index = (int) currentIndex;
+
+
+        LogUtils.e("别说话--------index=" + index);
+        if (index < 0) {
+            _index_bitmaps = 0;
+        } else if (index > (_bitmapsSize - 1)) {
+            _index_bitmaps = _bitmapsSize - 1;
+        } else {
+            _index_bitmaps = index;
+        }
+
+        System.gc();
+        if (_isformerData) {
+            getVideoBitmap(_index_bitmaps);
+        } else {
+            getformerDataBitmap(_index_bitmaps);
+        }
+
+
+        return _Videobitmap;
+
+
+    }
+
+    @Override
+    public void onValueSelected() {
+        if (_Videobitmap != null) {
+
+            videoView.setImageBitmap(_Videobitmap);
+
+        }
+
+    }
+
+//
+//    @Override
+//    public void onExtractMpegFramesData() {
+//        Message msg = new Message();
+//        msg.what = 1;
+//        _handle.sendMessage(msg);
+//    }
+//
+//    @Override
+//    public int onExtractMpegFramesBitmap(byte[] bitmaps) {
+//        _BitmapList.add(bitmaps);
+//        isBitmapsExist();
+//
+//        return _BitmapList.size();
+//    }
+//
+//
+//    @Override
+//    public void onExtractMpegFramesEnd() {
+//
+//
+//        long endTime = System.currentTimeMillis();
+//
+//        long s = (endTime - startTime) / 1000;
+//        LogUtils.e("---------别说话--------onExtractMpegFramesEnd=" + s);
+//
+//
+//    }
+//
+//    long startTime;
+//
+//    @Override
+//    public void onExtractMpegFramesStrat() {
+//        startTime = System.currentTimeMillis();
+//
+//        LogUtils.e("---------别说话--------onExtractMpegFramesStrat=");
+//
+//
+//    }
+
+    private Bitmap _Videobitmap;
+
+
+    private void getVideoBitmap(int index_bitmaps) {
+
+        byte[] bytes = _BitmapList.get(index_bitmaps);
+        ByteArrayInputStream isBm = new ByteArrayInputStream(bytes);//把压缩后的数据baos存放到ByteArrayInputStream中
+        _Videobitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
+        try {
+            isBm.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void getformerDataBitmap(int index_bitmaps) {
+        _Videobitmap = _BitmapListFormer.get(index_bitmaps);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        _Videobitmap.recycle();
+
+        for (Bitmap map : _BitmapListFormer) {
+            map.recycle();
+
+        }
+        _BitmapList.clear();
+
+
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.submit_but:
+                ViewsUtils.preventViewMultipleClick(v, false);
+                if (_uploadDialog == null) {
+                    _uploadDialog = DialogUtil.LoadingDialog(VideoCoverActivity.this, null);
+                }
+                _uploadDialog.show();
+
+
+                if (!TextUtils.isEmpty(videoImeHttpUrl) && !TextUtils.isEmpty(videoHttpUrl)) {
+                    Message message = new Message();
+                    message.what = Http_Uploading;
+                    _UploadHandler.sendMessage(message);
+                    return;
+                }
+                videoImeHttpUrl = "";
+                videoHttpUrl = "";
+                if (TextUtils.isEmpty(_iamgeFilePath)){//判断图片路径是否存在。当不存在是才去压缩。注意。当上传失败后。需要对“_iamgeFilePath”置空。同时需要生成新的_Videobitmap.避免重复压缩。
+                    _iamgeFilePath = ImgUtils.saveVideoImgFile(VideoCoverActivity.this, _Videobitmap);//不能回收Bitmap.因为回收后，当你滑动选择杠时，为因Bitmap的recycled。Canvas：trying to use a recycled bitmap
+                }
+                Message message = new Message();
+                message.what = IMG_Uploading;
+                _UploadHandler.sendMessage(message);
+
+
+                break;
+        }
+
+
+    }
+
+    private Dialog _uploadDialog;
+    private Dialog _hintdialog;
+
+
+    private final int IMG_UploadComplete = 1000;
+    private final int IMG_UploadFailed = 1001;
+    private final int IMG_Uploading = 1002;
+
+    private final int VIDEO_UploadComplete = 2000;
+    private final int VIDEO_UploadFailed = 2001;
+    private final int VIDEO_Uploading = 2002;
+
+
+    private final int Http_UploadComplete = 3000;
+    private final int Http_UploadFailed = 3001;
+    private final int Http_Uploading = 3002;
+
+    private String _iamgeFilePath;
+
+    private String videoImeHttpUrl;
+    private String videoHttpUrl;
+
+    Handler _UploadHandler = new Handler() {
+        @Override
+        public void dispatchMessage(Message msg) {
+            super.dispatchMessage(msg);
+            int tagId = msg.what;
+            switch (tagId) {
+                case IMG_Uploading://开始上传图片
+                    onUploadImg(new File(_iamgeFilePath));
+                    break;
+                case IMG_UploadComplete://图片上传成功
+
+                    Bundle bundle = msg.getData();
+                    videoImeHttpUrl = bundle.getString("videoImeHttpUrl");
+                    LogUtils.e("_videoPath=" + _videoPath);
+                    onUploadVideo(new File(_videoPath));
+                    break;
+                case IMG_UploadFailed://图片上传失败
+
+                    _iamgeFilePath="";
+                    getformerDataBitmap(_index_bitmaps);
+
+                    _hintdialog = DialogUtil.createHintOperateDialog(VideoCoverActivity.this, "提示", "上传失败，请重试", "", "确定", backCallListener);
+                    if (!isFinishing()) {
+                        _hintdialog.show();
+                    }
+                    if (_uploadDialog != null) {
+                        if (!isFinishing()) {
+                            _uploadDialog.dismiss();
+                        }
+
+                    }
+
+                    break;
+                case VIDEO_Uploading://视频上传开始
+                    int purpose = SharedprefUtil.getInt(VideoCoverActivity.this, YpSettings.PURPOSE_KEY, 0);
+                    httpVideoVerification(YPApplication.getInstance().loginUser.getUserId(), purpose, videoHttpUrl, videoImeHttpUrl);
+                    break;
+                case VIDEO_UploadComplete://视频上传成功
+                    Bundle v_bundle = msg.getData();
+                    videoHttpUrl = v_bundle.getString("videoHttpUrl");
+                    int purposes = SharedprefUtil.getInt(VideoCoverActivity.this, YpSettings.PURPOSE_KEY, 0);
+                    httpVideoVerification(YPApplication.getInstance().loginUser.getUserId(), purposes, videoHttpUrl, videoImeHttpUrl);
+
+
+                    break;
+                case VIDEO_UploadFailed://视频上传失败
+
+                    _hintdialog = DialogUtil.createHintOperateDialog(VideoCoverActivity.this, "提示", "上传失败，请重试", "", "确定", backCallListener);
+                    if (!isFinishing()) {
+                        _hintdialog.show();
+                    }
+
+                    if (_uploadDialog != null) {
+                        if (!isFinishing()) {
+                            _uploadDialog.dismiss();
+                        }
+                    }
+                    break;
+                case Http_Uploading://上传自己服务器开始
+
+                    httpVideoVerification(YPApplication.getInstance().loginUser.getUserId(), 1, videoHttpUrl, videoImeHttpUrl);
+
+                    break;
+                case Http_UploadComplete://上传自己服务器成功
+
+                    DialogUtil.showDisCoverNetToast(VideoCoverActivity.this, "上传成功");
+
+                    if (_uploadDialog != null){
+                        if (!isFinishing()) {
+                            _uploadDialog.dismiss();
+                        }
+                    }
+                    ViewsUtils.preventViewMultipleClick(submit_but, true);
+                    ActivityUtil.jump(VideoCoverActivity.this, VideoCommitFinishActivity.class, new Bundle(), 0, 100);
+
+
+                    break;
+                case Http_UploadFailed://上传自己服务器失败
+//                    if (_hintdialog ==null){
+//                        _hintdialog=DialogUtil.createHintOperateDialog(VideoCoverActivity.this, "", "上传失败，请重试", "确定", "取消", true, false, backCallListener);
+//                    }
+//                    _hintdialog.show();
+//                    if (_uploadDialog !=null){
+//                        _uploadDialog.dismiss();
+//                    }
+
+                    break;
+
+            }
+        }
+    };
+
+
+    private BackCallListener backCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (_hintdialog != null)
+                _hintdialog.dismiss();
+
+
+            ViewsUtils.preventViewMultipleClick(submit_but, true);
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (_hintdialog != null)
+                _hintdialog.dismiss();
+            ViewsUtils.preventViewMultipleClick(submit_but, true);
+
+        }
+    };
+
+
+    private void onUploadImg(File imgFile) {
+        if (YPApplication.mediaService == null) {
+            Message message = new Message();
+            message.what = IMG_UploadFailed;
+            _UploadHandler.sendMessage(message);
+            return;
+        }
+
+
+        String RequestId = UUIDGenerator.getUUID();
+        UploadOptions uploadOptions = new UploadOptions.Builder().dir(HttpURL.namespace_img).aliases(RequestId + ".jpg").build();
+        YPApplication.mediaService.upload(imgFile, HttpURL.namespace, uploadOptions, new UploadListener() {
+            @Override
+            public void onUploading(UploadTask uploadTask) {
+                Log.e(TAG, "onUploadImg---上传中---已上传大小：" + uploadTask.getCurrent()
+                        + " 总文件大小：" + uploadTask.getTotal());
+
+
+            }
+
+            @Override
+            public void onUploadFailed(UploadTask uploadTask, FailReason failReason) {
+                Log.e(TAG, "onUploadImg---上传失败---");
+
+                Message message = new Message();
+                message.what = IMG_UploadFailed;
+                _UploadHandler.sendMessage(message);
+            }
+
+            @Override
+            public void onUploadComplete(UploadTask uploadTask) {
+                Log.e(TAG, "onUploadImg---上传成功---URL:" + uploadTask.getResult().url);
+                Message message = new Message();
+                message.what = IMG_UploadComplete;
+                Bundle bundle = new Bundle();
+                bundle.putString("videoImeHttpUrl", uploadTask.getResult().url);
+                message.setData(bundle);
+                _UploadHandler.sendMessage(message);
+            }
+
+            @Override
+            public void onUploadCancelled(UploadTask uploadTask) {
+                Log.e(TAG, "onUploadImg---上传取消---");
+                Message message = new Message();
+                message.what = IMG_UploadFailed;
+                _UploadHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void onUploadVideo(File imgFile) {
+        if (YPApplication.mediaService == null) {
+            Message message = new Message();
+            message.what = VIDEO_UploadFailed;
+            _UploadHandler.sendMessage(message);
+            return;
+        }
+
+        String RequestId = UUIDGenerator.getUUID();
+        UploadOptions uploadOptions = new UploadOptions.Builder().dir(HttpURL.namespace_video).aliases(RequestId + ".mp4").build();
+        YPApplication.mediaService.upload(imgFile, HttpURL.namespace, uploadOptions, new UploadListener() {
+            @Override
+            public void onUploading(UploadTask uploadTask) {
+                Log.e(TAG, "onUploadVideo---上传中---已上传大小：" + uploadTask.getCurrent()
+                        + " 总文件大小：" + uploadTask.getTotal());
+
+            }
+
+            @Override
+            public void onUploadFailed(UploadTask uploadTask, FailReason failReason) {
+                Log.e(TAG, "onUploadVideo---上传失败---");
+                Message message = new Message();
+                message.what = VIDEO_UploadFailed;
+                _UploadHandler.sendMessage(message);
+            }
+
+            @Override
+            public void onUploadComplete(UploadTask uploadTask) {
+                Log.e(TAG, "onUploadVideo---上传成功---URL:" + uploadTask.getResult().url);
+                Message message = new Message();
+                message.what = VIDEO_UploadComplete;
+                Bundle bundle = new Bundle();
+                bundle.putString("videoHttpUrl", uploadTask.getResult().url);
+                message.setData(bundle);
+                _UploadHandler.sendMessage(message);
+            }
+
+            @Override
+            public void onUploadCancelled(UploadTask uploadTask) {
+                Log.e(TAG, "---上传取消---");
+                Message message = new Message();
+                message.what = VIDEO_UploadFailed;
+                _UploadHandler.sendMessage(message);
+            }
+        });
+    }
+
+    private void httpVideoVerification(int userId, int purpose, String videoUrl, String coverImgUrl) {
+
+
+        SubmitVideoBean videoBean = new SubmitVideoBean();
+        videoBean.setUserId(userId);
+        videoBean.setCoverImgUrl(coverImgUrl);
+        videoBean.setVideoUrl(videoUrl);
+        videoBean.setPurpose(purpose);
+
+
+        SubmitVideoService videoService = new SubmitVideoService(this);
+        videoService.parameter(videoBean);
+        videoService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                Message message = new Message();
+                message.what = Http_UploadComplete;
+                _UploadHandler.sendMessage(message);
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                ViewsUtils.preventViewMultipleClick(submit_but, true);
+                if (_uploadDialog != null) {
+                    _uploadDialog.dismiss();
+                }
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(VideoCoverActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(VideoCoverActivity.this, msg);
+            }
+        });
+        videoService.enqueue();
+
+
+    }
+
+}

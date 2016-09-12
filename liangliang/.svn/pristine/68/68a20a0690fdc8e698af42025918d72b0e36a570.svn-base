@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_gravity="top"
+        android:background="@color/background_gray_white"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <!-- 返回按钮 -->
+
+        <LinearLayout
+            android:id="@+id/feed_back_go_back_layout"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:gravity="left|center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:gravity="center"
+                android:paddingLeft="0dip"
+                android:paddingRight="10dip"
+                android:src="@drawable/icon_go_back"
+                android:textColor="@color/text_color_white"
+                 />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip" >
+
+            <!-- 页面标题 -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="意见反馈"
+                android:textColor="@color/text_color_black"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:visibility="invisible" >
+        </LinearLayout>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/feed_back_et"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/feed_back_et_bg"
+        android:gravity="left|top"
+        android:padding="10dp"
+        android:textColor="@color/text_color_black" />
+
+    <TextView
+        android:id="@+id/feed_back_submit_tv"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/corners_orange_selected_style"
+        android:gravity="center"
+        android:text="提交"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="18sp" />
+
+</LinearLayout>

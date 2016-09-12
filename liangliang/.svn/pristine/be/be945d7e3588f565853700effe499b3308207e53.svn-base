@@ -1,0 +1,74 @@
+package cn.chono.yopper.Service.Http.Campaigns;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by cc on 16/2/23.
+ */
+public class CampaignsDate extends ParameterBean {
+
+    private String id;
+    private String title;
+    private String imageUrl;
+    private String redirectUrl;
+    private String description;
+    private int seq;
+    // WebView类型,  Default:简单展示, Article:文章详情
+    private String type;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+}

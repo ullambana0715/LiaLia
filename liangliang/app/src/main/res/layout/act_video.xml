@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/color_000000"
+             android:gravity="center"
+             android:orientation="vertical">
+
+
+    <!--标题-->
+
+
+    <LinearLayout
+        android:id="@+id/ll_title"
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:background="@drawable/shadow_top"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <!-- 返回按钮 -->
+
+        <LinearLayout
+            android:id="@+id/ll_back"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="0dip"
+            android:gravity="left|center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:gravity="center"
+                android:paddingLeft="0dip"
+                android:paddingRight="10dip"
+                android:src="@drawable/icon_go_back_white"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14dip"/>
+        </LinearLayout>
+
+        <!-- 页面标题 -->
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/color_ffffff"
+            android:textSize="18sp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_option"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/option_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/option_white_more_icon"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/video_ll"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        >
+
+        <SurfaceView
+            android:id="@+id/video_sv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            />
+
+        <ImageView
+            android:id="@+id/video_iv_coverimg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_e4e4e4"
+            android:scaleType="fitXY"/>
+
+        <ImageView
+            android:id="@+id/video_iv_start"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/video_play_icon"
+            />
+
+        <ProgressBar
+            android:id="@+id/video_pb"
+            android:layout_width="45dip"
+            android:layout_height="45dip"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/video_ll_parise_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_parise_delect_mask"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/parise_count_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginRight="-10dp"
+            android:drawableBottom="@drawable/photo_parise_icon"
+            android:drawablePadding="2dp"
+            android:gravity="right"
+            android:minWidth="30dp"
+            android:text="0"
+            android:textColor="@color/color_ffffff"
+            android:visibility="visible"/>
+
+
+        <ImageView
+            android:id="@+id/iv_delect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_delect"
+            android:visibility="visible"/>
+
+
+    </LinearLayout>
+
+</FrameLayout>

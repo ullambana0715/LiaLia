@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_ffffff"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/one_tab_tv"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/tab_height"
+        android:layout_weight="1.0"
+        android:gravity="center"
+        android:text="人"
+        android:textColor="@color/color_000000"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/two_tab_tv"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/tab_height"
+        android:layout_weight="1.0"
+        android:gravity="center"
+        android:text="邀约"
+        android:textColor="@color/color_000000"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/three_tab_tv"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/tab_height"
+        android:layout_weight="1.0"
+        android:gravity="center"
+        android:text="冒泡"
+        android:textColor="@color/color_000000"
+        android:textSize="18sp" />
+
+</LinearLayout>

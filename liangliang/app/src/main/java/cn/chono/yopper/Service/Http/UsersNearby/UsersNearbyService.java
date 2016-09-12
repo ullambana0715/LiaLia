@@ -1,0 +1,108 @@
+package cn.chono.yopper.Service.Http.UsersNearby;
+
+import android.content.Context;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import java.util.HashMap;
+import java.util.List;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.base.App;
+import cn.chono.yopper.data.DiscoverPeopleDto;
+import cn.chono.yopper.data.UserInfo;
+import cn.chono.yopper.data.NearPeopleDto;
+import cn.chono.yopper.data.Profile;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.utils.JsonUtils;
+
+/**
+ * 附近人第一页
+ * Created by zxb on 2015/11/22.
+ */
+public class UsersNearbyService extends HttpService {
+    public UsersNearbyService(Context context) {
+        super(context);
+    }
+
+
+    private UsersNearbyBean usersNearbyBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = UsersNearbyRespBean.class;
+
+        HashMap<String, Object> HashMap = new HashMap<>();
+
+        HashMap.put("Lat", usersNearbyBean.getLat());
+        HashMap.put("Lng", usersNearbyBean.getLng());
+        HashMap.put("Time", usersNearbyBean.getTime());
+        HashMap.put("Sex", usersNearbyBean.getSex());
+        HashMap.put("Start", usersNearbyBean.getStart());
+        if (1 == usersNearbyBean.getLevel()) {
+            HashMap.put("level", usersNearbyBean.getLevel());
+        }
+
+
+        callWrap = OKHttpUtils.get(context, HttpURL.nearby, HashMap, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        usersNearbyBean = (UsersNearbyBean) iBean;
+    }
+
+    @Override
+    protected void onCallSucceed(RespBean respBean) {
+        UsersNearbyRespBean moreRespBean = (UsersNearbyRespBean) respBean;
+        DiscoverPeopleDto peropleDto = moreRespBean.getResp();
+        try {
+            if (peropleDto != null) {
+                List<NearPeopleDto> list = peropleDto.getList();
+                if (list != null && list.size() > 0) {// 列表有数据
+                    for (int i = 0; i < list.size(); i++) {
+                        NearPeopleDto dto = list.get(i);
+                        UserInfo loginUserInfo = App.getInstance().db.findFirst(Selector.from(UserInfo.class).where("id", " =", dto.getId()));
+                        if (loginUserInfo != null) {
+                            UserDto userInfo = JsonUtils.fromJson(loginUserInfo.getResp(), UserDto.class);
+                            userInfo.setDistance(dto.getDistance());
+                            userInfo.getProfile().setName(dto.getName());
+                            userInfo.getProfile().setHeadImg(dto.getHeadImg());
+                            userInfo.getProfile().setSex(dto.getSex());
+                            userInfo.getProfile().setHoroscope(dto.getHoroscope());
+                            String str = JsonUtils.toJson(userInfo);
+                            loginUserInfo.setResp(str);
+                            App.getInstance().db.update(loginUserInfo);
+
+                        } else {
+                            loginUserInfo = new UserInfo();
+                            loginUserInfo.setId(dto.getId());
+                            UserDto userDto = new UserDto();
+                            userDto.setDistance(dto.getDistance());
+                            Profile profile = new Profile();
+                            profile.setName(dto.getName());
+                            profile.setId(dto.getId());
+                            profile.setHeadImg(dto.getHeadImg());
+                            profile.setHoroscope(dto.getHoroscope());
+                            profile.setSex(dto.getSex());
+                            userDto.setProfile(profile);
+                            String str = JsonUtils.toJson(userDto);
+                            loginUserInfo.setResp(str);
+
+                            App.getInstance().db.save(loginUserInfo);
+
+                        }
+                    }
+                }
+            }
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+}

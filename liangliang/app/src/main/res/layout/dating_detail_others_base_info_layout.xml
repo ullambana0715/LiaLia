@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/dating_detail_others_title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:id="@+id/dating_detail_others_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/color_ff7462"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dating_detail_others_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+        <TextView
+            android:id="@+id/dating_detail_others_content_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dating_detail_others_obj_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+
+        <TextView
+            android:id="@+id/dating_detail_others_obj_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/dating_detail_others_cost_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+
+        <TextView
+            android:id="@+id/dating_detail_others_cost_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/dating_detail_others_pickup_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+
+        <TextView
+            android:id="@+id/dating_detail_others_pickup_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dating_detail_others_friends_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/white_bg_ff_circle" />
+
+
+        <TextView
+            android:id="@+id/dating_detail_others_friends_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="10dp"
+            android:text=""
+            android:textColor="@color/color_333333"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/dating_detail_others_img_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="12dp"
+         />
+
+
+
+</LinearLayout>

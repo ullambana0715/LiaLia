@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:color="@android:color/white"/>
+    <item android:color="@color/qupai_gray_0x99"/>
+</selector>
+<!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/color/tab_widget_bg_qupai_drafts.xml -->

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical" >
+
+    <cn.chono.yopper.view.viewpager.HackyViewPager
+        android:id="@+id/constellation_viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000" >
+    </cn.chono.yopper.view.viewpager.HackyViewPager>
+
+</RelativeLayout>

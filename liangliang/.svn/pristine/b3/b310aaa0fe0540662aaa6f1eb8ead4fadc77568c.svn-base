@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/text_color_ff7462">
+
+    <RelativeLayout
+        android:id="@+id/my_climbing_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/myplace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:text="@string/text_my_place"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:drawableLeft="@drawable/icon_climbing_info"
+            android:gravity="center"
+            android:layout_alignBottom="@+id/myplace"
+            android:layout_marginRight="10dp"
+            android:text="@string/text_climbing_info"
+            android:id="@+id/climbing_info"/>
+
+        <TextView
+            android:id="@+id/my_climbing_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/myplace"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/my_climbing_no"
+            android:gravity="center"
+            android:text="6000"
+            android:textColor="@android:color/black"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/climbing_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/my_climbing_no"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="15dp"
+            android:text="@string/climbing_list_timer" />
+    </RelativeLayout>
+
+    <cn.chono.zxb.xrefreshview.XRefreshView
+        android:id="@+id/climbing_list_xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/my_climbing_info"
+        android:background="@drawable/shape_corner"
+        android:layout_margin="10dp">
+
+        <ListView
+            android:id="@+id/climbing_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:listSelector="@android:color/transparent" />
+    </cn.chono.zxb.xrefreshview.XRefreshView>
+
+</RelativeLayout>

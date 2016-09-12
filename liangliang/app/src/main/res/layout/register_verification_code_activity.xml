@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/register_verification_loyout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee"
+    android:orientation="vertical">
+
+
+    <com.zhy.autolayout.AutoFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/register_verification_code_phone_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24px"
+            android:background="@color/color_ffffff"
+            android:maxLength="11"
+            android:paddingBottom="32px"
+            android:paddingLeft="24px"
+            android:paddingRight="24px"
+            android:paddingTop="32px"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            android:textColor="@color/color_333333"
+            android:textSize="32px" />
+
+
+        <com.zhy.autolayout.AutoRelativeLayout
+            android:id="@+id/register_verification_code_phone_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24px"
+            android:background="@color/color_ffffff"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <EditText
+                android:id="@+id/register_verification_code_phone_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_ffffff"
+                android:hint="@string/phone_hint_exit"
+                android:maxLength="11"
+                android:numeric="integer"
+                android:paddingBottom="32px"
+                android:paddingLeft="24px"
+                android:paddingRight="24px"
+                android:paddingTop="32px"
+                android:singleLine="true"
+                android:textColor="@color/color_333333"
+                android:textColorHint="@color/color_b2b2b2"
+                android:textSize="32px" />
+
+
+            <ImageView
+                android:id="@+id/register_verification_code_phone_et_empty_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="24px"
+                android:padding="24px"
+                android:src="@drawable/empty_icon"
+                android:visibility="gone"
+
+                />
+
+
+        </com.zhy.autolayout.AutoRelativeLayout>
+
+    </com.zhy.autolayout.AutoFrameLayout>
+
+
+
+
+
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24px"
+        android:background="@color/color_ffffff"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/register_verification_code_et"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/color_ffffff"
+            android:hint="@string/resend_verification_hine"
+            android:maxLength="6"
+            android:numeric="integer"
+            android:paddingBottom="32px"
+            android:paddingLeft="24px"
+            android:paddingRight="24px"
+            android:paddingTop="32px"
+            android:singleLine="true"
+            android:textColor="@color/color_333333"
+            android:textColorHint="@color/color_b2b2b2"
+
+            android:textSize="32px" />
+
+        <ImageView
+            android:id="@+id/register_verification_code_empty_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="24px"
+            android:padding="24px"
+            android:src="@drawable/empty_icon"
+            android:visibility="gone"
+
+            />
+
+
+        <Button
+            android:id="@+id/register_verification_code_to_obtain_but"
+            android:layout_width="200px"
+            android:layout_height="60px"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="24px"
+            android:background="@drawable/verification_code_corners_orange_selected_style"
+            android:enabled="false"
+            android:gravity="center"
+            android:text="@string/resend_verification_code"
+            android:textColor="@color/color_verification_code_style"
+
+            android:textSize="24px" />
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+    <Button
+        android:id="@+id/register_verification_code_next_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24px"
+        android:layout_marginRight="24px"
+        android:layout_marginTop="60px"
+        android:background="@drawable/corners_orange_selected_style"
+        android:gravity="center"
+        android:text="@string/next"
+        android:enabled="false"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="32px" />
+
+
+</com.zhy.autolayout.AutoLinearLayout>

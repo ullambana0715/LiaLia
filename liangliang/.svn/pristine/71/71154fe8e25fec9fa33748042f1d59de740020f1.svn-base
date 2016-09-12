@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/success_done_hint_bg"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/success_icon" />
+
+    <TextView
+        android:id="@+id/success_hint_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="发布成功！"
+        android:textColor="#ffffff"
+        android:layout_marginBottom="10dp"
+        android:textSize="16sp" />
+
+</LinearLayout>

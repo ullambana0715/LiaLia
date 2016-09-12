@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/cn.chono.yopper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/chat_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/margin_chat_top" >
+
+    <TextView
+        android:id="@+id/chat_item_time_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chat_item_time_bg"
+        android:padding="2dp"
+        android:textColor="@color/text_color_white"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="@dimen/margin_chat_top" >
+
+        <ImageView
+            android:id="@+id/chat_item_user_img_iv"
+            android:layout_width="@dimen/chat_head_img"
+            android:layout_height="@dimen/chat_head_img"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/message_head_default_icon"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:id="@+id/chat_item_appointment_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="@dimen/margin_chat_top"
+            android:layout_toRightOf="@id/chat_item_user_img_iv"
+            android:background="@drawable/chat_item_appoint_receive_bg"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginTop="3dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ta想约你去"
+                    android:textColor="#999999"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="3dp"
+                android:orientation="horizontal"
+                android:visibility="visible" >
+
+                <ImageView
+                    android:id="@+id/chat_item_appointment_type_iv"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginLeft="0dp" />
+
+                <TextView
+                    android:id="@+id/chat_item_appointment_address_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:maxEms="6"
+                    android:text="雕刻时光咖啡店（大学路52号）"
+                    android:textColor="@color/text_color_black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

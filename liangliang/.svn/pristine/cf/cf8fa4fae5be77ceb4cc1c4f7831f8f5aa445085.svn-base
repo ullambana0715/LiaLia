@@ -1,0 +1,97 @@
+package cn.chono.yopper.data;
+
+public class DatingDetailDto {
+
+	private int id;
+	private String content;
+	private String meetingDate;
+	private String meetingAddress;
+	private int locationId;
+	private int inviterId;
+	private int inviteeId;
+	private int  datingType;
+	
+	private String rewards;
+	private int status;
+	private String acceptedTime;
+	private String createTime;
+	
+	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getMeetingDate() {
+		return meetingDate;
+	}
+	public void setMeetingDate(String meetingDate) {
+		this.meetingDate = meetingDate;
+	}
+	public String getMeetingAddress() {
+		return meetingAddress;
+	}
+	public void setMeetingAddress(String meetingAddress) {
+		this.meetingAddress = meetingAddress;
+	}
+	public int getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(int locationId) {
+		this.locationId = locationId;
+	}
+	public int getInviterId() {
+		return inviterId;
+	}
+	public void setInviterId(int inviterId) {
+		this.inviterId = inviterId;
+	}
+	public int getInviteeId() {
+		return inviteeId;
+	}
+	public void setInviteeId(int inviteeId) {
+		this.inviteeId = inviteeId;
+	}
+	public int getDatingType() {
+		return datingType;
+	}
+	public void setDatingType(int datingType) {
+		this.datingType = datingType;
+	}
+	public String getRewards() {
+		return rewards;
+	}
+	public void setRewards(String rewards) {
+		this.rewards = rewards;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public String getAcceptedTime() {
+		return acceptedTime;
+	}
+	public void setAcceptedTime(String acceptedTime) {
+		this.acceptedTime = acceptedTime;
+	}
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+	
+	
+	    	
+	    	
+}

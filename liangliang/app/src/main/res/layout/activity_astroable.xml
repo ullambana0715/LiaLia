@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/astroable_bg"
+    android:orientation="vertical">
+
+
+    <!-- 头部布局 -->
+
+    <LinearLayout
+        android:id="@+id/astroable_ll_title"
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <!-- 返回按钮 -->
+
+        <LinearLayout
+            android:id="@+id/astroable_ll_back"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:gravity="left|center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp">
+
+            <ImageView
+
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/icon_go_back_white" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip">
+
+            <!-- 页面标题 -->
+
+            <TextView
+                android:id="@+id/astroable_tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@color/color_ffffff"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/astroable_ll_right"
+            android:layout_width="80dip"
+            android:layout_height="30dip"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/astroable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/astroable_ll_title"
+        android:layout_marginTop="135dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/personals_chat_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@drawable/diviner_tarot_btn"
+            android:gravity="center"
+            android:text="个人命盘"
+            android:textColor="@color/color_ffffff"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/coupe_chat_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@drawable/diviner_tarot_btn"
+            android:gravity="center"
+            android:text="双人合盘"
+            android:textColor="@color/color_ffffff"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/fortune_chat_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@drawable/diviner_tarot_btn"
+            android:gravity="center"
+            android:text="运势推测"
+            android:textColor="@color/color_ffffff"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+    <ScrollView
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/astroable">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:touchscreenBlocksFocus="false">
+
+            <TextView
+                android:id="@+id/my_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="您的出生信息"
+                android:textColor="@color/color_ffffff"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/my_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/my_info"
+                android:layout_margin="15dp"
+                android:background="@drawable/diviner_tarot_bg"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="姓名"
+                        android:textColor="#70ffffff"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/name_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="100dp"
+                    android:background="#20ffffff" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:padding="10dp"
+                        android:text="性别"
+                        android:textColor="#70ffffff"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/my_nan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/corners_6d5e75_default"
+                        android:gravity="center"
+                        android:text="男"
+                        android:textColor="@color/color_ffffff" />
+
+                    <TextView
+                        android:id="@+id/my_nv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:background="@drawable/corners_006d5e75_default"
+                        android:gravity="center"
+                        android:text="女"
+                        android:textColor="@color/color_ffffff" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="100dp"
+                    android:background="#20ffffff" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/chusheng"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:padding="10dp"
+                        android:text="出生日期"
+                        android:textColor="#70ffffff"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/chushengriqi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/chusheng"
+                        android:gravity="center"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:text="1990年1月1日"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/chushengshijian"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/chushengriqi"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="00:00"
+                        android:textColor="@android:color/white" />
+
+                    <CheckBox
+                        android:id="@+id/isSummer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignLeft="@+id/chushengriqi"
+                        android:layout_below="@id/chushengriqi"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/color_00000000"
+                        android:button="@drawable/astroable_checkbox"
+                        android:checked="false"
+                        android:padding="10dp"
+                        android:text="是都夏令时"
+                        android:textColor="@android:color/white" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="100dp"
+                    android:background="#20ffffff" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="出生城市"
+                        android:textColor="#70ffffff"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/born_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/chakangeren"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_layout"
+                android:layout_gravity="center"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/personal_chart_btn"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="查看星盘报告"
+                android:textColor="#334583"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/luck_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/my_layout"
+                android:layout_margin="15dp"
+                android:text="推运设置"
+                android:textColor="@color/color_ffffff"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/layout_luck"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/luck_info"
+                android:layout_margin="15dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/diviner_tarot_bg"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:text="推运到"
+                            android:textColor="#70ffffff"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/luckriqi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/tachusheng"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="1990年1月1日"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/luckshijian"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/luckriqi"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="00:00"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="100dp"
+                        android:background="#20ffffff" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:text="推运类型"
+                            android:textColor="#70ffffff"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:text="行运盘"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/luck_chakan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layout_luck"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/personal_chart_btn"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="查看星盘报告"
+                    android:textColor="#334583"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/ta_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/my_layout"
+                android:layout_margin="15dp"
+                android:text="TA的出生信息"
+                android:textColor="@color/color_ffffff"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ta_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ta_info"
+                android:layout_margin="15dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/diviner_tarot_bg"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:text="姓名"
+                            android:textColor="#70ffffff"
+                            android:textSize="14sp" />
+
+                        <EditText
+                            android:id="@+id/taname_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="100dp"
+                        android:background="#20ffffff" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:padding="10dp"
+                            android:text="性别"
+                            android:textColor="#70ffffff"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/ta_nan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:background="@drawable/corners_6d5e75_default"
+                            android:gravity="center"
+                            android:text="男"
+                            android:textColor="@color/color_ffffff" />
+
+                        <TextView
+                            android:id="@+id/ta_nv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="20dp"
+                            android:background="@drawable/corners_006d5e75_default"
+                            android:gravity="center"
+                            android:text="女"
+                            android:textColor="@color/color_ffffff" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="100dp"
+                        android:background="#20ffffff" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tachusheng"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:padding="10dp"
+                            android:text="出生日期"
+                            android:textColor="#70ffffff"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tachushengriqi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/tachusheng"
+                            android:gravity="center"
+                            android:paddingBottom="10dp"
+                            android:paddingTop="10dp"
+                            android:text="1990年1月1日"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/tachushengshijian"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/tachushengriqi"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="00:00"
+                            android:textColor="@android:color/white" />
+
+                        <CheckBox
+                            android:id="@+id/taisSummer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@+id/tachushengriqi"
+                            android:layout_below="@id/tachushengriqi"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/color_00000000"
+                            android:button="@drawable/astroable_checkbox"
+                            android:checked="false"
+                            android:padding="10dp"
+                            android:text="是都夏令时"
+                            android:textColor="@android:color/white" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="100dp"
+                        android:background="#20ffffff" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:text="出生城市"
+                            android:textColor="#70ffffff"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/taborn_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tachakangeren"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ta_layout"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/personal_chart_btn"
+                    android:gravity="center"
+                    android:padding="14dp"
+                    android:text="合盘"
+                    android:textColor="#334583"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

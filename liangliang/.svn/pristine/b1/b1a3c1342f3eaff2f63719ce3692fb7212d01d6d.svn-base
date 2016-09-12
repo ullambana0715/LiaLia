@@ -1,0 +1,190 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.GridView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.SelectOneAlbumAdapter;
+import cn.chono.yopper.adapter.SelectOneAlbumAdapter.OnItemClickLitener;
+import cn.chono.yopper.photo.OneAlbumHelper;
+import cn.chono.yopper.photo.OneImageBucket;
+import cn.chono.yopper.photo.OneImageItem;
+import cn.chono.yopper.photo.OneImageSelectedDto;
+import cn.chono.yopper.utils.ActivityUtil;
+
+public class SelectOneAlbumActivity extends MainFrameActivity implements OnItemClickLitener {
+
+    private RelativeLayout album_buttom_layout;
+
+    private SelectOneAlbumAdapter adapter;
+
+
+    private OneAlbumHelper _helper;
+
+    private TextView _Title;
+
+    private GridView gridView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.album_activity);
+        PushAgent.getInstance(this).onAppStart();
+        initView();// 组件初始化
+        Bundle bundle = getIntent().getExtras();
+        judgeFromObject(bundle);
+    }
+
+    private void judgeFromObject(Bundle bundle) {
+        int fromObject = bundle.getInt(YpSettings.PHOTO_TAG);
+        switch (fromObject) {
+
+            case YpSettings.PHOTO_SELECT:
+                photo();
+                break;
+
+            case YpSettings.PHOTO_TYPE:
+                String name = bundle.getString(YpSettings.PHOTO_TAG_NMAE);
+                _Title.setText(name);
+
+                adapter.notifyDataSetChanged();
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("选择相册图片"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("选择相册图片"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 组件初始化
+     */
+    private void initView() {
+
+        gridView = (GridView) findViewById(R.id.gridView);
+
+        album_buttom_layout = (RelativeLayout) findViewById(R.id.album_buttom_layout);
+
+        album_buttom_layout.setVisibility(View.GONE);
+
+        adapter = new SelectOneAlbumAdapter(this);
+        gridView.setAdapter(adapter);
+        adapter.setOnItemClickLitener(this);
+        _Title = getTvTitle();
+        _Title.setText("选择相片");
+
+        TextView rightTv = gettvOption();
+        rightTv.setVisibility(View.VISIBLE);
+        rightTv.setText("取消");
+        getOptionLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                OneImageSelectedDto.dataList = new ArrayList<OneImageBucket>();
+                OneImageSelectedDto.imageList = new ArrayList<OneImageItem>();
+//				Bundle bundle = new Bundle();
+//				bundle.putString(YpSettings.PHOTO_PATH, null);
+//				
+//				setResult(YpSettings.FLAG_MODIFY_FINISH_SELECT_ONE);
+                OneImageSelectedDto.select_image_path = "";
+                OneImageSelectedDto.select_image_w = 0;
+                OneImageSelectedDto.select_image_h = 0;
+                finish();
+
+            }
+        });
+
+        getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Bundle bundle = new Bundle();
+
+                ActivityUtil.jump(SelectOneAlbumActivity.this, SelectOneAlbumTypeActivity.class, bundle, 0, 200);
+                finish();
+
+            }
+        });
+    }
+
+
+    private void photo() {
+        _helper = OneAlbumHelper.getHelper();
+        _helper.init(getApplicationContext());
+        OneImageSelectedDto.dataList = _helper.getImagesBucketList(false);
+
+        int listSize = 0;
+        for (int i = 0; i < OneImageSelectedDto.dataList.size(); i++) {
+            int imageListSize = OneImageSelectedDto.dataList.get(i).imageList
+                    .size();
+            if (listSize < imageListSize) {
+                listSize = imageListSize;
+                OneImageSelectedDto.imageList = OneImageSelectedDto.dataList.get(i).imageList;
+            }
+
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    public void onItemClick(View view, String imagepath, int w, int h) {
+        LogUtils.e("imagepath=" + imagepath);
+//		Intent intent = new Intent();
+        OneImageSelectedDto.select_image_path = imagepath;
+        OneImageSelectedDto.select_image_w = w;
+        OneImageSelectedDto.select_image_h = h;
+//		Bundle bundle = new Bundle();
+//		bundle.putString(YpSettings.PHOTO_PATH, imagepath);
+//		intent.putExtras(bundle);
+//		this.setResult(YpSettings.FLAG_MODIFY_FINISH_SELECT_ONE);
+        this.finish();
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            OneImageSelectedDto.dataList = new ArrayList<OneImageBucket>();
+            OneImageSelectedDto.imageList = new ArrayList<OneImageItem>();
+//			Bundle bundle = new Bundle();
+//			bundle.putString(YpSettings.PHOTO_PATH, null);
+//			
+//			setResult(YpSettings.FLAG_MODIFY_FINISH_SELECT_ONE);
+            OneImageSelectedDto.select_image_path = "";
+            OneImageSelectedDto.select_image_w = 0;
+            OneImageSelectedDto.select_image_h = 0;
+            finish();
+        }
+        return true;
+    }
+}

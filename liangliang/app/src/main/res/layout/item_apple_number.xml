@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="12dp"
+              android:background="@drawable/corners_white_style"
+              android:orientation="vertical"
+              android:padding="12dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+
+
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/apple_number_hint"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp"
+
+            />
+
+        <TextView
+            android:id="@+id/item_apple_list_tv_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/color_ff7462"
+            android:textSize="17sp"
+            />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/apple_hint"
+        android:textColor="@color/color_b2b2b2"
+        android:visibility="gone"
+        android:textSize="12sp"
+        />
+
+</LinearLayout>

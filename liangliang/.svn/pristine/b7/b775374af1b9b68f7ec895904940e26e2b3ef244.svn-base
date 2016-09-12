@@ -1,0 +1,53 @@
+package cn.chono.yopper.data;
+
+/**
+ * Created by SQ on 2016/1/8.
+ */
+public class UserInfoAppointment {
+
+    private String id;
+    private String title;
+    private int activityType;
+    private String content;
+    private String endTime;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(int activityType) {
+        this.activityType = activityType;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+}

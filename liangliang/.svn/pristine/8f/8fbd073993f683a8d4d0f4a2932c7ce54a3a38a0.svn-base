@@ -1,0 +1,816 @@
+package cn.chono.yopper.adapter;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+import java.util.Date;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.appointment.AppointmentDetailActivity;
+import cn.chono.yopper.activity.chat.ChatActivity;
+import cn.chono.yopper.activity.chat.ChatImageShowActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoEditActivity;
+import cn.chono.yopper.activity.video.VideoDetailGetActivity;
+import cn.chono.yopper.data.AppointmentMsg;
+import cn.chono.yopper.data.BaseUser;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.ImgMsg;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.TextMsg;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.ChatUtils;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.FaceTextUtils;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.utils.UnitUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.MyDialog;
+import cn.chono.yopper.view.XCRoundImageViewByXfermode;
+
+/**
+ * 聊天适配器
+ *
+ * @ClassName: ChatMessageAdapter
+ * @author SQ
+ *
+ */
+
+public class ChatMessageAdapter extends BaseListAdapter<ChatDto> {
+
+	// 8种Item的类型
+	// 文本 和发送P果
+	private final int TYPE_RECEIVER_TXT = 0;
+	private final int TYPE_SEND_TXT = 1;
+
+	// 图片
+	private final int TYPE_SEND_IMAGE = 2;
+	private final int TYPE_RECEIVER_IMAGE = 3;
+
+	// 约会
+	private final int TYPE_SEND_APPOINTMENT = 4;
+	private final int TYPE_RECEIVER_APPOINTMENT = 5;
+
+	private final int TYPE_ATTRACTION_RESULT = 6;
+
+
+	private Dialog dialog;
+
+
+	private Context mContext;
+
+
+	private CropCircleTransformation transformation;
+
+	private BitmapPool mPool;
+
+
+	public ChatMessageAdapter(Context context, List<ChatDto> msgList) {
+		super(context, msgList);
+		mContext=context;
+		this.list = msgList;
+		mPool = Glide.get(context).getBitmapPool();
+
+		transformation = new CropCircleTransformation(mPool);
+		//		roundedCornersTransformation=new GlideRoundTransform(mContext, 60);
+	}
+
+
+	@Override
+	public int getItemViewType(int position) {
+		ChatDto chatdto = list.get(position);
+		String message = chatdto.getMessage();
+		//ChatMsg chatMsg = JsonUtils.fromJson(message, ChatMsg.class);
+		String type=ChatUtils.getMsgType(message);
+
+		if (TextUtils.equals(type, MessageType.Img)) {
+			return chatdto.getR_s_type() == ChatDto.s_type ? TYPE_SEND_IMAGE : TYPE_RECEIVER_IMAGE;
+
+		} else if (TextUtils.equals(type,MessageType.Appointment)) {
+
+			return chatdto.getR_s_type() == ChatDto.s_type ? TYPE_SEND_APPOINTMENT : TYPE_RECEIVER_APPOINTMENT;
+
+		}  else if (TextUtils.equals(type, MessageType.Attraction)) {
+
+			return chatdto.getR_s_type() == ChatDto.s_type ? TYPE_SEND_TXT : TYPE_ATTRACTION_RESULT;
+
+		} else {
+			// 默认文字
+			return chatdto.getR_s_type() == ChatDto.s_type ? TYPE_SEND_TXT : TYPE_RECEIVER_TXT;
+		}
+
+	}
+
+
+	@Override
+	public int getViewTypeCount() {
+		return 7;
+	}
+
+	@SuppressLint("InflateParams")
+	private View createViewByType(String type, int position) {
+
+		if (TextUtils.equals(type, MessageType.Img)) {// 图片类型
+			return getItemViewType(position) == TYPE_RECEIVER_IMAGE ? mInflater.inflate(R.layout.item_chat_received_image, null) : mInflater.inflate(R.layout.item_chat_sent_image, null);
+
+		}else if (TextUtils.equals(type, MessageType.Attraction)) {
+			// 收到P果或者发送P果 跟文字布局一样 所以就使用文字的布局 这个地方需要修改
+			return getItemViewType(position) == TYPE_ATTRACTION_RESULT ? mInflater.inflate(R.layout.item_chat_other_message_hint, null) : mInflater.inflate(R.layout.item_chat_sent_message, null);
+
+		} else if (TextUtils.equals(type, MessageType.Appointment)) {
+			return getItemViewType(position) == TYPE_RECEIVER_APPOINTMENT ? mInflater.inflate(R.layout.item_chat_receive_appointment,null) : mInflater.inflate(R.layout.item_chat_sent_appointment, null);
+
+		} else {// 默认文本
+			return getItemViewType(position) == TYPE_RECEIVER_TXT ? mInflater.inflate(R.layout.item_chat_received_message, null) : mInflater.inflate(R.layout.item_chat_sent_message, null);
+		}
+	}
+
+	private static class ViewHolder {
+		// 文本类型
+		TextView chat_time_tv;
+
+		// 用户头像 根据消息收到还是发送的类型 设置自己的头像或者对方的头像
+		ImageView iv_avatar;
+
+		ImageView send_fail_iv;
+
+		ProgressBar pb_send_status;
+
+		TextView text_message_tv;
+
+		// 图片
+		XCRoundImageViewByXfermode image_iv;
+		// 发送图片百分比
+		TextView image_progress_tv;
+		// 图片布局
+		RelativeLayout chat_item_image_layout;
+
+		XCRoundImageViewByXfermode image_bg_iv;
+
+		// 请求聊天类型：地址
+		TextView accept_request_chat_address_tv;
+
+		// 约会
+		LinearLayout appointment_layout;
+
+		ImageView appointment_type_iv;
+
+		TextView appointment_address_tv;
+
+		// 约会结果 收到P果子提示(都是收到消息)
+		TextView others_message_hint_tv;
+
+
+
+	}
+
+	@SuppressWarnings({ "static-access", "unchecked" })
+	@Override
+	public View bindView(final int position, View convertView, ViewGroup parent) {
+		final ChatDto chatdto = list.get(position);
+		String message = chatdto.getMessage();
+		final String type=ChatUtils.getMsgType(message);
+
+		LogUtils.e("数据="+chatdto.getSend_status());
+
+		ViewHolder viewholder = null;
+
+		if (convertView == null) {
+			convertView = createViewByType(type, position);
+			viewholder = new ViewHolder();
+
+			viewholder.chat_time_tv = (TextView) convertView.findViewById(R.id.chat_item_time_iv);
+
+			viewholder.iv_avatar = (ImageView) convertView.findViewById(R.id.chat_item_user_img_iv);
+
+			viewholder.send_fail_iv = (ImageView) convertView.findViewById(R.id.chat_item_send_fail_iv);
+
+			viewholder.pb_send_status = (ProgressBar) convertView.findViewById(R.id.chat_item_send_progressbar);
+
+			viewholder.text_message_tv = (TextView) convertView.findViewById(R.id.chat_item_text_message_tv);
+
+			viewholder.image_iv = (XCRoundImageViewByXfermode) convertView.findViewById(R.id.chat_item_image_iv);
+
+			viewholder.image_progress_tv = (TextView) convertView.findViewById(R.id.chat_item_image_send_image_progress_tv);
+
+			viewholder.chat_item_image_layout = (RelativeLayout) convertView.findViewById(R.id.chat_item_image_layout);
+
+			viewholder.image_bg_iv = (XCRoundImageViewByXfermode) convertView.findViewById(R.id.chat_item_image_bg_iv);
+
+			viewholder.appointment_layout = (LinearLayout) convertView.findViewById(R.id.chat_item_appointment_layout);
+
+			viewholder.appointment_type_iv = (ImageView) convertView.findViewById(R.id.chat_item_appointment_type_iv);
+
+			viewholder.appointment_address_tv = (TextView) convertView.findViewById(R.id.chat_item_appointment_address_tv);
+
+			viewholder.others_message_hint_tv = (TextView) convertView.findViewById(R.id.chat_item_others_message_hint_tv);
+
+			convertView.setTag(viewholder);
+
+		} else {
+			viewholder = (ViewHolder) convertView.getTag();
+
+		}
+
+		// 设置头像 点击头像进入个人资料
+		if (chatdto.getR_s_type() == 0) {
+			// 自己发送 加载自己的头像
+			// iv_avatar
+			if (!TextUtils.equals(type, MessageType.DatingResult) && viewholder.iv_avatar!=null) {
+
+				viewholder.iv_avatar.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+
+
+						ViewsUtils.preventViewMultipleClick(v, 1000);
+						hideSoftInputView((Activity) mContext);
+						Bundle bundle = new Bundle();
+						bundle.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+						LogUtils.e("卧槽来了="+YPApplication.getInstance().loginUser.getUserId());
+						ActivityUtil.jump(mContext, UserInfoActivity.class,bundle, 0, 100);
+					}
+				});
+
+				try {
+					LoginUserInfo userInfodto = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", YPApplication.getInstance().loginUser.getUserId()));
+
+					if (userInfodto != null) {
+						UserDto userdto = JsonUtils.fromJson(userInfodto.getResp(), UserDto.class);
+
+						String imageurl=ImgUtils.DealImageUrl(userdto.getProfile().getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+
+						if(!((Activity) mContext).isFinishing()){
+							Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(viewholder.iv_avatar);
+						}
+					}
+				} catch (DbException e) {
+					e.printStackTrace();
+				}
+
+			}
+
+			// 图片类型
+
+			if (TextUtils.equals(type, MessageType.Img)) {// 图片类型
+
+				ImgMsg chatMsg=JsonUtils.fromJson(message,ImgMsg.class);
+
+				double w =  chatMsg.getW();
+				double h =chatMsg.getH();
+				LogUtils.e("消息w="+w+"--h="+h);
+				float dip=UnitUtil.getScreenDIP(mContext);
+
+				if(w==0 || h==0){
+					w=640;
+					h=960;
+				}
+				if(w>h){
+					double mulriple=w/100;
+					h=h/mulriple;
+					w=100;
+					LogUtils.e("消息mulriple="+mulriple);
+				}else{
+					double mulriple=h/100;
+					w=w/mulriple;
+					LogUtils.e("消息mulriple="+mulriple);
+					h=100;
+				}
+
+				LogUtils.e("消息w="+(int)(w*dip)+"--h="+(int)(h*dip));
+				LayoutParams para = viewholder.chat_item_image_layout.getLayoutParams();
+				para.height = (int)(h*dip);
+				para.width = (int)(w*dip);
+				//
+				//
+				viewholder.chat_item_image_layout.setLayoutParams(para);
+				//
+
+				viewholder.image_iv.setType(XCRoundImageViewByXfermode.TYPE_ROUND);
+				viewholder.image_iv.setRoundBorderRadius(60);
+
+				viewholder.image_bg_iv.setType(XCRoundImageViewByXfermode.TYPE_ROUND);
+				viewholder.image_bg_iv.setRoundBorderRadius(60);
+
+				String filePath = chatdto.getFile_url();
+				// 判断数据库里是否有本地图片路径
+				if (!TextUtils.isEmpty(filePath)) {// 不为空时，存在
+					// 判断本地图片是否存在
+					if (ImgUtils.fileIsExists(filePath)) {// 本地图片存在
+						// 加载本地图片(路径以/开头， 绝对路径)
+						if(!((Activity) mContext).isFinishing()){
+							Glide.with(mContext).load("file://" + filePath).into(viewholder.image_iv);
+						}
+					} else {// 本地不存在
+						String imageurl=ImgUtils.DealImageUrl(chatMsg.getUrl(), (int)w, (int)h);
+						if(!((Activity) mContext).isFinishing()){
+							Glide.with(mContext).load(imageurl).into(viewholder.image_iv);
+						}
+					}
+
+				} else {// 不存在
+					String imageurl=ImgUtils.DealImageUrl(chatMsg.getUrl(), (int)w, (int)h);
+					if(!((Activity) mContext).isFinishing()){
+						Glide.with(mContext).load(imageurl).into(viewholder.image_iv);
+					}
+				}
+
+			}
+
+
+			if (chatdto.getSend_status() == 0) {
+				// 发送失败
+				if (TextUtils.equals(type, MessageType.Img)) {// 图片类型
+					viewholder.image_progress_tv.setVisibility(View.GONE);
+					viewholder.image_bg_iv.setVisibility(View.GONE);
+				}
+
+				if (viewholder.pb_send_status != null && viewholder.send_fail_iv!=null) {
+					viewholder.pb_send_status.setVisibility(View.GONE);
+					viewholder.send_fail_iv.setVisibility(View.VISIBLE);
+				}
+
+			} else if (chatdto.getSend_status() == 2) {
+				// 发送中
+				if (TextUtils.equals(type, MessageType.Img)) {// 图片类型
+
+					viewholder.image_bg_iv.setVisibility(View.VISIBLE);
+
+					viewholder.image_progress_tv.setVisibility(View.GONE);
+
+				}
+				if (viewholder.pb_send_status != null && viewholder.send_fail_iv!=null) {
+					viewholder.pb_send_status.setVisibility(View.VISIBLE);
+
+					viewholder.send_fail_iv.setVisibility(View.GONE);
+				}
+
+			} else {
+				// 发送成功
+				if (TextUtils.equals(type, MessageType.Img)) {
+					viewholder.image_progress_tv.setVisibility(View.GONE);
+					viewholder.image_bg_iv.setVisibility(View.GONE);
+				}
+
+				if (viewholder.pb_send_status != null && viewholder.send_fail_iv!=null) {
+					viewholder.pb_send_status.setVisibility(View.GONE);
+					viewholder.send_fail_iv.setVisibility(View.GONE);
+				}
+
+			}
+
+			if (TextUtils.equals(type, MessageType.Attraction) && viewholder.text_message_tv!=null) {
+				SpannableString spannableString = FaceTextUtils.toSpannableString(mContext, "赠送[P果]");
+				viewholder.text_message_tv.setText(spannableString,TextView.BufferType.SPANNABLE);
+			}
+
+		} else {
+			// 加载对方头像
+			// iv_avatar
+
+			if (!TextUtils.equals(type, MessageType.DatingResult) && !TextUtils.equals(type,MessageType.Attraction) && viewholder.iv_avatar!=null) {
+				String objectJid = chatdto.getJid();
+				final String userid = objectJid.substring(0,objectJid.indexOf("@"));
+				try {
+
+					BaseUser baseUser = YPApplication.getInstance().db.findFirst(Selector.from(BaseUser.class).where(" id", " =", userid));
+
+					if(baseUser!=null){
+						String imageurl=ImgUtils.DealImageUrl(baseUser.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+						if(!((Activity) mContext).isFinishing()){
+							Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(viewholder.iv_avatar);
+						}
+					}
+				} catch (DbException e) {
+					e.printStackTrace();
+				}
+
+				viewholder.iv_avatar.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						ViewsUtils.preventViewMultipleClick(v, 1000);
+
+						int userId=Integer.valueOf(userid);
+
+						if(YpSettings.isTest){
+							if(userId==129319){
+								return;
+							}
+						}else{
+							if(userId==103835){
+								return;
+							}
+						}
+
+						hideSoftInputView((Activity) mContext);
+						Bundle bundle = new Bundle();
+						bundle.putInt(YpSettings.USERID,userId);
+						ActivityUtil.jump(mContext, UserInfoActivity.class,bundle, 0, 100);
+					}
+				});
+
+			}
+
+
+			if (TextUtils.equals(type, MessageType.Attraction)) {
+
+				if(viewholder.others_message_hint_tv!=null){
+					viewholder.others_message_hint_tv.setText("收到P果,魅力值提升了");
+				}
+			}
+
+			// 图片类型
+
+			if (TextUtils.equals(type, MessageType.Img)) {// 图片类型
+
+				LogUtils.e("消息"+message);
+
+				ImgMsg chatMsg=JsonUtils.fromJson(message,ImgMsg.class);
+
+				if(chatMsg!=null){
+
+
+					double w =  chatMsg.getW();
+					double h =chatMsg.getH();
+					LogUtils.e("消息w="+w+"--h="+h);
+					float dip=UnitUtil.getScreenDIP(mContext);
+
+					if(w==0 || h==0){
+						w=640;
+						h=960;
+					}
+					if(w>h){
+						double mulriple=w/100;
+						h=h/mulriple;
+						w=100;
+						LogUtils.e("消息mulriple="+mulriple);
+					}else{
+						double mulriple=h/100;
+						w=w/mulriple;
+						LogUtils.e("消息mulriple="+mulriple);
+						h=100;
+					}
+
+					LogUtils.e("消息w="+(int)(w*dip)+"--h="+(int)(h*dip));
+					LayoutParams para = viewholder.chat_item_image_layout.getLayoutParams();
+					para.height = (int)(h*dip);
+					para.width = (int)(w*dip);
+
+					viewholder.image_iv.setType(XCRoundImageViewByXfermode.TYPE_ROUND);
+					viewholder.image_iv.setRoundBorderRadius(60);
+
+					viewholder.chat_item_image_layout.setLayoutParams(para);
+
+					String img_url = chatMsg.getUrl();
+					if (!CheckUtil.isEmpty(img_url)) {
+						// 加载网络图片
+						String imageurl=ImgUtils.DealImageUrl(chatMsg.getUrl(), (int)w, (int)h);
+						if(!((Activity) mContext).isFinishing()){
+							Glide.with(mContext).load(imageurl).into(viewholder.image_iv);
+						}
+					}
+				}
+			}
+
+		}
+
+		// 消息时间的显示和设置
+		long current_msg_time = chatdto.getDate();
+
+		if(viewholder.chat_time_tv!=null){
+
+
+			if (position == 0) {
+				Date date = new Date(current_msg_time);
+				if (!TimeUtil.isToday(current_msg_time)) {
+					// 消息时间不是当天
+					viewholder.chat_time_tv.setText(TimeUtil.getDateTimeString(current_msg_time));
+					viewholder.chat_time_tv.setVisibility(View.VISIBLE);
+
+				} else {
+					viewholder.chat_time_tv.setText(TimeUtil.gethour_minString(current_msg_time));
+					viewholder.chat_time_tv.setVisibility(View.VISIBLE);
+				}
+
+			} else {
+
+				Date date = new Date(current_msg_time);
+				long pre_msg_time = list.get(position - 1).getDate();
+				if (!TimeUtil.isToday(current_msg_time)) {
+					// 消息时间不是当天
+					// 判断跟上一条消息的时间差 一分钟则显示
+					if (TimeUtil.getIntervalDays(current_msg_time, pre_msg_time)) {
+						viewholder.chat_time_tv.setText(TimeUtil.getDateTimeString(current_msg_time));
+						viewholder.chat_time_tv.setVisibility(View.VISIBLE);
+					} else {
+						viewholder.chat_time_tv.setVisibility(View.GONE);
+					}
+				} else {
+					// 是当天 判断与上一条消息时间差 超过60秒就显示
+
+					if (TimeUtil.getIntervalDays(pre_msg_time, current_msg_time)) {
+						viewholder.chat_time_tv.setText(TimeUtil.gethour_minString(current_msg_time));
+						viewholder.chat_time_tv.setVisibility(View.VISIBLE);
+					} else {
+						viewholder.chat_time_tv.setVisibility(View.GONE);
+					}
+
+				}
+
+			}
+		}
+		// 文字表情消息
+		// TextUtils.equals(chatMsg.getType(),MessageType.Text)
+
+		if (type.equals(MessageType.Text)  && viewholder.text_message_tv!=null) {
+			TextMsg chatMsg = JsonUtils.fromJson(message, TextMsg.class);
+
+			if (!CheckUtil.isEmpty(chatMsg.getText())) {
+				SpannableString spannableString = FaceTextUtils.toSpannableString(mContext, chatMsg.getText());
+				viewholder.text_message_tv.setText(spannableString, TextView.BufferType.SPANNABLE);
+			}
+			//
+			String content = chatMsg.getText();
+			if (!CheckUtil.isEmpty(content)) {
+
+				if (content.contains("照片邀请通知\n")) {
+					if (viewholder.text_message_tv != null) {
+						viewholder.text_message_tv.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+
+								Bundle bundle = new Bundle();
+								bundle.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+								//去资料编辑
+								ActivityUtil.jump(mContext, UserInfoEditActivity.class, bundle, 0, 100);
+							}
+						});
+					}
+				} else if (content.contains("视频邀请通知\n") || content.contains("视频公开邀请通知\n")) {
+					if (viewholder.text_message_tv != null) {
+						viewholder.text_message_tv.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								Bundle bundle = new Bundle();
+								bundle.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+								//去视频过度页面
+								ActivityUtil.jump(mContext, VideoDetailGetActivity.class, bundle, 0, 100);
+							}
+						});
+					}
+				}
+
+			}
+		}
+		if (type.equals(MessageType.Img)) {
+			final ImgMsg chatMsg=JsonUtils.fromJson(message,ImgMsg.class);
+			viewholder.chat_item_image_layout.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+
+					ViewsUtils.preventViewMultipleClick(v, 1000);
+					String filePath = chatdto.getFile_url();
+					// 判断数据库里是否有本地图片路径
+					if (!TextUtils.isEmpty(filePath)) {// 不为空时，存在
+						// 判断本地图片是否存在
+						if (ImgUtils.fileIsExists(filePath)) {// 本地图片存在
+
+							// 加载本地图片(路径以/开头， 绝对路径)
+
+							Intent intent = new Intent(mContext,ChatImageShowActivity.class);
+							Bundle bundle = new Bundle();
+							bundle.putString(YpSettings.CHAT_IMAGE_URL,"file://" + filePath);
+							intent.putExtras(bundle);
+							mContext.startActivity(intent);
+
+						} else {// 本地不存在
+
+							Intent intent = new Intent(mContext,ChatImageShowActivity.class);
+							Bundle bundle = new Bundle();
+							bundle.putString(YpSettings.CHAT_IMAGE_URL,chatMsg.getUrl());
+							intent.putExtras(bundle);
+							mContext.startActivity(intent);
+						}
+
+					} else {// 不存在
+
+						Intent intent = new Intent(mContext,ChatImageShowActivity.class);
+						Bundle bundle = new Bundle();
+						bundle.putString(YpSettings.CHAT_IMAGE_URL,chatMsg.getUrl());
+						intent.putExtras(bundle);
+						mContext.startActivity(intent);
+
+					}
+				}
+			});
+			// }
+
+		}
+
+
+		// 约会类型
+		if (TextUtils.equals(type, MessageType.Appointment) && viewholder.appointment_type_iv!=null && viewholder.appointment_layout!=null) {
+			final AppointmentMsg chatMsg=JsonUtils.fromJson(message,AppointmentMsg.class);
+
+			LogUtils.e("-----------"+message);
+
+			if (!CheckUtil.isEmpty(chatMsg.getDateContent()) && viewholder.appointment_address_tv!=null) {
+				viewholder.appointment_address_tv.setText(chatMsg.getDateContent());
+			}
+
+			// 约会
+			// 点击去约会详情页面
+			viewholder.appointment_layout.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					ViewsUtils.preventViewMultipleClick(v, 1000);
+					// 跳转
+					Bundle bundle = new Bundle();
+					bundle.putString(YpSettings.APPOINTMENT_ID, chatMsg.getDateId());
+					ActivityUtil.jump(mContext,AppointmentDetailActivity.class,bundle, 0, 100);
+
+				}
+			});
+
+			switch (chatMsg.getDateType()) {
+				case Constant.APPOINT_TYPE_EAT:
+
+					viewholder.appointment_type_iv.setBackgroundResource(R.drawable.chat_appoint_eat);
+					break;
+
+				case Constant.APPOINT_TYPE_COFFEE:
+
+					viewholder.appointment_type_iv.setBackgroundResource(R.drawable.chat_appoint_coffee);
+					break;
+
+				case Constant.APPOINT_TYPE_BAR:
+					viewholder.appointment_type_iv.setBackgroundResource(R.drawable.chat_appoint_bar);
+					break;
+
+				case Constant.APPOINT_TYPE_DOG:
+					viewholder.appointment_type_iv.setBackgroundResource(R.drawable.chat_appoint_dog);
+					break;
+
+				case Constant.APPOINT_TYPE_MOVIE:
+					viewholder.appointment_type_iv.setBackgroundResource(R.drawable.chat_appoint_movie);
+					break;
+
+				case Constant.APPOINT_TYPE_FITNESS:
+					viewholder.appointment_type_iv.setBackgroundResource(R.drawable.chat_appoint_fitness);
+					break;
+
+				case Constant.APPOINT_TYPE_KTV:
+					viewholder.appointment_type_iv.setBackgroundResource(R.drawable.chat_appoint_ktv);
+					break;
+				default :
+					break;
+			}
+
+
+		}
+
+
+		if (viewholder.send_fail_iv != null) {
+			viewholder.send_fail_iv.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					ViewsUtils.preventViewMultipleClick(arg0, 1000);
+					showDialog(chatdto);
+				}
+			});
+		}
+
+		return convertView;
+
+	}
+
+
+	/**
+	 *
+	 * 清理缓存提示框 可自行设置标题 提示内容 以及按钮文本
+	 */
+
+	public void showDialog(final ChatDto dto) {
+
+		// 初始化一个自定义的Dialog
+		dialog = new MyDialog(mContext, R.style.MyDialog,R.layout.my_hint_operate_dialog_layout,new MyDialog.DialogEventListener() {
+
+			@Override
+			public void onInit(View contentView) {
+
+				TextView my_dialog_hint_title = (TextView) contentView.findViewById(R.id.my_dialog_hint_title);
+				TextView my_dialog_hint_content = (TextView) contentView.findViewById(R.id.my_dialog_hint_content);
+				TextView my_dialog_hint_ensure = (TextView) contentView.findViewById(R.id.my_dialog_hint_ensure);
+				TextView my_dialog_hint_cancel = (TextView) contentView.findViewById(R.id.my_dialog_hint_cancel);
+
+				my_dialog_hint_title.setText("提示");
+				my_dialog_hint_title.setVisibility(View.GONE);
+				my_dialog_hint_content.setText("是否要重新发送此条消息？");
+				my_dialog_hint_ensure.setText("重发");
+				my_dialog_hint_cancel.setText("取消");
+
+				// 点击保存按钮
+				my_dialog_hint_ensure.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						ViewsUtils.preventViewMultipleClick(v,1000);
+
+						dto.setSend_status(ChatDto.sending);
+
+						String message = dto.getMessage();
+						String type=ChatUtils.getMsgType(message);
+
+						if (TextUtils.equals(type,MessageType.Img)) {
+
+							ImgMsg chatMsg=JsonUtils.fromJson(message,ImgMsg.class);
+							if (CheckUtil.isEmpty(chatMsg.getUrl())) {
+								ChatActivity.uploadingImg(dto.getFile_url(),dto.getDate(),chatMsg.getW(),chatMsg.getH(),dto.getPacketid());
+							} else {
+								YpSettings.xxservice.sendMessage(dto.getJid(),dto.getMessage(),dto.getDate(),dto.getPacketid());
+							}
+						} else if(TextUtils.equals(type,MessageType.Attraction)){
+							ChatActivity.send_attraction(dto.getMessage(),dto.getJid(),dto.getDate(),dto.getPacketid());
+						}else{
+
+							YpSettings.xxservice.sendMessage(dto.getJid(),dto.getMessage(),dto.getDate(),dto.getPacketid());
+						}
+						notifyDataSetChanged();
+
+						dialog.dismiss();
+					}
+
+				});
+				// 点击取消按钮
+				my_dialog_hint_cancel.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+
+						dialog.dismiss();
+
+					}
+				});
+
+			}
+		});
+
+		dialog.show();
+	}
+
+	public void hideSoftInputView(Activity activity) {
+		InputMethodManager manager = ((InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE));
+		if (activity.getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+			if (activity.getCurrentFocus() != null)
+				manager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+	}
+
+	public void setData(List<ChatDto> list) {
+		this.list = list;
+		notifyDataSetChanged();
+	}
+
+	public List<ChatDto> getDatas() {
+		return list;
+	}
+
+}

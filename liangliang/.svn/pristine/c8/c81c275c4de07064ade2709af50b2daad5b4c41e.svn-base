@@ -1,0 +1,50 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+/**
+ * Created by SQ on 2015/12/23.
+ */
+public class MatchScore implements Serializable{
+    private static final transient  long serialVersionUID = 1L;
+    //资料匹配度
+    private int  profile;
+    //安全匹配度
+    private int  safety;
+    //亲密匹配度
+    private int   magic;
+    //总的匹配度
+    private int  totalMatch;
+
+    public int getProfile() {
+        return profile;
+    }
+
+    public void setProfile(int profile) {
+        this.profile = profile;
+    }
+
+    public int getSafety() {
+        return safety;
+    }
+
+    public void setSafety(int safety) {
+        this.safety = safety;
+    }
+
+    public int getMagic() {
+        return magic;
+    }
+
+    public void setMagic(int magic) {
+        this.magic = magic;
+    }
+
+    public int getTotalMatch() {
+        return totalMatch;
+    }
+
+    public void setTotalMatch(int totalMatch) {
+        this.totalMatch = totalMatch;
+    }
+}

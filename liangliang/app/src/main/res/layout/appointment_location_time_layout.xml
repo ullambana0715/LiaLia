@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/corners_white_style"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/appointment_movie_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                android:gravity="center_vertical"
+                android:text="@string/text_movie_name"
+                android:textSize="14sp"
+                android:textColor="@color/color_9a9a9a"
+
+                />
+
+            <TextView
+                android:id="@+id/appointment_movie_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                android:enabled="true"
+                android:gravity="right|center_vertical"
+                android:hint="@string/text_movie_name_select"
+                android:maxLines="1"
+                android:paddingLeft="12dp"
+                android:textColor="@color/color_333333"
+                android:textColorHint="@color/color_b2b2b2"
+                android:textSize="15sp"
+
+                />
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/travel_arrow" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="12dp"
+            android:background="@color/color_eeeeee"
+
+            ></View>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/appointment_theme_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                android:gravity="center_vertical"
+                android:text="@string/text_theme"
+                android:textSize="14sp"
+                android:textColor="@color/color_9a9a9a"
+
+                />
+
+            <TextView
+                android:id="@+id/appointment_theme_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                android:enabled="true"
+                android:gravity="right|center_vertical"
+                android:hint="@string/text_theme_select"
+                android:maxLines="1"
+                android:paddingLeft="12dp"
+                android:textColor="@color/color_333333"
+                android:textColorHint="@color/color_b2b2b2"
+                android:textSize="15sp"
+
+                />
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/travel_arrow" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="12dp"
+            android:background="@color/color_eeeeee"
+
+            ></View>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/appointment_dog_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                android:gravity="center_vertical"
+                android:text="@string/text_dog_species"
+                android:textSize="14sp"
+                android:textColor="@color/color_9a9a9a"
+
+                />
+
+            <TextView
+                android:id="@+id/appointment_dog_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                android:enabled="true"
+                android:gravity="right|center_vertical"
+                android:hint="@string/text_dog_species_select"
+                android:maxLines="1"
+                android:paddingLeft="12dp"
+                android:textColor="@color/color_333333"
+                android:textColorHint="@color/color_b2b2b2"
+                android:textSize="15sp"
+
+                />
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/travel_arrow" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="12dp"
+            android:background="@color/color_eeeeee"
+
+            ></View>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:gravity="center_vertical"
+            android:text="@string/text_location"
+            android:textSize="14sp"
+            android:textColor="@color/color_9a9a9a"
+
+            />
+
+        <TextView
+            android:id="@+id/appointment_location_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:gravity="right|center_vertical"
+            android:hint="@string/text_location_select"
+            android:maxLines="1"
+            android:paddingLeft="12dp"
+            android:textColor="@color/color_333333"
+            android:textColorHint="@color/color_b2b2b2"
+            android:textSize="15sp"
+
+            />
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/travel_arrow" />
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="12dp"
+        android:background="@color/color_eeeeee"
+
+        ></View>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:text="@string/text_time"
+            android:textColor="@color/color_9a9a9a"
+
+            />
+
+
+        <TextView
+            android:id="@+id/appointment_tiem"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:gravity="right|center_vertical"
+            android:hint="@string/text_time_select"
+            android:maxLines="1"
+            android:paddingLeft="12dp"
+            android:textColor="@color/color_333333"
+            android:textColorHint="@color/color_b2b2b2"
+            android:textSize="15sp"
+
+            />
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/travel_arrow" />
+    </LinearLayout>
+</LinearLayout>

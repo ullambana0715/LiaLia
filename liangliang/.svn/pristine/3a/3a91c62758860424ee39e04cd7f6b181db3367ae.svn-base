@@ -1,0 +1,20 @@
+package cn.chono.yopper.Service.Http.Appointments;
+
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.data.UserAppointListDto;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class AppointmentsRespBean extends RespBean {
+
+    private AppointmentsResp resp;
+
+    public AppointmentsResp getResp() {
+        return resp;
+    }
+
+    public void setResp(AppointmentsResp resp) {
+        this.resp = resp;
+    }
+}

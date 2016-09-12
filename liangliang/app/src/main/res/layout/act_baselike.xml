@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/color_ffffff"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/like_goback_iv"
+            android:layout_width="60dip"
+            android:layout_height="30dip"
+            android:layout_centerVertical="true"
+            android:gravity="left|center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp">
+
+            <ImageView
+                android:id="@+id/main_frame_btnGoBack"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/icon_go_back" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:gravity="center">
+
+            <cn.chono.yopper.view.TabFragmentIndicator
+                android:id="@+id/like_tabIndicator"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@color/color_ffffff"
+                android:orientation="vertical" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tab_like_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

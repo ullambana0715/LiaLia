@@ -1,0 +1,21 @@
+package cn.chono.yopper.Service.Http.FaceratingList;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/12/8.
+ */
+public class FaceratingListRespBean extends RespBean {
+
+
+
+    private FaceratingListDto resp;
+
+    public FaceratingListDto getResp() {
+        return resp;
+    }
+
+    public void setResp(FaceratingListDto resp) {
+        this.resp = resp;
+    }
+}

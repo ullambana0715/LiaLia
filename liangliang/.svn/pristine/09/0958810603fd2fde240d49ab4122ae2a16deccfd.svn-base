@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"> 
+    
+    <item android:state_activated="true" android:drawable="@drawable/textcolor_qupai_press"/>
+    
+    <item android:drawable="@drawable/textcolor_qupai_normal"/>
+
+</selector><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/textcolor_qupai_selector.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/textcolor_qupai_selector.xml -->

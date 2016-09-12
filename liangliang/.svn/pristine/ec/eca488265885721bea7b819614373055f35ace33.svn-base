@@ -1,0 +1,992 @@
+package cn.chono.yopper.activity.near;
+
+import android.app.Dialog;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.provider.Settings;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.baidu.mapapi.model.LatLng;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.BubblingBubblePraise.BubblingBubblePraiseBean;
+import cn.chono.yopper.Service.Http.BubblingBubblePraise.BubblingBubblePraiseService;
+import cn.chono.yopper.Service.Http.BubblingNearby.BubblingNearbyBean;
+import cn.chono.yopper.Service.Http.BubblingNearby.BubblingNearbyRespBean;
+import cn.chono.yopper.Service.Http.BubblingNearby.BubblingNearbyService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpBaseFragment;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.base.DiscoverListFragment;
+import cn.chono.yopper.activity.base.IndexActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.activity.video.VideoDetailGetActivity;
+import cn.chono.yopper.adapter.DiscoverBubblingAdapter;
+import cn.chono.yopper.adapter.DiscoverBubblingAdapter.OnItemClickLitener;
+import cn.chono.yopper.data.BubblingDto;
+import cn.chono.yopper.data.BubblingList;
+import cn.chono.yopper.data.BubblingList.Location;
+import cn.chono.yopper.data.DiscoverBubblingLocalDto;
+import cn.chono.yopper.data.ZoomViewerDto;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+import cn.chono.zxb.xrefreshview.XRefreshView.SimpleXRefreshListener;
+
+public class DiscoverBubblingFragment extends YpBaseFragment implements OnItemClickLitener, OnClickListener, DiscoverListFragment.OnBubbleBackToTopListener ,DiscoverListFragment.OnDiscoverItmeBubblingListener{
+
+    private XRefreshView xrefreshView;
+
+    private ListView listView;
+
+    private DiscoverBubblingAdapter adapter;
+
+    private double _latitude;
+    private double _longtitude;
+    private double _radii = 5.0;
+
+    private int _start = 0;
+    private int _total = 0;
+
+    private Animation mRotateAnimation;
+
+    private boolean haveFilterData = false;
+    private boolean haveFilterListData = false;
+    private boolean haveGpsTag;
+
+    private TextView error_location_tv;
+    private TextView error_network_tv;
+    private TextView error_no_data_tv;
+    private ImageView error_to_load_img;
+    private ImageView error_no_data_img;
+
+    private LinearLayout error_location_layout;
+    private LinearLayout error_network_layout;
+    private LinearLayout error_no_data_layout;
+    private LinearLayout error_to_load_layout;
+
+    private boolean isOnRefresh = true;
+    private boolean isOnLoadMore = true;
+
+    private boolean isgetLoc = false;
+
+    private String _Time = "";
+
+    private LocInfo myLoc;
+
+    private boolean goSetLocationg=false;
+
+
+
+
+
+    @Override
+    @Nullable
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View contentView = inflater.inflate(R.layout.discover_bubbling_fragment, container, false);
+        PushAgent.getInstance(getActivity()).onAppStart();
+        IndexActivity.setOnBubbleBackToTopListener(this);
+//		YpBaseFragment.setOnBubbleBackToTopListener(this);
+        YpBaseFragment.setOnDiscoverItmeBubblingListener(this);
+
+        initView(contentView);
+
+        if (YpBaseFragment.isItmeBubbling){
+            initData();
+            getLocAndInit();
+        }
+
+
+        return contentView;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (IndexActivity.selected_menu_type == 1) {
+
+            MobclickAgent.onPageStart("附近 (冒泡)"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+            MobclickAgent.onResume(getActivity()); // 统计时长
+
+        }
+
+        if (YpBaseFragment.isItmeBubbling&&goSetLocationg) {
+            getLocAndInit();
+        }
+    }
+
+    private void getLocAndInit(){
+
+        haveGpsTag = Loc.isGpsAvailable();
+        if (!haveGpsTag) {
+            // 未开启定位权限
+
+            error_to_load_layout.setVisibility(View.GONE);
+            error_network_layout.setVisibility(View.GONE);
+
+            if (haveFilterData) {
+                error_location_layout.setVisibility(View.GONE);
+                if (haveFilterListData) {
+                    xrefreshView.setVisibility(View.VISIBLE);
+                    error_no_data_layout.setVisibility(View.GONE);
+                } else {
+                    xrefreshView.setVisibility(View.GONE);
+                    error_no_data_layout.setVisibility(View.VISIBLE);
+
+                }
+                // 提示未开启定位
+                locDialog = DialogUtil.createHintOperateDialog(getActivity(), "定位服务未开启", "开启定位服务以看到附近用户", "取消", "立即开启", locbackCallListener);
+                locDialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+                if (!getActivity().isFinishing()) {
+                    locDialog.show();
+                }
+
+            } else {
+                error_location_layout.setVisibility(View.VISIBLE);
+                xrefreshView.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+            }
+
+        } else {
+            error_location_layout.setVisibility(View.GONE);
+            error_network_layout.setVisibility(View.GONE);
+
+            if (haveFilterData) {
+                if (haveFilterListData) {
+                    xrefreshView.setVisibility(View.VISIBLE);
+                    error_no_data_layout.setVisibility(View.GONE);
+                } else {
+                    xrefreshView.setVisibility(View.GONE);
+                    error_no_data_layout.setVisibility(View.VISIBLE);
+                    initRotateAnimation();
+                }
+
+            } else {
+                xrefreshView.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.VISIBLE);
+                initRotateAnimation();
+            }
+            getLocinfo();
+            boolean isRefresh = SharedprefUtil.getBoolean(getActivity(), YpSettings.BUBBLING_PUBLISH, false);
+            if (isRefresh) {
+                _start = 0;
+                onRefreshData(_start);
+                SharedprefUtil.saveBoolean(getActivity(), YpSettings.BUBBLING_PUBLISH, false);// 保存为true，标记冒泡列表要刷新
+            }
+        }
+    }
+
+    private Dialog locDialog;
+
+    private BackCallListener locbackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!getActivity().isFinishing()) {
+                locDialog.dismiss();
+            }
+            goSetLocationg=true;
+            try {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            } catch (Exception e) {
+                Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                startActivity(intent);
+            }
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!getActivity().isFinishing()) {
+                locDialog.dismiss();
+            }
+
+        }
+    };
+
+
+    private  void getLocinfo() {
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int count = 0;
+                while (true) {
+                    boolean isExist = Loc.IsLocExist();
+                    if (isExist) {
+                        break;
+                    }
+                    count++;
+                    if (count > 9) {
+                        break;
+                    }
+                    SystemClock.sleep(1000);
+                }
+
+                myLoc = Loc.getLoc();
+                if (myLoc != null && myLoc.getLoc() != null) {
+                    LocHandler.sendEmptyMessage(1);
+
+                } else {
+                    LocHandler.sendEmptyMessage(0);
+                }
+            }
+        }).start();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("附近 (冒泡)"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(getActivity()); // 统计时长
+
+    }
+
+    /**
+     * 组件初始化
+     *
+     * @param contentView
+     */
+    private void initView(View contentView) {
+        xrefreshView = (XRefreshView) contentView.findViewById(R.id.xrefreshview_View);
+        listView = (ListView) contentView.findViewById(R.id.listView);
+
+        adapter = new DiscoverBubblingAdapter(getActivity());
+
+        adapter.setOnItemClickLitener(this);
+
+        listView.setAdapter(adapter);
+        error_location_tv = (TextView) contentView.findViewById(R.id.error_location_tv);
+        error_network_tv = (TextView) contentView.findViewById(R.id.error_network_tv);
+        error_no_data_tv = (TextView) contentView.findViewById(R.id.error_no_data_tv);
+        error_to_load_img = (ImageView) contentView.findViewById(R.id.error_to_load_img);
+        error_no_data_img = (ImageView) contentView.findViewById(R.id.error_no_data_img);
+
+        error_location_layout = (LinearLayout) contentView.findViewById(R.id.error_location_layout);
+        error_network_layout = (LinearLayout) contentView.findViewById(R.id.error_network_layout);
+        error_no_data_layout = (LinearLayout) contentView.findViewById(R.id.error_no_data_layout);
+        error_to_load_layout = (LinearLayout) contentView.findViewById(R.id.error_to_load_layout);
+
+        error_network_tv.setOnClickListener(this);
+        error_location_tv.setOnClickListener(this);
+
+        error_no_data_tv.setText(R.string.error_bubbling_hini);
+        error_no_data_img.setImageResource(R.drawable.error_bubbling_message);
+
+        xrefreshView.setAutoLoadMore(true);
+        xrefreshView.setPinnedTime(1000);
+
+        xrefreshView.setCustomHeaderView(new CustomHeaderAnim(getActivity()));
+        // 处理ViewPager冲突
+        xrefreshView.setMoveForHorizontal(true);
+        // 设置静默加载模式
+        xrefreshView.setSlienceLoadMore();
+        // 设置静默加载时提前加载的item个数
+        xrefreshView.setPreLoadCount(10);
+        xrefreshView.setXRefreshViewListener(new SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (isOnRefresh) {
+                            isOnRefresh = false;
+                            _start = 0;
+                            onRefreshData(_start);
+                        }
+
+                        xrefreshView.stopRefresh();
+                    }
+                }, 2000);
+            }
+
+            @Override
+            public void onLoadMore(boolean isSlience) {
+                super.onLoadMore(isSlience);
+                LogUtils.e("--------------------上拉了");
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        if (isOnLoadMore) {
+
+                            if (_total >= _start) {
+                                isOnLoadMore = false;
+                                onLoadMoreData(_start);
+                            }
+
+                        }
+
+                        // 刷新完成必须调用此方法停止加载
+                        xrefreshView.stopLoadMore();
+                    }
+                }, 500);
+
+            }
+
+        });
+
+    }
+
+    private void initData() {
+
+        String dataStr = grtDataLocal(YPApplication.loginUser.getUserId());
+
+        if (!TextUtils.isEmpty(dataStr)) {
+            BubblingDto bubblinDto = JsonUtils.fromJson(dataStr, BubblingDto.class);
+
+            if (bubblinDto != null) {
+                List<BubblingList> list = bubblinDto.getList();
+                haveFilterData = true;
+                if (list != null && list.size() > 0) {// 有数据
+                    haveFilterListData = true;
+                    error_no_data_layout.setVisibility(View.GONE);
+                    xrefreshView.setVisibility(View.VISIBLE);
+
+                    adapter.setData(list);
+                    adapter.notifyDataSetChanged();
+
+                } else {// 还是没有数据
+                    haveFilterListData = false;
+                    error_no_data_layout.setVisibility(View.VISIBLE);
+                    xrefreshView.setVisibility(View.GONE);
+                }
+
+            } else {// 还是数据为空时
+                haveFilterData = false;
+                haveFilterListData = false;
+                xrefreshView.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.VISIBLE);
+                initRotateAnimation();
+            }
+
+        } else {// 为空就是没有数据
+            haveFilterData = false;
+            haveFilterListData = false;
+            // 没有本地数据
+            xrefreshView.setVisibility(View.GONE);
+            error_to_load_layout.setVisibility(View.VISIBLE);
+            initRotateAnimation();
+
+        }
+
+    }
+
+    private Handler LocHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            try {
+
+                if (msg.what == 0) {// 定位失败
+
+                    // 动画回收
+                    removeRotateAnimation();
+
+                    if (haveFilterData) {
+                        if (haveFilterListData) {
+                            xrefreshView.setVisibility(View.VISIBLE);
+                            error_no_data_layout.setVisibility(View.GONE);
+                        } else {
+                            xrefreshView.setVisibility(View.GONE);
+                            error_no_data_layout.setVisibility(View.VISIBLE);
+                        }
+                        // 提示定位失败
+//						DialogUtil.showDisCoverNetToast(getActivity(),"获取位置失败");
+                    } else {
+                        xrefreshView.setVisibility(View.GONE);
+                        error_no_data_layout.setVisibility(View.GONE);
+                        error_to_load_layout.setVisibility(View.GONE);
+                        error_location_layout.setVisibility(View.VISIBLE);
+                    }
+
+                    LogUtils.e("--------------你妈----------");
+
+                } else if (msg.what == 1) {// 找到位置
+                    isgetLoc = true;
+                    _latitude = myLoc.getLoc().getLatitude();
+                    _longtitude = myLoc.getLoc().getLongitude();
+                    _start = 0;
+
+                    LogUtils.e("--------------LocHandler----------");
+                    onRefreshData(_start);
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+    private void onRefreshData(final int start) {
+
+        LocInfo myLoc = Loc.getLoc();
+        if (myLoc != null && myLoc.getLoc() != null) {
+            _latitude=myLoc.getLoc().getLatitude();
+            _longtitude=myLoc.getLoc().getLongitude();
+        }
+
+        if (_latitude == 0 && _longtitude == 0) {
+            return;
+        }
+
+        LatLng pt = new LatLng(_latitude, _longtitude);
+        pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+        _Time = "";
+
+
+        BubblingNearbyBean nearbyBean = new BubblingNearbyBean();
+        nearbyBean.setLng(pt.longitude);
+        nearbyBean.setLat(pt.latitude);
+        nearbyBean.setStart(start);
+        nearbyBean.setRows(20);
+        nearbyBean.setR(_radii);
+        nearbyBean.setTime(_Time);
+
+        BubblingNearbyService nearbyService = new BubblingNearbyService(getActivity());
+
+        nearbyService.parameter(nearbyBean);
+        nearbyService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BubblingNearbyRespBean nearbyRespBean = (BubblingNearbyRespBean) respBean;
+                BubblingDto bubblinDto = nearbyRespBean.getResp();
+                String responseStr = JsonUtils.toJson(bubblinDto);
+
+                isOnRefresh = true;
+                // 定位视图隐藏 网络加载失败视图隐藏-小圆圈视图隐藏
+                // 如果没有数据，则显示无数据视图，如果有数据则刷新视图
+                // 动画回收
+                // 动画回收
+                removeRotateAnimation();
+
+                error_location_layout.setVisibility(View.GONE);
+                error_network_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+
+
+                if (bubblinDto != null) {
+                    haveFilterData = true;
+
+                    List<BubblingList> list = bubblinDto.getList();
+                    _total = bubblinDto.getTotal();
+
+                    if (list != null && list.size() > 0) {// 有数据
+
+                        _Time = list.get(0).getCreateTime();// 拿第一条数据的时间给下一次请求使用
+
+                        _start = _start + bubblinDto.getList().size();
+                        haveFilterListData = true;
+                        error_no_data_layout.setVisibility(View.GONE);
+                        xrefreshView.setVisibility(View.VISIBLE);
+                        adapter.setData(list);
+                        adapter.notifyDataSetChanged();
+
+                    } else {// 还是没有数据
+                        haveFilterListData = false;
+                        error_no_data_layout
+                                .setVisibility(View.VISIBLE);
+                        xrefreshView.setVisibility(View.GONE);
+                    }
+
+                    AsyncTask<Void, Void, Integer> async = saveDataLocal(
+                            YPApplication.loginUser.getUserId(),
+                            responseStr);
+                    async.execute();
+
+                } else {// 没有数据
+
+                    haveFilterData = false;
+                    haveFilterListData = false;
+                    error_no_data_layout.setVisibility(View.VISIBLE);
+                    xrefreshView.setVisibility(View.GONE);
+
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+
+                isOnRefresh = true;
+                // 定位视图隐藏 无数据视图隐藏-小圆圈视图隐藏-
+                // 如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                // 动画回收
+                // 动画回收
+                // 动画回收
+                removeRotateAnimation();
+
+                error_location_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+
+                if (haveFilterData) {
+                    if (haveFilterListData) {
+                        xrefreshView.setVisibility(View.VISIBLE);
+                        error_no_data_layout.setVisibility(View.GONE);
+                    } else {
+                        xrefreshView.setVisibility(View.GONE);
+                        error_no_data_layout.setVisibility(View.VISIBLE);
+                    }
+
+                    error_network_layout.setVisibility(View.GONE);
+                    // 提示连接失败
+                    DialogUtil.showDisCoverNetToast(getActivity());
+                } else {
+                    error_network_layout.setVisibility(View.VISIBLE);
+                    xrefreshView.setVisibility(View.GONE);
+                    error_no_data_layout.setVisibility(View.GONE);
+                }
+
+
+            }
+        });
+        nearbyService.enqueue();
+
+
+    }
+
+    private void onLoadMoreData(final int start) {
+
+
+        LatLng pt = new LatLng(_latitude, _longtitude);
+        pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+
+        BubblingNearbyBean nearbyBean = new BubblingNearbyBean();
+        nearbyBean.setLng(pt.longitude);
+        nearbyBean.setLat(pt.latitude);
+        nearbyBean.setStart(start);
+        nearbyBean.setRows(20);
+        nearbyBean.setR(_radii);
+        nearbyBean.setTime(_Time);
+
+        BubblingNearbyService nearbyService = new BubblingNearbyService(getActivity());
+
+        nearbyService.parameter(nearbyBean);
+        nearbyService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BubblingNearbyRespBean nearbyRespBean = (BubblingNearbyRespBean) respBean;
+                BubblingDto bubblinDto = nearbyRespBean.getResp();
+
+
+                isOnLoadMore = true;
+
+                if (bubblinDto != null) {
+                    List<BubblingList> list = bubblinDto.getList();
+                    _total = bubblinDto.getTotal();
+                    if (list != null && list.size() > 0) {
+                        _Time = list.get(0).getCreateTime();// 拿第一条数据的时间给下一次请求使用
+                        _start = _start + list.size();
+                        adapter.addData(list);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                isOnLoadMore = true;
+                // 定位视图隐藏 无数据视图隐藏-小圆圈视图隐藏-
+                // 如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                error_location_layout.setVisibility(View.GONE);
+                error_network_layout.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+                // 提示连接失败
+                DialogUtil.showDisCoverNetToast(getActivity());
+
+            }
+        });
+        nearbyService.enqueue();
+
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position, String bubblingID, BubblingList bubblingList) {
+
+        ViewsUtils.preventViewMultipleClick(view, 1000);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(YpSettings.BUBBLING_LIST_ID, bubblingID);
+        bundle.putSerializable(YpSettings.BUBBLING_LIST, bubblingList);
+
+        ActivityUtil.jump(getActivity(), BubblingInfoActivity.class, bundle, 0, 100);
+
+    }
+
+    @Override
+    public void onIconItemClick(View view, int position, List<String> list, int imgViewWidth, int imgViewHight) {
+        ViewsUtils.preventViewMultipleClick(view, 1000);
+        ZoomViewerDto sq = new ZoomViewerDto();
+        sq.setList(list);
+        sq.setPosition(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(YpSettings.ZOOM_LIST_DTO, sq);
+        ActivityUtil.jump(getActivity(), ZoomViewerActivity.class, bundle, 0, 200);
+
+    }
+
+    @Override
+    public void onPraiseClick(View view, final int position, boolean isLike, String id) {
+        ViewsUtils.preventViewMultipleClick(view, 1000);
+        boolean doisLike = false;
+        if (isLike) {
+            doisLike = false;
+        } else {
+            doisLike = true;
+        }
+        adapter.praiseIsLike(position, doisLike);
+        onPraisehttp(position, doisLike, id);
+
+    }
+
+    @Override
+    public void onUserIconItemClick(View view, int position, int userID) {
+        ViewsUtils.preventViewMultipleClick(view, 1000);
+        Bundle userbundle = new Bundle();
+        userbundle.putInt(YpSettings.USERID, userID);
+        ActivityUtil.jump(getActivity(), UserInfoActivity.class, userbundle, 0, 100);
+
+    }
+
+    @Override
+    public void onEvaluateClick(View view, int position, String bubblingID, BubblingList bubblingList) {
+        ViewsUtils.preventViewMultipleClick(view, 1000);
+        Bundle bundle = new Bundle();
+        bundle.putString(YpSettings.BUBBLING_LIST_ID, bubblingID);
+        bundle.putSerializable(YpSettings.BUBBLING_LIST, bubblingList);
+        ActivityUtil.jump(getActivity(), BubblingInfoActivity.class, bundle, 0, 100);
+
+    }
+
+    @Override
+    public void onTypeLayoutItemClick(View view, int position, Location location, String bubblingID, BubblingList bubblingList) {
+        // baiDuOverLay = new BaiDuOverLay(getActivity());
+        // baiDuOverLay.setBaiDuData(location);
+        // baiDuOverLay.showBaiDuOverLay();
+
+        ViewsUtils.preventViewMultipleClick(view, 1000);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(YpSettings.BUBBLING_LIST_ID, bubblingID);
+        bundle.putSerializable(YpSettings.BUBBLING_LIST, bubblingList);
+        ActivityUtil.jump(getActivity(), BubblingInfoActivity.class, bundle, 0, 100);
+    }
+
+    @Override
+    public void onVideoItemClick(View view, int position, int userid) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(YpSettings.USERID, userid);
+        ActivityUtil.jump(getActivity(), VideoDetailGetActivity.class, bundle, 0, 100);
+    }
+
+    private void getLocInfo() {
+
+        // 定位
+
+        // Loc.sendLocControlMessage(true);
+        if (!Loc.IsLocExist()) {
+
+            AsyncTask<Void, Void, Integer> task = new AsyncTask<Void, Void, Integer>() {
+
+                @Override
+                protected Integer doInBackground(Void... params) {
+                    int count = 0;
+                    while (true) {
+                        SystemClock.sleep(1000);
+                        boolean isExist = Loc.IsLocExist();
+                        if (isExist) {
+                            break;
+                        }
+                        count++;
+                        if (count > 9) {
+                            Loc.getLoc();
+                            break;
+                        }
+                    }
+                    LocInfo myLoc = Loc.getLoc();
+                    if (myLoc != null && myLoc.getLoc() != null) {
+
+                        if (!isgetLoc) {
+                            LocHandler.sendEmptyMessage(1);
+                        }
+
+                    } else {
+                        LocHandler.sendEmptyMessage(0);
+                    }
+
+                    return null;
+                }
+            };
+            task.execute();
+
+        } else {
+            if (!isgetLoc) {
+                LocHandler.sendEmptyMessage(1);
+            }
+        }
+
+    }
+
+    /**
+     * 获取缓存数据
+     *
+     * @param userId
+     * @return
+     */
+    private String grtDataLocal(int userId) {
+
+        try {
+            DiscoverBubblingLocalDto localDto = YPApplication.db.findFirst(Selector.from(DiscoverBubblingLocalDto.class).where("userId", " =", userId));
+            if (localDto == null) {
+                return null;
+            }
+
+            return localDto.getData();
+        } catch (DbException e) {
+            e.printStackTrace();
+
+        }
+
+        return null;
+
+    }
+
+    /**
+     * 保存数据
+     *
+     * @param userId
+     * @param data
+     * @return
+     */
+    private AsyncTask<Void, Void, Integer> saveDataLocal(final int userId, final String data) {
+
+        AsyncTask<Void, Void, Integer> task = new AsyncTask<Void, Void, Integer>() {
+
+            @Override
+            protected Integer doInBackground(Void... params) {
+
+                try {
+                    DiscoverBubblingLocalDto localDto = YPApplication.db.findFirst(Selector.from(DiscoverBubblingLocalDto.class).where("userId", " =", userId));
+
+                    if (localDto != null) {
+                        localDto.setUserId(YPApplication.loginUser.getUserId());
+                        localDto.setData(data);
+                        localDto.setTime(System.currentTimeMillis());
+                        YPApplication.db.update(localDto);
+                    } else {
+                        localDto = new DiscoverBubblingLocalDto();
+                        localDto.setUserId(YPApplication.loginUser.getUserId());
+                        localDto.setData(data);
+                        localDto.setTime(System.currentTimeMillis());
+                        YPApplication.db.save(localDto);
+                    }
+
+                } catch (DbException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        };
+        return task;
+
+    }
+
+    /**
+     * 点赞请求
+     *
+     * @param position
+     * @param islike
+     * @param id
+     */
+    private void onPraisehttp(final int position, boolean islike, String id) {
+
+
+        BubblingBubblePraiseBean praiseBean = new BubblingBubblePraiseBean();
+        praiseBean.setId(id);
+        praiseBean.setLike(islike);
+
+        BubblingBubblePraiseService praiseService = new BubblingBubblePraiseService(getActivity());
+
+        praiseService.parameter(praiseBean);
+        praiseService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+
+                String statusCode = respBean.getStatus();
+
+                LogUtils.e("卧槽请求回来了失败"+statusCode);
+
+                if (TextUtils.equals("404", statusCode)) {// 内容不存在了
+
+                    DialogUtil.showDisCoverNetToast(getActivity(), "该冒泡不存在");
+                    return;
+
+                }
+                if (TextUtils.equals("410", statusCode)) {
+                    DialogUtil.showDisCoverNetToast(getActivity(), "您访问的信息存在违规的内容");
+                    return;
+                }
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(getActivity());
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(getActivity(), msg);
+
+
+            }
+        });
+        praiseService.enqueue();
+
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.error_location_tv:
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+                try {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                    getActivity().startActivity(intent);
+                }
+
+                break;
+            case R.id.error_network_tv:
+
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+
+                error_to_load_layout.setVisibility(View.VISIBLE);
+                error_network_layout.setVisibility(View.GONE);
+                error_location_layout.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+                error_location_layout.setVisibility(View.GONE);
+                xrefreshView.setVisibility(View.GONE);
+                initRotateAnimation();
+                _start = 0;
+                onRefreshData(_start);
+
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // 动画回收
+        removeRotateAnimation();
+    }
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        // mRotateAnimation.setDuration(ROTATION_ANIMATION_DURATION);
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        error_to_load_img.setAnimation(mRotateAnimation);
+    }
+
+    /**
+     * 正在加载动画回收
+     */
+    private void removeRotateAnimation() {
+        // 动画回收
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            error_to_load_img.clearAnimation();
+        }
+    }
+
+    @Override
+    public void onBubbleBackToTop() {
+        listView.setSelection(0);
+    }
+
+    @Override
+    public void onDiscoverItmeBubbling() {
+        if (!YpBaseFragment.isItmeBubbling){
+            YpBaseFragment.isItmeBubbling=true;
+            initData();
+            getLocAndInit();
+
+        }
+
+    }
+}

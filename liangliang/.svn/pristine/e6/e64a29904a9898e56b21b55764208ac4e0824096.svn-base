@@ -1,0 +1,17 @@
+package cn.chono.yopper.Service.Http.AppointClose;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+
+public class AppointMentsCloseBean extends ParameterBean {
+
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+}

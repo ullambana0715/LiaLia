@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_gravity="top"
+             android:background="@color/color_ffffff"
+             android:gravity="top|center"
+
+    >
+
+    <cn.chono.yopper.view.WebView.PragressWebView
+        android:id="@+id/Web_wv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true"
+        android:scrollbars="none" />
+
+    <ViewStub
+        android:id="@+id/Web_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_network_layout" />
+
+    <ViewStub
+        android:id="@+id/Web_localhost_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/web_localhost_tv" />
+
+</FrameLayout>

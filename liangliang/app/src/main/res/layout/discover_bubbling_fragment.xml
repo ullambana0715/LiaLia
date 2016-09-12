@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_e3e3e3" >
+
+
+    <ViewStub
+        android:id="@+id/bubble_error_no_data_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_no_data_layout" />
+
+    <ViewStub
+        android:id="@+id/bubble_error_network_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_network_layout" />
+
+
+    <ViewStub
+        android:id="@+id/bubble_error_location_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_location_layout" />
+
+
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/xrefreshview_View"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </com.andview.refreshview.XRefreshView>
+
+
+
+</RelativeLayout>

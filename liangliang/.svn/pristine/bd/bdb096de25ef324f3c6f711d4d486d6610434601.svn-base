@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="debug"><source path="D:\android_studio_1_5\yopper_as_2.3.0\Yopper\OkHttp\build\intermediates\bundles\debug\res"/></dataSet><dataSet config="main"><source path="D:\android_studio_1_5\yopper_as_2.3.0\Yopper\OkHttp\src\androidTest\res"/><source path="D:\android_studio_1_5\yopper_as_2.3.0\Yopper\OkHttp\build\generated\res\rs\androidTest\debug"/><source path="D:\android_studio_1_5\yopper_as_2.3.0\Yopper\OkHttp\build\generated\res\resValues\androidTest\debug"/></dataSet><mergedItems/></merger>

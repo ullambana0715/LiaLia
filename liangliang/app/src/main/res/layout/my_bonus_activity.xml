@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_eeeeee"
+                android:orientation="vertical">
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/my_bonus_xfefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="6dp"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/my_bonus_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </com.andview.refreshview.XRefreshView>
+
+    <LinearLayout
+        android:id="@+id/my_bonys_error_no_data_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:background="@color/color_eeeeee"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:background="#c1c0c2"
+            android:gravity="center"
+            android:text="在爬行榜中获得的奖品会发放到这里哦"
+            android:textColor="@color/color_ffffff"
+            android:textSize="12sp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="42dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_error_no_data"
+                />
+
+            <TextView
+                android:id="@+id/error_no_data_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="暂时没有可领取的奖品"
+                android:textColor="@color/color_918b97"
+                android:textSize="15sp"
+                />
+
+            <TextView
+                android:id="@+id/error_no_data_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="快去努力爬榜吧"
+                android:textColor="@color/color_918b97"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/my_bonus_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_ffffff"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <include layout="@layout/error_network_layout"/>
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+</RelativeLayout>

@@ -1,0 +1,446 @@
+package cn.chono.yopper;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RefreshToken.RefreshTokenBean;
+import cn.chono.yopper.Service.Http.RefreshToken.RefreshTokenRespBean;
+import cn.chono.yopper.Service.Http.RefreshToken.RefreshTokenService;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.data.LoginUser;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.smack.service.XXService;
+import cn.chono.yopper.utils.CommonObservable;
+import cn.chono.yopper.utils.CommonObserver;
+import cn.chono.yopper.utils.Constants;
+import cn.chono.yopper.utils.ContextUtil;
+import cn.chono.yopper.utils.SHA;
+import cn.chono.yopper.utils.SharedprefUtil;
+
+public class MainFrameActivity extends AppCompatActivity implements
+        IConnectionStatusCallback {
+
+    // 功能组件
+    // 主框架界面顶部标题布局
+    private LinearLayout main_frame_titlelayout;
+
+    private LinearLayout main_btnGoBack_container;
+
+    // 主框架顶部左侧返回按钮
+    private ImageView btnGoBack;
+
+    private LinearLayout main_frame_tvTitle_layout;
+
+    private TextView tvTitle;
+
+    private TextView tvBack;
+
+    private LinearLayout main_frame_btnOption_containers;
+
+    private ImageView btnOption;
+
+    private TextView tvOption;
+
+    private LinearLayout mainLayout;
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+
+    public static ArrayList<BackPressHandler> mListeners = new ArrayList<BackPressHandler>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // 内容部分
+
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        setContentView(R.layout.main_frame);
+//        StatusBarCompat.compat(this);
+        ContextUtil.init(this);
+
+        PushAgent mPushAgent = PushAgent.getInstance(this);
+        mPushAgent.enable();
+        bindXMPPService();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!YPApplication.getInstance().isActive) {
+            YPApplication.getInstance().isActive = true; //全局变量isActive = true 从后台唤醒，进入前台
+        }
+
+        if (!TextUtils.isEmpty(YPApplication.loginUser.getAuthToken())) {
+            refreshToken(this);
+        }
+
+        if (mXxService != null) {
+            YpSettings.xxservice = mXxService;
+        }
+
+        if (!TextUtils.isEmpty(YPApplication.loginUser.getAuthToken())) {
+
+            SharedprefUtil.save(MainFrameActivity.this, Constants.Server,"@chono");
+
+            if (mXxService != null) {
+
+                // 取得填入的用户和密码
+
+                if (!mXxService.isAuthenticated()) {
+
+                    CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+                    mXxService.registerConnectionStatusCallback(this);
+                    LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
+                    loginAsyncTask.execute();
+                }
+            }
+        }
+        // asmack
+        if (mListeners.size() > 0)
+            for (BackPressHandler handler : mListeners) {
+                handler.activityOnResume();
+            }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (!isAppOnForeground()) {
+            //app 进入后台
+            YPApplication.getInstance().isActive = false; //全局变量isActive = false 记录当前已经进入后台
+
+        }
+
+        // asmack
+        if (mListeners.size() > 0)
+            for (BackPressHandler handler : mListeners) {
+                handler.activityOnPause();
+            }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 注销广播
+        unbindXMPPService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (!isAppOnForeground()) {
+            //app 进入后台
+            YPApplication.getInstance().isActive = false; //全局变量isActive = false 记录当前已经进入后台
+
+        }
+
+    }
+
+
+    public static OnAppointPublishBackListener onAppointPublishBackListener;
+
+    public interface OnAppointPublishBackListener {
+        public void onAppointPublishBackListener(int page);
+    }
+
+    public static OnAppointPublishBackListener getOnAppointPublishBackListener() {
+        return onAppointPublishBackListener;
+    }
+
+    public static void setOnAppointPublishBackListener(OnAppointPublishBackListener onAppointPublishListener) {
+        onAppointPublishBackListener = onAppointPublishListener;
+    }
+
+
+    /**
+     * *************************************************************************
+     * * 取组件
+     */
+
+    public LinearLayout getTitleLayout() {
+        main_frame_titlelayout = (LinearLayout) findViewById(R.id.main_frame_titlelayout);
+        return main_frame_titlelayout;
+    }
+
+    public LinearLayout getGoBackLayout() {
+        main_btnGoBack_container = (LinearLayout) findViewById(R.id.main_frame_btnGoBack_container);
+        return main_btnGoBack_container;
+    }
+
+    public ImageView getBtnGoBack() {
+        btnGoBack = (ImageView) findViewById(R.id.main_frame_btnGoBack);
+        return btnGoBack;
+    }
+
+    public LinearLayout getTvTitleLayout() {
+        main_frame_tvTitle_layout = (LinearLayout) findViewById(R.id.main_frame_tvTitle_layout);
+        return main_frame_tvTitle_layout;
+    }
+
+    public TextView gettvBack() {
+        tvBack = (TextView) findViewById(R.id.main_frame_tvback);
+        return tvBack;
+    }
+
+    public TextView getTvTitle() {
+        tvTitle = (TextView) findViewById(R.id.main_frame_tvTitle);
+        return tvTitle;
+    }
+
+    public LinearLayout getOptionLayout() {
+        main_frame_btnOption_containers = (LinearLayout) findViewById(R.id.main_frame_btnOption_containers);
+        return main_frame_btnOption_containers;
+    }
+
+    public ImageView getBtnOption() {
+        btnOption = (ImageView) findViewById(R.id.main_frame_btnOption);
+        return btnOption;
+    }
+
+    public TextView gettvOption() {
+        tvOption = (TextView) findViewById(R.id.main_frame_tvOption);
+        return tvOption;
+    }
+
+    public LinearLayout getMainLayout() {
+        mainLayout = (LinearLayout) findViewById(R.id.main_frame_layout);
+        return mainLayout;
+    }
+
+    /**
+     * 设置布局内容
+     *
+     * @param LayoutID
+     */
+    public View setContentLayout(int LayoutID) {
+        if (LayoutID == -1) {
+            return null;
+        }
+        View contextView = mInflater.inflate(LayoutID, null);
+        getMainLayout().addView(contextView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        return contextView;
+    }
+
+
+    public static abstract interface BackPressHandler {
+
+        public abstract void activityOnResume();
+
+        public abstract void activityOnPause();
+
+    }
+
+    /**
+     * 隐藏软键盘 hideSoftInputView
+     *
+     * @param
+     * @return void 返回类型
+     * @throws
+     * @Title: hideSoftInputView
+     */
+    public void hideSoftInputView() {
+        InputMethodManager manager = ((InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE));
+        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (getCurrentFocus() != null)
+                manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    private XXService mXxService;
+    private String mAccount;
+    private String mPassword;
+
+    public class LoginAsyncTask extends AsyncTask<Void, Integer, String> {
+
+        // 该方法并不运行在UI线程内，所以在方法内不能对UI当中的控件进行设置和修改
+        // 主要用于进行异步操作
+        @Override
+        protected String doInBackground(Void... params) {
+
+            SharedprefUtil.save(MainFrameActivity.this, Constants.ACCOUNT, YPApplication.loginUser.getUserId() + "");// 帐号是一直保存的
+            SharedprefUtil.save(MainFrameActivity.this, Constants.PASSWORD, YPApplication.loginUser.getAuthToken());
+            mAccount = YPApplication.loginUser.getUserId() + "";
+            mPassword = YPApplication.loginUser.getAuthToken();
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(MainFrameActivity.this, Constants.MJD, mAccount + "@chono");
+            mXxService.Login(mAccount, SHA.encodeByMD5(mPassword));
+
+            return null;
+
+        }
+
+        // 该方法运行在Ui线程内，可以对UI线程内的控件设置和修改其属性
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        // 在doInBackground方法当中，每次调用publishProgrogress()方法之后，都会触发该方法
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+
+        // 在doInBackground方法执行结束后再运行，并且运行在UI线程当中
+        // 主要用于将异步操作任务执行的结果展示给用户
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+
+    }
+
+    private void unbindXMPPService() {
+        try {
+            unbindService(mServiceConnection);
+        } catch (IllegalArgumentException e) {
+        }
+    }
+
+    private void bindXMPPService() {
+        Intent mServiceIntent = new Intent(this, XXService.class);
+        mServiceIntent.setAction(Constants.LOGIN_ACTION);
+        // 开启服务器
+        bindService(mServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE + Context.BIND_DEBUG_UNBIND);
+    }
+
+    // 广播
+    ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mXxService = ((XXService.XXBinder) service).getService();
+            mXxService.registerConnectionStatusCallback(MainFrameActivity.this);
+            // 开始连接xmpp服务器
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mXxService.unRegisterConnectionStatusCallback();
+            mXxService = null;
+        }
+
+    };
+
+    @Override
+    public void connectionStatusChanged(int connectedState, String reason) {
+        if (connectedState == XXService.CONNECTED) {
+            SharedprefUtil.save(this, Constants.ACCOUNT, mAccount);// 帐号是一直保存的
+            SharedprefUtil.save(this, Constants.PASSWORD, mPassword);
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(this, Constants.MJD, mAccount + "@chono");
+
+        } else if (connectedState == XXService.DISCONNECTED) {
+            // 失败
+
+            SharedprefUtil.save(this, Constants.ACCOUNT, "");
+            SharedprefUtil.save(this, Constants.PASSWORD, "");
+            // 登陆成功后，保存自己的jd
+            SharedprefUtil.save(this, Constants.MJD, "");
+
+        }
+
+    }
+
+    @Override
+    public void ReceiveNewMsg(ChatDto dto) {
+
+    }
+
+    @Override
+    public void ListenSendStatus(int send_status, String packetId) {
+
+    }
+
+    /**
+     * 刷新
+     *
+     * @param @param context 设定文件
+     * @return void 返回类型
+     * @throws
+     * @Title: refreshToken
+     */
+    private void refreshToken(final Context context) {
+
+        long pastTime = YPApplication.getrefreshTokenExpiration(context);
+        long current = System.currentTimeMillis();
+        if (current < pastTime) {
+            return;
+        }
+
+
+        RefreshTokenBean refreshTokenBean = new RefreshTokenBean();
+        refreshTokenBean.setRefreshToken(YPApplication.loginUser.getRefreshToken());
+
+        RefreshTokenService refreshTokenService = new RefreshTokenService(this);
+        refreshTokenService.parameter(refreshTokenBean);
+        refreshTokenService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                RefreshTokenRespBean refreshTokenRespBean = (RefreshTokenRespBean) respBean;
+                LoginUser loginUser = refreshTokenRespBean.getResp();
+                YPApplication.getInstance().saveUserInfo(MainFrameActivity.this, loginUser);
+            }
+        });
+        refreshTokenService.callBack(new OnCallBackFailListener());
+        refreshTokenService.enqueue();
+    }
+
+
+
+    /**
+     * 程序是否在前台运行
+     *
+     * @return
+     */
+    public boolean isAppOnForeground() {
+        // Returns a list of application processes that are running on the
+        // device
+
+        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        String packageName = getApplicationContext().getPackageName();
+
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager
+                .getRunningAppProcesses();
+        if (appProcesses == null)
+            return false;
+
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            // The name of the process that this object is associated with.
+            if (appProcess.processName.equals(packageName)
+                    && appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}

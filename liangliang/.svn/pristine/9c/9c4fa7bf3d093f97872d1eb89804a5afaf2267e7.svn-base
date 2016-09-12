@@ -1,0 +1,336 @@
+package cn.chono.yopper.utils;
+
+import java.lang.ref.WeakReference;
+
+import android.os.Bundle;
+
+/**
+ * 所有自定义监听者的定义都在这里
+ * 
+ * 
+ */
+public class CommonObserver {
+
+	public void update(CommonObservable commonObservable, Object arg) {
+
+	}
+
+	
+	public static class SetMessageNumObserver extends CommonObserver {
+
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public SetMessageNumObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+
+	
+	/**
+	 * *************************************************************************
+	 * ****************************
+	 * 
+	 * 新版本升级观察者
+	 * 
+	 */
+	public static class NewVersionObserver extends CommonObserver {
+
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public NewVersionObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+	
+	
+	public static class GPSObserver extends CommonObserver {
+
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public GPSObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+	
+	
+	/**
+	 * 删除消息后更新消息列表
+	 * 
+	 */
+	public static class MessageDeleteObserver extends CommonObserver {
+
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public MessageDeleteObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+
+	
+	/**
+	 * 
+	 * 微信结果通知类
+	 * 
+	 */
+	public static class WeiXinResultObserver extends CommonObserver {
+
+		private WeiXinResultListener listener;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public WeiXinResultObserver(WeiXinResultListener listener) {
+			this.listener = listener;
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (listener == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			listener.onComplete((Boolean) result);
+			commonObservable.deleteObserver(this);
+		}
+
+		public interface WeiXinResultListener {
+
+			/**
+			 * 通知授权（并且绑定、登录）是否成功
+			 * 
+			 * @param isSuccessful
+			 */
+			public void onComplete(boolean isSuccessful);
+
+		}
+
+	}
+	
+	
+	public static class DeleteStrangeMessageObserver extends CommonObserver {
+
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public DeleteStrangeMessageObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+
+	
+	/**
+	 * 第一次动画时
+	 * 
+	 * @ClassName: AnimationOneObserver
+	 * @Description: TODO(这里用一句话描述这个类的作用)
+	 * @author xianbin.zou
+	 * @date 2015-4-27 上午11:30:53
+	 * 
+	 */
+	public static class AnimStartObserver extends CommonObserver {
+
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public AnimStartObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+
+	/**
+	 * 第二次动画时
+	 * 
+	 * @ClassName: AnimationOneObserver
+	 * @Description: TODO(这里用一句话描述这个类的作用)
+	 * @author xianbin.zou
+	 * @date 2015-4-27 上午11:30:53
+	 * 
+	 */
+	public static class AnimGoBackObserver extends CommonObserver {
+
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public AnimGoBackObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+
+
+	public static class WeiXinObserver extends CommonObserver{
+		private WeakReference<Runnable> reference;
+
+		/**
+		 * 传入成功后的回调
+		 */
+		public WeiXinObserver(Runnable runner) {
+			this.reference = new WeakReference<Runnable>(runner);
+		}
+
+		/**
+		 * 完成时，将执行此update
+		 */
+		public void update(CommonObservable commonObservable, Object result) {
+
+			if (reference == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			// ---
+			Runnable runner = reference.get();
+			if (runner == null) {
+				commonObservable.deleteObserver(this);
+				return;
+			}
+			runner.run();
+		}
+	}
+	
+}

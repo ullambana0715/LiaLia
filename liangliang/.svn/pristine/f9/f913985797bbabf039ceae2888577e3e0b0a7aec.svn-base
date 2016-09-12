@@ -1,0 +1,86 @@
+package cn.chono.yopper.data;
+
+public class InviteMsgDto {
+
+
+	//1是:相册, 2是视频
+
+	private String type;
+
+	private String from;
+
+	private int inviteType;
+
+	private int fromUserId;
+
+	private String content;
+
+	private String createTime;
+
+	private int  attractionAdded;
+	
+
+
+	public int getAttractionAdded() {
+		return attractionAdded;
+	}
+
+	public void setAttractionAdded(int attractionAdded) {
+		this.attractionAdded = attractionAdded;
+	}
+
+	public int getFromUserId() {
+		return fromUserId;
+	}
+
+	public void setFromUserId(int fromUserId) {
+		this.fromUserId = fromUserId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public int getInviteType() {
+		return inviteType;
+	}
+
+	public void setInviteType(int inviteType) {
+		this.inviteType = inviteType;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
+	public InviteMsgDto() {
+		super();
+	}
+
+
+
+}

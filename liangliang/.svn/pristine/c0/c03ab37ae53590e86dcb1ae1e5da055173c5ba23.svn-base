@@ -1,0 +1,466 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.BubblingList;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.utils.UnitUtil;
+import cn.chono.yopper.view.vewgroup.YPGridView;
+import cn.chono.yopper.view.vewgroup.YPGridView.OnTouchInvalidPositionListener;
+
+public class DiscoverBubblingAdapter extends BaseAdapter {
+
+	public interface OnItemClickLitener {
+		/**
+		 * 整条Item点击监听事件
+		 *
+		 * @param view
+		 * @param position
+		 */
+		void onUserIconItemClick(View view, int position, int userID);
+
+		/**
+		 * 整条Item点击监听事件
+		 *
+		 * @param view
+		 * @param position
+		 */
+		void onItemClick(View view, int position, String bubblingID,
+						 BubblingList bubblingList);
+
+		/**
+		 * 点赞点击监听事件
+		 *
+		 * @param view
+		 * @param position
+		 */
+		void onPraiseClick(View view, int position, boolean isLide, String id);
+
+		/**
+		 * 评价点击监听事件
+		 *
+		 * @param view
+		 * @param position
+		 */
+		void onEvaluateClick(View view, int position, String bubblingID, BubblingList bubblingList);
+
+		/**
+		 * 内容图片点击监听
+		 * @param view
+		 * @param position
+		 */
+		void onIconItemClick(View view, int position, List<String> list, int imgViewWidth, int imgViewHight);
+
+		void onTypeLayoutItemClick(View view, int position, BubblingList.Location location, String bubblingID,BubblingList bubblingList);
+
+		/**
+		 * 内容视频点击监听
+		 * @param view
+		 * @param position
+		 */
+		void onVideoItemClick(View view, int position,int userid);
+	}
+
+	private OnItemClickLitener mOnItemClickLitener;
+
+	public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+		this.mOnItemClickLitener = mOnItemClickLitener;
+	}
+
+
+	private List<BubblingList> list;
+
+	private Context context;
+	private BitmapPool mPool;
+	private Drawable praise_number_icon;
+	private Drawable praise_icon_no;
+	private CropCircleTransformation transformation;
+
+	public DiscoverBubblingAdapter(Context context) {
+		this.context = context;
+		mPool = Glide.get(context).getBitmapPool();
+		transformation = new CropCircleTransformation(mPool);
+
+		praise_number_icon = context.getResources().getDrawable(R.drawable.praise_number_icon);
+		praise_icon_no = context.getResources().getDrawable(R.drawable.praise_icon_no);
+
+	}
+
+	public void setData(List<BubblingList> list) {
+		this.list = list;
+	}
+
+	public void addData(List<BubblingList> addlist) {
+		if (list == null) {
+			list = new ArrayList<BubblingList>();
+		}
+		list.addAll(addlist);
+
+	}
+
+	class NewViewHolder {
+		/**
+		 * 用户头像
+		 */
+		public ImageView userIcon;
+		/**
+		 * 名字
+		 *
+		 */
+		public TextView nameTv;
+		/**
+		 * 星座
+		 */
+		public TextView constellationTv;
+		/**
+		 * 时间
+		 */
+		public TextView tiemTv;
+		/**
+		 * 内容
+		 */
+		public TextView contentTv;
+		/**
+		 * 图片
+		 */
+		public YPGridView ypGridView;
+
+		public ImageView  bubbling_one_img_iv;
+		public RelativeLayout bubbling_video_layout;
+		public ImageView bubbling_video_coverimg_iv;
+		public ImageView  bubbling_video_hint_iv;
+
+		/**
+		 * 类型icon
+		 */
+
+		public ImageView typeIcon;
+		/**
+		 * 类型
+		 */
+		public TextView typeTv;
+		/**
+		 *
+		 * 位置
+		 */
+		public TextView locationNumberTv;
+		/**
+		 *
+		 * 点赞
+		 */
+		public TextView praiseNumberTv;
+		/**
+		 *
+		 * 评价
+		 */
+		public TextView evaluateNumberTv;
+
+		public RelativeLayout discover_bubbling_location_layout;
+		public LinearLayout itme_Layout;
+
+		public LinearLayout typeLayout;
+
+		public View discover_bubbing_item_top_line;
+
+		private DiscoverBubblingIconAdapter iconAdapter;
+
+	}
+
+	NewViewHolder holder;
+
+	@Override
+	public int getCount() {
+		return list == null ? 0 : list.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return list.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	@SuppressWarnings({ "unused", "unchecked" })
+	@Override
+	public View getView(final int position, View convertView, ViewGroup parent) {
+		if (convertView == null) {
+
+			holder = new NewViewHolder();
+			convertView = LayoutInflater.from(context).inflate(R.layout.discover_bubbling_item_layout, null);
+
+			holder.discover_bubbing_item_top_line=convertView.findViewById(R.id.discover_bubbing_item_top_line);
+
+			holder.itme_Layout = (LinearLayout) convertView.findViewById(R.id.itme_Layout);
+			holder.userIcon = (ImageView) convertView.findViewById(R.id.userIcon);
+
+			holder.nameTv = (TextView) convertView.findViewById(R.id.nameTv);
+			holder.constellationTv = (TextView) convertView.findViewById(R.id.constellationTv);
+			holder.tiemTv = (TextView) convertView.findViewById(R.id.tiemTv);
+			holder.contentTv = (TextView) convertView.findViewById(R.id.contentTv);
+			holder.ypGridView = (YPGridView) convertView.findViewById(R.id.ypGridView);
+
+			int weight = (int) (UnitUtil.getScreenWidthPixels(context)*0.46);
+
+			holder.bubbling_one_img_iv=(ImageView) convertView.findViewById(R.id.bubbling_one_img_iv);
+			ViewGroup.LayoutParams imgpara = holder.bubbling_one_img_iv.getLayoutParams();
+			imgpara.height = weight;
+			imgpara.width = weight;
+			holder.bubbling_one_img_iv.setLayoutParams(imgpara);
+
+
+
+			holder.bubbling_video_layout=(RelativeLayout) convertView.findViewById(R.id.bubbling_video_layout);
+			holder.bubbling_video_coverimg_iv=(ImageView) convertView.findViewById(R.id.bubbling_video_coverimg_iv);
+			holder.bubbling_video_hint_iv=(ImageView) convertView.findViewById(R.id.bubbling_video_hint_iv);
+
+			LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)holder.bubbling_video_layout.getLayoutParams();
+			linearParams.height = weight;
+			linearParams.width = weight;
+			holder.bubbling_video_layout.setLayoutParams(linearParams);
+
+			holder.typeIcon = (ImageView) convertView.findViewById(R.id.typeIcon);
+			holder.typeTv = (TextView) convertView.findViewById(R.id.typeTv);
+			holder.locationNumberTv = (TextView) convertView.findViewById(R.id.locationNumberTv);
+			holder.praiseNumberTv = (TextView) convertView.findViewById(R.id.praiseNumberTv);
+			holder.evaluateNumberTv = (TextView) convertView.findViewById(R.id.evaluateNumberTv);
+
+			holder.typeLayout = (LinearLayout) convertView.findViewById(R.id.typeLayout);
+
+			holder.discover_bubbling_location_layout = (RelativeLayout) convertView.findViewById(R.id.discover_bubbling_location_layout);
+
+			holder.ypGridView.setOnTouchInvalidPositionListener(new OnTouchInvalidPositionListener() {
+
+				@Override
+				public boolean onTouchInvalidPosition(int motionEvent) {
+					return false;
+				}
+			});
+
+			convertView.setTag(holder);
+		} else {
+			holder = (NewViewHolder) convertView.getTag();
+		}
+		final BubblingList dto=list.get(position);
+
+		if(position==0){
+			holder.discover_bubbing_item_top_line.setVisibility(View.GONE);
+		}else{
+			holder.discover_bubbing_item_top_line.setVisibility(View.VISIBLE);
+		}
+
+		String uresUrl = dto.getUser().getHeadImg();
+		if(!CheckUtil.isEmpty(uresUrl)){
+			String uresIcoUrl = ImgUtils.DealImageUrl(uresUrl, YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+			Glide.with(context).load(uresIcoUrl).bitmapTransform(transformation).placeholder(R.drawable.error_user_icon).error(R.drawable.error_user_icon).into(holder.userIcon);
+		}
+		if(!CheckUtil.isEmpty(dto.getUser().getName())){
+			holder.nameTv.setText(dto.getUser().getName());
+		}
+		int sex =dto.getUser().getSex();
+		if(sex==1){// 男
+			holder.constellationTv.setBackgroundResource(R.drawable.discover_male_bg);
+		}else if(sex==2){
+			holder.constellationTv.setBackgroundResource(R.drawable.discover_female_bg);
+		}
+
+		long time = ISO8601.getTime(dto.getCreateTime());
+		String timeStr = TimeUtil.normalTimeFormat(time);
+		holder.tiemTv.setText(timeStr);
+		holder.constellationTv.setText(CheckUtil.ConstellationMatching(dto.getUser().getHoroscope()));
+
+		if(!CheckUtil.isEmpty(dto.getText())) {
+			holder.contentTv.setVisibility(View.VISIBLE);
+			if(dto.getSource()==0){
+				holder.contentTv.setTextColor(context.getResources().getColor(R.color.text_color_black));
+			}else if (dto.getSource()==1){
+				holder.contentTv.setTextColor(context.getResources().getColor(R.color.text_color_999999));
+			}
+			holder.contentTv.setText(dto.getText());
+		}else{
+			holder.contentTv.setVisibility(View.GONE);
+		}
+
+		if(dto.getType()==0){
+			if(dto.getImageUrls().size()==1){
+				holder.ypGridView.setVisibility(View.GONE);
+				holder.bubbling_one_img_iv.setVisibility(View.VISIBLE);
+				holder.bubbling_video_layout.setVisibility(View.GONE);
+				String imgurl = dto.getImageUrls().get(0);
+				if (!CheckUtil.isEmpty(imgurl)) {
+					String dealimgurl = ImgUtils.DealImageUrl(imgurl, YpSettings.IMG_SIZE_300, YpSettings.IMG_SIZE_300);
+					Glide.with(context).load(dealimgurl).placeholder(R.drawable.error_default_icon).centerCrop().error(R.drawable.error_default_icon).into(holder.bubbling_one_img_iv);
+				}else{
+					holder.bubbling_one_img_iv.setVisibility(View.GONE);
+				}
+				holder.bubbling_one_img_iv.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mOnItemClickLitener.onIconItemClick(holder.bubbling_one_img_iv,position,dto.getImageUrls(),holder.bubbling_one_img_iv.getWidth(),holder.bubbling_one_img_iv.getHeight());
+					}
+				});
+
+			}else{
+				holder.ypGridView.setVisibility(View.VISIBLE);
+				holder.bubbling_one_img_iv.setVisibility(View.GONE);
+				holder.bubbling_video_layout.setVisibility(View.GONE);
+
+				holder.iconAdapter = new DiscoverBubblingIconAdapter(context);
+				holder.iconAdapter.setOnIconItemClickLitener(mOnItemClickLitener);
+				holder.ypGridView.setAdapter(holder.iconAdapter);
+				holder.iconAdapter.setData(dto.getImageUrls());
+				holder.iconAdapter.notifyDataSetChanged();
+			}
+
+		}else if (dto.getType()==1){
+			holder.ypGridView.setVisibility(View.GONE);
+			holder.bubbling_one_img_iv.setVisibility(View.GONE);
+			holder.bubbling_video_layout.setVisibility(View.VISIBLE);
+			holder.bubbling_video_coverimg_iv.setVisibility(View.VISIBLE);
+			holder.bubbling_video_hint_iv.setVisibility(View.VISIBLE);
+
+			String imgurl = dto.getImageUrls().get(0);
+			if (!CheckUtil.isEmpty(imgurl)) {
+				String dealimgurl = ImgUtils.DealImageUrl(imgurl, YpSettings.IMG_SIZE_300, YpSettings.IMG_SIZE_300);
+				Glide.with(context).load(dealimgurl).placeholder(R.drawable.error_default_icon).centerCrop().error(R.drawable.error_default_icon).into(holder.bubbling_video_coverimg_iv);
+				holder.bubbling_video_hint_iv.setBackgroundResource(R.drawable.video_play_icon);
+			}else{
+				holder.bubbling_video_layout.setVisibility(View.GONE);
+			}
+
+			holder.bubbling_video_layout.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mOnItemClickLitener.onVideoItemClick(holder.bubbling_video_layout,position,dto.getUser().getId());
+				}
+			});
+		}
+
+
+
+		final BubblingList.Location location = dto.getLocation();
+		if (location != null) {
+			Integer locationID = location.getId();
+			String typeUrl = location.getTypeImgUrl();
+			if(!CheckUtil.isEmpty(typeUrl) && !CheckUtil.isEmpty(location.getName())){
+
+				holder.typeLayout.setVisibility(View.VISIBLE);
+				String typeIcoUrl = ImgUtils.DealImageUrl(typeUrl,YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+				if (locationID == null || locationID <= 0) {
+					holder.typeIcon.setBackgroundResource(R.drawable.discover_type_icon_no);
+					Glide.with(context).load(typeIcoUrl).into(holder.typeIcon);
+				} else {
+					holder.typeIcon.setBackgroundResource(R.drawable.discover_type_icon);
+					Glide.with(context).load(typeIcoUrl).bitmapTransform(transformation).into(holder.typeIcon);
+				}
+				holder.typeTv.setText(location.getName() + "");
+			}else{
+				holder.typeLayout.setVisibility(View.GONE);
+			}
+		} else {
+			holder.typeLayout.setVisibility(View.GONE);
+		}
+
+		holder.locationNumberTv.setText(CheckUtil.getSpacingTool(dto.getDistance()));
+		holder.praiseNumberTv.setText(dto.getTotalLikes() + "");
+		holder.evaluateNumberTv.setText(dto.getTotalComments() + "");
+		final boolean isLiked = dto.isLiked();
+
+		if (isLiked) {
+			// / 这一步必须要做,否则不会显示.
+			praise_number_icon.setBounds(0, 0,praise_number_icon.getMinimumWidth(),praise_number_icon.getMinimumHeight());
+			holder.praiseNumberTv.setCompoundDrawables(praise_number_icon,null, null, null);
+		} else {
+			// / 这一步必须要做,否则不会显示.
+			praise_icon_no.setBounds(0, 0, praise_icon_no.getMinimumWidth(),praise_icon_no.getMinimumHeight());
+			holder.praiseNumberTv.setCompoundDrawables(praise_icon_no, null,null, null);
+		}
+
+		// 如果设置了回调，则设置点击事件
+		if (mOnItemClickLitener != null) {
+
+			holder.itme_Layout.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mOnItemClickLitener.onItemClick(holder.itme_Layout,position, dto.getId(),dto);
+				}
+			});
+			holder.praiseNumberTv.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					String id = list.get(position).getId();
+					mOnItemClickLitener.onPraiseClick(holder.praiseNumberTv,position, isLiked, id);
+
+				}
+			});
+			holder.evaluateNumberTv.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					mOnItemClickLitener.onEvaluateClick(holder.evaluateNumberTv, position,dto.getId(),dto);
+
+				}
+			});
+
+			holder.userIcon.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					mOnItemClickLitener.onUserIconItemClick(holder.userIcon,position, dto.getUser().getId());
+
+				}
+			});
+			holder.typeLayout.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					mOnItemClickLitener.onTypeLayoutItemClick(holder.typeLayout, position, location,dto.getId(), dto);
+				}
+			});
+
+		}
+
+		return convertView;
+	}
+
+	public void praiseIsLike(final int position, boolean isLike) {
+		if (list == null) {
+			return;
+		}
+		list.get(position).setLiked(isLike);
+		int toTalLikes = list.get(position).getTotalLikes();
+		if (isLike) {
+			toTalLikes = toTalLikes + 1;
+		} else {
+			toTalLikes = toTalLikes - 1;
+		}
+		list.get(position).setTotalLikes(toTalLikes);
+		notifyDataSetChanged();
+	}
+
+}

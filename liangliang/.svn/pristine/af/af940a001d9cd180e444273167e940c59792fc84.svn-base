@@ -1,0 +1,683 @@
+package cn.chono.yopper.activity.appointment;
+
+import android.app.Dialog;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.AppointMentsComment.AppointMentsCommentBean;
+import cn.chono.yopper.Service.Http.AppointMentsComment.AppointMentsCommentRespBean;
+import cn.chono.yopper.Service.Http.AppointMentsComment.AppointMentsCommentService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.AppointComment;
+import cn.chono.yopper.data.AppointDetailDto;
+import cn.chono.yopper.data.AppointOwner;
+import cn.chono.yopper.data.Constant;
+import cn.chono.yopper.data.TargetUserDto;
+import cn.chono.yopper.data.User;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.TimeUtil;
+
+/**
+ * Created by zxb on 2015/12/28.
+ */
+public class AppointEvaluationActivity extends MainFrameActivity {
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+
+    private AppointDetailDto appointDetailDto;
+
+    private ImageView appoint_evaluation_user_icon_iv;
+
+    private ImageView appoint_evaluation_type_iv;
+    private TextView appoint_evaluation_type_name_tv;
+
+    private ImageView appoint_evaluation_content_iv;
+    private TextView appoint_evaluation_content_tv;
+
+    private TextView appoint_evaluation_time_tv;
+
+    private FrameLayout appoint_evaluation_content_layout;
+
+    private LinearLayout user_appoint_no_evaluation_layout;
+    private LinearLayout user_appoint_already_evaluation_layout;
+
+    private TextView user_appoint_already_evaluation_hini_tv;
+    private Button user_appoint_no_evaluation_but;
+    private EditText user_appoint_no_evaluation_et;
+    private TextView user_appoint_no_evaluation_numbe_tv;
+
+    private LinearLayout user_appoint_already_evaluation_from_layout;
+    private LinearLayout user_appoint_already_evaluation_other_layout;
+
+    private ImageView user_appoint_already_evaluation_from_user_icon_iv;
+    private TextView user_appoint_already_evaluation_from_user_name_tv;
+    private TextView user_appoint_already_evaluation_from_comment_tv;
+    private TextView user_appoint_already_evaluation_from_tiem_tv;
+
+    private ImageView user_appoint_already_evaluation_other_user_icon_iv;
+    private TextView user_appoint_already_evaluation_other_user_name_tv;
+    private TextView user_appoint_already_evaluation_other_comment_tv;
+    private TextView user_appoint_already_evaluation_other_tiem_tv;
+
+    private RadioGroup user_appoint_no_evaluation_rg;
+    private RadioButton user_appoint_no_evaluation_rg_but_true;
+    private RadioButton user_appoint_no_evaluation_rg_but_false;
+
+    private Boolean user_appoint_no_evaluation_rg_value = null;
+
+
+    private int user_appoint_no_evaluation_et_length;
+    private String user_appoint_no_evaluation_et_context;
+
+    private Dialog loadingDiaog;
+    private boolean isEvaluation = true;
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        MobclickAgent.onPageStart("约会评价"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        MobclickAgent.onPageEnd("约会评价"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.appoint_evaluation_activity);
+        PushAgent.getInstance(this).onAppStart();
+
+        appointDetailDto = (AppointDetailDto) getIntent().getExtras().getSerializable(YpSettings.APPOINT_DETAIL_DIO_KEY);
+        initView();
+        initData();
+        appointComment();
+
+    }
+
+    private void initView() {
+        mPool = Glide.get(this).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+
+        appoint_evaluation_user_icon_iv = (ImageView) findViewById(R.id.appoint_evaluation_user_icon_iv);
+
+        appoint_evaluation_type_iv = (ImageView) findViewById(R.id.appoint_evaluation_type_iv);
+        appoint_evaluation_type_name_tv = (TextView) findViewById(R.id.appoint_evaluation_type_name_tv);
+
+        appoint_evaluation_content_iv = (ImageView) findViewById(R.id.appoint_evaluation_content_iv);
+        appoint_evaluation_content_tv = (TextView) findViewById(R.id.appoint_evaluation_content_tv);
+
+        appoint_evaluation_time_tv = (TextView) findViewById(R.id.appoint_evaluation_time_tv);
+
+        appoint_evaluation_content_layout = (FrameLayout) findViewById(R.id.appoint_evaluation_content_layout);
+
+        user_appoint_no_evaluation_layout = (LinearLayout) findViewById(R.id.user_appoint_no_evaluation_layout);
+
+        user_appoint_already_evaluation_hini_tv = (TextView) findViewById(R.id.user_appoint_already_evaluation_hini_tv);
+        user_appoint_no_evaluation_but = (Button) findViewById(R.id.user_appoint_no_evaluation_but);
+        user_appoint_no_evaluation_et = (EditText) findViewById(R.id.user_appoint_no_evaluation_et);
+        user_appoint_no_evaluation_numbe_tv = (TextView) findViewById(R.id.user_appoint_no_evaluation_numbe_tv);
+
+        user_appoint_already_evaluation_layout = (LinearLayout) findViewById(R.id.user_appoint_already_evaluation_layout);
+
+        user_appoint_already_evaluation_from_layout = (LinearLayout) findViewById(R.id.user_appoint_already_evaluation_from_layout);
+
+        user_appoint_already_evaluation_from_user_icon_iv = (ImageView) findViewById(R.id.user_appoint_already_evaluation_from_user_icon_iv);
+        user_appoint_already_evaluation_from_user_name_tv = (TextView) findViewById(R.id.user_appoint_already_evaluation_from_user_name_tv);
+        user_appoint_already_evaluation_from_comment_tv = (TextView) findViewById(R.id.user_appoint_already_evaluation_from_comment_tv);
+        user_appoint_already_evaluation_from_tiem_tv = (TextView) findViewById(R.id.user_appoint_already_evaluation_from_tiem_tv);
+
+
+        user_appoint_already_evaluation_other_layout = (LinearLayout) findViewById(R.id.user_appoint_already_evaluation_other_layout);
+
+        user_appoint_already_evaluation_other_user_icon_iv = (ImageView) findViewById(R.id.user_appoint_already_evaluation_other_user_icon_iv);
+        user_appoint_already_evaluation_other_user_name_tv = (TextView) findViewById(R.id.user_appoint_already_evaluation_other_user_name_tv);
+        user_appoint_already_evaluation_other_comment_tv = (TextView) findViewById(R.id.user_appoint_already_evaluation_other_comment_tv);
+        user_appoint_already_evaluation_other_tiem_tv = (TextView) findViewById(R.id.user_appoint_already_evaluation_other_tiem_tv);
+
+        user_appoint_no_evaluation_rg = (RadioGroup) findViewById(R.id.user_appoint_no_evaluation_rg);
+        user_appoint_no_evaluation_rg_but_true = (RadioButton) findViewById(R.id.user_appoint_no_evaluation_rg_but_true);
+        user_appoint_no_evaluation_rg_but_false = (RadioButton) findViewById(R.id.user_appoint_no_evaluation_rg_but_false);
+
+        user_appoint_no_evaluation_rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                if (checkedId == R.id.user_appoint_no_evaluation_rg_but_true) {
+
+                    user_appoint_no_evaluation_rg_value = true;
+
+                } else if (checkedId == R.id.user_appoint_no_evaluation_rg_but_false) {
+
+                    user_appoint_no_evaluation_rg_value = false;
+                }
+
+
+            }
+        });
+
+
+        user_appoint_no_evaluation_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (null != s) {
+                    user_appoint_no_evaluation_et_context = s.toString();
+                }
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (null != s) {
+                    user_appoint_no_evaluation_et_context = s.toString();
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (!TextUtils.isEmpty(user_appoint_no_evaluation_et_context)) {
+                    user_appoint_no_evaluation_et_length = user_appoint_no_evaluation_et_context.length();
+
+                }
+                user_appoint_no_evaluation_numbe_tv.setText(user_appoint_no_evaluation_et_length + "/100");
+
+            }
+        });
+
+
+        this.getTvTitle().setText("约会评价");
+
+        this.getGoBackLayout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
+        user_appoint_no_evaluation_but.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!isEvaluation) {
+                    return;
+                }
+
+                isEvaluation = false;
+
+                if (TextUtils.isEmpty(user_appoint_no_evaluation_et_context)) {
+
+                    DialogUtil.showDisCoverNetToast(AppointEvaluationActivity.this, "请输入评价内容");
+                    isEvaluation = true;
+
+                } else if (null == user_appoint_no_evaluation_rg_value){
+                    DialogUtil.showDisCoverNetToast(AppointEvaluationActivity.this, "请选择约会完成情况");
+                    isEvaluation = true;
+                }
+
+                else {
+                    if (null == loadingDiaog) {
+                        loadingDiaog = DialogUtil.LoadingDialog(AppointEvaluationActivity.this, null);
+                    }
+                    loadingDiaog.show();
+
+                    if (null == appointDetailDto) {
+                        loadingDiaog.dismiss();
+                        isEvaluation = true;
+                        return;
+
+                    }
+
+                    putAppointmentsComment(appointDetailDto.getId(), user_appoint_no_evaluation_rg_value, user_appoint_no_evaluation_et_context);
+
+
+                }
+
+
+            }
+        });
+
+    }
+
+    private void initData() {
+
+        if (null == appointDetailDto) {
+            return;
+        }
+
+        appoint_evaluation_type_name_tv.setText(appointDetailDto.getTitle());
+
+
+        int activityType = appointDetailDto.getActivityType();
+        switch (activityType) {
+            case Constant.APPOINT_TYPE_EAT:
+
+                appoint_evaluation_type_iv.setImageResource(R.drawable.chat_appoint_eat);
+
+                appoint_evaluation_content_iv.setImageResource(R.drawable.appoint_item_address_icon);
+                if(appointDetailDto.getShop().getName()!=null){
+                    appoint_evaluation_content_tv.setText(appointDetailDto.getShop().getName());
+                }
+                break;
+
+            case Constant.APPOINT_TYPE_COFFEE:
+
+                appoint_evaluation_type_iv.setImageResource(R.drawable.chat_appoint_coffee);
+                appoint_evaluation_content_iv.setImageResource(R.drawable.appoint_item_address_icon);
+                if(appointDetailDto.getShop().getName()!=null){
+                    appoint_evaluation_content_tv.setText(appointDetailDto.getShop().getName());
+                }
+                break;
+
+            case Constant.APPOINT_TYPE_BAR:
+
+                appoint_evaluation_type_iv.setImageResource(R.drawable.chat_appoint_bar);
+                appoint_evaluation_content_iv.setImageResource(R.drawable.appoint_item_address_icon);
+                if(appointDetailDto.getShop().getName()!=null){
+                    appoint_evaluation_content_tv.setText(appointDetailDto.getShop().getName());
+                }
+                break;
+
+            case Constant.APPOINT_TYPE_MOVIE:
+                appoint_evaluation_type_iv.setImageResource(R.drawable.chat_appoint_movie);
+                appoint_evaluation_content_iv.setImageResource(R.drawable.appoint_item_movice_icon);
+                if(appointDetailDto.getMovie().getName()!=null){
+                    appoint_evaluation_content_tv.setText(appointDetailDto.getMovie().getName());
+                }
+
+                break;
+
+            case Constant.APPOINT_TYPE_DOG:
+                appoint_evaluation_type_iv.setImageResource(R.drawable.chat_appoint_dog);
+                appoint_evaluation_content_iv.setImageResource(R.drawable.appoint_item_address_icon);
+                if(appointDetailDto.getWalkADog().getAddress()!=null){
+                    appoint_evaluation_content_tv.setText(appointDetailDto.getWalkADog().getAddress());
+                }
+                break;
+
+
+            case Constant.APPOINT_TYPE_FITNESS:
+                appoint_evaluation_type_iv.setImageResource(R.drawable.chat_appoint_fitness);
+                appoint_evaluation_content_iv.setImageResource(R.drawable.appoint_item_address_icon);
+                if(appointDetailDto.getSports().getAddress()!=null){
+                    appoint_evaluation_content_tv.setText(appointDetailDto.getSports().getAddress());
+                }
+                break;
+
+            case Constant.APPOINT_TYPE_KTV:
+                appoint_evaluation_type_iv.setImageResource(R.drawable.chat_appoint_ktv);
+                appoint_evaluation_content_iv.setImageResource(R.drawable.appoint_item_address_icon);
+                if(appointDetailDto.getShop().getName()!=null){
+                    appoint_evaluation_content_tv.setText(appointDetailDto.getShop().getName());
+                }
+
+                break;
+
+
+        }
+
+        long endtime=ISO8601.getTime(appointDetailDto.getEndTime());
+        String timeStr=TimeUtil.getDatingDateString(endtime,System.currentTimeMillis());
+
+        int availableTime = appointDetailDto.getAvailableTime();
+
+        String availableTimeStr = "";
+
+        switch (availableTime) {
+            case 1:
+                availableTimeStr = "  中午";
+                break;
+            case 2:
+                availableTimeStr = "  下午";
+                break;
+            case 3:
+                availableTimeStr = "  晚上";
+                break;
+        }
+
+        if(!timeStr.contains("今天")){
+            timeStr=timeStr+"之前";
+        }
+
+        appoint_evaluation_time_tv.setText(timeStr + availableTimeStr);
+
+
+    }
+
+
+    private void appointComment() {
+
+
+        if (null == appointDetailDto) {
+            return;
+        }
+
+        AppointOwner owner = appointDetailDto.getOwner();
+        if (null == owner) {
+            return;
+        }
+        String imageurl = ImgUtils.DealImageUrl(owner.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+        Glide.with(this).load(imageurl).bitmapTransform(transformation).into(appoint_evaluation_user_icon_iv);
+        AppointComment myComment = appointDetailDto.getMyComment();
+        AppointComment targetUserComment = appointDetailDto.getTargetUserComment();
+
+        if (owner.getId() == YPApplication.loginUser.getUserId()) {//我是发布者
+            if (null != myComment && null != targetUserComment) {//都 有评价
+
+                user_appoint_already_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_no_evaluation_layout.setVisibility(View.GONE);
+
+                user_appoint_already_evaluation_from_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_other_layout.setVisibility(View.VISIBLE);
+
+                String from_headImg = owner.getHeadImg();
+                String from_name = owner.getName();
+                fromAppointComment(myComment, from_headImg, from_name);
+
+
+                TargetUserDto targetUserDto = appointDetailDto.getTargetUser();
+
+                if (null == targetUserDto) {
+                    return;
+                }
+
+                User user = targetUserDto.getUser();
+
+                if (null == user) {
+                    return;
+                }
+
+                String other_headImg = user.getHeadImg();
+                String other_name = user.getName();
+                otherAppointComment(targetUserComment, other_headImg, other_name);
+
+
+            } else if (null != myComment) {//自已发布者有评价
+                user_appoint_already_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_no_evaluation_layout.setVisibility(View.GONE);
+
+                user_appoint_already_evaluation_from_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_other_layout.setVisibility(View.GONE);
+
+                String from_headImg = owner.getHeadImg();
+                String from_name = owner.getName();
+                fromAppointComment(myComment, from_headImg, from_name);
+
+
+            } else if (null != targetUserComment) {//自已发布者没有评价,而达成者有评价
+                user_appoint_already_evaluation_layout.setVisibility(View.GONE);
+                user_appoint_no_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_hini_tv.setVisibility(View.VISIBLE);
+
+            } else {//自已发布者没有评价,而达成者有也没有评价
+
+                user_appoint_already_evaluation_layout.setVisibility(View.GONE);
+                user_appoint_no_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_hini_tv.setVisibility(View.GONE);
+            }
+
+
+        } else {//我是达成者
+            if (null != myComment && null != targetUserComment) {//都 有评价
+                user_appoint_already_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_no_evaluation_layout.setVisibility(View.GONE);
+
+                user_appoint_already_evaluation_from_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_other_layout.setVisibility(View.VISIBLE);
+
+
+                TargetUserDto targetUserDto = appointDetailDto.getTargetUser();
+
+                if (null == targetUserDto) {
+                    return;
+                }
+
+                User user = targetUserDto.getUser();
+
+                if (null == user) {
+                    return;
+                }
+
+
+                String from_headImg = user.getHeadImg();
+                String from_name = user.getName();
+                fromAppointComment(targetUserComment, from_headImg, from_name);
+
+
+                String other_headImg = owner.getHeadImg();
+                String other_name = owner.getName();
+                otherAppointComment(myComment, other_headImg, other_name);
+
+
+            } else if (null != targetUserComment) {//自己已经评价
+
+                user_appoint_already_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_no_evaluation_layout.setVisibility(View.GONE);
+
+                user_appoint_already_evaluation_from_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_other_layout.setVisibility(View.GONE);
+
+                TargetUserDto targetUserDto = appointDetailDto.getTargetUser();
+
+                if (null == targetUserDto) {
+                    return;
+                }
+
+                User user = targetUserDto.getUser();
+
+                if (null == user) {
+                    return;
+                }
+
+
+                String from_headImg = user.getHeadImg();
+                String from_name = user.getName();
+
+                fromAppointComment(targetUserComment, from_headImg, from_name);
+
+            } else if (null != myComment) {//对方有评价
+
+                user_appoint_already_evaluation_layout.setVisibility(View.GONE);
+                user_appoint_no_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_hini_tv.setVisibility(View.VISIBLE);
+
+            } else {//对方没有评价
+
+                user_appoint_already_evaluation_layout.setVisibility(View.GONE);
+                user_appoint_no_evaluation_layout.setVisibility(View.VISIBLE);
+                user_appoint_already_evaluation_hini_tv.setVisibility(View.GONE);
+
+            }
+
+
+        }
+
+    }
+
+    private void fromAppointComment(AppointComment comment, String headImg, String name) {
+
+
+        if (!TextUtils.isEmpty(headImg)) {
+            String imageurl = ImgUtils.DealImageUrl(headImg, YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+            Glide.with(this).load(imageurl).bitmapTransform(transformation).into(user_appoint_already_evaluation_from_user_icon_iv);
+
+        }
+
+        if (!TextUtils.isEmpty(name)) {
+            user_appoint_already_evaluation_from_user_name_tv.setText(name);
+        }
+
+
+        if (null == comment) {
+            return;
+        }
+
+        user_appoint_already_evaluation_from_comment_tv.setText(comment.getComment());
+
+        long time = ISO8601.getTime(comment.getCreateTime());
+        String timeStr = TimeUtil.normalTimeFormat(time);
+        user_appoint_already_evaluation_from_tiem_tv.setText(timeStr);
+
+
+    }
+
+    private void otherAppointComment(AppointComment comment, String headImg, String name) {
+
+
+        if (!TextUtils.isEmpty(headImg)) {
+            String imageurl = ImgUtils.DealImageUrl(headImg, YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+            Glide.with(this).load(imageurl).bitmapTransform(transformation).into(user_appoint_already_evaluation_other_user_icon_iv);
+
+        }
+
+        if (!TextUtils.isEmpty(name)) {
+            user_appoint_already_evaluation_other_user_name_tv.setText(name);
+        }
+
+
+        if (null == comment) {
+            return;
+        }
+
+        user_appoint_already_evaluation_other_comment_tv.setText(comment.getComment());
+
+        long time = ISO8601.getTime(comment.getCreateTime());
+        String timeStr = TimeUtil.normalTimeFormat(time);
+
+
+        user_appoint_already_evaluation_other_tiem_tv.setText(timeStr);
+
+
+    }
+
+
+    private void updateAppointmentsComment(boolean complete, String comment) {
+
+        if (null == appointDetailDto) {
+            return;
+        }
+
+        AppointOwner owner = appointDetailDto.getOwner();
+        if (null == owner) {
+            return;
+        }
+
+        long tiem = System.currentTimeMillis();
+        String date = TimeUtil.convertLongToDateString(tiem, "yyyy-MM-dd'T'HH:mm:ssz");
+
+        AppointComment appointComment = new AppointComment();
+        appointComment.setComplete(complete);
+        appointComment.setComment(comment);
+        appointComment.setCreateTime(date);
+
+        if (owner.getId() == YPApplication.loginUser.getUserId()) {//我是发布者
+
+            appointDetailDto.setMyComment(appointComment);
+
+        } else {//不是发布者
+
+            appointDetailDto.setTargetUserComment(appointComment);
+
+        }
+
+        appointComment();
+
+    }
+
+
+    private void putAppointmentsComment(String id, final boolean complete, final String comment) {
+
+        AppointMentsCommentBean commentBean = new AppointMentsCommentBean();
+        commentBean.setId(id);
+        commentBean.setComplete(complete);
+        commentBean.setComment(comment);
+
+        AppointMentsCommentService commentService = new AppointMentsCommentService(this);
+        commentService.parameter(commentBean);
+        commentService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                loadingDiaog.dismiss();
+                isEvaluation = true;
+
+                AppointMentsCommentRespBean commentRespBean = (AppointMentsCommentRespBean) respBean;
+                if (null == commentRespBean) {
+                    return;
+                }
+
+                updateAppointmentsComment(complete, comment);
+
+//                AppointMentsCommentData commentData = commentRespBean.getResp();
+//                if (null == commentData) {
+//                    return;
+//                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+                isEvaluation = true;
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(AppointEvaluationActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(AppointEvaluationActivity.this, msg);
+
+            }
+        });
+
+
+        commentService.enqueue();
+
+    }
+
+
+}

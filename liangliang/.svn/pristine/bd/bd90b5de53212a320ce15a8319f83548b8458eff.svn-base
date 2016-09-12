@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/welcome_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:orientation="horizontal">
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+    <Button
+        android:id="@+id/weblome_but"
+        android:layout_width="match_parent"
+        android:layout_height="94px"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="35px"
+        android:layout_marginRight="35px"
+        android:layout_marginTop="32px"
+        android:layout_marginBottom="100px"
+        android:background="@drawable/white_border_corners_transparent_selected_style"
+        android:gravity="center"
+        android:text="@string/welcome_but"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="32px" />
+
+
+</com.zhy.autolayout.AutoRelativeLayout>

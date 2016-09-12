@@ -1,0 +1,640 @@
+package cn.chono.yopper.activity.usercenter;
+
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+
+/**
+ * 用户P果界面
+ *
+ * @author sam.sun
+ */
+public class EditUserProfessionActivity extends MainFrameActivity implements OnClickListener {
+
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    private EditText user_info_pro_et;
+
+    //学生
+    private TextView edit_pro_student_tv;
+    //打工族
+    private TextView edit_pro_dagong_tv;
+    //私营
+    private TextView edit_pro_siying_tv;
+    //销售
+    private TextView edit_pro_xiaoshou_tv;
+    //工程师
+    private TextView edit_pro_gongchengshi_tv;
+    //公司职员
+    private TextView edit_pro_zhiyuan_tv;
+    //中层管理
+    private TextView edit_pro_guanli_tv;
+    //警察
+    private TextView edit_pro_jingcha_tv;
+    //医生
+    private TextView edit_pro_yisheng_tv;
+    //演艺人员
+    private TextView edit_pro_yanyuan_tv;
+    //模特
+    private TextView edit_pro_mote_tv;
+    //教师
+    private TextView edit_pro_jiaoshi_tv;
+    //设计师
+    private TextView edit_pro_shejishi_tv;
+    //投资顾问
+    private TextView edit_pro_guwen_tv;
+    //互联网
+    private TextView edit_pro_it_tv;
+    //风投
+    private TextView edit_pro_fengtou_tv;
+
+
+    private String pro_name;
+
+    private int result_code;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+        initComponent();
+
+        Bundle bundle = this.getIntent().getExtras();
+        if (bundle != null) {
+            pro_name = bundle.getString(YpSettings.USER_PROFESSION);
+
+            result_code = bundle.getInt(YpSettings.INTENT_RESULT_CODE);
+        }
+        if (!CheckUtil.isEmpty(pro_name)) {
+            user_info_pro_et.setText(pro_name);
+            setSelectedBg(pro_name);
+        }
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("职业修改"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("职业修改"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("职业");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.INVISIBLE);
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                return_name();
+            }
+        });
+
+        // 内容部分
+        mInflater = (LayoutInflater) this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        contextView = mInflater.inflate(R.layout.user_info_edit_profession_activity, null);
+
+        user_info_pro_et = (EditText) contextView.findViewById(R.id.edit_profession_et);
+
+
+        edit_pro_student_tv = (TextView) contextView.findViewById(R.id.edit_profession_student_tv);
+        edit_pro_student_tv.setOnClickListener(this);
+
+        edit_pro_dagong_tv = (TextView) contextView.findViewById(R.id.edit_profession_dagong_tv);
+        edit_pro_dagong_tv.setOnClickListener(this);
+
+        edit_pro_siying_tv = (TextView) contextView.findViewById(R.id.edit_profession_siying_tv);
+        edit_pro_siying_tv.setOnClickListener(this);
+
+        edit_pro_xiaoshou_tv = (TextView) contextView.findViewById(R.id.edit_profession_xiaoshou_tv);
+        edit_pro_xiaoshou_tv.setOnClickListener(this);
+
+        edit_pro_gongchengshi_tv = (TextView) contextView.findViewById(R.id.edit_profession_gongchengshi_tv);
+        edit_pro_gongchengshi_tv.setOnClickListener(this);
+
+        edit_pro_zhiyuan_tv = (TextView) contextView.findViewById(R.id.edit_profession_zhiyuan_tv);
+        edit_pro_zhiyuan_tv.setOnClickListener(this);
+
+        edit_pro_guanli_tv = (TextView) contextView.findViewById(R.id.edit_profession_guanli_tv);
+        edit_pro_guanli_tv.setOnClickListener(this);
+
+        edit_pro_jingcha_tv = (TextView) contextView.findViewById(R.id.edit_profession_jingcha_tv);
+        edit_pro_jingcha_tv.setOnClickListener(this);
+
+
+        edit_pro_yisheng_tv = (TextView) contextView.findViewById(R.id.edit_profession_yisheng_tv);
+        edit_pro_yisheng_tv.setOnClickListener(this);
+
+        edit_pro_yanyuan_tv = (TextView) contextView.findViewById(R.id.edit_profession_yanyuan_tv);
+        edit_pro_yanyuan_tv.setOnClickListener(this);
+
+        edit_pro_mote_tv = (TextView) contextView.findViewById(R.id.edit_profession_mote_tv);
+        edit_pro_mote_tv.setOnClickListener(this);
+
+        edit_pro_jiaoshi_tv = (TextView) contextView.findViewById(R.id.edit_profession_jiaoshi_tv);
+        edit_pro_jiaoshi_tv.setOnClickListener(this);
+
+        edit_pro_shejishi_tv = (TextView) contextView.findViewById(R.id.edit_profession_shejishi_tv);
+        edit_pro_shejishi_tv.setOnClickListener(this);
+
+        edit_pro_guwen_tv = (TextView) contextView.findViewById(R.id.edit_profession_guwen_tv);
+        edit_pro_guwen_tv.setOnClickListener(this);
+
+        edit_pro_it_tv = (TextView) contextView.findViewById(R.id.edit_profession_It_tv);
+        edit_pro_it_tv.setOnClickListener(this);
+
+        edit_pro_fengtou_tv = (TextView) contextView.findViewById(R.id.edit_profession_fengtou_tv);
+        edit_pro_fengtou_tv.setOnClickListener(this);
+
+        this.getMainLayout().addView(contextView, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            return_name();
+        }
+        return true;
+    }
+
+    private void return_name() {
+
+        hideSoftInputView();
+
+        pro_name = user_info_pro_et.getText().toString().trim();
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putString(YpSettings.USER_PROFESSION, pro_name);
+        intent.putExtras(bundle);
+
+        EditUserProfessionActivity.this.setResult(result_code, intent);
+        EditUserProfessionActivity.this.finish();
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+
+        switch (id) {
+            case R.id.edit_profession_student_tv://学生
+                pro_name = "学生";
+                break;
+
+            case R.id.edit_profession_dagong_tv://打工
+                pro_name = "打工族";
+                break;
+
+            case R.id.edit_profession_siying_tv://私营
+                pro_name = "私营业主";
+                break;
+
+            case R.id.edit_profession_xiaoshou_tv://销售
+                pro_name = "销售";
+                break;
+
+
+            case R.id.edit_profession_gongchengshi_tv://工程师
+                pro_name = "工程师";
+                break;
+
+            case R.id.edit_profession_zhiyuan_tv://职员
+                pro_name = "公司职员";
+                break;
+
+            case R.id.edit_profession_guanli_tv://管理
+                pro_name = "中层管理者";
+                break;
+
+            case R.id.edit_profession_jingcha_tv://警察
+                pro_name = "警察";
+                break;
+
+            case R.id.edit_profession_yisheng_tv://医生
+                pro_name = "医生";
+                break;
+
+            case R.id.edit_profession_yanyuan_tv://演员
+                pro_name = "演艺人员";
+                break;
+
+            case R.id.edit_profession_mote_tv://模特
+                pro_name = "模特";
+                break;
+
+            case R.id.edit_profession_jiaoshi_tv://教师
+                pro_name = "教师";
+                break;
+
+            case R.id.edit_profession_shejishi_tv://设计师
+                pro_name = "设计师";
+                break;
+
+            case R.id.edit_profession_guwen_tv://顾问
+                pro_name = "投资顾问";
+                break;
+
+            case R.id.edit_profession_It_tv://互联网从业者
+                pro_name = "互联网从业者";
+                break;
+
+            case R.id.edit_profession_fengtou_tv://风投
+                pro_name = "风险投资人";
+                break;
+        }
+        setSelectedBg(pro_name);
+    }
+
+    private void setSelectedBg(String profess_str) {
+
+        if (profess_str.equals("学生")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("打工族")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("私营业主")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("销售")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("工程师")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("公司职员")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("中层管理者")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("警察")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("医生")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("演艺人员")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("模特")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("教师")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("设计师")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("投资顾问")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("互联网从业者")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_selected);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_normal);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+
+        if (profess_str.equals("风险投资人")) {
+
+            edit_pro_student_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_dagong_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_siying_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_xiaoshou_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_gongchengshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_zhiyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guanli_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jingcha_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yisheng_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_yanyuan_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_mote_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_jiaoshi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_shejishi_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_guwen_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_it_tv.setBackgroundResource(R.drawable.profession_normal);
+            edit_pro_fengtou_tv.setBackgroundResource(R.drawable.profession_selected);
+            user_info_pro_et.setText(profess_str);
+            user_info_pro_et.setSelection(profess_str.length());
+        }
+    }
+}

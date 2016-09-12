@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_f8f7f5"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/edit_age_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_marginTop="20dp"
+        android:background="@color/color_ffffff"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@color/color_ffffff"
+            android:text="年龄"
+            android:gravity="center"
+            android:textSize="16dip"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/color_000000" />
+
+        <TextView
+            android:id="@+id/edit_age_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:background="@color/color_ffffff"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/color_000000" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_below="@+id/edit_age_layout"
+        android:layout_marginTop="20dp"
+        android:background="@color/color_ffffff"
+        android:gravity="center"
+        android:visibility="visible"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="公开我的年龄"
+            android:textColor="@color/color_000000"
+            android:textSize="16dip" />
+
+        <cn.chono.yopper.view.SwitchButton
+            android:id="@+id/edit_age_visiable_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            style="@style/SwitchButtonStyle"
+            app:kswBackMeasureRatio="1.7"
+            app:kswThumbDrawable="@drawable/setting_voice_scroll"
+            app:kswBackDrawable="@drawable/ios_back_drawable"
+            app:kswAnimationDuration="300"
+            android:layout_marginRight="0dp" />
+    </RelativeLayout>
+
+    <cn.chono.yopper.view.wheel.WheelView
+        android:id="@+id/edit_age_wheel"
+        android:layout_width="match_parent"
+        android:layout_height="160dip"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_vertical" />
+
+</RelativeLayout>

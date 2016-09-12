@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/setting_info_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_eeeeee"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="@string/setting_passwords_text_hint"
+        android:textColor="@color/text_color_b2b2b2"
+        android:textSize="12sp" />
+
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/text_color_white"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <EditText
+            android:id="@+id/setting_password_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:digits="@string/passworid_limit"
+            android:hint="@string/setting_passwords_hint"
+            android:inputType="textPassword"
+            android:maxLength="18"
+            android:paddingBottom="15dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="24px"
+            android:paddingTop="12dp"
+            android:singleLine="true"
+            android:textColor="@color/text_color_333333"
+            android:textColorHint="@color/text_color_b2b2b2"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/setting_password_delete_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="12dp"
+            android:padding="10dp"
+            android:src="@drawable/empty_icon"
+            android:visibility="gone"
+
+            />
+
+    </RelativeLayout>
+
+
+
+
+
+</LinearLayout>

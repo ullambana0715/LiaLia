@@ -1,0 +1,1553 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.app.Dialog;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.DaillyTask.DaillyFaceratingCandidatesDBTask;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesLevelDto;
+import cn.chono.yopper.Service.Http.Facerating.FaceratingBean;
+import cn.chono.yopper.Service.Http.Facerating.FaceratingRespBean;
+import cn.chono.yopper.Service.Http.Facerating.FaceratingService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.ScoreZoomViewerDto;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.glide.RoundedCornersTransformation;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.FaceTextUtils;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.SharedprefUtil;
+import cn.chono.yopper.utils.UnitUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.ScoreCord.OnScordCordLayoutUpdateListener;
+import cn.chono.yopper.view.ScoreCord.OnScoreCordLayoutLevelListener;
+import cn.chono.yopper.view.ScoreCord.OnScoreCordLayoutListener;
+import cn.chono.yopper.view.ScoreCord.ScoreCordBean;
+import cn.chono.yopper.view.ScoreCord.ScoreCordLayout;
+
+/**
+ * Created by zxb on 2015/12/3.
+ */
+public class ScoreActivity extends MainFrameActivity implements OnScoreCordLayoutListener, OnScoreCordLayoutLevelListener, OnScordCordLayoutUpdateListener, View.OnClickListener {
+
+    private ScoreCordLayout score_cord_layout;
+
+    private TextView score_title_tv;
+    private TextView score_back_tv;
+
+
+    private LayoutInflater inflater;
+
+
+    private List<DaillyFaceratingCandidatesDto> daillyFaceratingCandidatesDtos;
+    private List<DaillyFaceratingCandidatesLevelDto> daillyFaceratingCandidatesLevelDtos = new ArrayList<>();
+
+    private BitmapPool mBitmapPool;
+    private RoundedCornersTransformation roundedCornersTransformation;
+    private CropCircleTransformation transformation;
+
+    private LinearLayout score_update_data_layout;
+
+    private Button score_update_data_layout_but;
+    private TextView score_update_data_layout_hini_tv;
+    private TextView score_update_data_layout_hini_more_tv;
+
+    private FaceratingService faceratingService;
+
+    private ImageView score_update_data_layout_top_lift_iv;
+    private ImageView score_update_data_layout_top_lift_ereer_iv;
+    private ImageView score_update_data_layout_top_lift_attribute_iv;
+
+    private ImageView score_update_data_layout_top_right_iv;
+    private ImageView score_update_data_layout_top_right_ereer_iv;
+    private ImageView score_update_data_layout_top_right_attribute_iv;
+
+    private ImageView score_update_data_layout_bottom_lift_iv;
+    private ImageView score_update_data_layout_bottom_lift_ereer_iv;
+    private ImageView score_update_data_layout_bottom_lift_attribute_iv;
+
+    private ImageView score_update_data_layout_bottom_middle_iv;
+    private ImageView score_update_data_layout_bottom_middle_ereer_iv;
+    private ImageView score_update_data_layout_bottom_middle_attribute_iv;
+
+    private ImageView score_update_data_layout_bottom_right_iv;
+    private ImageView score_update_data_layout_bottom_right_ereer_iv;
+    private ImageView score_update_data_layout_bottom_right_attribute_iv;
+
+
+    private FrameLayout contentView;
+
+    private RelativeLayout score_welocome_layout;
+    private RelativeLayout score_welocome_layout_hini_layout;
+
+    private ImageView score_welocome_layout_level_clown_iv;
+    private ImageView score_welocome_layout_level_general_iv;
+    private ImageView score_welocome_layout_level_handsome_iv;
+    private ImageView score_welocome_layout_level_very_handsome_iv;
+
+    private LinearLayout score_welocome_layout_level_layout;
+
+
+    private Button score_welocome_layout_but;
+
+    private ImageView score_layout_level_clown_iv;
+    private ImageView score_layout_level_general_iv;
+    private ImageView score_layout_level_handsome_iv;
+    private ImageView score_layout_level_very_handsome_iv;
+
+    private boolean WelocomeTouchEvent = false;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        inflater = LayoutInflater.from(this);
+        contentView = (FrameLayout) inflater.inflate(R.layout.score_activity, null);
+        setContentView(contentView);
+        PushAgent.getInstance(this).onAppStart();
+
+        mBitmapPool = Glide.get(this).getBitmapPool();
+        transformation = new CropCircleTransformation(mBitmapPool);
+        roundedCornersTransformation = new RoundedCornersTransformation(mBitmapPool, 10, 0);
+        initView();
+
+
+        daillyFaceratingCandidatesDtos = (List<DaillyFaceratingCandidatesDto>) getIntent().getExtras().getSerializable(YpSettings.SCORE_START_DATA_TAG);
+
+        String score_start_welocome_code = SharedprefUtil.get(ScoreActivity.this, YpSettings.SCORE_START_WELCOME + YPApplication.loginUser.getUserId(), "");
+
+        if (TextUtils.isEmpty(score_start_welocome_code) || !TextUtils.equals(score_start_welocome_code, YPApplication.getInstance().versionName)) {//不为空，且与版本号相同，则是要显示提示
+            WelocomeTouchEvent = true;
+            score_cord_layout.setWelocomeTouchEvent(WelocomeTouchEvent);
+            initScoreWelocomeLayout();
+
+        } else {
+            WelocomeTouchEvent = false;
+            score_cord_layout.setWelocomeTouchEvent(WelocomeTouchEvent);
+        }
+
+
+        if (null != daillyFaceratingCandidatesDtos && daillyFaceratingCandidatesDtos.size() > 0) {//有卡片
+            score_cord_layout.setVisibility(View.VISIBLE);
+
+            setScoreCordLayout();
+
+        }
+
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("颜值打分"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("颜值打分"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    private void initView() {
+
+        score_title_tv = (TextView) findViewById(R.id.score_title_tv);
+        score_back_tv = (TextView) findViewById(R.id.score_back_tv);
+        score_cord_layout = (ScoreCordLayout) findViewById(R.id.score_cord_layout);
+        score_back_tv.setOnClickListener(this);
+
+
+        score_cord_layout.setOnScoreCordLayoutListener(this);
+        score_cord_layout.setOnScordCordLayoutUpdateListener(this);
+//        score_cord_layout.setOnScoreCordLayoutLevelListener(this);
+    }
+
+    private void initScoreCordLayoutView() {
+
+        contentView.removeView(score_update_data_layout);
+        score_update_data_layout = (LinearLayout) inflater.inflate(R.layout.score_update_data_layout, null);
+        contentView.addView(score_update_data_layout);
+//        score_update_data_layout = (LinearLayout) findViewById(R.id.score_update_data_layout);
+        score_update_data_layout_but = (Button) score_update_data_layout.findViewById(R.id.score_update_data_layout_but);
+        score_update_data_layout_hini_tv = (TextView) score_update_data_layout.findViewById(R.id.score_update_data_layout_hini_tv);
+        score_update_data_layout_hini_more_tv = (TextView) score_update_data_layout.findViewById(R.id.score_update_data_layout_hini_more_tv);
+        score_update_data_layout_but.setOnClickListener(this);
+
+        score_update_data_layout_top_lift_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_top_lift_iv);
+        score_update_data_layout_top_lift_ereer_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_top_lift_ereer_iv);
+        score_update_data_layout_top_lift_attribute_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_top_lift_attribute_iv);
+
+        score_update_data_layout_top_right_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_top_right_iv);
+        score_update_data_layout_top_right_ereer_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_top_right_ereer_iv);
+        score_update_data_layout_top_right_attribute_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_top_right_attribute_iv);
+
+        score_update_data_layout_bottom_lift_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_lift_iv);
+        score_update_data_layout_bottom_lift_ereer_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_lift_ereer_iv);
+        score_update_data_layout_bottom_lift_attribute_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_lift_attribute_iv);
+
+        score_update_data_layout_bottom_middle_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_middle_iv);
+        score_update_data_layout_bottom_middle_ereer_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_middle_ereer_iv);
+        score_update_data_layout_bottom_middle_attribute_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_middle_attribute_iv);
+
+        score_update_data_layout_bottom_right_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_right_iv);
+        score_update_data_layout_bottom_right_ereer_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_right_ereer_iv);
+        score_update_data_layout_bottom_right_attribute_iv = (ImageView) score_update_data_layout.findViewById(R.id.score_update_data_layout_bottom_right_attribute_iv);
+
+
+
+
+        int size_10 = UnitUtil.dip2px(10, this);
+
+        int size_50 = UnitUtil.dip2px(50, this);
+        int wight = UnitUtil.getScreenWidthPixels(this);
+
+        int viewWight = (wight - (size_10 * 2) - size_50) / 3;
+
+
+        RelativeLayout.LayoutParams top_lift_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        top_lift_iv_pa.width = viewWight;
+        top_lift_iv_pa.height = viewWight;
+        top_lift_iv_pa.setMargins(0, 0, 0, 0);
+        score_update_data_layout_top_lift_iv.setLayoutParams(top_lift_iv_pa);
+        score_update_data_layout_top_lift_ereer_iv.setLayoutParams(top_lift_iv_pa);
+
+        RelativeLayout.LayoutParams top_right_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        top_right_iv_pa.width = viewWight;
+        top_right_iv_pa.height = viewWight;
+        top_right_iv_pa.setMargins(size_10, 0, 0, 0);
+        score_update_data_layout_top_right_iv.setLayoutParams(top_right_iv_pa);
+        score_update_data_layout_top_right_ereer_iv.setLayoutParams(top_right_iv_pa);
+
+
+        RelativeLayout.LayoutParams bottom_lift_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        bottom_lift_iv_pa.width = viewWight;
+        bottom_lift_iv_pa.height = viewWight;
+        bottom_lift_iv_pa.setMargins(0, 0, 0, 0);
+        score_update_data_layout_bottom_lift_iv.setLayoutParams(bottom_lift_iv_pa);
+        score_update_data_layout_bottom_lift_ereer_iv.setLayoutParams(bottom_lift_iv_pa);
+
+        RelativeLayout.LayoutParams bottom_middle_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        bottom_middle_iv_pa.width = viewWight;
+        bottom_middle_iv_pa.height = viewWight;
+        bottom_middle_iv_pa.setMargins(size_10, 0, 0, 0);
+        score_update_data_layout_bottom_middle_iv.setLayoutParams(bottom_middle_iv_pa);
+        score_update_data_layout_bottom_middle_ereer_iv.setLayoutParams(bottom_middle_iv_pa);
+
+        RelativeLayout.LayoutParams bottom_right_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        bottom_right_iv_pa.width = viewWight;
+        bottom_right_iv_pa.height = viewWight;
+        bottom_right_iv_pa.setMargins(size_10, 0, 0, 0);
+        score_update_data_layout_bottom_right_iv.setLayoutParams(bottom_right_iv_pa);
+        score_update_data_layout_bottom_right_ereer_iv.setLayoutParams(bottom_right_iv_pa);
+
+        int attribute_size = viewWight / 5;
+        int size_30 = attribute_size / 2;
+
+        RelativeLayout.LayoutParams score_update_data_layout_top_lift_attribute_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        score_update_data_layout_top_lift_attribute_iv_pa.width = attribute_size;
+        score_update_data_layout_top_lift_attribute_iv_pa.height = attribute_size;
+        score_update_data_layout_top_lift_attribute_iv_pa.setMargins(0, 0, size_30, size_30);
+
+        score_update_data_layout_top_lift_attribute_iv_pa.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.score_update_data_layout_top_lift_iv);
+        score_update_data_layout_top_lift_attribute_iv_pa.addRule(RelativeLayout.ALIGN_RIGHT, R.id.score_update_data_layout_top_lift_iv);
+        score_update_data_layout_top_lift_attribute_iv.setLayoutParams(score_update_data_layout_top_lift_attribute_iv_pa);
+
+
+        RelativeLayout.LayoutParams score_update_data_layout_top_right_attribute_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        score_update_data_layout_top_right_attribute_iv_pa.width = attribute_size;
+        score_update_data_layout_top_right_attribute_iv_pa.height = attribute_size;
+        score_update_data_layout_top_right_attribute_iv_pa.setMargins(0, 0, size_30, size_30);
+
+        score_update_data_layout_top_right_attribute_iv_pa.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.score_update_data_layout_top_right_iv);
+        score_update_data_layout_top_right_attribute_iv_pa.addRule(RelativeLayout.ALIGN_RIGHT, R.id.score_update_data_layout_top_right_iv);
+        score_update_data_layout_top_right_attribute_iv.setLayoutParams(score_update_data_layout_top_right_attribute_iv_pa);
+
+        RelativeLayout.LayoutParams score_update_data_layout_bottom_lift_attribute_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        score_update_data_layout_bottom_lift_attribute_iv_pa.width = attribute_size;
+        score_update_data_layout_bottom_lift_attribute_iv_pa.height = attribute_size;
+        score_update_data_layout_bottom_lift_attribute_iv_pa.setMargins(0, 0, size_30, size_30);
+
+        score_update_data_layout_bottom_lift_attribute_iv_pa.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.score_update_data_layout_bottom_lift_iv);
+        score_update_data_layout_bottom_lift_attribute_iv_pa.addRule(RelativeLayout.ALIGN_RIGHT, R.id.score_update_data_layout_bottom_lift_iv);
+
+        score_update_data_layout_bottom_lift_attribute_iv.setLayoutParams(score_update_data_layout_bottom_lift_attribute_iv_pa);
+
+        RelativeLayout.LayoutParams score_update_data_layout_bottom_middle_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        score_update_data_layout_bottom_middle_iv_pa.width = attribute_size;
+        score_update_data_layout_bottom_middle_iv_pa.height = attribute_size;
+        score_update_data_layout_bottom_middle_iv_pa.setMargins(0, 0, size_30, size_30);
+
+        score_update_data_layout_bottom_middle_iv_pa.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.score_update_data_layout_bottom_middle_iv);
+        score_update_data_layout_bottom_middle_iv_pa.addRule(RelativeLayout.ALIGN_RIGHT, R.id.score_update_data_layout_bottom_middle_iv);
+        score_update_data_layout_bottom_middle_attribute_iv.setLayoutParams(score_update_data_layout_bottom_middle_iv_pa);
+
+        RelativeLayout.LayoutParams score_update_data_layout_bottom_right_attribute_iv_pa = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        score_update_data_layout_bottom_right_attribute_iv_pa.width = attribute_size;
+        score_update_data_layout_bottom_right_attribute_iv_pa.height = attribute_size;
+        score_update_data_layout_bottom_right_attribute_iv_pa.setMargins(0, 0, size_30, size_30);
+        score_update_data_layout_bottom_right_attribute_iv_pa.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.score_update_data_layout_bottom_right_iv);
+        score_update_data_layout_bottom_right_attribute_iv_pa.addRule(RelativeLayout.ALIGN_RIGHT, R.id.score_update_data_layout_bottom_right_iv);
+        score_update_data_layout_bottom_right_attribute_iv.setLayoutParams(score_update_data_layout_bottom_right_attribute_iv_pa);
+
+
+    }
+
+    private void initScoreWelocomeLayout() {
+        score_welocome_layout = (RelativeLayout) inflater.inflate(R.layout.score_welocome_layout, null);
+        contentView.addView(score_welocome_layout);
+        score_welocome_layout_hini_layout = (RelativeLayout) score_welocome_layout.findViewById(R.id.score_welocome_layout_hini_layout);
+        score_welocome_layout_level_layout = (LinearLayout) score_welocome_layout.findViewById(R.id.score_welocome_layout_level_layout);
+
+
+        score_welocome_layout_level_clown_iv = (ImageView) score_welocome_layout.findViewById(R.id.score_welocome_layout_level_clown_iv);
+        score_welocome_layout_level_general_iv = (ImageView) score_welocome_layout.findViewById(R.id.score_welocome_layout_level_general_iv);
+        score_welocome_layout_level_handsome_iv = (ImageView) score_welocome_layout.findViewById(R.id.score_welocome_layout_level_handsome_iv);
+        score_welocome_layout_level_very_handsome_iv = (ImageView) score_welocome_layout.findViewById(R.id.score_welocome_layout_level_very_handsome_iv);
+        score_welocome_layout_but = (Button) score_welocome_layout.findViewById(R.id.score_welocome_layout_but);
+        score_welocome_layout_but.setOnClickListener(this);
+
+        int wight = UnitUtil.getScreenWidthPixels(this);
+        int height = UnitUtil.getScreenHeightPixels(this);
+        int size_20 = UnitUtil.dip2px(20, this);
+
+        int viewWight = (wight - (size_20 * 5)) / 4;
+
+        LinearLayout.LayoutParams clown_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        clown_iv_params.width = viewWight;
+        clown_iv_params.height = viewWight;
+        clown_iv_params.setMargins(size_20, 0, 0, 0);
+        score_welocome_layout_level_clown_iv.setLayoutParams(clown_iv_params);
+
+        LinearLayout.LayoutParams general_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        general_iv_params.width = viewWight;
+        general_iv_params.height = viewWight;
+        general_iv_params.setMargins(size_20, 0, 0, 0);
+        score_welocome_layout_level_general_iv.setLayoutParams(general_iv_params);
+
+        LinearLayout.LayoutParams handsome_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        handsome_iv_params.width = viewWight;
+        handsome_iv_params.height = viewWight;
+        handsome_iv_params.setMargins(size_20, 0, 0, 0);
+        score_welocome_layout_level_handsome_iv.setLayoutParams(handsome_iv_params);
+
+        LinearLayout.LayoutParams very_handsome_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        very_handsome_iv_params.width = viewWight;
+        very_handsome_iv_params.height = viewWight;
+        very_handsome_iv_params.setMargins(size_20, 0, 0, 0);
+        score_welocome_layout_level_very_handsome_iv.setLayoutParams(very_handsome_iv_params);
+
+
+    }
+
+    private void setScoreCordLayout() {
+
+        List<ScoreCordBean> score_cord_list = new ArrayList<>();
+
+        int width = UnitUtil.getScreenWidthPixels(this);
+        int hight = UnitUtil.getScreenHeightPixels(this);
+        score_cord_layout.score_cord_layout_moment_from_top = UnitUtil.dip2px(100, this);
+        score_cord_layout.score_cord_layout_moment_from = UnitUtil.dip2px(10, this);
+
+        int CordLayoutWidth = width - UnitUtil.dip2px(50, this);
+        int CordLayoutHight = hight - (score_cord_layout.score_cord_layout_moment_from_top * 2);
+
+
+        int size_10 = UnitUtil.dip2px(10, this);
+        int size_15 = UnitUtil.dip2px(15, this);
+        int size_20 = UnitUtil.dip2px(20, this);
+        int photo_album_iv_size = (CordLayoutWidth - (size_10 * 2 + size_15 * 2)) / 3;
+        int layout_leve_layout_iv_size = (CordLayoutWidth - (size_20 * 2 + size_10 * 3)) / 4;
+
+        if (null != daillyFaceratingCandidatesDtos && daillyFaceratingCandidatesDtos.size() > 0) {
+            for (int i = 0; i < daillyFaceratingCandidatesDtos.size(); i++) {
+                DaillyFaceratingCandidatesDto candidatesDto = daillyFaceratingCandidatesDtos.get(i);
+                if (null == candidatesDto) {
+                    continue;
+                }
+
+                LinearLayout scoreCordLayout = (LinearLayout) inflater.inflate(R.layout.score_layout, null);
+                //头像
+                ImageView score_layout_head_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_head_iv);
+                //左上角数量
+                TextView score_layout_attraction_tv = (TextView) scoreCordLayout.findViewById(R.id.score_layout_attraction_tv);
+                //用户名称
+                TextView score_cord_layout_user_name_tv = (TextView) scoreCordLayout.findViewById(R.id.score_cord_layout_user_name_tv);
+                //用户星座
+                TextView score_cord_layout_constellation_tv = (TextView) scoreCordLayout.findViewById(R.id.score_cord_layout_constellation_tv);
+
+                //年龄
+                TextView score_cord_layout_age_tv = (TextView) scoreCordLayout.findViewById(R.id.score_cord_layout_age_tv);
+
+
+//                RelativeLayout.LayoutParams score_layout_head_iv_params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                score_layout_head_iv_params.width = CordLayoutWidth-size_15-size_10;
+//                score_layout_head_iv_params.height = CordLayoutWidth-size_15-size_10;
+//                score_layout_head_iv_params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//                score_layout_head_iv_params.addRule(RelativeLayout.CENTER_VERTICAL);
+//                score_layout_head_iv.setLayoutParams(score_layout_head_iv_params);
+
+                score_layout_level_clown_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_level_clown_iv);
+                LinearLayout.LayoutParams level_clown_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                level_clown_iv_params.width = layout_leve_layout_iv_size;
+                level_clown_iv_params.height = layout_leve_layout_iv_size;
+                level_clown_iv_params.setMargins(0, size_10, size_10, size_10);
+                score_layout_level_clown_iv.setLayoutParams(level_clown_iv_params);
+
+
+                score_layout_level_general_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_level_general_iv);
+                LinearLayout.LayoutParams level_general_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                level_general_iv_params.width = layout_leve_layout_iv_size;
+                level_general_iv_params.height = layout_leve_layout_iv_size;
+                level_general_iv_params.setMargins(0, size_10, size_10, size_10);
+                score_layout_level_general_iv.setLayoutParams(level_general_iv_params);
+
+                score_layout_level_handsome_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_level_handsome_iv);
+                LinearLayout.LayoutParams level_handsomel_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                level_handsomel_iv_params.width = layout_leve_layout_iv_size;
+                level_handsomel_iv_params.height = layout_leve_layout_iv_size;
+                level_handsomel_iv_params.setMargins(0, size_10, size_10, size_10);
+                score_layout_level_handsome_iv.setLayoutParams(level_handsomel_iv_params);
+
+
+                score_layout_level_very_handsome_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_level_very_handsome_iv);
+                LinearLayout.LayoutParams level_very_handsomel_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                level_very_handsomel_iv_params.width = layout_leve_layout_iv_size;
+                level_very_handsomel_iv_params.height = layout_leve_layout_iv_size;
+                level_very_handsomel_iv_params.setMargins(0, size_10, 0, size_10);
+                score_layout_level_very_handsome_iv.setLayoutParams(level_very_handsomel_iv_params);
+
+
+//                int score_cord_layout_moment_from
+
+
+                ImageView score_layout_photo_album_one_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_photo_album_one_iv);
+                LinearLayout.LayoutParams photo_album_one_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                photo_album_one_iv_params.width = photo_album_iv_size;
+                photo_album_one_iv_params.height = photo_album_iv_size;
+                photo_album_one_iv_params.setMargins(size_10, size_10, size_15, size_10);
+                score_layout_photo_album_one_iv.setLayoutParams(photo_album_one_iv_params);
+
+
+                ImageView score_layout_photo_album_two_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_photo_album_two_iv);
+                LinearLayout.LayoutParams photo_album_two_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                photo_album_two_iv_params.width = photo_album_iv_size;
+                photo_album_two_iv_params.height = photo_album_iv_size;
+                photo_album_two_iv_params.setMargins(0, size_10, size_15, size_10);
+
+                score_layout_photo_album_two_iv.setLayoutParams(photo_album_two_iv_params);
+
+
+                ImageView score_layout_photo_album_three_iv = (ImageView) scoreCordLayout.findViewById(R.id.score_layout_photo_album_three_iv);
+                LinearLayout.LayoutParams photo_album_threeiv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                photo_album_threeiv_params.width = photo_album_iv_size;
+                photo_album_threeiv_params.height = photo_album_iv_size;
+                photo_album_threeiv_params.setMargins(0, size_10, size_10, size_10);
+                score_layout_photo_album_three_iv.setLayoutParams(photo_album_threeiv_params);
+
+
+                RelativeLayout score_layout_top_layout = (RelativeLayout) scoreCordLayout.findViewById(R.id.score_layout_top_layout);
+                LinearLayout score_layout_level_layout = (LinearLayout) scoreCordLayout.findViewById(R.id.score_layout_level_layout);
+
+                LinearLayout score_layout_photo_album_layout = (LinearLayout) scoreCordLayout.findViewById(R.id.score_layout_photo_album_layout);
+
+
+                String uresIcoUrl = ImgUtils.DealImageUrl(candidatesDto.getHeadImg(), YpSettings.IMG_SIZE_300, YpSettings.IMG_SIZE_300);
+
+                Glide.with(ScoreActivity.this).load(uresIcoUrl).into(score_layout_head_iv);
+
+
+                List<String> score_layout_album = candidatesDto.getAlbum();
+                if (null != score_layout_album && score_layout_album.size() > 0) {
+                    for (int j = 0; j < score_layout_album.size(); j++) {
+                        String url = score_layout_album.get(j);
+                        String score_layout_album_img_url = ImgUtils.DealImageUrl(url, YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+                        if (j == 0) {
+                            Glide.with(ScoreActivity.this).load(score_layout_album_img_url).bitmapTransform(roundedCornersTransformation).into(score_layout_photo_album_one_iv);
+                        } else if (j == 1) {
+                            Glide.with(ScoreActivity.this).load(score_layout_album_img_url).bitmapTransform(roundedCornersTransformation).into(score_layout_photo_album_two_iv);
+                        } else if (j == 2) {
+                            Glide.with(ScoreActivity.this).load(score_layout_album_img_url).bitmapTransform(roundedCornersTransformation).into(score_layout_photo_album_three_iv);
+                            break;
+                        }
+
+                    }
+                    score_layout_attraction_tv.setText(score_layout_album.size() + "");
+                } else {
+                    score_layout_attraction_tv.setText(0 + "");
+                }
+
+                String nameStr = candidatesDto.getName();
+                String nameText = "";
+                if (!TextUtils.isEmpty(nameStr)) {
+                    int nameStr_size = nameStr.length();
+                    if (nameStr_size > 5) {
+                        nameText = nameStr.substring(0, 5) + "...";
+                    } else {
+                        nameText = nameStr;
+                    }
+                }
+
+                score_cord_layout_user_name_tv.setText(nameText);
+
+                String score_cord_layout_constellation_tv_str = CheckUtil.ConstellationMatching(candidatesDto.getHoroscope());
+                score_cord_layout_constellation_tv.setText(score_cord_layout_constellation_tv_str);
+                if (candidatesDto.getSex() == 1) {
+                    //男性
+                    score_cord_layout_constellation_tv.setBackgroundResource(R.drawable.look_video_man_bg);
+
+                } else {
+                    // 女性
+                    score_cord_layout_constellation_tv.setBackgroundResource(R.drawable.look_video_women_bg);
+                }
+
+                String location_str = CheckUtil.getSpacingTool(candidatesDto.getDistance());
+                int age = candidatesDto.getAge();
+                String agestr = "";
+                if (age > 0) {
+                    agestr = age + "岁" + " | ";
+                }
+
+                score_cord_layout_age_tv.setText(agestr + location_str);
+
+
+                ScoreCordBean scoreCordBean = new ScoreCordBean();
+                scoreCordBean.CordLinearLayout = scoreCordLayout;
+
+                scoreCordBean.CordLayoutLevelClownIV = score_layout_level_clown_iv;
+                scoreCordBean.CordLayoutLevelGeneralIV = score_layout_level_general_iv;
+                scoreCordBean.CordLayoutLevelHandsomeIV = score_layout_level_handsome_iv;
+                scoreCordBean.CordLayoutLevelVeryHandsomeIV = score_layout_level_very_handsome_iv;
+
+                scoreCordBean.CordLayoutPhotoAlbumOneIV = score_layout_photo_album_one_iv;
+                scoreCordBean.CordLayoutPhotoAlbumTwoIV = score_layout_photo_album_two_iv;
+                scoreCordBean.CordLayoutPhotoAlbumThreeIV = score_layout_photo_album_three_iv;
+
+                scoreCordBean.CordLayoutWidth = CordLayoutWidth;
+                scoreCordBean.CordLayoutHight = CordLayoutHight;
+
+                scoreCordBean.CordLayoutTopLayout = score_layout_top_layout;
+
+                scoreCordBean.CordLayoutLeveLLayout = score_layout_level_layout;
+
+                scoreCordBean.CordLayoutLevelPhotoAlbumLatout = score_layout_photo_album_layout;
+
+                scoreCordBean.CordLayoutDaillyFaceratingCandidatesDto = candidatesDto;
+                scoreCordBean.CordLayoutPhotoAlbumSize = photo_album_iv_size;
+
+                score_cord_list.add(scoreCordBean);
+
+
+                if (i >= 4) {
+                    break;
+                }
+
+            }
+        }
+        score_cord_layout.setScoreCordLayout(score_cord_list);
+
+    }
+
+
+    private Dialog score_cord_right_event_dialog;
+    private Dialog score_cord_lift_event_dialog;
+    private Dialog score_cord_top_event_dialog;
+    private Dialog score_cord_bottom_event_dialog;
+
+    @Override
+    public void onScoreCordLeftEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+
+        System.out.println("--score_cord_top_layout--");
+        setScoreCordLeftEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+    }
+
+
+    @Override
+    public void onScoreCordRightEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+        System.out.println("--score_cord_top_layout--");
+
+        setScoreCordRightEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+
+    }
+
+    @Override
+    public void onScoreCordTopEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+        setScoreCordTopEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+    }
+
+    @Override
+    public void onScoreCordBottomEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+        System.out.println("--score_cord_top_layout--");
+        setScoreCordBottomEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+    }
+
+
+    @Override
+    public void onLevelClownImageView(final int score_cord_layout_list_size, final int level, ImageView clown_iv, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+        System.out.println("--clown_iv--");
+//        setScoreCordBottomEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+        score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+
+    }
+
+    @Override
+    public void onLevelGeneralImageView(final int score_cord_layout_list_size, final int level, ImageView general_iv, LinearLayout score_cord_top_layout, float fromXDelta, float toXDelta, float fromYDelta, float toYDelta, final String username) {
+        System.out.println("--general_iv--");
+
+//        setScoreCordLeftEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+        score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+    }
+
+    @Override
+    public void onLevelHandsomeImageView(final int score_cord_layout_list_size, final int level, ImageView handsome_iv, LinearLayout score_cord_top_layout, float fromXDelta, float toXDelta, float fromYDelta, float toYDelta, final String username) {
+        System.out.println("--handsome_iv--");
+//        setScoreCordRightEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+        score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+    }
+
+    @Override
+    public void onLevelVeryHandsomeImageView(final int score_cord_layout_list_size, final int level, ImageView very_handsome_iv, LinearLayout score_cord_top_layout, float fromXDelta, float toXDelta, float fromYDelta, float toYDelta, final String username) {
+        System.out.println("--very_handsome_iv--");
+//        setScoreCordTopEvent(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta, username);
+        score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+    }
+
+    @Override
+    public void onPhotoAlbumOne(ImageView photo_album_one, final List<String> score_layout_album) {
+
+        System.out.println("--photo_album_one--");
+        System.out.println("--size--" + score_layout_album.size());
+        if (null != score_layout_album && score_layout_album.size() > 0) {
+            ScoreZoomViewerDto dto = new ScoreZoomViewerDto();
+            dto.setList(score_layout_album);
+            dto.setPosition(0);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(YpSettings.SCORE_ZOOM_LIST_DTO, dto);
+
+            ActivityUtil.jump(ScoreActivity.this, ScoreZoomViewersActivity.class, bundle, 0, 100);
+        }
+
+    }
+
+    @Override
+    public void onPhotoAlbumTwo(ImageView photo_album_two, final List<String> score_layout_album) {
+
+        System.out.println("--photo_album_two--");
+        System.out.println("--size--" + score_layout_album.size());
+        if (null != score_layout_album && score_layout_album.size() > 1) {
+            ScoreZoomViewerDto dto = new ScoreZoomViewerDto();
+            dto.setList(score_layout_album);
+            dto.setPosition(1);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(YpSettings.SCORE_ZOOM_LIST_DTO, dto);
+            ActivityUtil.jump(ScoreActivity.this, ScoreZoomViewersActivity.class, bundle, 0, 100);
+        }
+    }
+
+    @Override
+    public void onPhotoAlbumThree(ImageView photo_album_Three, final List<String> score_layout_album) {
+
+
+        System.out.println("--photo_album_Three--");
+        System.out.println("--size--" + score_layout_album.size());
+        if (null != score_layout_album && score_layout_album.size() > 2) {
+            ScoreZoomViewerDto dto = new ScoreZoomViewerDto();
+            dto.setList(score_layout_album);
+            dto.setPosition(2);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(YpSettings.SCORE_ZOOM_LIST_DTO, dto);
+            ActivityUtil.jump(ScoreActivity.this, ScoreZoomViewersActivity.class, bundle, 0, 100);
+            System.out.println("--dto--" + dto.toString());
+        }
+    }
+
+    private SpannableStringBuilder getSpannableStringBuilder(String dilogContextStr, String username) {
+        int toUserNameSize = 0;
+        int contentSize = 0;
+
+        contentSize = dilogContextStr.indexOf(username);
+        toUserNameSize = username.length();
+        String contentStr = CheckUtil.ToDBC(dilogContextStr);
+
+        SpannableString spannableString = FaceTextUtils.toSpannableString(
+                this, contentStr);
+
+        SpannableStringBuilder builder = new SpannableStringBuilder(
+                spannableString);
+
+        ForegroundColorSpan blackSpan = new ForegroundColorSpan(this
+                .getResources().getColor(R.color.text_color_ff7462));
+
+        builder.setSpan(blackSpan, contentSize, contentSize
+                + toUserNameSize, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        return builder;
+
+    }
+
+
+    private void setScoreCordLeftEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+
+        String dilogTitleStr = "一般？";
+        String dilogContextStr = "将照片滑至左侧表示 " + username + " 长相很一般";
+
+        String StartCode = SharedprefUtil.get(ScoreActivity.this, YpSettings.SCORE_START_LIFT + YPApplication.loginUser.getUserId(), "");
+        if (!TextUtils.isEmpty(StartCode) && TextUtils.equals(StartCode, YPApplication.getInstance().versionName)) {//不为空，且与版本号相同，则是已经提示过了
+            score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+        } else {//没有提示过时
+
+            if (null != score_cord_lift_event_dialog) {
+                score_cord_lift_event_dialog.dismiss();
+
+            }
+            score_cord_lift_event_dialog = DialogUtil.createHintOperateDialog(ScoreActivity.this, dilogTitleStr, getSpannableStringBuilder(dilogContextStr, username), "取消", "确定", new BackCallListener() {
+
+                @Override
+                public void onEnsure(View view, Object... obj) {
+
+                    SharedprefUtil.save(ScoreActivity.this, YpSettings.SCORE_START_LIFT + YPApplication.loginUser.getUserId(), YPApplication.getInstance().versionName);
+                    score_cord_lift_event_dialog.dismiss();
+                    score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+                }
+
+                @Override
+                public void onCancel(View view, Object... obj) {
+                    score_cord_lift_event_dialog.dismiss();
+                    score_cord_layout.setOriginAnimation(score_cord_top_layout, 0, -score_cord_layout.score_cord_layout_actton_move_x, 0, -score_cord_layout.score_cord_layout_actton_move_y);
+                }
+            });
+
+            score_cord_lift_event_dialog.setCanceledOnTouchOutside(false);
+            score_cord_lift_event_dialog.setCancelable(false);
+            if (!isFinishing()) {
+                score_cord_lift_event_dialog.show();
+            }
+        }
+    }
+
+
+    private void setScoreCordRightEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+        System.out.println("--score_cord_top_layout--");
+
+        String dilogTitleStr = "帅？";
+        String dilogContextStr = "将照片滑至右侧表示 " + username + " 长相还不错";
+
+        String StartCode = SharedprefUtil.get(ScoreActivity.this, YpSettings.SCORE_START_RIGHT + YPApplication.loginUser.getUserId(), "");
+        if (!TextUtils.isEmpty(StartCode) && TextUtils.equals(StartCode, YPApplication.getInstance().versionName)) {//不为空，且与版本号相同，则是已经提示过了
+            score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+        } else {//没有提示过时
+
+            if (null != score_cord_right_event_dialog) {
+                score_cord_right_event_dialog.dismiss();
+
+            }
+            score_cord_right_event_dialog = DialogUtil.createHintOperateDialog(ScoreActivity.this, dilogTitleStr, getSpannableStringBuilder(dilogContextStr, username), "取消", "确定", new BackCallListener() {
+
+                @Override
+                public void onEnsure(View view, Object... obj) {
+
+                    SharedprefUtil.save(ScoreActivity.this, YpSettings.SCORE_START_RIGHT + YPApplication.loginUser.getUserId(), YPApplication.getInstance().versionName);
+                    score_cord_right_event_dialog.dismiss();
+                    score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+                }
+
+                @Override
+                public void onCancel(View view, Object... obj) {
+                    score_cord_right_event_dialog.dismiss();
+                    score_cord_layout.setOriginAnimation(score_cord_top_layout, 0, -score_cord_layout.score_cord_layout_actton_move_x, 0, -score_cord_layout.score_cord_layout_actton_move_y);
+                }
+            });
+
+            score_cord_right_event_dialog.setCanceledOnTouchOutside(false);
+            score_cord_right_event_dialog.setCancelable(false);
+            if (!isFinishing()) {
+                score_cord_right_event_dialog.show();
+            }
+        }
+
+    }
+
+
+    private void setScoreCordTopEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+        System.out.println("--score_cord_top_layout--");
+
+        String dilogTitleStr = "很帅？";
+        String dilogContextStr = "将照片滑至上方表示 " + username + " 长相很帅";
+
+
+        String StartCode = SharedprefUtil.get(ScoreActivity.this, YpSettings.SCORE_START_TOP + YPApplication.loginUser.getUserId(), "");
+        if (!TextUtils.isEmpty(StartCode) && TextUtils.equals(StartCode, YPApplication.getInstance().versionName)) {//不为空，且与版本号相同，则是已经提示过了
+            score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+        } else {//没有提示过时
+
+            if (null != score_cord_top_event_dialog) {
+                score_cord_top_event_dialog.dismiss();
+            }
+            score_cord_top_event_dialog = DialogUtil.createHintOperateDialog(ScoreActivity.this, dilogTitleStr, getSpannableStringBuilder(dilogContextStr, username), "取消", "确定", new BackCallListener() {
+
+
+                @Override
+                public void onEnsure(View view, Object... obj) {
+
+                    SharedprefUtil.save(ScoreActivity.this, YpSettings.SCORE_START_TOP + YPApplication.loginUser.getUserId(), YPApplication.getInstance().versionName);
+                    score_cord_top_event_dialog.dismiss();
+                    score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+                }
+
+                @Override
+                public void onCancel(View view, Object... obj) {
+                    score_cord_top_event_dialog.dismiss();
+                    score_cord_layout.setOriginAnimation(score_cord_top_layout, 0, -score_cord_layout.score_cord_layout_actton_move_x, 0, -score_cord_layout.score_cord_layout_actton_move_y);
+                }
+            });
+
+            score_cord_top_event_dialog.setCanceledOnTouchOutside(false);
+            score_cord_top_event_dialog.setCancelable(false);
+            if (!isFinishing()) {
+                score_cord_top_event_dialog.show();
+            }
+        }
+    }
+
+
+    private void setScoreCordBottomEvent(final int score_cord_layout_list_size, final int level, final LinearLayout score_cord_top_layout, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, final String username) {
+        System.out.println("--score_cord_top_layout--");
+
+        String dilogTitleStr = "丑？";
+        String dilogContextStr = "将照片滑至下方表示 " + username + " 长相丑哭了";
+
+        String StartCode = SharedprefUtil.get(ScoreActivity.this, YpSettings.SCORE_START_BOTTOM + YPApplication.loginUser.getUserId(), "");
+        if (!TextUtils.isEmpty(StartCode) && TextUtils.equals(StartCode, YPApplication.getInstance().versionName)) {//不为空，且与版本号相同，则是已经提示过了
+            score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+
+
+        } else {//没有提示过时
+
+            if (null != score_cord_bottom_event_dialog) {
+                score_cord_bottom_event_dialog.dismiss();
+            }
+            score_cord_bottom_event_dialog = DialogUtil.createHintOperateDialog(ScoreActivity.this, dilogTitleStr, getSpannableStringBuilder(dilogContextStr, username), "取消", "确定", new BackCallListener() {
+
+                @Override
+                public void onEnsure(View view, Object... obj) {
+
+                    SharedprefUtil.save(ScoreActivity.this, YpSettings.SCORE_START_BOTTOM + YPApplication.loginUser.getUserId(), YPApplication.getInstance().versionName);
+                    score_cord_bottom_event_dialog.dismiss();
+                    score_cord_layout.setSlideViewAnims(score_cord_layout_list_size, level, score_cord_top_layout, fromXDelta, toXDelta, fromYDelta, toYDelta);
+                }
+
+                @Override
+                public void onCancel(View view, Object... obj) {
+                    score_cord_bottom_event_dialog.dismiss();
+                    score_cord_layout.setOriginAnimation(score_cord_top_layout, 0, -score_cord_layout.score_cord_layout_actton_move_x, 0, -score_cord_layout.score_cord_layout_actton_move_y);
+                }
+            });
+
+
+            score_cord_bottom_event_dialog.setCanceledOnTouchOutside(false);
+            score_cord_bottom_event_dialog.setCancelable(false);
+            if (!isFinishing()) {
+                score_cord_bottom_event_dialog.show();
+            }
+        }
+    }
+
+
+    @Override
+    public void onLevelClownIvSelected(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_clown_icon_selected);
+    }
+
+    @Override
+    public void onLevelGeneralIvSelected(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_general_icon_selected);
+
+    }
+
+    @Override
+    public void onLevelHandsomeIvSelected(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_handsome_icon_selected);
+
+    }
+
+    @Override
+    public void onLevelVeryHandsomeIvSelected(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_very_handsome_icon_selected);
+
+    }
+
+    @Override
+    public void onLevelClownIvLoosen(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_clown_icon);
+
+    }
+
+    @Override
+    public void onLevelGeneralIvLoosen(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_general_icon);
+
+    }
+
+    @Override
+    public void onLevelHandsomeIvLoosen(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_handsome_icon);
+
+    }
+
+    @Override
+    public void onLevelVeryHandsomeIvLoosen(ImageView imageView) {
+        if (null != imageView)
+            imageView.setImageResource(R.drawable.score_very_handsome_icon);
+
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.score_update_data_layout_but:
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+
+                int tag = (int) score_update_data_layout_but.getTag();
+                if (tag == 0) {//没有打完哦
+                    daillyFaceratingCandidatesLevelDtos = new ArrayList<>();
+                    score_update_data_layout.setVisibility(View.GONE);
+                    contentView.removeView(score_update_data_layout);
+                    score_cord_layout.setVisibility(View.VISIBLE);
+                    setScoreCordLayout();
+                } else {//已经打完回到上一个界面
+                    finish();
+
+                }
+
+
+                break;
+            case R.id.score_back_tv:
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+
+                if (!WelocomeTouchEvent) {
+                    finish();
+                }
+
+                break;
+            case R.id.score_welocome_layout_but:
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+                SharedprefUtil.save(ScoreActivity.this, YpSettings.SCORE_START_WELCOME + YPApplication.loginUser.getUserId(), YPApplication.getInstance().versionName);
+                score_welocome_layout_hini_layout.setVisibility(View.INVISIBLE);
+                setscore_layout_level_layout_clown_iv_anim();
+                setscore_layout_level_layout_general_iv_anim();
+                setscore_layout_level_layout_handsome_iv_anim();
+                setscore_layout_level_layout_very_handsome_iv_anim();
+                WelocomeTouchEvent = false;
+                score_cord_layout.setWelocomeTouchEvent(WelocomeTouchEvent);
+
+                break;
+        }
+
+    }
+
+
+    private void setscore_layout_level_layout_clown_iv_anim() {
+        final ImageView view = new ImageView(this);
+
+        int left = score_welocome_layout.getLeft() + score_welocome_layout_hini_layout.getLeft() + score_welocome_layout_level_layout.getLeft() + score_welocome_layout_level_clown_iv.getLeft();
+        int right = score_welocome_layout.getRight() + score_welocome_layout_hini_layout.getRight() + score_welocome_layout_level_layout.getRight() + score_welocome_layout_level_clown_iv.getRight();
+        int buttom = score_welocome_layout.getBottom() + score_welocome_layout_hini_layout.getBottom() + score_welocome_layout_level_layout.getBottom() + score_welocome_layout_level_clown_iv.getBottom();
+        int top = score_welocome_layout.getTop() + score_welocome_layout_hini_layout.getTop() + score_welocome_layout_level_layout.getTop() + score_welocome_layout_level_clown_iv.getTop();
+
+        int left_c = score_cord_layout.getLeftLevelClownIv();
+        int top_c = score_cord_layout.getTopLevelClownIv();
+
+        int toXDelta = 0;
+        int toYDelta = 0;
+
+
+        toXDelta = left_c - left;
+        toYDelta = top_c - top;
+
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        params.width = score_welocome_layout_level_clown_iv.getWidth();
+        params.height = score_welocome_layout_level_clown_iv.getHeight();
+        params.setMargins(left, top, right, buttom);
+        view.setLayoutParams(params);
+
+        score_welocome_layout.addView(view);
+        view.setImageResource(R.drawable.score_clown_icon);
+
+
+        TranslateAnimation translateAnimation = new TranslateAnimation(0, toXDelta, 0, toYDelta);
+        translateAnimation.setInterpolator(new AccelerateInterpolator());
+        translateAnimation.setDuration(300);
+
+
+        int score_welocome_layout_level_clown_iv_wight = score_welocome_layout_level_clown_iv.getWidth();
+        int score_welocome_layout_level_clown_iv_height = score_welocome_layout_level_clown_iv.getHeight();
+
+        int score_welocome_layout_level_clown_iv_wight_c = score_cord_layout.getWidthLevelClownIv();
+        int score_welocome_layout_level_clown_iv_height_c = score_cord_layout.getHeightLevelClownIv();
+
+
+        float toX = (float) score_welocome_layout_level_clown_iv_wight_c / (float) score_welocome_layout_level_clown_iv_wight;
+
+        float toY = (float) score_welocome_layout_level_clown_iv_height_c / (float) score_welocome_layout_level_clown_iv_height;
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, toX, 1.0f, toY);
+        scaleAnimation.setDuration(300);
+        //动画集
+        AnimationSet setAnimat = new AnimationSet(true);
+        setAnimat.addAnimation(translateAnimation);
+        setAnimat.addAnimation(scaleAnimation);
+        setAnimat.setFillAfter(false);
+        setAnimat.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+//                score_welocome_layout.removeView(view);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        view.clearAnimation();
+        view.setAnimation(setAnimat);
+        translateAnimation.start();
+    }
+
+    private void setscore_layout_level_layout_general_iv_anim() {
+        final ImageView view = new ImageView(this);
+
+
+        int left = score_welocome_layout.getLeft() + score_welocome_layout_hini_layout.getLeft() + score_welocome_layout_level_layout.getLeft() + score_welocome_layout_level_general_iv.getLeft();
+        int right = score_welocome_layout.getRight() + score_welocome_layout_hini_layout.getRight() + score_welocome_layout_level_layout.getRight() + score_welocome_layout_level_general_iv.getRight();
+        int buttom = score_welocome_layout.getBottom() + score_welocome_layout_hini_layout.getBottom() + score_welocome_layout_level_layout.getBottom() + score_welocome_layout_level_general_iv.getBottom();
+        int top = score_welocome_layout.getTop() + score_welocome_layout_hini_layout.getTop() + score_welocome_layout_level_layout.getTop() + score_welocome_layout_level_general_iv.getTop();
+
+        int left_c = score_cord_layout.getLeftLevelGeneralIv();
+        int top_c = score_cord_layout.getTopLevelGeneralIv();
+
+        int toXDelta = 0;
+        int toYDelta = 0;
+
+        toXDelta = left_c - left;
+        toYDelta = top_c - top;
+
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.width = score_welocome_layout_level_general_iv.getWidth();
+        params.height = score_welocome_layout_level_general_iv.getHeight();
+        params.setMargins(left, top, right, buttom);
+        view.setLayoutParams(params);
+
+        score_welocome_layout.addView(view);
+        view.setImageResource(R.drawable.score_general_icon);
+
+
+        TranslateAnimation translateAnimation = new TranslateAnimation(0, toXDelta, 0, toYDelta);
+        translateAnimation.setInterpolator(new AccelerateInterpolator());
+        translateAnimation.setDuration(300);
+
+
+        int score_welocome_layout_level_general_iv_wight = score_welocome_layout_level_general_iv.getWidth();
+        int score_welocome_layout_level_general_iv_height = score_welocome_layout_level_general_iv.getHeight();
+
+        int score_welocome_layout_level_general_iv_wight_c = score_cord_layout.getWidthLevelGeneralIv();
+        int score_welocome_layout_level_general_iv_height_c = score_cord_layout.getHeightLevelGeneralIv();
+
+
+        float toX = (float) score_welocome_layout_level_general_iv_wight_c / (float) score_welocome_layout_level_general_iv_wight;
+
+        float toY = (float) score_welocome_layout_level_general_iv_height_c / (float) score_welocome_layout_level_general_iv_height;
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, toX, 1.0f, toY);
+        scaleAnimation.setDuration(300);
+        //动画集
+        AnimationSet setAnimat = new AnimationSet(true);
+        setAnimat.addAnimation(translateAnimation);
+        setAnimat.addAnimation(scaleAnimation);
+        setAnimat.setFillAfter(false);
+        setAnimat.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+        view.clearAnimation();
+        view.setAnimation(setAnimat);
+        translateAnimation.start();
+    }
+
+    private void setscore_layout_level_layout_handsome_iv_anim() {
+        final ImageView view = new ImageView(this);
+
+
+        int left = score_welocome_layout.getLeft() + score_welocome_layout_hini_layout.getLeft() + score_welocome_layout_level_layout.getLeft() + score_welocome_layout_level_handsome_iv.getLeft();
+        int right = score_welocome_layout.getRight() + score_welocome_layout_hini_layout.getRight() + score_welocome_layout_level_layout.getRight() + score_welocome_layout_level_handsome_iv.getRight();
+        int buttom = score_welocome_layout.getBottom() + score_welocome_layout_hini_layout.getBottom() + score_welocome_layout_level_layout.getBottom() + score_welocome_layout_level_handsome_iv.getBottom();
+        int top = score_welocome_layout.getTop() + score_welocome_layout_hini_layout.getTop() + score_welocome_layout_level_layout.getTop() + score_welocome_layout_level_handsome_iv.getTop();
+
+        int left_c = score_cord_layout.getLeftLevelHandsomeIv();
+        int top_c = score_cord_layout.getTopLevelHandsomeIv();
+
+        int toXDelta = 0;
+        int toYDelta = 0;
+
+        toXDelta = left_c - left;
+        toYDelta = top_c - top;
+
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.width = score_welocome_layout_level_handsome_iv.getWidth();
+        params.height = score_welocome_layout_level_handsome_iv.getHeight();
+        params.setMargins(left, top, right, buttom);
+        view.setLayoutParams(params);
+
+        score_welocome_layout.addView(view);
+        view.setImageResource(R.drawable.score_handsome_icon);
+
+
+        TranslateAnimation translateAnimation = new TranslateAnimation(0, toXDelta, 0, toYDelta);
+        translateAnimation.setInterpolator(new AccelerateInterpolator());
+        translateAnimation.setDuration(300);
+
+
+        int score_welocome_layout_level_handsome_iv_wight = score_welocome_layout_level_handsome_iv.getWidth();
+        int score_welocome_layout_level_handsome_iv_height = score_welocome_layout_level_handsome_iv.getHeight();
+
+        int score_welocome_layout_level_handsome_iv_wight_c = score_cord_layout.getWidthLevelHandsomeIv();
+        int score_welocome_layout_level_handsome_iv_height_c = score_cord_layout.getHeightLevelHandsomeIv();
+
+
+        float toX = (float) score_welocome_layout_level_handsome_iv_wight_c / (float) score_welocome_layout_level_handsome_iv_wight;
+
+        float toY = (float) score_welocome_layout_level_handsome_iv_height_c / (float) score_welocome_layout_level_handsome_iv_height;
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, toX, 1.0f, toY);
+        scaleAnimation.setDuration(300);
+        //动画集
+        AnimationSet setAnimat = new AnimationSet(true);
+        setAnimat.addAnimation(translateAnimation);
+        setAnimat.addAnimation(scaleAnimation);
+        setAnimat.setFillAfter(false);
+        setAnimat.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+        view.clearAnimation();
+        view.setAnimation(setAnimat);
+        translateAnimation.start();
+    }
+
+    private void setscore_layout_level_layout_very_handsome_iv_anim() {
+        final ImageView view = new ImageView(this);
+
+
+        int left = score_welocome_layout.getLeft() + score_welocome_layout_hini_layout.getLeft() + score_welocome_layout_level_layout.getLeft() + score_welocome_layout_level_very_handsome_iv.getLeft();
+        int right = score_welocome_layout.getRight() + score_welocome_layout_hini_layout.getRight() + score_welocome_layout_level_layout.getRight() + score_welocome_layout_level_very_handsome_iv.getRight();
+        int buttom = score_welocome_layout.getBottom() + score_welocome_layout_hini_layout.getBottom() + score_welocome_layout_level_layout.getBottom() + score_welocome_layout_level_very_handsome_iv.getBottom();
+        int top = score_welocome_layout.getTop() + score_welocome_layout_hini_layout.getTop() + score_welocome_layout_level_layout.getTop() + score_welocome_layout_level_very_handsome_iv.getTop();
+
+        int left_c = score_cord_layout.getLeftLevelVeryHandsomeIv();
+        int top_c = score_cord_layout.getTopLevelVeryHandsomeIv();
+
+        int toXDelta = 0;
+        int toYDelta = 0;
+
+        toXDelta = left_c - left;
+        toYDelta = top_c - top;
+
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.width = score_welocome_layout_level_very_handsome_iv.getWidth();
+        params.height = score_welocome_layout_level_very_handsome_iv.getHeight();
+        params.setMargins(left, top, right, buttom);
+        view.setLayoutParams(params);
+
+        score_welocome_layout.addView(view);
+        view.setImageResource(R.drawable.score_very_handsome_icon);
+
+
+        TranslateAnimation translateAnimation = new TranslateAnimation(0, toXDelta, 0, toYDelta);
+        translateAnimation.setInterpolator(new AccelerateInterpolator());
+        translateAnimation.setDuration(300);
+
+
+        int score_welocome_layout_level_very_handsome_iv_wight = score_welocome_layout_level_very_handsome_iv.getWidth();
+        int score_welocome_layout_level_very_handsome_iv_height = score_welocome_layout_level_very_handsome_iv.getHeight();
+
+        int score_welocome_layout_level_very_handsome_iv_wight_c = score_cord_layout.getWidthLevelVeryHandsomeIv();
+        int score_welocome_layout_level_very_handsome_iv_height_c = score_cord_layout.getHeightLevelVeryHandsomeIv();
+
+
+        float toX = (float) score_welocome_layout_level_very_handsome_iv_wight_c / (float) score_welocome_layout_level_very_handsome_iv_wight;
+
+        float toY = (float) score_welocome_layout_level_very_handsome_iv_height_c / (float) score_welocome_layout_level_very_handsome_iv_height;
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, toX, 1.0f, toY);
+        scaleAnimation.setDuration(300);
+        //动画集
+        AnimationSet setAnimat = new AnimationSet(true);
+        setAnimat.addAnimation(translateAnimation);
+        setAnimat.addAnimation(scaleAnimation);
+        setAnimat.setFillAfter(false);
+        setAnimat.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
+        view.clearAnimation();
+        view.setAnimation(setAnimat);
+        translateAnimation.start();
+    }
+
+
+    @Override
+    public void onUpdateData(final int score_cord_layout_list_size, final DaillyFaceratingCandidatesDto dto, int level) {
+        daillyFaceratingCandidatesDtos.remove(dto);
+        if (null != daillyFaceratingCandidatesDtos && daillyFaceratingCandidatesDtos.size() > 0) {
+            DaillyFaceratingCandidatesDBTask.getInstance().saveDataLocal(YPApplication.loginUser.getUserId(), JsonUtils.toJson(daillyFaceratingCandidatesDtos));
+        } else {
+            DaillyFaceratingCandidatesDBTask.getInstance().saveDataLocal(YPApplication.loginUser.getUserId(), "");
+        }
+
+
+        System.out.println("--onUpdateData--");
+
+        final FaceratingBean faceratingBean = new FaceratingBean();
+        faceratingBean.setTargetUserId(dto.getUserId());
+        faceratingBean.setLevel(level);
+        faceratingService = new FaceratingService(ScoreActivity.this);
+        faceratingService.parameter(faceratingBean);
+        faceratingService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                FaceratingRespBean faceratingRespBean = (FaceratingRespBean) respBean;
+
+                FaceratingRespBean.FaceratingResp faceratingResp = faceratingRespBean.getResp();
+
+                DaillyFaceratingCandidatesLevelDto levelDto = new DaillyFaceratingCandidatesLevelDto();
+                if (null != faceratingResp) {
+                    levelDto.setLevel(faceratingResp.getLevel());
+                    levelDto.setTargetUserId(faceratingResp.getTargetUserId());
+                    levelDto.setLevelState(true);
+                    levelDto.setDaillyFaceratingCandidatesDto(dto);
+                    daillyFaceratingCandidatesLevelDtos.add(levelDto);
+                }
+                System.out.println("--onUpdateData--size--" + daillyFaceratingCandidatesLevelDtos.size());
+                if (score_cord_layout_list_size == 0) {
+                    setCompLeteScore_update();
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+
+                DaillyFaceratingCandidatesLevelDto levelDto = new DaillyFaceratingCandidatesLevelDto();
+
+                levelDto.setLevelState(false);
+                levelDto.setLevel(0);
+                levelDto.setDaillyFaceratingCandidatesDto(dto);
+                daillyFaceratingCandidatesLevelDtos.add(levelDto);
+                if (score_cord_layout_list_size == 0) {
+                    setCompLeteScore_update();
+                }
+
+            }
+        });
+
+        faceratingService.enqueue();
+
+
+    }
+
+    @Override
+    public void onComplete() {
+
+    }
+
+    private void setCompLeteScore_update() {
+
+
+        initScoreCordLayoutView();
+        score_update_data_layout.setVisibility(View.VISIBLE);
+        score_cord_layout.setVisibility(View.GONE);
+
+        if (null != daillyFaceratingCandidatesLevelDtos && daillyFaceratingCandidatesLevelDtos.size() > 0) {
+
+            int daillyFaceratingCandidatesLevelDtosSize = daillyFaceratingCandidatesLevelDtos.size();
+            System.out.println("-----------daillyFaceratingCandidatesLevelDtos-----------" + daillyFaceratingCandidatesLevelDtosSize);
+
+            for (int i = 0; i < daillyFaceratingCandidatesLevelDtosSize; i++) {
+                DaillyFaceratingCandidatesLevelDto levelDto = daillyFaceratingCandidatesLevelDtos.get(i);
+
+                String score_layout_head_img_url = ImgUtils.DealImageUrl(levelDto.getDaillyFaceratingCandidatesDto().getHeadImg(),
+                        YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+
+
+                if (daillyFaceratingCandidatesLevelDtosSize == 1) {
+
+
+                    Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_bottom_middle_iv);
+
+
+                    if (levelDto.isLevelState()) {
+
+                        score_update_data_layout_bottom_middle_ereer_iv.setVisibility(View.GONE);
+                    } else {
+                        score_update_data_layout_bottom_middle_ereer_iv.setVisibility(View.VISIBLE);
+                    }
+
+                    setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_bottom_middle_attribute_iv, levelDto.getLevel());
+
+                } else if (daillyFaceratingCandidatesLevelDtosSize == 3) {
+
+                    if (i == 0) {
+
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_bottom_lift_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_bottom_lift_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_bottom_lift_attribute_iv, levelDto.getLevel());
+                        Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_bottom_lift_iv);
+                    } else if (i == 1) {
+
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_bottom_middle_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_bottom_middle_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_bottom_middle_attribute_iv, levelDto.getLevel());
+                        Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_bottom_middle_iv);
+
+                    } else if (i == 2) {
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_bottom_right_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_bottom_right_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_bottom_right_attribute_iv, levelDto.getLevel());
+                        Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_bottom_right_iv);
+                    }
+
+                } else {
+
+
+                    if (i == 0) {
+
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_top_lift_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_top_lift_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_top_lift_attribute_iv, levelDto.getLevel());
+                        if(!ScoreActivity.this.isFinishing()){
+                            Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_top_lift_iv);
+                        }
+
+                    } else if (i == 1) {
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_top_right_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_top_right_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_top_right_attribute_iv, levelDto.getLevel());
+                        if(!ScoreActivity.this.isFinishing()) {
+                            Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_top_right_iv);
+                        }
+                    } else if (i == 2) {
+
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_bottom_lift_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_bottom_lift_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_bottom_lift_attribute_iv, levelDto.getLevel());
+                        if(!ScoreActivity.this.isFinishing()) {
+                            Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_bottom_lift_iv);
+                        }
+
+                    } else if (i == 3) {
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_bottom_middle_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_bottom_middle_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_bottom_middle_attribute_iv, levelDto.getLevel());
+                        if(!ScoreActivity.this.isFinishing()) {
+                            Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_bottom_middle_iv);
+                        }
+
+                    } else if (i == 4) {
+
+                        if (levelDto.isLevelState()) {
+                            score_update_data_layout_bottom_right_ereer_iv.setVisibility(View.GONE);
+                        } else {
+                            score_update_data_layout_bottom_right_ereer_iv.setVisibility(View.VISIBLE);
+                        }
+                        setScoreUpdateDataLayoutAttributeIV(score_update_data_layout_bottom_right_attribute_iv, levelDto.getLevel());
+                        if(!ScoreActivity.this.isFinishing()) {
+                            Glide.with(ScoreActivity.this).load(score_layout_head_img_url).bitmapTransform(transformation).into(score_update_data_layout_bottom_right_iv);
+                        }
+
+                    }
+
+
+                }
+
+                if (null == daillyFaceratingCandidatesDtos || daillyFaceratingCandidatesDtos.size() <= 0) {
+                    score_update_data_layout_hini_tv.setText("辛苦啦，今日的“颜值”已打完，休息一下吧");
+                    score_update_data_layout_hini_more_tv.setText("明天会有新的面孔等你来打分！");
+                    score_update_data_layout_hini_more_tv.setVisibility(View.VISIBLE);
+                    score_update_data_layout_but.setTag(1);//绑定一个tag ,0表示没有打完.1表示已经打完了
+                    score_update_data_layout_but.setText("好的");
+
+                } else {
+                    score_update_data_layout_hini_tv.setText("还不过瘾?");
+                    score_update_data_layout_hini_more_tv.setVisibility(View.GONE);
+                    score_update_data_layout_but.setTag(0);//绑定一个tag ,0表示没有打完.1表示已经打完了
+                    score_update_data_layout_but.setText("再来一批");
+                }
+
+            }
+
+
+        }
+
+
+    }
+
+
+    private void setScoreUpdateDataLayoutAttributeIV(ImageView attributeIV, int level) {
+        attributeIV.setVisibility(View.VISIBLE);
+        if (level == 0) {//丑
+            attributeIV.setImageResource(R.drawable.clown_icon);
+        } else if (level == 1) {
+            attributeIV.setImageResource(R.drawable.general_icon);
+        } else if (level == 2) {
+            attributeIV.setImageResource(R.drawable.handsome_icon);
+        } else if (level == 3) {
+            attributeIV.setImageResource(R.drawable.very_handsome_icon);
+        }
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        super.onKeyDown(keyCode, event);
+        if (WelocomeTouchEvent && keyCode == KeyEvent.KEYCODE_BACK) {
+
+            SharedprefUtil.save(ScoreActivity.this, YpSettings.SCORE_START_WELCOME + YPApplication.loginUser.getUserId(), YPApplication.getInstance().versionName);
+            score_welocome_layout_hini_layout.setVisibility(View.INVISIBLE);
+            setscore_layout_level_layout_clown_iv_anim();
+            setscore_layout_level_layout_general_iv_anim();
+            setscore_layout_level_layout_handsome_iv_anim();
+            setscore_layout_level_layout_very_handsome_iv_anim();
+            WelocomeTouchEvent = false;
+            score_cord_layout.setWelocomeTouchEvent(WelocomeTouchEvent);
+
+            return false;
+
+        } else {
+            return true;
+        }
+
+
+    }
+}

@@ -1,0 +1,100 @@
+package cn.chono.yopper.Service.Http.Appointments;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/28.
+ */
+public class AppointmentsData implements Serializable {
+
+    private String id;
+    private int activityType;
+    private AppointmentsOwner owner;
+    private String title;
+    private String content;
+    private String endTime;
+    private int availableTime;//0，不显示。1，上午。2，下午。3，晚上。
+    private int status;
+    private String statusText;
+    private int commentStatus;//0,不显示。1，等待。2，已经评价
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(int activityType) {
+        this.activityType = activityType;
+    }
+
+    public AppointmentsOwner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(AppointmentsOwner owner) {
+        this.owner = owner;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public int getAvailableTime() {
+        return availableTime;
+    }
+
+    public void setAvailableTime(int availableTime) {
+        this.availableTime = availableTime;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
+    }
+
+    public int getCommentStatus() {
+        return commentStatus;
+    }
+
+    public void setCommentStatus(int commentStatus) {
+        this.commentStatus = commentStatus;
+    }
+}

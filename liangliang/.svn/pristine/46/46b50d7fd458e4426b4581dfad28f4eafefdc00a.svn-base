@@ -1,0 +1,138 @@
+package cn.chono.yopper.data;
+
+import com.lidroid.xutils.db.annotation.Column;
+import com.lidroid.xutils.db.annotation.NoAutoIncrement;
+import com.lidroid.xutils.db.annotation.Table;
+
+@Table(name ="AppointFilterDto")
+public class AppointFilterDto {
+	
+	@Column(column = "id")
+	@NoAutoIncrement()
+	private int id;
+	
+	@Column(column = "datingType")
+	private int datingType;
+	
+	@Column(column = "sexType")
+	private int sexType;
+	
+	@Column(column = "sort")
+	private int sort;
+
+	@Column(column = "minAge")
+	private int minAge;
+
+	@Column(column = "maxAge")
+	private int maxAge;
+
+	@Column(column = "horType")
+	private int horType;
+
+	@Column(column = "emoType")
+	private int emoType;
+
+	@Column(column = "daysOffset")
+	private int daysOffset;
+
+	@Column(column = "datingTimeType")
+	private int datingTimeType;
+
+	@Column(column = "city")
+	private String city;
+
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getDatingType() {
+		return datingType;
+	}
+
+	public void setDatingType(int datingType) {
+		this.datingType = datingType;
+	}
+
+	public int getSexType() {
+		return sexType;
+	}
+
+	public void setSexType(int sexType) {
+		this.sexType = sexType;
+	}
+
+	public int getSort() {
+		return sort;
+	}
+
+	public void setSort(int sort) {
+		this.sort = sort;
+	}
+
+	public int getMinAge() {
+		return minAge;
+	}
+
+	public void setMinAge(int minAge) {
+		this.minAge = minAge;
+	}
+
+	public int getHorType() {
+		return horType;
+	}
+
+	public void setHorType(int horType) {
+		this.horType = horType;
+	}
+
+	public int getMaxAge() {
+		return maxAge;
+	}
+
+	public void setMaxAge(int maxAge) {
+		this.maxAge = maxAge;
+	}
+
+	public int getEmoType() {
+		return emoType;
+	}
+
+	public void setEmoType(int emoType) {
+		this.emoType = emoType;
+	}
+
+	public int getDaysOffset() {
+		return daysOffset;
+	}
+
+	public void setDaysOffset(int daysOffset) {
+		this.daysOffset = daysOffset;
+	}
+
+	public int getDatingTimeType() {
+		return datingTimeType;
+	}
+
+	public void setDatingTimeType(int datingTimeType) {
+		this.datingTimeType = datingTimeType;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public AppointFilterDto() {
+		super();
+	}
+	
+	
+}

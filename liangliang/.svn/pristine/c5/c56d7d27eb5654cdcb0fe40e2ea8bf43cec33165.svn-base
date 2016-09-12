@@ -1,0 +1,61 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+/**
+ * Created by SQ on 2015/12/28.
+ */
+public class TargetUserDto implements Serializable{
+    private static final transient  long serialVersionUID = 1L;
+   private String  mobile;
+
+    private User user;
+
+    //加入时间
+    private String joinTime;
+    //是否被选中
+    private boolean isChoosen;
+
+   private MatchScore  matchScore;
+
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getJoinTime() {
+        return joinTime;
+    }
+
+    public void setJoinTime(String joinTime) {
+        this.joinTime = joinTime;
+    }
+
+    public boolean isChoosen() {
+        return isChoosen;
+    }
+
+    public void setChoosen(boolean choosen) {
+        isChoosen = choosen;
+    }
+
+    public MatchScore getMatchScore() {
+        return matchScore;
+    }
+
+    public void setMatchScore(MatchScore matchScore) {
+        this.matchScore = matchScore;
+    }
+}

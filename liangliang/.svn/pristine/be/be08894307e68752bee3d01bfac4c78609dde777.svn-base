@@ -1,0 +1,32 @@
+package cn.chono.yopper.Service.Http.AppointmentsMore;
+
+import android.content.Context;
+
+import cn.chono.yopper.Service.Http.Appointments.AppointmentsRespBean;
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class AppointmentsMoreService extends HttpService {
+    public AppointmentsMoreService(Context context) {
+        super(context);
+    }
+
+    private AppointmentsMoreBean appointmentsMoreBean;
+
+    @Override
+    public void enqueue() {
+
+        OutDataClass = AppointmentsRespBean.class;
+        callWrap = OKHttpUtils.get(context, appointmentsMoreBean.getNextQuery(), okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        appointmentsMoreBean = (AppointmentsMoreBean) iBean;
+    }
+}

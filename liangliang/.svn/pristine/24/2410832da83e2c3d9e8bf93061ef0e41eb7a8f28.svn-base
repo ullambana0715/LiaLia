@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appoint_publish_type_select_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/appoint_publish_bg"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ViewFlipper
+        android:id="@+id/ViewFlipper1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+         >
+    </ViewFlipper>
+
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="遇见真实.约会安全"
+        android:layout_marginTop="60dp"
+        android:paddingBottom="40dp"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="#6b6b6b"
+        />
+</LinearLayout>

@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tarotOrAstrologyDetail_ll_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_f8f8f7"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:visibility="visible"
+
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
+
+                    <!--头像-->
+
+                    <ImageView
+
+                        android:id="@+id/tarotOrAstrologyDetail_iv_icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="253dp" />
+                    <!--占位符-->
+                    <View
+                        android:id="@+id/tarotOrAstrologyDetail_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="27dp"
+                        android:layout_below="@+id/tarotOrAstrologyDetail_iv_icon"></View>
+
+                    <!--用户信息-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/tarotOrAstrologyDetail_view"
+                        android:layout_marginLeft="27dp"
+                        android:layout_marginRight="27dp"
+                        android:orientation="vertical"
+
+                        >
+
+                        <!--名字，星座-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="14dp"
+                            android:gravity="center">
+
+                            <TextView
+
+                                android:id="@+id/tarotOrAstrologyDetail_tv_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:textColor="@color/color_ffffff"
+                                android:textSize="16sp" />
+
+                            <ImageView
+                                android:id="@+id/tarotOrAstrologyDetail_iv_sex"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp" />
+
+
+                        </LinearLayout>
+
+                        <!--已回答的问题，小时收费-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/shadow"
+                            android:padding="6dp"
+
+                            >
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:padding="4dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tarotOrAstrologyDetail_tv_answer_problem"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/color_ff7462"
+                                    android:textSize="17sp"
+
+                                    />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/answer_problem"
+                                    android:textColor="@color/color_b2b2b2"
+                                    android:textSize="10sp"
+
+                                    />
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/color_eeeeee"
+
+                                ></View>
+
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:padding="4dp"
+                                android:orientation="vertical">
+
+                                <TextView
+
+                                    android:id="@+id/tarotOrAstrologyDetail_tv_price"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/color_ff7462"
+                                    android:textSize="17sp"
+
+                                    />
+
+                                <TextView
+                                    android:id="@+id/tarotOrAstrologyDetail_tv_price_unit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/hour"
+                                    android:textColor="@color/color_b2b2b2"
+                                    android:textSize="10sp" />
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+                <!--基本信息标题-->
+
+                <LinearLayout
+
+                    android:id="@+id/tarotOrAstrologyDetail_ll_basic_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="15dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/basic_info"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="13sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/color_ff7462"></View>
+
+                </LinearLayout>
+
+                <!--基本信息内容-->
+
+                <LinearLayout
+
+                    android:id="@+id/tarotOrAstrologyDetail_ll_basic_info_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/shadow"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/tarotOrAstrologyDetail_tv_practitioners_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="12dp"
+                        android:text="从业"
+                        android:textColor="@color/color_666666"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tarotOrAstrologyDetail_tv_basic_info_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="@string/basic_info"
+                        android:textColor="@color/color_666666"
+                        android:textSize="14sp" />
+
+                    <!--标签-->
+
+                    <LinearLayout
+                        android:id="@+id/tarotOrAstrologyDetail_ll_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="15dp"
+                        android:orientation="horizontal"
+
+                        ></LinearLayout>
+
+
+                </LinearLayout>
+
+
+                <!--门店信息标题-->
+
+                <LinearLayout
+                    android:id="@+id/tarotOrAstrologyDetail_ll_stores_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="15dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stores_info"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="13sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/color_ff7462"></View>
+
+                </LinearLayout>
+
+                <!--门店信息,地址-->
+                <LinearLayout
+
+                    android:id="@+id/tarotOrAstrologyDetail_ll_stores_info_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/shadow"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp"
+                    android:visibility="visible">
+
+                    <ImageView
+
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/tarot_astrology_location" />
+
+
+                    <TextView
+
+                        android:id="@+id/tarotOrAstrologyDetail_tv_stores_info_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/color_666666"
+                        android:textSize="14sp"
+
+
+                        />
+
+
+                </LinearLayout>
+
+
+                <!--照片墙-->
+
+                <LinearLayout
+                    android:id="@+id/tarotOrAstrologyDetail_ll_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="15dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/photo_wall"
+                        android:textColor="@color/color_9a9a9a"
+                        android:textSize="13sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/color_ff7462"></View>
+
+                </LinearLayout>
+
+
+                <!--照片-->
+
+                <LinearLayout
+
+                    android:id="@+id/tarotOrAstrologyDetail_ll_photo_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/shadow"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+
+                    <cn.chono.yopper.view.MyGridView
+                        android:id="@+id/tarotOrAstrologyDetail_gv_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@android:color/transparent"
+                        android:listSelector="@android:color/transparent"
+                        android:numColumns="4"
+                        android:scrollbars="none"
+
+
+                        ></cn.chono.yopper.view.MyGridView>
+
+
+                    <TextView
+                        android:id="@+id/tarotOrAstrologyDetail_tv_photo_more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="15dp"
+                        android:text="@string/look_photo"
+                        android:textColor="@color/color_b2b2b2"
+                        android:textSize="12dp"
+                        android:visibility="visible" />
+
+
+                </LinearLayout>
+
+                <!--顾客评价-->
+
+
+                <LinearLayout
+                    android:id="@+id/tarotOrAstrologyDetail_ll_evaluation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@color/color_ffffff"
+                    android:orientation="vertical"
+                    android:paddingLeft="12dp"
+
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+
+                        >
+
+                        <TextView
+                            android:id="@+id/tarotOrAstrologyDetail_tv_evaluation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:textColor="@color/color_b2b2b2"
+                            android:textSize="12sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="12dp"
+                            android:src="@drawable/travel_arrow" />
+
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/color_eeeeee"></View>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical">
+
+                        <RatingBar
+                            android:id="@+id/tarotOrAstrologyDetail_rbar_evaluation"
+                            style="@style/score_rating_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:isIndicator="true"
+
+                            android:numStars="5"
+                            android:rating="3" />
+
+                        <TextView
+
+                            android:id="@+id/tarotOrAstrologyDetail_tv_evaluation_number"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:textColor="@color/color_ff7462"
+
+                            android:textSize="10sp"
+
+                            />
+
+
+                    </LinearLayout>
+
+
+                    <cn.chono.yopper.view.FlowLeftLayout
+                        android:id="@+id/tarotOrAstrologyDetail_fll_evaluation_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible">
+
+                    </cn.chono.yopper.view.FlowLeftLayout>
+
+
+                    <cn.chono.yopper.view.MiListView
+                        android:id="@+id/tarotOrAstrologyDetail_lv_evaluation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@android:color/transparent"
+                        android:listSelector="@android:color/transparent"
+                        android:scrollbars="none"></cn.chono.yopper.view.MiListView>
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </ScrollView>
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/color_eeeeee"></View>
+
+    <!--产即咨询，预约-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/color_ffffff"
+
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="7dp"
+        android:paddingTop="7dp">
+
+
+        <Button
+            android:id="@+id/tarotOrAstrologyDetail_btn_straightway_advisory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/ffd4cd_border_corners_ffffff_style"
+            android:text="@string/straightway_advisory"
+            android:textColor="@color/color_ff7462_b2b2b2_style"
+            android:textSize="16sp"
+            android:visibility="gone"
+
+            />
+
+        <TextView
+            android:id="@+id/tarotOrAstrologyDetail_btn_reservation"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/ff7462_fillet_ff7462_style"
+            android:text="@string/reservation"
+            android:textColor="@color/color_ffffff"
+            android:textSize="14sp"
+
+            />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

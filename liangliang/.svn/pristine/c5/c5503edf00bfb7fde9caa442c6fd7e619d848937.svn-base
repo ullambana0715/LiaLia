@@ -1,0 +1,458 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.UserInfoID.UserInfoIDBean;
+import cn.chono.yopper.Service.Http.UserInfoID.UserInfoIDRespBean;
+import cn.chono.yopper.Service.Http.UserInfoID.UserInfoIDService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.BaseUser;
+import cn.chono.yopper.data.BubbleMsgDto;
+import cn.chono.yopper.data.DatingAttamptDto;
+import cn.chono.yopper.data.DatingRequestDto;
+import cn.chono.yopper.data.LoginUserInfo;
+import cn.chono.yopper.data.MessageDto;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.NotificationMsg;
+import cn.chono.yopper.data.TextMsg;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.utils.ChatUtils;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.TimeUtil;
+
+public class MessageAdapter extends BaseAdapter {
+
+
+    /**
+     * 这个用来填充list
+     */
+    private List<MessageDto> list;
+
+    private Context mContext;
+
+    private int strangeNum = 0;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    public MessageAdapter(Context context) {
+        // 初始化
+        this.mContext = context;
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+    }
+
+    public MessageAdapter(Context context, List<MessageDto> list) {
+        // 初始化
+        this.mContext = context;
+        this.list = list;
+    }
+
+    @Override
+    public int getCount() {
+
+        return list == null ? 0 : list.size();
+    }
+
+
+    @Override
+    public Object getItem(int position) {
+        return list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        final ViewHolder holder;
+
+        MessageDto dto = list.get(position);
+
+        String message = dto.getLastmessage();
+        // 如果没有设置过,初始化convertView
+
+
+        if (dto.getIs_strange() != 0 || dto.getJid().equals("system_bubble@chono")) {
+            convertView = null;
+        }
+
+
+        if (convertView == null) {
+            // 获得设置的view
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.message_list_item, null);
+
+            // 初始化holder
+            holder = new ViewHolder();
+
+
+            holder.icon_img_iv = (ImageView) convertView.findViewById(R.id.message_item_icon_img_iv);
+
+            holder.name_tv = (TextView) convertView.findViewById(R.id.message_item_name_tv);
+
+            holder.time_tv = (TextView) convertView.findViewById(R.id.message_item_time_tv);
+
+            holder.content_tv = (TextView) convertView.findViewById(R.id.message_item_content_tv);
+
+            holder.num_tv = (TextView) convertView.findViewById(R.id.message_item_num_tv);
+
+
+            convertView.setTag(holder);
+        } else {
+            // 有直接获得ViewHolder
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        if (dto.getNo_read_num() > 0) {
+            if (dto.getNo_read_num() < 10) {
+                holder.num_tv.setBackgroundResource(R.drawable.circle_messaga_num_bg);
+            } else {
+                holder.num_tv.setBackgroundResource(R.drawable.center_messaga_num_bg);
+            }
+            holder.num_tv.setVisibility(View.VISIBLE);
+            holder.num_tv.setText(dto.getNo_read_num() + "");
+        } else {
+            holder.num_tv.setVisibility(View.GONE);
+        }
+
+        if (dto.getIs_strange() == 1) {
+
+            holder.icon_img_iv.setBackgroundResource(R.drawable.icon_strange_date);
+
+            holder.name_tv.setText("有" + strangeNum + "个人想约你");
+
+            String jid = dto.getJid();
+            String userid = jid.substring(0, jid.indexOf("@"));
+            try {
+                LoginUserInfo userInfodto = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userid));
+
+                String content = getcontent(message, dto.getS_r_type());
+
+                if (userInfodto != null) {
+                    UserDto userdto = JsonUtils.fromJson(userInfodto.getResp(), UserDto.class);
+                    holder.content_tv.setText(userdto.getProfile().getName() + ":" + content + "");
+
+                } else {
+                    holder.content_tv.setText("未知:" + content + "");
+                    getUserWithID(userid + "", holder.icon_img_iv, holder.name_tv, holder.content_tv, message, true, dto.getS_r_type());
+                }
+
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            String type = ChatUtils.getMsgType(message);
+
+            if (TextUtils.equals(type, MessageType.Notification)) {
+                String jid = dto.getJid();
+                String userid = jid.substring(0, jid.indexOf("@"));
+                NotificationMsg notificationMsg = JsonUtils.fromJson(message, NotificationMsg.class);
+                String from = notificationMsg.getFrom();
+                String text = notificationMsg.getText();
+                String content = notificationMsg.getContent();
+                int notifytype = notificationMsg.getNotifytype();
+
+                if (!CheckUtil.isEmpty(from)) {
+                    holder.name_tv.setText(from);
+                }
+
+                if (!CheckUtil.isEmpty(text)) {
+                    holder.content_tv.setText(text);
+                } else {
+                    if (!CheckUtil.isEmpty(content)) {
+                        holder.content_tv.setText(content);
+                    }
+                }
+
+                String imageurl = "";
+
+                if (notifytype == 8) {
+                    imageurl = notificationMsg.getAvatar();
+                } else {
+                    imageurl = "http://www.yopper.cn/static/message/icons/" + userid + ".png";
+                }
+
+
+                Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(holder.icon_img_iv);
+
+            } else {
+                // 不是陌生人
+
+                if (dto.getJid().equals("system_bubble@chono")) {
+
+                    //冒泡通知
+                    holder.icon_img_iv.setBackgroundResource(R.drawable.message_bubble_icon);
+
+                    holder.name_tv.setText("冒泡通知");
+
+
+                    BubbleMsgDto bubbleMsgDto = JsonUtils.fromJson(message, BubbleMsgDto.class);
+
+                    if (bubbleMsgDto.getBubbleType() == 0) {
+                        //直接评论
+                        holder.content_tv.setText(bubbleMsgDto.getFrom() + "评论:" + bubbleMsgDto.getContent());
+                    } else if (bubbleMsgDto.getBubbleType() == 1) {
+                        //回复
+                        holder.content_tv.setText(bubbleMsgDto.getFrom() + bubbleMsgDto.getContent());
+                    } else {
+                        //点赞
+                        holder.content_tv.setText(bubbleMsgDto.getFrom() + bubbleMsgDto.getContent());
+                    }
+
+                } else {
+
+
+                    String jid = dto.getJid();
+                    String userid = jid.substring(0, jid.indexOf("@"));
+
+                    String content = getcontent(message, dto.getS_r_type());
+                    holder.content_tv.setText(content + "");
+
+                    try {
+                        LoginUserInfo userInfodto = YPApplication.getInstance().db.findFirst(Selector.from(LoginUserInfo.class).where("id", " =", userid));
+
+                        if (userInfodto != null) {
+                            UserDto userdto = JsonUtils.fromJson(userInfodto.getResp(), UserDto.class);
+                            holder.name_tv.setText(userdto.getProfile().getName());
+
+                            String imageurl = ImgUtils.DealImageUrl(userdto.getProfile().getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+
+                            Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(holder.icon_img_iv);
+
+                        } else {
+                            getUserWithID(userid, holder.icon_img_iv, holder.name_tv, holder.content_tv, message, false, dto.getS_r_type());
+                        }
+
+                    } catch (DbException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        // 时间设置
+        holder.time_tv.setText(msgTimeFormat(dto.getLasttime()) + "");
+
+        return convertView;
+    }
+
+
+    /**
+     * ViewHolder
+     *
+     * @Title:
+     * @Description:主要是避免了不断的view获取初始化.
+     * @Author:justlcw
+     * @Since:2013-11-22
+     * @Version:
+     */
+    class ViewHolder {
+
+        public ImageView icon_img_iv;
+        public TextView name_tv;
+        public TextView time_tv;
+        public TextView content_tv;
+        public TextView num_tv;
+
+    }
+
+    public void setStrangeNum(int num) {
+        strangeNum = num;
+    }
+
+
+    public List<MessageDto> getList() {
+        return list;
+    }
+
+    public void setList(List<MessageDto> addlist) {
+        list = new ArrayList<MessageDto>();
+        list.addAll(addlist);
+        super.notifyDataSetChanged();
+    }
+
+
+    private String getcontent(String message, int s_r_type) {
+
+        // 文本：文本
+        //
+        // 表情：[表情]
+        //
+        // 图片：[图片]
+        //
+        // P果：[P果]
+        //
+        // 约会：[约会邀请] 地点
+        //
+        // 约Ta：[Ta想约你] 地点
+
+        String type = ChatUtils.getMsgType(message);
+
+        String content = "";
+        if (TextUtils.equals(type, MessageType.Img)) {
+
+            content = "[图片]";
+
+        } else if (TextUtils.equals(type, MessageType.Appointment)) {
+            content = "[约会]";
+        } else if (TextUtils.equals(type, MessageType.DatingRequest)) {
+
+            DatingRequestDto datingRequestDto = JsonUtils.fromJson(message, DatingRequestDto.class);
+            content = "[约会邀请]" + datingRequestDto.getDating().getContent();
+
+        } else if (TextUtils.equals(type, MessageType.DatingAttampt)) {
+
+            DatingAttamptDto datingAttamptDto = JsonUtils.fromJson(message, DatingAttamptDto.class);
+            if (s_r_type == ChatDto.s_type) {
+                content = "[约Ta]" + datingAttamptDto.getContent();
+            } else {
+                content = "[Ta想约你]" + datingAttamptDto.getContent();
+            }
+
+        } else if (TextUtils.equals(type, MessageType.DatingResult)) {
+
+            content = "[约会结果]";
+
+        } else if (TextUtils.equals(type, MessageType.Attraction)) {
+
+            content = "[P果]";
+
+        } else if (TextUtils.equals(type, MessageType.Notification)) {
+            content = "收到通知";
+        } else {
+            // 默认文字
+            TextMsg textmsg = JsonUtils.fromJson(message, TextMsg.class);
+            if (textmsg != null) {
+                content = textmsg.getText();
+            }
+
+        }
+
+        return content;
+
+    }
+
+
+    private String msgTimeFormat(long datetime) {
+
+        String time = "";
+
+        long system_time = System.currentTimeMillis();
+        if (TimeUtil.isToday(datetime)) {
+            // 是当天
+
+            int min = TimeUtil.getdifMin(datetime, system_time);
+
+            if (min == 0) {
+                time = "刚刚";
+            } else if (1 <= min && min < 60) {
+                time = min + "分钟前";
+            } else {
+                time = TimeUtil.gethour_minString(datetime);
+            }
+
+        } else {
+            // 消息时间不是当天
+            time = TimeUtil.getDateString(datetime, system_time);
+        }
+
+        return time;
+    }
+
+
+    private void getUserWithID(final String id, final ImageView head_img, final TextView name_tv, final TextView content_tv, final String message, final boolean isStrange, final int s_r_type) {
+
+
+        UserInfoIDBean infoIDBean = new UserInfoIDBean();
+        infoIDBean.setUserId(Integer.valueOf(id));
+
+        UserInfoIDService infoIDService = new UserInfoIDService(mContext);
+
+        infoIDService.parameter(infoIDBean);
+
+        infoIDService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                UserInfoIDRespBean idRespBean = (UserInfoIDRespBean) respBean;
+
+                BaseUser baseUser = idRespBean.getResp();
+                try {
+                    if (!isStrange) {
+                        name_tv.setText(baseUser.getName());
+                        String imageurl = ImgUtils.DealImageUrl(baseUser.getHeadImg(), YpSettings.IMG_SIZE_150, YpSettings.IMG_SIZE_150);
+                        Glide.with(mContext).load(imageurl).bitmapTransform(transformation).into(head_img);
+                    } else {
+
+                        head_img.setBackgroundResource(R.drawable.icon_strange_date);
+                        name_tv.setText("有" + strangeNum + "个人想约你");
+                    }
+
+                    YPApplication.getInstance().db.save(baseUser);
+
+                    if (isStrange) {
+                        String content = getcontent(message, s_r_type);
+                        content_tv.setText(baseUser.getName() + ":" + content + "");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                if (!isStrange) {
+                    name_tv.setText("未知");
+                } else {
+                    head_img.setBackgroundResource(R.drawable.icon_strange_date);
+                    name_tv.setText("有" + strangeNum + "个人想约你");
+                }
+
+                if (isStrange) {
+                    String content = getcontent(message, s_r_type);
+                    content_tv.setText("未知" + ":" + content + "");
+                }
+
+            }
+        });
+
+        infoIDService.enqueue();
+
+    }
+
+}

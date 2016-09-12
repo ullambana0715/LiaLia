@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+<LinearLayout
+    android:id="@+id/article_list_banner_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:visibility="gone"
+    android:orientation="horizontal"
+    android:background="@color/color_ffffff">
+
+    <HorizontalScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_weight="1">
+
+    <LinearLayout
+        android:id="@+id/article_list_banner_hsv"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <ImageView
+        android:id="@+id/article_list_banner_add_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/find_banner_add"/>
+</LinearLayout>
+
+    <cn.chono.yopper.view.WebView.PragressWebView
+        android:id="@+id/article_list_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true"
+        android:scrollbars="none"
+        />
+
+    <include layout="@layout/error_network_layout"></include>
+
+</LinearLayout>

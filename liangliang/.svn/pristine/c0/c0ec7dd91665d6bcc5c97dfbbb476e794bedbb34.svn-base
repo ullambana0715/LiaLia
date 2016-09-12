@@ -1,0 +1,19 @@
+package cn.chono.yopper.Service.Http.SignUpManagement;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementRespBean extends RespBean {
+
+    private SignUpManagementResp resp;
+
+    public SignUpManagementResp getResp() {
+        return resp;
+    }
+
+    public void setResp(SignUpManagementResp resp) {
+        this.resp = resp;
+    }
+}

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_f8f8f7"
+    android:orientation="vertical">
+
+    <include layout="@layout/commont_top_title"></include>
+
+    <cn.chono.yopper.view.MyNestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_ffffff"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp">
+
+                    <ImageView
+                        android:id="@+id/gift_receive_headimg_iv"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/message_head_default_icon" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_send_to" />
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/gift_receive_name_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/gift_receive_headimg_iv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="6dp"
+                    android:text="姓名"
+                    android:textColor="@color/color_666666"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/gift_receive_sex_age_horsecope_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/gift_receive_name_tv"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="6dp"
+                    android:drawablePadding="3dp"
+                    android:text="星座"
+                    android:textSize="12sp" />
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/gift_why_send_no_response_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="15dp"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="15dp"
+                        android:text="送礼物后女生没有回应怎么办?"
+                        android:textColor="@color/color_3170f0"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/gift_why_girl_like_gift_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="15dp"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="15dp"
+                        android:text="为什么女生喜欢礼物?"
+                        android:textColor="@color/color_3170f0"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@color/color_ffffff"
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:background="@color/color_ffffff">
+
+                    <TextView
+                        android:id="@+id/gift_user_apple_count_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="20dp"
+                        android:text="余额：6666个苹果"
+                        android:textColor="@color/color_ff7462"
+                        android:textSize="15sp" />
+
+
+                    <TextView
+                        android:id="@+id/gift_buy_apple_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dp"
+                        android:background="@drawable/shape_bg_ff7462_corners_5px"
+                        android:gravity="center"
+                        android:paddingBottom="6dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="6dp"
+                        android:text="获取苹果"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="赠送礼物，女性签收后，可以增加相应的魅力值"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="15dp"
+                android:background="@color/color_eeeeee" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/gift_unpass_hot_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_ffffff">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <LinearLayout
+                android:id="@+id/gift_pass_hot_hint_ly"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="已下礼物可以穿越HOT限制，赠送后"
+                    android:textColor="@color/color_ff7462"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="可以直接和HOT用户打招呼"
+                    android:textColor="@color/color_ff7462"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+
+            <android.support.v7.widget.RecyclerView
+
+                android:id="@+id/gift_pass_hot_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_ffffff"
+                android:visibility="visible">
+
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
+
+    </cn.chono.yopper.view.MyNestedScrollView>
+
+</LinearLayout>

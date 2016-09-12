@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/score_welocome_layout_hini_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/text_color_e0000000">
+
+        <TextView
+            android:id="@+id/score_hini_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/score_hini_set_tv"
+            android:gravity="center"
+            android:text="@string/score_hini_str"
+            android:textColor="@color/text_color_white"></TextView>
+
+        <TextView
+            android:id="@+id/score_hini_set_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/score_welocome_layout_level_layout"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/score_hini_tv_str"
+            android:textColor="@color/text_color_white"></TextView>
+
+        <LinearLayout
+            android:id="@+id/score_welocome_layout_level_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+
+            android:orientation="horizontal">
+
+
+            <ImageView
+                android:id="@+id/score_welocome_layout_level_clown_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/score_clown_icon" />
+
+
+            <ImageView
+                android:id="@+id/score_welocome_layout_level_general_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/score_general_icon" />
+
+
+            <ImageView
+                android:id="@+id/score_welocome_layout_level_handsome_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/score_handsome_icon" />
+
+
+            <ImageView
+                android:id="@+id/score_welocome_layout_level_very_handsome_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/score_very_handsome_icon" />
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/score_welocome_layout_but"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/score_welocome_layout_level_layout"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/score_layout_understand_but"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="懂了"
+            android:textColor="@color/text_color_white"
+            android:textSize="16sp" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
+

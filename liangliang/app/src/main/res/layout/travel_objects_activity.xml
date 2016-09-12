@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee"
+    android:orientation="vertical"
+    android:padding="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/corners_white_style"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/text_invite_objects"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="14sp"
+
+            />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/travel_objects_tyrant_m_layout"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+
+                        >
+
+                        <ImageView
+                            android:id="@+id/travel_objects_tyrant_m_iv"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@drawable/objects_border_corners_cancel"
+                            android:paddingBottom="2dp"
+                            android:paddingTop="5dp"
+                            android:src="@drawable/objects_tyrant_m_icon"
+                            app:layout_auto_baseheight="width"
+
+                            />
+
+                        <ImageView
+                            android:id="@+id/travel_objects_tyrant_m_select_iv"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/objects_select"
+                            android:visibility="gone"
+                            app:layout_auto_baseheight="width" />
+
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="@string/text_objects_tyrant_m"
+                        android:textColor="@color/color_333333"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/travel_objects_overbearing_chairman_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+
+                        >
+
+                        <ImageView
+                            android:id="@+id/travel_objects_overbearing_chairman_iv"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@drawable/objects_border_corners_cancel"
+                            android:paddingBottom="2dp"
+                            android:paddingTop="5dp"
+                            android:src="@drawable/objects_overbearing_chairman_icon"
+                            app:layout_auto_baseheight="width"
+
+                            />
+
+                        <ImageView
+                            android:id="@+id/travel_objects_overbearing_chairman_select_iv"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/objects_select"
+                            android:visibility="gone"
+                            app:layout_auto_baseheight="width" />
+
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="@string/text_objects_overbearing_chairman"
+                        android:textColor="@color/color_333333"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/travel_objects_rich_handsome_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+
+                        >
+
+                        <ImageView
+                            android:id="@+id/travel_objects_rich_handsome_iv"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@drawable/objects_border_corners_cancel"
+                            android:paddingBottom="2dp"
+                            android:paddingTop="5dp"
+                            android:src="@drawable/objects_rich_handsome_icon"
+                            app:layout_auto_baseheight="width"
+
+                            />
+
+                        <ImageView
+                            android:id="@+id/travel_objects_rich_handsome_select_iv"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/objects_select"
+                            android:visibility="gone"
+                            app:layout_auto_baseheight="width"
+
+                            />
+
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="@string/text_objects_rich_handsome"
+                        android:textColor="@color/color_333333"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <!--右-->
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/travel_objects_female_temperament_layout"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+
+                        >
+
+                        <ImageView
+                            android:id="@+id/travel_objects_female_temperament_iv"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@drawable/objects_border_corners_cancel"
+                            android:paddingBottom="2dp"
+                            android:paddingTop="5dp"
+                            android:src="@drawable/objects_female_temperament_icon"
+                            app:layout_auto_baseheight="width"
+
+                            />
+
+                        <ImageView
+                            android:id="@+id/travel_objects_female_temperament_select_iv"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/objects_select"
+                            android:visibility="gone"
+                            app:layout_auto_baseheight="width" />
+
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="@string/text_objects_female_temperament"
+                        android:textColor="@color/color_333333"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/travel_objects_silly_sweet_white_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+
+                        >
+
+                        <ImageView
+                            android:id="@+id/travel_objects_silly_sweet_white_iv"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@drawable/objects_border_corners_cancel"
+                            android:paddingBottom="2dp"
+                            android:paddingTop="5dp"
+                            android:src="@drawable/objects_silly_sweet_white_icon"
+                            app:layout_auto_baseheight="width"
+
+                            />
+
+                        <ImageView
+                            android:id="@+id/travel_objects_silly_sweet_white_select_iv"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/objects_select"
+                            android:visibility="gone"
+                            app:layout_auto_baseheight="width" />
+
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="@string/text_objects_silly_sweet_white"
+                        android:textColor="@color/color_333333"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/travel_objects_phu_bai_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+
+                        >
+
+                        <ImageView
+                            android:id="@+id/travel_objects_phu_bai_iv"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentBottom="true"
+                            android:background="@drawable/objects_border_corners_cancel"
+                            android:paddingBottom="2dp"
+                            android:paddingTop="5dp"
+                            android:src="@drawable/objects_phu_bai_icon"
+
+                            app:layout_auto_baseheight="width"
+
+                            />
+
+                        <ImageView
+                            android:id="@+id/travel_objects_phu_bai_select_iv"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/objects_select"
+                            android:visibility="gone"
+                            app:layout_auto_baseheight="width" />
+
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="@string/text_objects_phu_bai"
+                        android:textColor="@color/color_333333"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
+
+
+
+

@@ -1,0 +1,20 @@
+package cn.chono.yopper.Service.Http.DatingRequirment;
+
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.data.DatingRequirementListDto;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class DatingRequirmentRespBean extends RespBean {
+
+    private DatingRequirementListDto resp;
+
+    public DatingRequirementListDto getResp() {
+        return resp;
+    }
+
+    public void setResp(DatingRequirementListDto resp) {
+        this.resp = resp;
+    }
+}

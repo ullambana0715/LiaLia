@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee"
+    android:orientation="vertical"
+    android:padding="6dp"
+
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corners_white_style"
+        android:orientation="vertical"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="3px"
+                android:layout_height="match_parent"
+                android:background="@color/color_ff7462" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:text="@string/text_travel_significance"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="14sp"
+
+                />
+
+
+        </LinearLayout>
+
+        <cn.chono.yopper.view.FlowLeftLayout
+            android:id="@+id/travel_label_travel_significance_lable_flowlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginTop="15dp"></cn.chono.yopper.view.FlowLeftLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corners_white_style"
+        android:orientation="vertical"
+        android:layout_marginTop="6dp"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="3px"
+                android:layout_height="match_parent"
+                android:background="@color/color_ff7462" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:text="@string/text_like_preferences"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="14sp"
+
+                />
+
+
+        </LinearLayout>
+
+        <cn.chono.yopper.view.FlowLeftLayout
+            android:id="@+id/travel_label_like_preferences_lable_flowlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginTop="15dp"></cn.chono.yopper.view.FlowLeftLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

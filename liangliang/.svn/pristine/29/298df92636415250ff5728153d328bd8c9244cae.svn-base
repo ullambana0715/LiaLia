@@ -1,0 +1,376 @@
+package cn.chono.yopper.activity.chat;
+
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.StrangeMessageAdapter;
+import cn.chono.yopper.data.MessageDto;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.smack.service.XXService;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CommonObservable;
+import cn.chono.yopper.utils.CommonObserver;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.MyDialog;
+
+
+/**
+ * 消息列表
+ *
+ * @author sam.sun
+ */
+public class StrangeMessageActivity extends MainFrameActivity implements IConnectionStatusCallback {
+
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+    private View contextView;
+
+
+    private ListView strange_message_listview;// 消息列表
+
+
+    private List<MessageDto> strange_messagedtoList = new ArrayList<MessageDto>();
+
+
+    private StrangeMessageAdapter strangeMessageAdapter;
+
+
+    public XXService mXxService;// Main服务
+
+    private String mid;
+
+    // 删除
+    private Dialog deleteDialog;
+
+    private Dialog ignoreDialog;
+
+    private Runnable deleteMsgRun = new Runnable() {
+
+        @Override
+        public void run() {
+            getMessageDto();
+        }
+    };
+    private CommonObserver.DeleteStrangeMessageObserver deleteMessageObserver = new CommonObserver.DeleteStrangeMessageObserver(deleteMsgRun);
+
+    private int scroll_postiton = 0;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+        initComponent();
+        mid = YPApplication.loginUser.getUserId() + "@chono";
+
+
+        if (YpSettings.xxservice != null) {
+            YpSettings.xxservice.registerConnectionStatusCallback(StrangeMessageActivity.this);
+        }
+
+        CommonObservable.getInstance().addObserver(deleteMessageObserver);
+
+    }
+
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.VISIBLE);
+        this.getBtnOption().setVisibility(View.GONE);
+        this.gettvOption().setVisibility(View.VISIBLE);
+        this.gettvOption().setText("忽略未读");
+
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 1000);
+                finish();
+            }
+        });
+
+        this.getOptionLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 1000);
+
+                ignoreDialog = DialogUtil.createHintOperateDialog(StrangeMessageActivity.this, "忽略未读", "消息气泡会清除,但消息不会丢失", "取消", "确认", ignorebackCallListener);
+                if (!isFinishing()) {
+                    ignoreDialog.show();
+                }
+
+            }
+        });
+
+        // 内容部分
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        contextView = mInflater.inflate(R.layout.strange_message_activity, null);
+        strange_message_listview = (ListView) contextView.findViewById(R.id.strange_message_listview);
+
+        strangeMessageAdapter = new StrangeMessageAdapter(this);
+        strange_message_listview.setAdapter(strangeMessageAdapter);
+
+
+        strange_message_listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                MessageDto dto = strange_messagedtoList.get(position);
+                String jid = dto.getJid();
+                showDeleteDialog(jid);
+                return true;
+            }
+        });
+
+
+        strange_message_listview.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                MessageDto dto = strange_messagedtoList.get(position);
+                Bundle bundle = new Bundle();
+                String jid = dto.getJid();
+                String userid = jid.substring(0, jid.indexOf("@"));
+                bundle.putInt(YpSettings.USERID, Integer.valueOf(userid));
+                ActivityUtil.jump(StrangeMessageActivity.this, ChatActivity.class, bundle, 0, 100);
+            }
+        });
+
+
+        this.getMainLayout().addView(contextView, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("陌生人消息列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+        getMessageDto();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("陌生人消息列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+    private BackCallListener ignorebackCallListener = new BackCallListener() {
+        @Override
+        public void onEnsure(View view, Object... obj) {
+            if (!isFinishing()) {
+                ignoreDialog.dismiss();
+            }
+            try {
+                List<MessageDto> strange_messagedtoList = YPApplication.getInstance().db.findAll(Selector.from(MessageDto.class).where("mid", " =", mid).and("is_strange", " =", 1));
+                LogUtils.e("大小=" + strange_messagedtoList.size());
+                if (strange_messagedtoList != null && strange_messagedtoList.size() > 0) {
+
+                    for (int i = 0; i < strange_messagedtoList.size(); i++) {
+                        MessageDto dto = strange_messagedtoList.get(i);
+                        List<ChatDto> chatdtoList = YPApplication.getInstance().db.findAll((Selector.from(ChatDto.class).where("jid", " =", dto.getJid()).and("mid", " =", mid).and("status", " =", 0)));
+                        if (chatdtoList != null && chatdtoList.size() > 0) {
+                            for (int j = 0; j < chatdtoList.size(); j++) {
+                                ChatDto chatdto = chatdtoList.get(j);
+                                if (chatdto != null) {
+                                    chatdto.setStatus(ChatDto.readed_status);
+                                    YPApplication.getInstance().db.update(chatdto);
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+            } catch (DbException e1) {
+                e1.printStackTrace();
+            }
+            getMessageDto();
+        }
+
+        @Override
+        public void onCancel(View view, Object... obj) {
+            if (!isFinishing()) {
+                ignoreDialog.dismiss();
+            }
+
+        }
+    };
+
+    @Override
+    public void ReceiveNewMsg(ChatDto dto) {
+
+        getMessageDto();
+        CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+    }
+
+
+    /**
+     *
+     *
+     */
+
+    public void showDeleteDialog(final String jid) {
+
+        // 初始化一个自定义的Dialog
+        deleteDialog = new MyDialog(StrangeMessageActivity.this, R.style.MyDialog, R.layout.select_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+
+                TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+
+                TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+
+                select_operate_dialog_title_tv.setText("操作");
+                select_operate_dialog_one_tv.setText("删除对话");
+
+                select_operate_dialog_one_layout.setVisibility(View.VISIBLE);
+
+                select_operate_dialog_two_layout.setVisibility(View.GONE);
+
+                select_operate_dialog_three_layout.setVisibility(View.GONE);
+
+                // 点击升级按钮
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        StrangeMessageActivity.this.deleteDialog.dismiss();
+
+                        try {
+                            YPApplication.getInstance().db.delete(ChatDto.class, WhereBuilder.b("jid", " =", jid).and("mid", " =", mid));
+
+                            YPApplication.getInstance().db.delete(MessageDto.class, WhereBuilder.b("jid", " =", jid).and("mid", " =", mid));
+
+                            // list.remove(position);
+                            CommonObservable.getInstance().notifyObservers(CommonObserver.DeleteStrangeMessageObserver.class);
+                            CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+
+                        } catch (DbException e) {
+                            e.printStackTrace();
+
+                        }
+                    }
+
+                });
+            }
+        });
+        deleteDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+        deleteDialog.show();
+
+    }
+
+
+    private void getMessageDto() {
+        try {
+            //allmessagedtoList= YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("mid", " =", mid).orderBy("date DESC"));
+
+            strange_message_listview.setVisibility(View.VISIBLE);
+            strange_messagedtoList = YPApplication.getInstance().db.findAll(Selector.from(MessageDto.class).where("mid", " =", mid).and("is_strange", " =", 1).orderBy("lasttime", true));
+
+
+            if (strange_messagedtoList != null && strange_messagedtoList.size() > 0) {
+                //给其塞未读消息条数
+                for (int i = 0; i < strange_messagedtoList.size(); i++) {
+                    String jid = strange_messagedtoList.get(i).getJid();
+
+                    long no_read_num = YPApplication.getInstance().db.count(Selector.from(ChatDto.class).where("mid", " =", mid).and("jid", " =", jid).and("status", "=", 0));
+
+                    strange_messagedtoList.get(i).setNo_read_num((int) no_read_num);
+                }
+
+                if (strangeMessageAdapter != null) {
+                    strangeMessageAdapter.setList(strange_messagedtoList);
+                    strangeMessageAdapter.notifyDataSetChanged();
+                } else {
+
+                    strangeMessageAdapter = new StrangeMessageAdapter(this);
+                    strangeMessageAdapter.setList(strange_messagedtoList);
+                    strange_message_listview.setAdapter(strangeMessageAdapter);
+                    strange_message_listview.setSelection(scroll_postiton);
+                }
+
+                this.getTvTitle().setText("约你(" + strange_messagedtoList.size() + ")");
+
+            } else {
+                strange_message_listview.setVisibility(View.GONE);
+                this.getTvTitle().setText("约你(0)");
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    protected void onDestroy() {
+        super.onDestroy();
+        // 注销广播
+
+    }
+
+    ;
+
+
+    @Override
+    public void connectionStatusChanged(int connectedState, String reason) {
+
+    }
+
+
+    @Override
+    public void ListenSendStatus(int send_status, String packetId) {
+
+    }
+
+}

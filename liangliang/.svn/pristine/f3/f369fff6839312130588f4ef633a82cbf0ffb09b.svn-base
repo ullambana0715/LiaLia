@@ -1,0 +1,32 @@
+package cn.chono.yopper.data;
+
+public class MessageType {
+
+
+	// 状态常量
+	public static final String Text="text";//文本消息
+
+	public static final String Img="img";//图片
+
+	public static final String DatingRequest="DatingRequest";//约会请求
+
+	public static final String DatingResult="DatingResult";//约会请求结果
+
+	public static final String Attraction="Attraction";//送P果
+
+	public static final String DatingAttampt="DatingAttampt";//约ta消息
+
+	public static final String Notification="notification";
+
+	public static final String Appointment="appointment";
+
+
+	public static final String ChattingRequest="ChattingRequest";//聊天请求 弃用了
+
+	public static final String AccpetChattingRequest="AccpetChattingRequest";//接收聊天请求 弃用了
+
+	public static final String ChattingNotification="ChattingNotification"; //弃用了
+
+
+
+}

@@ -1,0 +1,19 @@
+package cn.chono.yopper.Service.Http.ApointValidJoin;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/29.
+ */
+public class AppointMentsValidJoinData implements Serializable {
+
+    private boolean join;
+
+    public boolean isJoin() {
+        return join;
+    }
+
+    public void setJoin(boolean join) {
+        this.join = join;
+    }
+}

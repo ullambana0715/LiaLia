@@ -1,0 +1,49 @@
+package cn.chono.yopper.Service.Http.BumpPoll;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * 轮询是否碰撞成功
+ * Created by zxb on 2015/11/21.
+ */
+public class BumpPollService extends HttpService {
+    public BumpPollService(Context context) {
+        super(context);
+    }
+
+    private BumpPollBean bumpPollBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = BumpPollRespBean.class;
+        HashMap<String, Object> HashMap = new HashMap<>();
+
+        HashMap.put("sceneId", bumpPollBean.getSceneId());
+        BumpPollBean.BumpEvent bumpEvent = bumpPollBean.getBumpEvent();
+
+        if (null != bumpEvent) {
+
+            HashMap<String, Object> bumpPollBeanHashMap = new HashMap<>();
+            bumpPollBeanHashMap.put("timestamp", bumpEvent.getTimestamp());
+            bumpPollBeanHashMap.put("lat", bumpEvent.get_latitude());
+            bumpPollBeanHashMap.put("lng", bumpEvent.get_longtitude());
+            bumpPollBeanHashMap.put("address", bumpEvent.get_Address());
+
+            HashMap.put("bumpEvent", bumpPollBeanHashMap);
+        }
+        callWrap = OKHttpUtils.post(context, HttpURL.bump_poll, HashMap, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        bumpPollBean = (BumpPollBean) iBean;
+    }
+}

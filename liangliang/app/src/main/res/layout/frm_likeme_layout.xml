@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_e3e3e3"
+    android:orientation="vertical">
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/likeme_xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/likeme_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_f8f8f7" />
+    </com.andview.refreshview.XRefreshView>
+</LinearLayout>

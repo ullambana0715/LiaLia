@@ -1,0 +1,525 @@
+package cn.chono.yopper.activity.bump;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.adapter.UserBumpFriendAdapter;
+import cn.chono.yopper.adapter.UserBumpFriendAdapter.OnItemClickLitener;
+import cn.chono.yopper.data.BumpDataBD;
+import cn.chono.yopper.data.BumpFriends;
+import cn.chono.yopper.data.BumpResults;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.recyclerview.DividerItemDecoration;
+import cn.chono.yopper.Service.Http.BumpFriendsList.BumpFriendsListBean;
+import cn.chono.yopper.Service.Http.BumpFriendsList.BumpFriendsListRespBean;
+import cn.chono.yopper.Service.Http.BumpFriendsList.BumpFriendsService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+import cn.chono.zxb.xrefreshview.XRefreshView.SimpleXRefreshListener;
+
+/**
+ * 碰友页面 ：无本地缓存数据且请求网络返回无碰友数据，则显示碰一碰动画 若有数据，则显示碰友列表
+ *
+ * @author sam.sun
+ */
+public class BumpActivity extends MainFrameActivity implements OnClickListener, OnItemClickLitener {
+
+    private XRefreshView bump_xrefreshview;
+
+    private RecyclerView bump_recyclerview;
+    /**
+     * 无碰友时的界面布局
+     */
+
+    private RelativeLayout bump_no_friend_layout;
+    /**
+     * 无碰友时的碰一碰按钮
+     */
+    private ImageView bump_no_friend_bump_btn_iv;
+
+    /**
+     * 无碰友时的碰一碰按钮动画小
+     */
+    private ImageView bump_no_friend_bump_inner_iv;
+    /**
+     * 无碰友时的碰一碰按钮动画大
+     */
+    private ImageView bump_no_friend_bump_outer_iv;
+
+    private UserBumpFriendAdapter mAdapter;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    private Animation bump_inner_anim, bump_outer_anim;
+
+    private boolean haveFilterData = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.bump_activity);
+        PushAgent.getInstance(this).onAppStart();
+
+        initComponent();
+
+        mPool = Glide.get(this).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+
+        List<BumpResults> dblist = getBumpFromLocal();
+
+        if (dblist != null && dblist.size() > 0) {// 有缓存数据
+            haveFilterData = true;
+            List<BumpResults> curlist = fakeFirstBumpFriends();
+            curlist.addAll(dblist);
+            bump_no_friend_layout.setVisibility(View.GONE);
+            bump_xrefreshview.setVisibility(View.VISIBLE);
+            mAdapter.setData(curlist);
+            mAdapter.notifyDataSetChanged();
+
+        } else {
+            haveFilterData = false;
+        }
+
+        bump_inner_anim = AnimationUtils.loadAnimation(this, R.anim.bump_but_bag);
+        bump_outer_anim = AnimationUtils.loadAnimation(this, R.anim.bump_but_bag_size);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("碰友"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+        getBumpFriends();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageStart("碰友"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("碰友");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.INVISIBLE);
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                finish();
+            }
+        });
+
+        bump_xrefreshview = (XRefreshView) findViewById(R.id.bump_xrefreshview);
+        bump_no_friend_layout = (RelativeLayout) findViewById(R.id.bump_no_friend_layout);
+        bump_no_friend_bump_btn_iv = (ImageView) findViewById(R.id.bump_no_friend_bump_btn_iv);
+        bump_no_friend_bump_btn_iv.setOnClickListener(this);
+
+        bump_no_friend_bump_outer_iv = (ImageView) findViewById(R.id.bump_no_friend_bump_outer_iv);
+
+        bump_no_friend_bump_inner_iv = (ImageView) findViewById(R.id.bump_no_friend_bump_inner_iv);
+
+        setXrefreshListener();
+
+        bump_recyclerview = (RecyclerView) findViewById(R.id.bump_recyclerview);
+
+        bump_recyclerview.setLayoutManager(new GridLayoutManager(this, 3));
+
+        bump_recyclerview.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST, R.drawable.discover_people));
+
+        bump_recyclerview.setItemAnimator(new DefaultItemAnimator());
+
+        mAdapter = new UserBumpFriendAdapter(this);
+        bump_recyclerview.setAdapter(mAdapter);
+
+        mAdapter.setOnItemClickLitener(this);
+
+    }
+
+    private void setXrefreshListener() {
+        // 设置静默加载模式
+        bump_xrefreshview.setSlienceLoadMore();
+        bump_xrefreshview.setAutoLoadMore(false);
+        bump_xrefreshview.setPinnedTime(1000);
+        bump_xrefreshview.setMoveForHorizontal(true);
+        bump_xrefreshview.setCustomHeaderView(new CustomHeaderAnim(this));
+        bump_xrefreshview.setXRefreshViewListener(new SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getBumpFriends();
+                        bump_xrefreshview.stopRefresh();
+                    }
+                }, 1000);
+            }
+
+        });
+
+    }
+
+    /**
+     * 获取本地缓存碰友列表数据
+     */
+    private List<BumpResults> getBumpFromLocal() {
+        List<BumpResults> dblist = new ArrayList<BumpResults>();
+
+        try {
+            BumpDataBD data = YPApplication.db.findFirst(Selector.from(BumpDataBD.class).where("UserId", " =", YPApplication.loginUser.getUserId()));
+            if (data == null) {
+                return null;
+            }
+            BumpFriends bumpFriends = JsonUtils.fromJson(data.getData(), BumpFriends.class);
+
+            if (bumpFriends == null) {
+                return null;
+            }
+            if (bumpFriends.getResults() != null && bumpFriends.getResults().size() > 0) {
+                dblist = bumpFriends.getResults();
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return dblist;
+    }
+
+    /**
+     * 保存碰友列表数据到本地
+     */
+    private void saveBumpToLocal(String results) {
+
+        try {
+            BumpDataBD dataBd = null;
+
+            dataBd = YPApplication.db.findFirst(Selector.from(BumpDataBD.class).where("UserId", " =", YPApplication.loginUser.getUserId()));
+
+            if (dataBd != null) {
+                dataBd.setUserId(YPApplication.loginUser.getUserId());
+                dataBd.setData(results);
+                dataBd.setTime(System.currentTimeMillis());
+                YPApplication.getInstance().db.update(dataBd);
+            } else {
+                dataBd = new BumpDataBD();
+                dataBd.setUserId(YPApplication.loginUser.getUserId());
+                dataBd.setData(results);
+                dataBd.setTime(System.currentTimeMillis());
+                YPApplication.getInstance().db.save(dataBd);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取碰友列表
+     */
+
+    private void getBumpFriends() {
+
+
+
+
+        BumpFriendsListBean bumpFriendsListBean = new BumpFriendsListBean();
+        bumpFriendsListBean.setRows(999);
+        bumpFriendsListBean.setStart(0);
+
+        BumpFriendsService bumpFriendsService = new BumpFriendsService(this);
+        bumpFriendsService.parameter(bumpFriendsListBean);
+        bumpFriendsService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                BumpFriendsListRespBean bumpFriendsListRespBean = (BumpFriendsListRespBean) respBean;
+
+                List<BumpResults> list = new ArrayList<BumpResults>();
+                BumpFriends bumpafFriends = bumpFriendsListRespBean.getResp();
+                String response = JsonUtils.toJson(bumpafFriends);
+
+
+                if (bumpafFriends != null) {
+
+                    list = bumpafFriends.getResults();
+
+                    if (list != null && list.size() > 0) {// 有碰友时
+                        // 显示列表 刷新界面
+                        List<BumpResults> curlist = fakeFirstBumpFriends();
+                        curlist.addAll(list);
+
+                        bump_no_friend_layout.setVisibility(View.GONE);
+                        bump_xrefreshview.setVisibility(View.VISIBLE);
+                        CanCelAnim();
+
+                        mAdapter.setData(curlist);
+                        mAdapter.notifyDataSetChanged();
+
+                        saveBumpToLocal(response);
+
+                    } else {
+                        if (haveFilterData) {
+                            bump_no_friend_layout.setVisibility(View.GONE);
+                            bump_xrefreshview.setVisibility(View.VISIBLE);
+                            getTitleLayout().setBackgroundResource(R.color.text_color_white);
+                            CanCelAnim();
+                        } else {
+                            bump_no_friend_layout.setVisibility(View.VISIBLE);
+                            getTitleLayout().setBackgroundResource(R.color.text_color_ff7462);
+                            bump_xrefreshview.setVisibility(View.GONE);
+                            setButAnim();
+                        }
+                    }
+                } else {
+                    if (haveFilterData) {
+                        bump_no_friend_layout.setVisibility(View.GONE);
+                        getTitleLayout().setBackgroundResource(R.color.text_color_white);
+                        bump_xrefreshview.setVisibility(View.VISIBLE);
+                        CanCelAnim();
+                    } else {
+                        bump_no_friend_layout.setVisibility(View.VISIBLE);
+                        getTitleLayout().setBackgroundResource(R.color.text_color_ff7462);
+                        bump_xrefreshview.setVisibility(View.GONE);
+                        setButAnim();
+                    }
+
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                if (haveFilterData) {// 有本地数据
+                    bump_no_friend_layout.setVisibility(View.GONE);
+                    bump_xrefreshview.setVisibility(View.VISIBLE);
+                    getTitleLayout().setBackgroundResource(R.color.text_color_white);
+                    CanCelAnim();
+                } else {// 无本地数据
+                    bump_no_friend_layout.setVisibility(View.VISIBLE);
+                    bump_xrefreshview.setVisibility(View.GONE);
+                    getTitleLayout().setBackgroundResource(R.color.text_color_ff7462);
+                    setButAnim();
+                }
+
+                // 没有网络的场合，去提示页
+                DialogUtil.setContext(BumpActivity.this);
+                DialogUtil.showDisCoverNetToast(BumpActivity.this);
+            }
+        });
+        bumpFriendsService.enqueue();
+
+    }
+
+    /**
+     * 本地造一条数据
+     *
+     * @return
+     */
+    private List<BumpResults> fakeFirstBumpFriends() {
+        List<BumpResults> fakeList = new ArrayList<BumpResults>();
+        // 创建假数据（+）
+        BumpResults dto = new BumpResults();
+        dto.setHeadImg("");
+        dto.setHoroscope(1);
+        dto.setId(000000);
+        dto.setName("");
+        dto.setRegTime(System.currentTimeMillis() + "");
+        dto.setSex(1);
+        fakeList.add(dto);
+        return fakeList;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.bump_no_friend_bump_btn_iv:// 碰一碰按钮监听
+
+                ViewsUtils.preventViewMultipleClick(v, 1000);
+                MobclickAgent.onEvent(BumpActivity.this, "bump_button");
+                startActivity(new Intent(BumpActivity.this, BumpStartActivity.class));
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+
+        List<BumpResults> list = mAdapter.getDatas();
+        String HeadImg = list.get(position).getHeadImg();
+        int tag = list.get(position).getId();
+
+        if (TextUtils.isEmpty(HeadImg) && tag == 000000) {
+
+            if (YpSettings.isBumpOnClick) {
+
+                YpSettings.isBumpOnClick = false;
+                MobclickAgent.onEvent(BumpActivity.this, "bump_button");
+
+                BumpActivity.this.startActivity(new Intent(BumpActivity.this, BumpStartActivity.class));
+            }
+
+        } else {
+
+            BumpResults dto = list.get(position);
+            Bundle bundle = new Bundle();
+            bundle.putInt(YpSettings.USERID, dto.getId());
+            ActivityUtil.jump(BumpActivity.this, UserInfoActivity.class, bundle, 0, 100);
+
+        }
+
+    }
+
+
+    /**
+     * but动画效果
+     *
+     * @throws
+     * @Title: setButAnim
+     * @param:
+     * @return: void
+     */
+    private void setButAnim() {
+        bump_no_friend_bump_outer_iv.clearAnimation();
+        bump_no_friend_bump_inner_iv.clearAnimation();
+
+        bump_no_friend_bump_outer_iv.setAnimation(bump_outer_anim);
+        bump_no_friend_bump_inner_iv.setAnimation(bump_inner_anim);
+
+        bump_inner_anim.setAnimationListener(new AnimationListener() {
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                bump_inner_anim.setFillAfter(true);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+                bump_no_friend_bump_inner_iv.setVisibility(View.VISIBLE);
+
+            }
+        });
+        bump_outer_anim.setAnimationListener(new AnimationListener() {
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                bump_outer_anim.setFillAfter(true);
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        // bump_btn_fno.clearAnimation();
+                        // bump_btn_fno_size.clearAnimation();
+                        bump_no_friend_bump_outer_iv.setVisibility(View.INVISIBLE);
+                        bump_no_friend_bump_inner_iv.setVisibility(View.INVISIBLE);
+
+                    }
+                }, 200);
+
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+
+                        bump_no_friend_bump_inner_iv.setVisibility(View.VISIBLE);
+
+                        bump_no_friend_bump_inner_iv.clearAnimation();
+                        bump_no_friend_bump_inner_iv.setAnimation(bump_inner_anim);
+                        bump_inner_anim.start();
+
+
+                        bump_no_friend_bump_outer_iv.clearAnimation();
+
+                        bump_no_friend_bump_outer_iv.setAnimation(bump_outer_anim);
+                        bump_outer_anim.start();
+                    }
+                }, 1000);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+        });
+    }
+
+    private void CanCelAnim() {
+        bump_inner_anim.cancel();
+        bump_outer_anim.cancel();
+        bump_no_friend_bump_outer_iv.clearAnimation();
+        bump_no_friend_bump_inner_iv.clearAnimation();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CanCelAnim();
+    }
+
+}

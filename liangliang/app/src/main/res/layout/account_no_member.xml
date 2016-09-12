@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+
+              android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/account_member_bg"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="24dp"
+
+
+                >
+
+                <ImageView
+                    android:id="@+id/account_no_member_iv_icon"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/member_ordinary_icon"
+                    />
+
+                <ImageView
+                    android:id="@+id/account_no_member_iv_bg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/member_bg"
+
+                    />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="22dp"
+            android:gravity="center"
+            android:orientation="vertical"
+
+            >
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="@string/liangliang_member"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14sp"
+
+                />
+
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="14dp"
+
+                android:text="@string/exclusive_privilege"
+                android:textColor="@color/color_ffffff"
+                android:textSize="18sp"/>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bg_5_bottom_corners"
+        android:padding="22dp"
+        >
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+
+
+            android:orientation="vertical"
+
+            >
+
+            <TextView
+                android:id="@+id/account_no_member_tv_vip_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="dfsfs"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="14sp"
+
+                />
+
+
+            <TextView
+                android:id="@+id/account_no_member_tv_vip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="eeeee"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="14sp"/>
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/account_no_member_tv_but"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/ff7462_bg_10_corners"
+            android:gravity="center"
+            android:minWidth="80dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+
+            android:text="查看特权"
+            android:textColor="@color/color_ffffff"
+            android:textSize="14sp"/>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

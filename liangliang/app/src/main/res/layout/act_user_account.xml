@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dash="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_f8f8f7"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <ViewStub
+            android:id="@+id/account_member_vs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:layout="@layout/account_member" />
+
+
+        <ViewStub
+            android:id="@+id/account_no_member_vs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:layout="@layout/account_no_member" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/white_bg_5_corners"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_account_apple" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:text="苹果:"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/account_apple_num_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="0"
+                android:textColor="@color/color_ff7462"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/account_get_apple_tv"
+                android:layout_width="60dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="24dp"
+                android:background="@drawable/ff7462_bg_10_corners"
+                android:gravity="center"
+                android:text="获取"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/white_bg_5_corners"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_account_key" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:text="钥匙:"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/account_key_num_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="0"
+                android:textColor="@color/color_ff7462"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/account_get_key_tv"
+                android:layout_width="60dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="24dp"
+                android:background="@drawable/ff7462_bg_10_corners"
+                android:gravity="center"
+                android:text="获取"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/white_bg_5_corners"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_meilizhi" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:text="魅力值:"
+                android:textColor="@color/color_b2b2b2"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/atrrack_key_num_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_weight="1"
+                android:text="0"
+                android:textColor="@color/color_ff7462"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/atrrack_get_key_tv"
+                android:layout_width="60dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="24dp"
+                android:background="@drawable/ff7462_bg_10_corners"
+                android:gravity="center"
+                android:text="提现"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</ScrollView>

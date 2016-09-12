@@ -1,0 +1,39 @@
+package cn.chono.yopper.Service.Http.DaillyMatch;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.Service.OKHttpUtils;
+
+/**
+ * 每日星座匹配
+ * Created by zxb on 2015/11/21.
+ */
+public class DaillyMatchService extends HttpService {
+    public DaillyMatchService(Context context) {
+        super(context);
+    }
+
+    private DaillyMatchBean matchBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = DaillyMatchRespBean.class;
+        HashMap<String, Object> HashMap = new HashMap<>();
+        HashMap.put("targetUserId", matchBean.getTargetUserId());
+        String url = HttpURL.get_user_info_album + matchBean.getUserId() + "/dailly_match?";
+
+        callWrap = OKHttpUtils.get(context, url, HashMap, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        matchBean = (DaillyMatchBean) iBean;
+
+    }
+}

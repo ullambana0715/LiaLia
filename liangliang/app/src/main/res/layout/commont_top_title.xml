@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/commont_top_title_ll"
+              android:layout_width="match_parent"
+              android:layout_height="45dp"
+              android:layout_alignParentTop="true"
+              android:layout_gravity="top"
+              android:background="@color/color_ffffff"
+              android:gravity="center"
+              android:orientation="horizontal">
+
+    <!-- 返回按钮 -->
+
+    <LinearLayout
+        android:id="@+id/base_back_layout"
+        android:layout_width="80dip"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:gravity="left|center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp">
+
+        <ImageView
+            android:id="@+id/base_back_iv"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/icon_go_back"/>
+
+        <TextView
+            android:id="@+id/base_back_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text=""
+            android:textColor="@color/color_000000"
+            android:textSize="14dip"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+
+    <!-- 页面标题 -->
+
+    <TextView
+        android:id="@+id/base_title_tv"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/color_000000"
+        android:textSize="18sp"/>
+
+
+    <LinearLayout
+        android:id="@+id/base_option_layout"
+        android:layout_width="80dip"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="10dp"
+        android:gravity="center_vertical|right"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/base_option_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/base_option_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/color_000000"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+</LinearLayout>

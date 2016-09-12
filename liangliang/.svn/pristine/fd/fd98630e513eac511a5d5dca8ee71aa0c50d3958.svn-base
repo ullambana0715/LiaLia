@@ -1,0 +1,20 @@
+package cn.chono.yopper.Service.Http.BumpHistory;
+
+import cn.chono.yopper.data.BumpFriendshistory;
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class BumpHistoryRespBean extends RespBean {
+
+    private BumpFriendshistory resp;
+
+    public BumpFriendshistory getResp() {
+        return resp;
+    }
+
+    public void setResp(BumpFriendshistory resp) {
+        this.resp = resp;
+    }
+}

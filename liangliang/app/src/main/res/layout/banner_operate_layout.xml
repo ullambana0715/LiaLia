@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="切换栏目"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/banner_operate_finish_tv"
+            android:layout_width="44dp"
+            android:layout_height="18dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/banner_operate_off_iv_layout"
+            android:background="@drawable/banner_deal_shape"
+            android:gravity="center"
+            android:text="完成"
+            android:visibility="gone"
+            android:textColor="@color/color_ff7462"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/banner_operate_detele_tv"
+            android:layout_width="44dp"
+            android:layout_height="18dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/banner_operate_off_iv_layout"
+            android:background="@drawable/banner_deal_shape"
+            android:gravity="center"
+            android:text="删除"
+            android:textColor="@color/color_ff7462"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/banner_operate_off_iv_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/find_banner_add_off" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <cn.chono.yopper.view.FlowCenterLeftLayout
+        android:id="@+id/select_lable_flowlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@color/color_cad7d7">
+
+    </cn.chono.yopper.view.FlowCenterLeftLayout>
+
+    <TextView
+        android:id="@+id/banner_add_more_tv"
+
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical"
+        android:text="点击添加更多栏目"
+        android:textColor="@color/color_b2b2b2"
+        android:textSize="12sp" />
+
+    <cn.chono.yopper.view.FlowCenterLeftLayout
+        android:id="@+id/no_select_lable_flowlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@color/color_cad7d7">
+
+    </cn.chono.yopper.view.FlowCenterLeftLayout>
+
+</LinearLayout>

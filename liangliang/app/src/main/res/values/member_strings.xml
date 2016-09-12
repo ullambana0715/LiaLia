@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string name="liangliang_member">俩俩会员</string>
+    <string name="exclusive_privilege">专享特权</string>
+
+    <string name="no_vip">您当前不是VIP</string>
+    <string name="opened_vip_privilege">开通VIP可获得更多特权！</string>
+    <string name="no_vip_opened_vip_privilege">您当前不是VIP，开通VIP可获得更多特权！</string>
+    <string name="view_privilege">查看特权</string>
+    <string name="renewals">续费</string>
+    <string name="vip_current_status">您当前是</string>
+    <string name="validity_period">有效期至</string>
+
+    <string name="vip_silver">白银会员</string>
+    <string name="vip_platinum">铂金会员</string>
+    <string name="vip_gole">黄金会员</string>
+    <string name="vip_diamond">钻石会员</string>
+
+    <string name="member">会员</string>
+
+
+    <string name="vip_renewals">VIP续费</string>
+
+    <string name="vip_renewals_become_effective">续费后新的VIP权益即时生效</string>
+
+    <string name="vip_renewals_vip_the_way">，可选择以下续费方式</string>
+
+    <string name="obtain_more_apple">获取更多苹果</string>
+
+    <string name="account_apple_number_hint">账户内苹果数:</string>
+
+
+    <string name="silver_vip">白银VIP</string>
+    <string name="platinum_vip">铂金VIP</string>
+    <string name="gole_vip">黄金VIP</string>
+    <string name="diamond_vip">钻石VIP</string>
+    <string name="no_vip_user">普通用户</string>
+
+    <string name="upgrade_vip">升级VIP</string>
+
+    <string name="make_friends_limit_shanghai">交友活动暂只开放上海地区</string>
+
+    <string name="view_satisfy">查看门店</string>
+
+</resources>

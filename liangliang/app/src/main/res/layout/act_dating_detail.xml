@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dating_detail_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/dating_detail_bottom_ll">
+
+        <com.andview.refreshview.XRefreshView
+            android:id="@+id/user_dating_detail_xrefreshview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+
+            app:isHeightMatchParent="false"
+            app:isWidthMatchParent="false">
+
+            <com.andview.refreshview.XScrollView
+                android:id="@+id/appoint_detail_scrollview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_eeeeee"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="6dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/shape_white_rectangle_five_corners"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="77dp"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="12dp"
+                            android:gravity="center_vertical">
+
+
+                            <RelativeLayout
+                                android:layout_width="60dp"
+                                android:layout_height="60dp">
+
+                                <ImageView
+                                    android:id="@+id/dating_detail_userImg_iv"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:background="@drawable/message_head_default_icon" />
+
+                                <ImageView
+                                    android:id="@+id/dating_detail_vip_iv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentRight="true"
+                                    android:background="@drawable/ic_small_vip_diamond"
+                                    android:visibility="gone" />
+                            </RelativeLayout>
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp">
+
+                                <LinearLayout
+                                    android:id="@+id/dating_name_distance_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical">
+
+                                    <TextView
+                                        android:id="@+id/dating_detail_name_tv"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:ellipsize="end"
+                                        android:gravity="left"
+                                        android:singleLine="true"
+                                        android:text=""
+                                        android:textColor="@color/color_333333"
+                                        android:textSize="15sp" />
+
+                                    <TextView
+                                        android:id="@+id/dating_detail_distance_tv"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:singleLine="true"
+                                        android:text=""
+                                        android:textColor="@color/color_b2b2b2"
+                                        android:textSize="12sp" />
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/dating_name_distance_layout"
+                                    android:layout_marginTop="10dp"
+                                    android:gravity="center_vertical">
+
+
+                                    <TextView
+                                        android:id="@+id/dating_detail_age_tv"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="2dp"
+                                        android:drawablePadding="3dp"
+                                        android:gravity="center_vertical"
+                                        android:paddingLeft="2dp"
+                                        android:paddingRight="2dp"
+                                        android:textColor="@color/color_ffffff"
+                                        android:textSize="12sp" />
+
+
+                                    <ImageView
+                                        android:id="@+id/dating_detail_hot_iv"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="3dp"
+                                        android:src="@drawable/hot_icon"
+                                        android:visibility="visible" />
+
+                                    <ImageView
+                                        android:id="@+id/dating_detail_video_iv"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="3dp"
+                                        android:src="@drawable/video_icon"
+                                        android:visibility="visible" />
+
+
+                                    <ImageView
+                                        android:id="@+id/dating_detail_activity_talent_iv"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="3dp"
+                                        android:src="@drawable/ic_activity_talent"
+                                        android:visibility="visible" />
+
+                                </LinearLayout>
+
+                            </RelativeLayout>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="12dp"
+                            android:background="@color/color_eeeeee" />
+
+                        <LinearLayout
+                            android:id="@+id/dating_detail_type_info_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp">
+
+                            <ImageView
+                                android:id="@+id/dating_detail_datingtype_iv"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginLeft="12dp" />
+
+                            <TextView
+                                android:id="@+id/dating_detail_title_tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="6dp"
+                                android:layout_marginRight="10dp"
+                                android:text=""
+                                android:textColor="@color/color_333333"
+                                android:textSize="15sp" />
+
+                        </LinearLayout>
+
+                        <ViewStub
+                            android:id="@+id/dating_detail_travel_base_info_vs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout="@layout/dating_detail_travel_base_info_layout" />
+
+                        <ViewStub
+                            android:id="@+id/dating_detail_others_base_info_vs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout="@layout/dating_detail_others_base_info_layout" />
+
+                        <ViewStub
+                            android:id="@+id/dating_detail_married_info_vs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout="@layout/dating_detail_married_info_layout" />
+
+                    </LinearLayout>
+
+
+                    <ViewStub
+                        android:id="@+id/dating_detail_time_distance_vs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginRight="6dp"
+                        android:layout_marginTop="12dp"
+                        android:layout="@layout/dating_detail_time_address_layout" />
+
+                    <ViewStub
+                        android:id="@+id/dating_detail_travel_label_vs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout="@layout/dating_detail_travel_label_layout" />
+
+
+                    <ViewStub
+                        android:id="@+id/dating_detail_signup_vs"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout="@layout/dating_detail_signup_management" />
+
+
+                    <LinearLayout
+                        android:id="@+id/dating_detail_status_pb_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="@color/color_d5e3e3"
+                        android:orientation="vertical"
+                        android:paddingBottom="15dp"
+                        android:visibility="gone">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="35dp"
+                            android:layout_marginLeft="17dp"
+                            android:layout_marginRight="17dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="诚意度"
+                                android:textColor="@color/color_333333"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/dating_detail_improve_chengyidu_tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentRight="true"
+                                android:gravity="center"
+                                android:text="怎么提高诚意度？"
+                                android:textColor="@color/color_8eb1b1"
+                                android:textSize="10sp" />
+
+                        </RelativeLayout>
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="17dp"
+                            android:layout_marginRight="17dp"
+                            android:background="@drawable/appoint_detail_white_bg">
+
+
+                            <TextView
+                                android:id="@+id/dating_detail_chengyi_pb_tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="18dp"
+                                android:gravity="center_vertical"
+                                android:text="诚意度"
+                                android:textColor="@color/color_45424c"
+                                android:textSize="14sp" />
+
+                            <ProgressBar
+                                android:id="@+id/dating_detail_chengyi_pb"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="120dp"
+                                android:layout_height="15dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="10dp"
+                                android:layout_toRightOf="@+id/dating_detail_chengyi_pb_tv"
+                                android:max="100"
+                                android:progressDrawable="@drawable/appoint_horizontal_pb_style" />
+
+
+                            <cn.chono.yopper.view.ProgressBarView
+                                android:id="@+id/dating_detail_all_pbv"
+                                android:layout_width="54dp"
+                                android:layout_height="54dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginBottom="15dp"
+                                android:layout_marginRight="18dp"
+                                android:layout_marginTop="15dp"
+                                app:inside_round_color="#ff735d"
+                                app:inside_round_moment_from="4dp"
+                                app:outside_round_color="#ffd3cc"
+                                app:outside_round_progress_color="#ff735d"
+                                app:outside_round_width="2dp"
+                                app:promptTextColor="#ffffff"
+                                app:promptTextSize="8sp"
+                                app:prompt_text_moment_from="3dp"
+                                app:textColor="#ffffff"
+                                app:textSize="12sp">
+
+                            </cn.chono.yopper.view.ProgressBarView>
+
+                        </RelativeLayout>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.andview.refreshview.XScrollView>
+
+        </com.andview.refreshview.XRefreshView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dating_detail_hint_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_above="@+id/dating_detail_bottom_ll"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/dating_detail_hint_bg"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="!"
+                android:textColor="@color/color_ff7462"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="该用户未通过视频认证，请注意酒托骗子"
+                android:textColor="@color/color_ffffff"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/dating_detail_hint_close_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="3dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="3dp"
+                android:src="@drawable/dating_detail_hint_close_icon" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dating_detail_hint_shibie_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:gravity="center"
+            android:text="如何识别>"
+            android:textColor="@color/color_1f88ff"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dating_detail_bottom_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/dating_detail_bottom_chat_tv"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:background="@color/color_ff7462"
+            android:gravity="center"
+            android:text="先聊聊"
+            android:textColor="@color/color_ffffff"
+            android:textSize="16sp" />
+
+        <View
+            android:id="@+id/dating_bottom_cut_line"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/color_ffffff" />
+
+        <LinearLayout
+            android:id="@+id/dating_bottom_send_layout"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:background="@color/color_ff7462"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:drawableLeft="@drawable/ic_gift"
+                android:drawablePadding="3dp"
+                android:gravity="center"
+                android:text="带礼物打招呼"
+                android:textColor="@color/color_ffffff"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

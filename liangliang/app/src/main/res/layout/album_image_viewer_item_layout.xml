@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <cn.chono.yopper.view.viewpager.PhotoView
+        android:id="@+id/photoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="false" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:background="#4Dffffff" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_parise_delect_mask"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/parise_count_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/iv_parise"
+                android:text="0"
+                android:textColor="@color/color_ffffff"
+                android:textSize="10sp"
+                android:visibility="visible" />
+
+
+            <ImageView
+                android:id="@+id/iv_parise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/photo_parised_icon"
+                android:visibility="visible" />
+
+
+            <ImageView
+                android:id="@+id/iv_delect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@+id/parise_count_tv"
+                android:background="@drawable/ic_delect"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+</FrameLayout>

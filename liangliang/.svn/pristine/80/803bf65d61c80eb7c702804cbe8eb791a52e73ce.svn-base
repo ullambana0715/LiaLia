@@ -1,0 +1,470 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.VisitorsList.VisitorsListBean;
+import cn.chono.yopper.Service.Http.VisitorsList.VisitorsListRespBean;
+import cn.chono.yopper.Service.Http.VisitorsList.VisitorsListService;
+import cn.chono.yopper.Service.Http.VisitorsMoreList.VisitorsMoreListBean;
+import cn.chono.yopper.Service.Http.VisitorsMoreList.VisitorsMoreListRespBean;
+import cn.chono.yopper.Service.Http.VisitorsMoreList.VisitorsMoreListService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.UserVisitorsAdapter;
+import cn.chono.yopper.adapter.UserVisitorsAdapter.OnItemClickLitener;
+import cn.chono.yopper.data.VisitorsDto;
+import cn.chono.yopper.data.VisitorsListDto;
+import cn.chono.yopper.data.Visits;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+import cn.chono.zxb.xrefreshview.XRefreshView.SimpleXRefreshListener;
+
+
+/**
+ * 访客列表
+ *
+ * @author sam.sun
+ */
+public class VisitorsActivity extends MainFrameActivity implements OnItemClickLitener {
+
+
+    private RecyclerView user_visitors_recyclerview;// 地点列表
+
+    private XRefreshView xrefreshView;
+
+    private UserVisitorsAdapter mAdapter;
+
+    private LinearLayout user_visitors_layout;
+
+
+    //开始的位置
+    private int location = 0;
+
+
+    private Animation mRotateAnimation;
+
+    private TextView error_network_tv;
+    private TextView error_no_data_tv;
+    private ImageView error_to_load_img;
+
+    private LinearLayout error_network_layout;
+    private LinearLayout error_no_data_layout;
+    private LinearLayout error_to_load_layout;
+
+
+    private boolean haveGeting = false;
+
+
+    private String nextQuery;
+
+    private int userid;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentLayout(R.layout.user_visitors_activity);
+        PushAgent.getInstance(this).onAppStart();
+
+        Bundle bunble = this.getIntent().getExtras();
+        if (bunble != null) {
+            userid = bunble.getInt(YpSettings.USERID);
+        }
+        initComponent();
+
+        initRotateAnimation();
+        user_visitors_layout.setVisibility(View.GONE);
+
+        error_network_layout.setVisibility(View.GONE);
+
+        error_no_data_layout.setVisibility(View.GONE);
+        error_to_load_layout.setVisibility(View.VISIBLE);
+
+        getVisitorsList(location);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("访客页面"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("访客页面"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("谁看过我");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.INVISIBLE);
+
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                finish();
+//				overridePendingTransition(R.anim.in_from_right,R.anim.out_to_right);
+            }
+        });
+
+        xrefreshView = (XRefreshView) findViewById(R.id.user_visitors_xrefreshview);
+
+        user_visitors_layout= (LinearLayout) findViewById(R.id.user_visitors_layout);
+        user_visitors_recyclerview = (RecyclerView) findViewById(R.id.user_visitors_recyclerview);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        user_visitors_recyclerview.setLayoutManager(layoutManager);
+        mAdapter = new UserVisitorsAdapter(this);
+        user_visitors_recyclerview.setAdapter(mAdapter);
+
+
+
+        xrefreshView.setAutoLoadMore(true);
+        setXrefreshListener();
+
+
+        mAdapter.setOnItemClickLitener(this);
+
+
+        error_network_tv = (TextView) findViewById(R.id.error_network_tv);
+        error_no_data_tv = (TextView) findViewById(R.id.error_no_data_tv);
+        error_to_load_img = (ImageView) findViewById(R.id.error_to_load_img);
+
+        error_no_data_tv.setText("暂时没有人访问你");
+
+        error_network_layout = (LinearLayout) findViewById(R.id.error_network_layout);
+        error_no_data_layout = (LinearLayout) findViewById(R.id.error_no_data_layout);
+        error_to_load_layout = (LinearLayout) findViewById(R.id.error_to_load_layout);
+
+
+        error_network_tv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                ViewsUtils.preventViewMultipleClick(arg0, 1000);
+                error_network_layout.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+                user_visitors_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.VISIBLE);
+                initRotateAnimation();
+
+                location = 0;
+                getVisitorsList(location);
+
+            }
+        });
+
+
+    }
+
+
+    private void setXrefreshListener() {
+        // 设置静默加载模式
+        // 设置静默加载模式
+        xrefreshView.setSlienceLoadMore();
+        xrefreshView.setAutoLoadMore(true);
+        xrefreshView.setPinnedTime(1000);
+        xrefreshView.setMoveForHorizontal(true);
+        xrefreshView.setCustomHeaderView(new CustomHeaderAnim(this));
+
+        xrefreshView.setXRefreshViewListener(new SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        location = 0;
+                        getVisitorsList(location);
+                        xrefreshView.stopRefresh();
+                    }
+                }, 1000);
+            }
+
+            @Override
+            public void onLoadMore(boolean isSlience) {
+                super.onLoadMore(isSlience);
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+
+                        loadMoreGetVisitorsList();
+                        //刷新完成必须调用此方法停止加载
+                        xrefreshView.stopLoadMore();
+                    }
+                }, 1000);
+            }
+
+        });
+
+
+        xrefreshView.setOnAbsListViewScrollListener(new OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+    }
+
+
+    /**
+     * 获取约会列表
+     */
+
+    private void getVisitorsList(final int start) {
+
+        if (haveGeting) {
+            return;
+        }
+
+
+        VisitorsListBean listBean = new VisitorsListBean();
+        listBean.setUserid(userid);
+        listBean.setStart(start);
+
+        VisitorsListService listService = new VisitorsListService(this);
+        listService.parameter(listBean);
+        listService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                VisitorsListRespBean listRespBean = (VisitorsListRespBean) respBean;
+                VisitorsListDto listDto = listRespBean.getResp();
+                savaLookme();
+
+                //定位视图隐藏  网络加载失败视图隐藏-小圆圈视图隐藏
+                //如果没有数据，则显示无数据视图，如果有数据则刷新视图
+                // 动画回收
+                haveGeting = false;
+                if (mRotateAnimation != null) {
+                    mRotateAnimation.cancel();
+                    error_to_load_img.clearAnimation();
+                }
+
+                error_network_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+                List<VisitorsDto> list = new ArrayList<VisitorsDto>();
+
+
+                if (listDto != null) {
+
+                    list = listDto.getList();
+
+                    if (list != null && list.size() > 0) {
+                        error_no_data_layout.setVisibility(View.GONE);
+                        user_visitors_layout.setVisibility(View.VISIBLE);
+                        nextQuery = listDto.getNextQuery();
+                        mAdapter.setData(list);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        error_no_data_layout.setVisibility(View.VISIBLE);
+                        user_visitors_layout.setVisibility(View.GONE);
+                    }
+                } else {
+                    error_no_data_layout.setVisibility(View.VISIBLE);
+                    user_visitors_layout.setVisibility(View.GONE);
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                //定位视图隐藏  无数据视图隐藏-小圆圈视图隐藏-
+                //如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                // 动画回收
+                // 动画回收
+                haveGeting = false;
+                if (mRotateAnimation != null) {
+                    mRotateAnimation.cancel();
+                    error_to_load_img.clearAnimation();
+                }
+
+                error_to_load_layout.setVisibility(View.GONE);
+
+
+                error_network_layout.setVisibility(View.VISIBLE);
+                user_visitors_layout.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+            }
+        });
+        listService.enqueue();
+
+    }
+
+
+    /**
+     * 获取约会列表
+     */
+
+    private void loadMoreGetVisitorsList() {
+
+        if (haveGeting) {
+            return;
+        }
+
+        if (CheckUtil.isEmpty(nextQuery)) {
+            return;
+        }
+
+
+        VisitorsMoreListBean moelistBean = new VisitorsMoreListBean();
+        moelistBean.setNextQuery(nextQuery);
+
+        VisitorsMoreListService listService = new VisitorsMoreListService(this);
+        listService.parameter(moelistBean);
+        listService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                VisitorsMoreListRespBean listRespBean = (VisitorsMoreListRespBean) respBean;
+                VisitorsListDto listDto = listRespBean.getResp();
+                haveGeting = false;
+
+                List<VisitorsDto> list = new ArrayList<VisitorsDto>();
+
+                if (listDto != null) {
+
+                    list = listDto.getList();
+
+                    if (list != null && list.size() > 0) {
+
+                        nextQuery = listDto.getNextQuery();
+                        List<VisitorsDto> curlist = mAdapter.getData();
+                        curlist.addAll(list);
+                        mAdapter.setData(curlist);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                //定位视图隐藏  无数据视图隐藏-小圆圈视图隐藏-
+                //如果没有本地缓存，则显示网络加载失败视图，如果有缓存则提示网络问题
+                haveGeting = false;
+                error_network_layout.setVisibility(View.GONE);
+                error_no_data_layout.setVisibility(View.GONE);
+                error_to_load_layout.setVisibility(View.GONE);
+                //提示连接失败
+                DialogUtil.showDisCoverNetToast(VisitorsActivity.this);
+            }
+        });
+        listService.enqueue();
+
+    }
+
+    private void savaLookme() {
+
+        Intent intent = new Intent();
+        intent.setAction("cn.yopper.chono.set.sync");
+        this.sendBroadcast(intent);
+
+        Visits dto;
+        try {
+            dto = YPApplication.getInstance().db.findFirst(Selector.from(Visits.class).where("id", " =", userid));
+            if (dto != null) {
+                dto.setNewadded(0);
+                YPApplication.getInstance().db.update(dto);
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            error_to_load_img.clearAnimation();
+        }
+        super.onDestroy();
+    }
+
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        error_to_load_img.setAnimation(mRotateAnimation);
+    }
+
+    @Override
+    public void onItemClick(View view, int position, int userID) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(YpSettings.USERID, userID);
+        ActivityUtil.jump(VisitorsActivity.this, UserInfoActivity.class, bundle, 0, 100);
+    }
+
+
+}

@@ -1,0 +1,218 @@
+package cn.chono.yopper.Service.Http.SignUpManagement;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementUser implements Serializable {
+
+    private int relationship;
+    private int age;
+    private String birthday;
+    private boolean birthdayPrivacy;
+    private String career;
+    private int height;
+    private int weight;
+    private String hometown;
+    private String likes;
+    private String dislikes;
+    private int attraction;
+    private int beautyScore;
+    private int incomeLevel;
+    private String tags;
+    private int completion;
+    private int id;
+    private String name;
+    private int horoscope;
+    private String headImg;
+    private int sex;
+    private int status;
+    private int level;
+    private String regTime;
+
+
+    public int getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(int relationship) {
+        this.relationship = relationship;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public boolean isBirthdayPrivacy() {
+        return birthdayPrivacy;
+    }
+
+    public void setBirthdayPrivacy(boolean birthdayPrivacy) {
+        this.birthdayPrivacy = birthdayPrivacy;
+    }
+
+    public String getCareer() {
+        return career;
+    }
+
+    public void setCareer(String career) {
+        this.career = career;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public String getHometown() {
+        return hometown;
+    }
+
+    public void setHometown(String hometown) {
+        this.hometown = hometown;
+    }
+
+    public String getLikes() {
+        return likes;
+    }
+
+    public void setLikes(String likes) {
+        this.likes = likes;
+    }
+
+    public String getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(String dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    public int getAttraction() {
+        return attraction;
+    }
+
+    public void setAttraction(int attraction) {
+        this.attraction = attraction;
+    }
+
+    public int getBeautyScore() {
+        return beautyScore;
+    }
+
+    public void setBeautyScore(int beautyScore) {
+        this.beautyScore = beautyScore;
+    }
+
+    public int getIncomeLevel() {
+        return incomeLevel;
+    }
+
+    public void setIncomeLevel(int incomeLevel) {
+        this.incomeLevel = incomeLevel;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public int getCompletion() {
+        return completion;
+    }
+
+    public void setCompletion(int completion) {
+        this.completion = completion;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getHoroscope() {
+        return horoscope;
+    }
+
+    public void setHoroscope(int horoscope) {
+        this.horoscope = horoscope;
+    }
+
+    public String getHeadImg() {
+        return headImg;
+    }
+
+    public void setHeadImg(String headImg) {
+        this.headImg = headImg;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public String getRegTime() {
+        return regTime;
+    }
+
+    public void setRegTime(String regTime) {
+        this.regTime = regTime;
+    }
+}

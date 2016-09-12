@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/color_e3e3e3"
+    android:orientation="vertical">
+
+    <include layout="@layout/error_network_layout" />
+
+    <include layout="@layout/error_no_data_remove_layout" />
+
+    <include layout="@layout/error_report_layout" />
+
+    <com.andview.refreshview.XRefreshView
+        android:id="@+id/xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_e3e3e3"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false" >
+
+        <ListView
+            android:id="@+id/praise_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_ffffff"
+            android:listSelector="@android:color/transparent" >
+        </ListView>
+    </com.andview.refreshview.XRefreshView>
+
+</RelativeLayout>

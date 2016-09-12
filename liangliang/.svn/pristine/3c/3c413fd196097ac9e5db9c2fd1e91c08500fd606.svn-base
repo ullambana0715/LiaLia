@@ -1,0 +1,60 @@
+package cn.chono.yopper.data;
+
+public class ImgMsg {
+
+	private String type;
+	private String url;
+	private double w;
+	private double h;
+	private String from;
+	
+	private String id;
+	
+	
+	
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+	
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	public double getW() {
+		return w;
+	}
+	
+	public void setW(double w) {
+		this.w = w;
+	}
+	public double getH() {
+		return h;
+	}
+	public void setH(double h) {
+		this.h = h;
+	}
+
+
+
+}

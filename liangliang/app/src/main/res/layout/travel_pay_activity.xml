@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="6dp"
+
+        >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/corners_white_style"
+            android:orientation="vertical"
+            android:paddingBottom="15dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="3px"
+                    android:layout_height="16dp"
+                    android:background="@color/color_ff7462" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="7dp"
+                    android:text="@string/text_travel_the_way"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="14sp"
+
+                    />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="7dp"
+                    android:layout_weight="1"
+                    android:background="@color/color_b2b2b2" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/travel_the_way_icon" />
+
+            </LinearLayout>
+
+            <cn.chono.yopper.view.MyGridView
+                android:id="@+id/travel_the_way"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:numColumns="2"
+
+                >
+
+            </cn.chono.yopper.view.MyGridView>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/corners_white_style"
+            android:orientation="vertical"
+            android:paddingBottom="15dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="3px"
+                    android:layout_height="16dp"
+                    android:background="@color/color_ff7462" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="7dp"
+                    android:text="@string/text_travel_cost"
+                    android:textColor="@color/color_b2b2b2"
+                    android:textSize="14sp"
+
+                    />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1px"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="7dp"
+                    android:layout_weight="1"
+                    android:background="@color/color_b2b2b2" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/travel_cost_icon" />
+
+
+            </LinearLayout>
+
+            <cn.chono.yopper.view.MiListView
+                android:id="@+id/travel_cost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="10dp">
+
+            </cn.chono.yopper.view.MiListView>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</ScrollView>

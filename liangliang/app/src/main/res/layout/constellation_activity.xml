@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_eeeeee"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="35px"
+            android:layout_marginRight="35px"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32px"
+                android:layout_marginTop="32px"
+                android:gravity="center"
+                android:text="@string/constellation_tv_hint"
+                android:textColor="@color/color_000000"
+                android:textSize="32px" />
+
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:id="@+id/radio_group_line_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/aries_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_aries"
+                    android:tag="1"
+                    app:layout_auto_baseheight="width|margin" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+                    android:id="@+id/taurus_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_taurus"
+
+                    android:tag="2"
+                    app:layout_auto_baseheight="width|margin" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+                    android:id="@+id/gemini_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_gemini"
+
+                    android:tag="3"
+                    app:layout_auto_baseheight="width|margin" />
+            </com.zhy.autolayout.AutoLinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_e5e5e5" />
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:id="@+id/radio_group_line_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/cancer_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_cancer"
+
+                    android:tag="4"
+                    app:layout_auto_baseheight="width|margin" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+                    android:id="@+id/leo_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_leo"
+
+                    app:layout_auto_baseheight="width|margin"
+                    android:tag="5"
+                    />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+                    android:id="@+id/virgo_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_virgo"
+
+                    android:tag="6"
+                    app:layout_auto_baseheight="width|margin" />
+
+            </com.zhy.autolayout.AutoLinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_e5e5e5" />
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:id="@+id/radio_group_line_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+
+                    android:id="@+id/libra_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_libra"
+
+                    android:tag="7"
+                    app:layout_auto_baseheight="width|margin" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+                    android:id="@+id/scorpio_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_scorpio"
+
+                    android:tag="8"
+                    app:layout_auto_baseheight="width|margin" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+
+                    android:id="@+id/sagittarius_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_sagittarius"
+
+                    android:tag="9"
+                    app:layout_auto_baseheight="width|margin" />
+
+            </com.zhy.autolayout.AutoLinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_e5e5e5" />
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:id="@+id/radio_group_line_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+
+                    android:id="@+id/capricornus_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_capricornus"
+
+                    android:tag="10"
+                    app:layout_auto_baseheight="width|margin" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+
+                    android:id="@+id/aquarius_rb"
+
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_aquarius"
+
+                    android:tag="11"
+                    app:layout_auto_baseheight="width|margin" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="230px"
+                    android:background="@color/color_e5e5e5" />
+
+                <ImageView
+                    android:id="@+id/pisces_rb"
+                    android:layout_width="230px"
+                    android:layout_height="230px"
+                    android:background="@drawable/contellation_style_pisces"
+
+                    android:tag="12"
+                    app:layout_auto_baseheight="width|margin" />
+
+            </com.zhy.autolayout.AutoLinearLayout>
+
+        </com.zhy.autolayout.AutoLinearLayout>
+
+
+    </ScrollView>
+
+
+</LinearLayout>

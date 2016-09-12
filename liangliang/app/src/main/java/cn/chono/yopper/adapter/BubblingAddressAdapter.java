@@ -1,0 +1,205 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.andview.refreshview.recyclerview.BaseRecyclerAdapter;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.data.NearLoc;
+import cn.chono.yopper.data.NearPlaceDto;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.UnitUtil;
+
+public class BubblingAddressAdapter extends
+        BaseRecyclerAdapter<BubblingAddressAdapter.ViewHolder> {
+
+    private List<NearPlaceDto> list;
+    ;
+
+    private Context mContext;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position, NearPlaceDto nearPlaceDto);
+
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
+    public BubblingAddressAdapter(Context context, List<NearPlaceDto> list) {
+        this.mContext = context;
+        this.list = list;
+
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+
+    }
+
+
+    @Override
+    public ViewHolder getViewHolder(View view) {
+        return new ViewHolder(view,false);
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+
+        View v = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.bubble_select_address_list_item, parent, false);
+        return new ViewHolder(v,true);
+    }
+
+    @Override
+    public void onBindViewHolder(final ViewHolder viewHolder, int i, boolean isItem) {
+// 给ViewHolder设置元素
+
+        final NearPlaceDto dto = list.get(i);
+        NearLoc loc = list.get(i).getLoc();
+        int id = 0;
+
+        if (loc != null) {
+            id = loc.getId();
+        }
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        if (id == 0) {
+            lp.gravity = Gravity.CENTER_VERTICAL;
+            lp.width = UnitUtil.dip2px(30, mContext);
+            lp.height = UnitUtil.dip2px(30, mContext);
+            lp.setMargins(UnitUtil.dip2px(20, mContext), 0, 0, 0);
+            viewHolder.appointType_iv.setLayoutParams(lp);
+
+            viewHolder.distance_tv.setVisibility(View.GONE);
+            if (!CheckUtil.isEmpty(dto.getLoc().getName())) {
+                viewHolder.name_tv.setText(dto.getLoc().getName());
+            }
+
+            if (!CheckUtil.isEmpty(dto.getLoc().getAddress())) {
+                viewHolder.address_tv.setText(dto.getLoc().getAddress());
+            }
+
+            Glide.with(mContext).load(R.drawable.my_loc_address_icon)
+                    .error(R.drawable.error_default_icon)
+                    .into(viewHolder.appointType_iv);
+
+        } else {
+            lp.width = UnitUtil.dip2px(30, mContext);
+            lp.height = UnitUtil.dip2px(30, mContext);
+            lp.gravity = Gravity.TOP;
+            lp.setMargins(UnitUtil.dip2px(20, mContext), 0, 0, 0);
+            viewHolder.appointType_iv.setLayoutParams(lp);
+
+            viewHolder.distance_tv.setVisibility(View.VISIBLE);
+            if (!CheckUtil.isEmpty(dto.getDistance() + "")) {
+
+                String location_str = CheckUtil.getSpacingTool(dto
+                        .getDistance());
+
+                viewHolder.distance_tv.setText(location_str);
+            }
+
+            if (!CheckUtil.isEmpty(dto.getLoc().getAddress())) {
+                viewHolder.address_tv.setText(dto.getLoc().getAddress());
+            }
+
+            if (!CheckUtil.isEmpty(dto.getLoc().getName())) {
+                viewHolder.name_tv.setText(dto.getLoc().getName());
+            }
+
+            String typeUrl = dto.getLoc().getTypeImgUrl();
+            Glide.with(mContext).load(typeUrl)
+                    .error(R.drawable.error_default_icon)
+                    .bitmapTransform(transformation)
+                    .into(viewHolder.appointType_iv);
+        }
+
+        // 如果设置了回调，则设置点击事件
+        if (mOnItemClickLitener != null) {
+            viewHolder.address_list_item
+                    .setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            int pos = viewHolder.getLayoutPosition();
+                            mOnItemClickLitener.onItemClick(
+                                    viewHolder.address_list_item, pos, dto);
+                        }
+                    });
+        }
+    }
+
+
+    @Override
+    public int getAdapterItemCount() {
+        return list == null ? 0 : list.size();
+    }
+
+    // 重写的自定义ViewHolder
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public LinearLayout address_list_item;
+        public TextView name_tv;
+        public TextView distance_tv;
+        public ImageView appointType_iv;
+        public TextView address_tv;
+        public View big_type_line;
+        public View item_type_line;
+
+        public ViewHolder(View v,boolean isItme) {
+            super(v);
+
+            if (isItme){
+                address_list_item = (LinearLayout) v
+                        .findViewById(R.id.select_address_item_layout);
+                // 店名
+                name_tv = (TextView) v
+                        .findViewById(R.id.select_address_item_name_tv);
+                // 距离
+                distance_tv = (TextView) v
+                        .findViewById(R.id.select_address_item_distance_tv);
+                // 地址
+                address_tv = (TextView) v
+                        .findViewById(R.id.select_address_item_address_tv);
+                // 地区大类分割
+                big_type_line = v.findViewById(R.id.select_address_big_type_line);
+
+                item_type_line = v.findViewById(R.id.select_address_item_line);
+                // 约会类型icon
+                appointType_iv = (ImageView) v.findViewById(R.id.dating_type_iv);
+            }
+
+
+        }
+    }
+
+    public void setData(List<NearPlaceDto> list) {
+        this.list = list;
+    }
+
+    public List<NearPlaceDto> getDatas() {
+        return list;
+    }
+
+}

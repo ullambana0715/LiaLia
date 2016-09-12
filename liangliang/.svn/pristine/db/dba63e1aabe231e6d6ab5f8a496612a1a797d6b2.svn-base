@@ -1,0 +1,145 @@
+package cn.chono.yopper.activity.near;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.AlbumTypeAdapter;
+import cn.chono.yopper.adapter.AlbumTypeAdapter.OnItemClickLitener;
+import cn.chono.yopper.photo.AlbumHelper;
+import cn.chono.yopper.photo.ImageBucket;
+import cn.chono.yopper.photo.ImageItem;
+import cn.chono.yopper.photo.ImageSelectedDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.DialogUtil;
+
+public class AlbumTypeActivity extends MainFrameActivity implements
+        OnItemClickLitener {
+
+    private RecyclerView recyclerView;
+
+    private AlbumTypeAdapter adapter;
+
+    private ProgressDialog mProgressDialog;
+
+    private AlbumHelper _helper;
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            mProgressDialog.dismiss();
+
+            adapter.notifyDataSetChanged();
+
+            if (ImageSelectedDto.dataList == null || ImageSelectedDto.dataList.size() == 0) {
+                DialogUtil.showDisCoverNetToast(AlbumTypeActivity.this, "无外部存储或外部存储异常未取到图片");
+            }
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.album_type_activity);
+        initView();
+        getphotoData();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("照片"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("照片"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    private void getphotoData() {
+
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            DialogUtil.showDisCoverNetToast(AlbumTypeActivity.this, "无外部存储");
+            return;
+        }
+
+        // 显示进度条
+        mProgressDialog = ProgressDialog.show(this, null, "正在加载...");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                _helper = AlbumHelper.getHelper();
+                _helper.init(getApplicationContext());
+                ImageSelectedDto.dataList = _helper.getImagesBucketList(false);
+
+                mHandler.sendEmptyMessage(0x110);
+
+            }
+        }).start();
+
+
+    }
+    /**
+     * 组件初始化
+     */
+    private void initView() {
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        // recyclerView.addItemDecoration(new
+        // DividerItemDecoration(this,LinearLayoutManager.VERTICAL,
+        // R.drawable.album_type_itme_icon));
+
+        adapter = new AlbumTypeAdapter(this);
+        recyclerView.setAdapter(adapter);
+        adapter.setOnItemClickLitener(this);
+
+        getBtnGoBack().setVisibility(View.INVISIBLE);
+        TextView textView = gettvOption();
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(R.string.screen_cancel);
+        textView.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                finish();
+
+            }
+        });
+        // 设置标题栏
+        getTvTitle().setText(R.string.text_photo_tv);
+    }
+
+
+    @Override
+    public void onItemClick(View view, int position, ImageBucket imageBucket,
+                            List<ImageItem> imageList) {
+
+        ImageSelectedDto.imageList = imageList;
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(YpSettings.PHOTO_TAG, YpSettings.PHOTO_TYPE);
+        bundle.putString(YpSettings.PHOTO_TAG_NMAE, imageBucket.bucketName);
+        ActivityUtil.jump(AlbumTypeActivity.this, AlbumActivity.class, bundle,
+                0, 100);
+        finish();
+
+    }
+}

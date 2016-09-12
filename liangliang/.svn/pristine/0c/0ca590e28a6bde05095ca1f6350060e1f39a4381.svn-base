@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+  <solid android:color="@color/defalut_primary_color"/>
+  <size android:width="6dp" android:height="45dp" />
+  <corners android:radius="2dp"/>
+</shape>
+<!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/drawable/theme_default_thumb_qupai_diy_editbar.xml --><!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/build/intermediates/bundles/debug/res/drawable/theme_default_thumb_qupai_diy_editbar.xml -->

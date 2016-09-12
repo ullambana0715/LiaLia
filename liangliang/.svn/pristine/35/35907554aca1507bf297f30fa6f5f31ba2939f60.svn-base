@@ -1,0 +1,41 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.google.guava:guava:18.0'
+    /*compile files('libs/Qupai-Common.jar')
+                    compile files('libs/QupaiResource.jar')
+                    compile files('libs/android-support-v13.jar')
+                    compile files('libs/dagger-2.0.1.jar')
+                    compile files('libs/dagger-compiler-2.0.1.jar')
+                    compile files('libs/dagger-producers-2.0-beta.jar')
+                    compile files('libs/jackson-annotations-2.4.0.jar')
+                    compile files('libs/jackson-core-2.4.4.jar')
+                    compile files('libs/jackson-databind-2.4.4.jar')
+                    compile files('libs/javax.inject-1.jar')
+                    compile files('libs/jcip-annotations-1.0.jar')
+                    compile files('libs/jsr250-api-1.0.jar')
+                    compile files('libs/jsr305-3.0.0.jar')
+                    compile files('libs/qupai-Engine.UI.jar')
+                    compile files('libs/qupai-Engine.jar')
+                    compile files('libs/qupai-Recorder.jar')
+                    compile files('libs/qupai-Sdk.jar')
+                    compile files('libs/universal-image-loader-1.9.4.jar')*/
+}

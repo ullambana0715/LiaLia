@@ -1,0 +1,292 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.zhy.autolayout.utils.AutoUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.DiscoverPeopleDto.PeopLeList;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.ImgUtils;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.utils.UnitUtil;
+
+public class DiscoverPeopleAdapter extends BaseAdapter {
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position, int userID);
+
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
+    private Context context;
+
+    private List<PeopLeList> list;
+
+
+
+    public DiscoverPeopleAdapter(Context context) {
+        this.context = context;
+    }
+
+    public void setData(List<PeopLeList> list) {
+        this.list = list;
+
+    }
+
+    public List<PeopLeList>  getData(){
+        return list;
+    }
+
+
+    public void addData(List<PeopLeList> addlist) {
+        if (list == null) {
+            list = new ArrayList<PeopLeList>();
+        }
+        list.addAll(addlist);
+
+    }
+
+    class NewViewHolder {
+        public ImageView userIcon;
+        public ImageView showIcon;
+        /**
+         * 点赞
+         */
+        public TextView praiseNumberTv;
+        /**
+         * 矩离
+         */
+
+        public TextView locationNumberTv;
+
+        public RelativeLayout relativeLayout;
+
+        public FrameLayout f_layout;
+
+        public ImageView hasDating_view;
+
+        public ImageView video_icon;
+        public ImageView level_men_iv;
+
+    }
+
+    @Override
+    public int getCount() {
+
+        return list == null ? 0 : list.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+
+        return list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+
+        return position;
+    }
+
+    private NewViewHolder newViewHolder = null;
+
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+
+        if (convertView == null) {
+
+            newViewHolder = new NewViewHolder();
+            convertView = LayoutInflater.from(context).inflate( R.layout.discover_people_item_layout, parent, false);
+
+            newViewHolder.praiseNumberTv = (TextView) convertView
+                    .findViewById(R.id.praiseNumberTv);
+            newViewHolder.locationNumberTv = (TextView) convertView
+                    .findViewById(R.id.locationNumberTv);
+            newViewHolder.relativeLayout = (RelativeLayout) convertView
+                    .findViewById(R.id.relativeLayout);
+
+            newViewHolder.userIcon = (ImageView) convertView
+                    .findViewById(R.id.userIcon);
+            newViewHolder.showIcon = (ImageView) convertView
+                    .findViewById(R.id.showIcon);
+            newViewHolder.hasDating_view = (ImageView) convertView
+                    .findViewById(R.id.hasDating_view);
+            newViewHolder.f_layout = (FrameLayout) convertView
+                    .findViewById(R.id.f_layout);
+            newViewHolder.video_icon = (ImageView) convertView.findViewById(R.id.video_icon);
+            newViewHolder.level_men_iv = (ImageView) convertView.findViewById(R.id.level_men_iv);
+//
+            GridView.LayoutParams GridViewParams = new GridView.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            int weight = UnitUtil.getScreenWidthPixels(context);
+
+            int wid=(weight) / 3;
+            GridViewParams.width = wid;
+            GridViewParams.height = wid;
+            convertView.setLayoutParams(GridViewParams);
+//
+//            //
+//
+//
+//            float video_icon_wight= (float) ((float)wid*0.4);
+//
+//            int size_5=UnitUtil.dip2px(5,context);
+//            int size_4=UnitUtil.dip2px(4,context);
+//            int size_3=UnitUtil.dip2px(3,context);
+//
+//            RelativeLayout.LayoutParams icon_Params = new RelativeLayout.LayoutParams(
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+//            icon_Params.width= (int) video_icon_wight;
+//            icon_Params.height= (int) ((float)video_icon_wight/3.333);
+//            icon_Params.setMargins(size_4,size_3,0,0);
+//            icon_Params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+//            icon_Params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//
+//            newViewHolder.video_icon.setLayoutParams(icon_Params);
+//
+//            int level_men_iv_wight= wid/6;
+//
+//            RelativeLayout.LayoutParams level_men_iv_Params = new RelativeLayout.LayoutParams(
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+//            level_men_iv_Params.width= level_men_iv_wight;
+//            level_men_iv_Params.height=level_men_iv_wight+2;
+//            level_men_iv_Params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//            level_men_iv_Params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//            level_men_iv_Params.setMargins(0,size_3,size_5,0);
+//            newViewHolder.level_men_iv.setLayoutParams(level_men_iv_Params);
+
+            convertView.setTag(newViewHolder);
+            //对于listview，注意添加这一行，即可在item上使用高度
+//            AutoUtils.autoSize(convertView);
+
+        } else {
+            newViewHolder = (NewViewHolder) convertView.getTag();
+        }
+
+        RelativeLayout.LayoutParams f_layoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT);
+
+
+        if ((position % 3) == 0) {
+            newViewHolder.f_layout.setPadding(4, 2, 2, 2);
+
+        } else if ((position % 3) == 1) {
+            newViewHolder.f_layout.setPadding(2, 2, 2, 2);
+        } else if ((position % 3) == 2) {
+            newViewHolder.f_layout.setPadding(2, 2, 4, 2);
+        }
+        newViewHolder.f_layout.setLayoutParams(f_layoutParams);
+
+        final PeopLeList dto = list.get(position);
+
+
+        int sex = dto.getSex();
+        int level = dto.getLevel();
+
+
+
+        if (dto.isHasVideo())
+            newViewHolder.video_icon.setVisibility(View.VISIBLE);
+        else
+            newViewHolder.video_icon.setVisibility(View.GONE);
+
+
+        String url = dto.getHeadImg();
+
+        String imageurl = ImgUtils.DealImageUrl(url, YpSettings.IMG_SIZE_360,
+                YpSettings.IMG_SIZE_360);
+        Glide.with(context).load(imageurl).error(R.drawable.error_default_icon)
+                .crossFade(R.anim.discover_people_alpha, 500)
+                .into(newViewHolder.userIcon);
+
+
+
+        boolean hasDating = dto.isHasDating();
+        if (hasDating) {
+            newViewHolder.hasDating_view.setVisibility(View.VISIBLE);
+        } else {
+            newViewHolder.hasDating_view.setVisibility(View.GONE);
+        }
+
+        long time = ISO8601.getTime(dto.getUpdateTime());
+        String timeStr = TimeUtil.LivelyTimeFormat(time);
+        String location_str = CheckUtil.getSpacingTool(dto.getDistance());
+        String location_time_tv = timeStr + " | " + location_str;
+
+        newViewHolder.locationNumberTv.setText(location_time_tv);
+
+
+        if (sex == 1) {
+            newViewHolder.praiseNumberTv.setVisibility(View.GONE);
+
+            if (level == 1) {
+
+                newViewHolder.level_men_iv.setVisibility(View.VISIBLE);
+            } else {
+                newViewHolder.level_men_iv.setVisibility(View.GONE);
+
+            }
+
+        } else {
+            newViewHolder.level_men_iv.setVisibility(View.GONE);
+            boolean showVitsit = dto.isShowVisit();
+            if (showVitsit) {
+                newViewHolder.praiseNumberTv.setVisibility(View.VISIBLE);
+
+                newViewHolder.praiseNumberTv.setText(CheckUtil.showVisit(dto.getVisit()));
+
+            } else {
+                newViewHolder.praiseNumberTv.setVisibility(View.GONE);
+
+            }
+
+
+        }
+
+
+
+
+        // 如果设置了回调，则设置点击事件
+        if (mOnItemClickLitener != null) {
+            newViewHolder.relativeLayout
+                    .setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mOnItemClickLitener.onItemClick(
+                                    newViewHolder.relativeLayout, position,
+                                    dto.getId());
+                        }
+                    });
+        }
+
+
+        return convertView;
+    }
+
+}

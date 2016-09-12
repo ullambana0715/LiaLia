@@ -1,0 +1,356 @@
+package cn.chono.yopper.activity.chat;
+
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.appointment.AppointmentDetailActivity;
+import cn.chono.yopper.activity.near.BubblingInfoActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoEditActivity;
+import cn.chono.yopper.activity.video.VideoDetailGetActivity;
+import cn.chono.yopper.adapter.NotificationMessageAdapter;
+import cn.chono.yopper.data.NotificationMsg;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.CommonObservable;
+import cn.chono.yopper.utils.CommonObserver;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.ViewsUtils;
+
+
+/**
+ * 通知消息列表
+ *
+ * @author sam.sun
+ */
+public class NotificationMessageActivity extends MainFrameActivity implements IConnectionStatusCallback {
+
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+    private View contextView;
+
+
+    private ListView notification_message_listview;// 消息列表
+
+
+    private List<ChatDto> notification_messagedtoList = new ArrayList<ChatDto>();
+
+
+    private NotificationMessageAdapter notificationMessageAdapter;
+
+
+    private String mid;
+
+    // 删除
+    private Dialog deleteDialog;
+
+    private Runnable deleteMsgRun = new Runnable() {
+
+        @Override
+        public void run() {
+            getMessageDto();
+        }
+    };
+    private CommonObserver.DeleteStrangeMessageObserver deleteMessageObserver = new CommonObserver.DeleteStrangeMessageObserver(deleteMsgRun);
+
+
+    private String notification_title;
+    private String jid;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+
+        mid = YPApplication.loginUser.getUserId() + "@chono";
+
+        if (YpSettings.xxservice != null) {
+            YpSettings.xxservice.registerConnectionStatusCallback(NotificationMessageActivity.this);
+        }
+        Bundle bundle=this.getIntent().getExtras();
+        if(bundle!=null){
+            notification_title= bundle.getString(YpSettings.NOTIFICATION_TITLE);
+            jid=bundle.getString(YpSettings.MESSAGE_OTHER_JID);
+        }
+
+        LogUtils.e("from="+notification_title+"===jid="+jid);
+
+        initComponent();
+
+        CommonObservable.getInstance().addObserver(deleteMessageObserver);
+
+    }
+
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText(notification_title+"");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.VISIBLE);
+        this.getBtnOption().setVisibility(View.GONE);
+        this.gettvOption().setVisibility(View.VISIBLE);
+        this.gettvOption().setText("忽略未读");
+
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 1000);
+                finish();
+            }
+        });
+
+        this.getOptionLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 1000);
+
+                try {
+                    List<ChatDto> chatdtoList = YPApplication.getInstance().db.findAll((Selector.from(ChatDto.class).where("jid", " =", jid)).and("mid", " =", mid));
+                    if (chatdtoList != null && chatdtoList.size() > 0) {
+                        for (int j = 0; j < chatdtoList.size(); j++) {
+                            ChatDto chatdto = chatdtoList.get(j);
+                            if (chatdto != null) {
+                                String message=chatdto.getMessage();
+                                NotificationMsg notificationMsg = JsonUtils.fromJson(message, NotificationMsg.class);
+                                notificationMsg.setBadge(-1);
+                                String chatmsg_str=JsonUtils.toJson(notificationMsg);
+                                chatdto.setMessage(chatmsg_str);
+                                chatdto.setStatus(ChatDto.readed_status);
+                                YPApplication.getInstance().db.update(chatdto);
+                            }
+                        }
+                    }
+
+                } catch (DbException e1) {
+                    e1.printStackTrace();
+                }
+                getMessageDto();
+
+            }
+        });
+
+        // 内容部分
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        contextView = mInflater.inflate(R.layout.strange_message_activity, null);
+        notification_message_listview = (ListView) contextView.findViewById(R.id.strange_message_listview);
+
+        notificationMessageAdapter = new NotificationMessageAdapter(this);
+        notification_message_listview.setAdapter(notificationMessageAdapter);
+
+
+//        notification_message_listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+//
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                MessageDto dto = notification_messagedtoList.get(position);
+//                String jid = dto.getJid();
+//                showDeleteDialog(jid);
+//                return true;
+//            }
+//        });
+
+
+        notification_message_listview.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                ChatDto dto = notification_messagedtoList.get(position);
+
+                NotificationMsg notificationMsg = JsonUtils.fromJson(dto.getMessage(), NotificationMsg.class);
+
+                if (notificationMsg != null) {
+                    int type=notificationMsg.getNotifytype();
+                    Bundle bundle = new Bundle();
+                    if (type==1 || type==2) {
+                        //去他人个人资料页
+                        try {
+                        String message=dto.getMessage();
+                        notificationMsg.setBadge(-1);
+                        String chatmsg_str=JsonUtils.toJson(notificationMsg);
+                        dto.setMessage(chatmsg_str);
+                        dto.setStatus(ChatDto.readed_status);
+                        YPApplication.getInstance().db.update(dto);
+                        } catch (DbException e1) {
+                            e1.printStackTrace();
+                        }
+                        String testData=notificationMsg.getExtra().get("userId").toString();
+                        double userid = Double.parseDouble(testData);
+                        bundle.putInt(YpSettings.USERID, (int)userid);
+                        ActivityUtil.jump(NotificationMessageActivity.this, UserInfoActivity.class, bundle, 0, 100);
+
+                    } else if (type==4 || type==5) {
+
+                        try {
+                            String message=dto.getMessage();
+                            notificationMsg.setBadge(-1);
+                            String chatmsg_str=JsonUtils.toJson(notificationMsg);
+                            dto.setMessage(chatmsg_str);
+                            dto.setStatus(ChatDto.readed_status);
+                            YPApplication.getInstance().db.update(dto);
+                        } catch (DbException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        bundle.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+                        //去视频过度页面
+                        ActivityUtil.jump(NotificationMessageActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+                    } else if (type==6 || type==7) {
+                        try {
+                            String message=dto.getMessage();
+                            notificationMsg.setBadge(-1);
+                            String chatmsg_str=JsonUtils.toJson(notificationMsg);
+                            dto.setMessage(chatmsg_str);
+                            dto.setStatus(ChatDto.readed_status);
+                            YPApplication.getInstance().db.update(dto);
+                        } catch (DbException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        //去冒泡详情
+                        String str=notificationMsg.getExtra().get("bubbleId").toString();
+                        double bubbleId = Double.parseDouble(str);
+                        int b_id=(int)bubbleId;
+                        bundle.putString(YpSettings.BUBBLING_LIST_ID, b_id+"");
+                        ActivityUtil.jump(NotificationMessageActivity.this, BubblingInfoActivity.class,bundle, 0, 100);
+                    } else if (type==3) {
+                        try {
+                            String message=dto.getMessage();
+                            notificationMsg.setBadge(-1);
+                            String chatmsg_str=JsonUtils.toJson(notificationMsg);
+                            dto.setMessage(chatmsg_str);
+                            dto.setStatus(ChatDto.readed_status);
+                            YPApplication.getInstance().db.update(dto);
+                        } catch (DbException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        //去个人资料编辑页
+                        bundle.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+                        ActivityUtil.jump(NotificationMessageActivity.this, UserInfoEditActivity.class, bundle, 0, 100);
+                    }else if (type==24 || type==20 || type==21 || type==22 || type==23 || type==25) {
+                        try {
+                            String message=dto.getMessage();
+                            notificationMsg.setBadge(-1);
+                            String chatmsg_str=JsonUtils.toJson(notificationMsg);
+                            dto.setMessage(chatmsg_str);
+                            dto.setStatus(ChatDto.readed_status);
+                            YPApplication.getInstance().db.update(dto);
+                        } catch (DbException e1) {
+                            e1.printStackTrace();
+                        }
+                        String str=notificationMsg.getExtra().get("appointmentId").toString();
+                        //去个人资料编辑页
+                        bundle.putString(YpSettings.APPOINTMENT_ID, str);
+                        ActivityUtil.jump(NotificationMessageActivity.this, AppointmentDetailActivity.class, bundle, 0, 100);
+                    }
+                }
+            }
+        });
+
+
+        this.getMainLayout().addView(contextView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("消息通知列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+        getMessageDto();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("消息通知列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+
+    @Override
+    public void ReceiveNewMsg(ChatDto dto) {
+
+        getMessageDto();
+        CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+    }
+
+
+
+    private void getMessageDto() {
+        try {
+
+            notification_message_listview.setVisibility(View.VISIBLE);
+            notification_messagedtoList = YPApplication.getInstance().db.findAll(Selector.from(ChatDto.class).where("mid", " =", mid).and("jid", " =", jid).orderBy("date", true));
+
+            if (notification_messagedtoList != null && notification_messagedtoList.size() > 0) {
+
+                if (notificationMessageAdapter != null) {
+
+                    notificationMessageAdapter.setList(notification_messagedtoList);
+                    notificationMessageAdapter.notifyDataSetChanged();
+                } else {
+                    notificationMessageAdapter = new NotificationMessageAdapter(this);
+                    notificationMessageAdapter.setList(notification_messagedtoList);
+                    notification_message_listview.setAdapter(notificationMessageAdapter);
+                }
+
+            } else {
+                LogUtils.e("为空");
+                notification_message_listview.setVisibility(View.GONE);
+
+            }
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void connectionStatusChanged(int connectedState, String reason) {
+
+    }
+
+    @Override
+    public void ListenSendStatus(int send_status, String packetId) {
+
+    }
+
+
+}

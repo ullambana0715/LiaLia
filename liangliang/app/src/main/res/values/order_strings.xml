@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="tarot_consultant">塔罗咨询</string>
+
+    <string name="astrolabe_consultant">星盘咨询</string>
+
+    <string name="waiting_for_payment">待付款</string>
+
+    <string name="order_id">订单编号</string>
+
+    <string name="consultant_price">咨询价格</string>
+
+    <string name="consultant_time">咨询时间</string>
+    <string name="activity_time">活动时间</string>
+
+    <string name="cancel_order">取消订单</string>
+
+    <string name="payment_text">付款</string>
+
+    <string name="consultant_text">咨询</string>
+
+    <string name="feedback_result">反馈结果</string>
+
+    <string name="feedback_handling">反馈处理中</string>
+
+    <string name="book_success">预约成功</string>
+
+    <string name="book_cancel">已取消</string>
+
+    <string name="complaint_text">投诉</string>
+
+    <string name="consultant_done">咨询完成</string>
+
+    <string name="evaluate_text">评价</string>
+
+    <string name="had_evaluate_text">已评价</string>
+
+    <string name="order_pay_timeRemaining">订单支付剩余时间</string>
+
+    <string name="order_pay_time_expired">该订单已过期</string>
+
+    <string name="order_detail">订单详情</string>
+
+    <string name="consultant_cost">费用</string>
+    <string name="vip_cost">会员价</string>
+
+    <string name="pay_type">支付方式</string>
+
+    <string name="pay_with_alipay">支付宝支付</string>
+
+    <string name="pay_with_wechat">微信支付</string>
+
+    <string name="pay_with_alipay_hint">推荐有支付宝账号的用户使用</string>
+
+    <string name="pay_with_wechat_hint">推荐安装5.0及以上版本的使用</string>
+
+    <string name="order_pay_hint">支付完成即可咨询 不支持时间变更及订单取消</string>
+
+    <string name="pay_had_readed">我已阅读</string>
+
+    <string name="need_know_service">服务须知</string>
+
+    <string name="pay_sure_text">确认支付</string>
+
+
+    <string name="pay_success">支付成功</string>
+
+    <string name="consult_order_pay_success_hint">我们会在开始咨询前15分钟通过系统消息通知您</string>
+    <string name="consult_order_pay_success_activity_hint">我们会在活动开始前一天通过系统消息通知您，请开启软件通知功能(手机“设置”-“通知”-“俩俩”)。</string>
+    <string name="consult_order_pay_success_activity_notice_hint">成功报名的活动,可在"我的活动"中查看</string>
+
+    <string name="i_know_text">知道了</string>
+
+
+    <string name="star">星级</string>
+
+    <string name="label">标签</string>
+
+    <string name="confirm_submit">确认提交</string>
+
+    <string name="evaluation_et_hint">最多200汉字字符</string>
+
+    <string name="fraction_hint">还没有给对方评价星级哦</string>
+
+    <string name="fill_in_hint">还没有给对方文字评价哦</string>
+
+    <string name="fill_in_lenght_hint">评价最少需要5个字</string>
+
+
+    <string name="use_these_pay_type">使用以下方式支付</string>
+
+    <string name="feedback_hint">请将您在服务中遇到的不满意的地方告诉我们，请选择您的问题类型便于我们快速帮您处理。</string>
+
+    <string name="feedback_descriptions">请输入问题描述</string>
+
+    <string name="photo_description">请添加图片（非必需）</string>
+
+    <string name="feedback">问题反馈</string>
+
+    <string name="pay_apple">购买苹果</string>
+
+    <string name="apple_number_hint">剩余苹果：</string>
+
+    <string name="apple_hint">• 苹果可用于赠送他人提升亲密度，还可以兑换礼品哦〜</string>
+
+
+
+</resources>

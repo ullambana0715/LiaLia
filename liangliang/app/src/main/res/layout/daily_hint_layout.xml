@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_horizontal"
+              android:background="@drawable/publish_appoint_bg"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/color_ffffff"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/ic_chat_dlg_key"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="每日福利"
+            android:textColor="@color/color_ff7462"
+            android:textSize="15sp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="2dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="今天登录，送"
+                android:textColor="@color/color_666666"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/daily_hint_num_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/color_ff7462"
+                android:textSize="18sp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="把钥匙（当日有效）"
+                android:textColor="@color/color_666666"
+                android:textSize="14sp"/>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="记得明天再来哟"
+            android:textColor="@color/color_666666"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/daily_hint_sure_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/publish_appoint_hint_sure_bg"
+            android:gravity="center"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:text="确定"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:textColor="@color/color_ffffff"
+            android:textSize="15sp"/>
+    </LinearLayout>
+
+</LinearLayout>

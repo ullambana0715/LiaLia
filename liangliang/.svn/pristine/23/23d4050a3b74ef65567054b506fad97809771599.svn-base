@@ -1,0 +1,147 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+public class RespBumpFriendsList implements Serializable {
+	/**
+	* @Fields serialVersionUID : TODO(用一句话描述这个变量表示什么)
+	*/
+	
+	private static final long serialVersionUID = 1L;
+	private int userId;
+	private String bumpTime;
+	private String description;
+	private String displayAddress;
+	private BumpFriend bumpFriend;
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public String getBumpTime() {
+		return bumpTime;
+	}
+
+	public void setBumpTime(String bumpTime) {
+		this.bumpTime = bumpTime;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDisplayAddress() {
+		return displayAddress;
+	}
+
+	public void setDisplayAddress(String displayAddress) {
+		this.displayAddress = displayAddress;
+	}
+
+	public BumpFriend getBumpFriend() {
+		return bumpFriend;
+	}
+
+	public void setBumpFriend(BumpFriend bumpFriend) {
+		this.bumpFriend = bumpFriend;
+	}
+
+	@Override
+	public String toString() {
+		return "RespList [userId=" + userId + ", bumpTime=" + bumpTime
+				+ ", description=" + description + ", displayAddress="
+				+ displayAddress + ", bumpFriend=" + bumpFriend + "]";
+	}
+	
+	public class BumpFriend {
+		private int id;
+		private String mobile;
+		private String hashedPassword;
+		private String name;
+		private int horoscope;
+		private String headImg;
+		private int sex;
+		private String regTime;
+
+		@Override
+		public String toString() {
+			return "BumpFriend [id=" + id + ", mobile=" + mobile
+					+ ", hashedPassword=" + hashedPassword + ", name=" + name
+					+ ", horoscope=" + horoscope + ", headImg=" + headImg
+					+ ", sex=" + sex + ", regTime=" + regTime + "]";
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		public String getMobile() {
+			return mobile;
+		}
+
+		public void setMobile(String mobile) {
+			this.mobile = mobile;
+		}
+
+		public String getHashedPassword() {
+			return hashedPassword;
+		}
+
+		public void setHashedPassword(String hashedPassword) {
+			this.hashedPassword = hashedPassword;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getHoroscope() {
+			return horoscope;
+		}
+
+		public void setHoroscope(int horoscope) {
+			this.horoscope = horoscope;
+		}
+
+		public String getHeadImg() {
+			return headImg;
+		}
+
+		public void setHeadImg(String headImg) {
+			this.headImg = headImg;
+		}
+
+		public int getSex() {
+			return sex;
+		}
+
+		public void setSex(int sex) {
+			this.sex = sex;
+		}
+
+		public String getRegTime() {
+			return regTime;
+		}
+
+		public void setRegTime(String regTime) {
+			this.regTime = regTime;
+		}
+
+	}
+}

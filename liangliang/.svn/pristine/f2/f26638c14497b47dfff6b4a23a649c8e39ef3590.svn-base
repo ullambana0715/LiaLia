@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="debug"><source path="D:\android_studio_1_5\yopper_as_2.3.0\Yopper\VideoTrimActivity\build\intermediates\bundles\debug\assets"><file name="ts.tab" path="D:\android_studio_1_5\yopper_as_2.3.0\Yopper\VideoTrimActivity\build\intermediates\bundles\debug\assets\ts.tab"/></source></dataSet><dataSet config="main"><source path="D:\android_studio_1_5\yopper_as_2.3.0\Yopper\VideoTrimActivity\src\androidTest\assets"/></dataSet></merger>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_e3e3e3"
+    android:orientation="vertical" >
+
+
+    <include layout="@layout/error_location_layout" />
+
+
+    <include layout="@layout/error_to_load_layout" />
+
+    <cn.chono.zxb.xrefreshview.XRefreshView
+        android:id="@+id/select_address_xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/select_address_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/text_color_white"
+            />
+    </cn.chono.zxb.xrefreshview.XRefreshView>
+
+</LinearLayout>

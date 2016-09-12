@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/login_info_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_eeeeee"
+    android:orientation="vertical">
+
+
+    <com.zhy.autolayout.AutoRelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24px"
+        android:background="@color/text_color_white"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <EditText
+            android:id="@+id/login_phone_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:hint="@string/phone_hint_exit"
+            android:maxLength="11"
+            android:numeric="integer"
+            android:paddingBottom="32px"
+            android:paddingLeft="24px"
+            android:paddingRight="24px"
+            android:paddingTop="32px"
+            android:singleLine="true"
+            android:textColor="@color/text_color_333333"
+            android:textColorHint="@color/text_color_b2b2b2"
+            android:textSize="32px" />
+
+
+        <ImageView
+            android:id="@+id/login_phone_et_empty_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="24px"
+            android:padding="24px"
+            android:src="@drawable/empty_icon"
+            android:visibility="gone"
+
+            />
+
+
+    </com.zhy.autolayout.AutoRelativeLayout>
+
+
+    <com.zhy.autolayout.AutoRelativeLayout
+        android:id="@+id/login_password_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24px"
+        android:background="@color/text_color_white"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <EditText
+            android:id="@+id/login_password_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:digits="@string/passworid_limit"
+            android:gravity="center_vertical"
+            android:hint="@string/login_hine_password"
+            android:inputType="textPassword"
+            android:maxLength="18"
+            android:numeric="integer"
+            android:paddingBottom="32px"
+            android:paddingLeft="24px"
+            android:paddingRight="24px"
+            android:paddingTop="32px"
+            android:singleLine="true"
+            android:textColor="@color/text_color_333333"
+            android:textColorHint="@color/text_color_b2b2b2"
+            android:textSize="32px" />
+
+
+        <ImageView
+            android:id="@+id/login_password_et_empty_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="24px"
+            android:padding="24px"
+            android:src="@drawable/empty_icon"
+            android:visibility="gone"
+            />
+
+
+    </com.zhy.autolayout.AutoRelativeLayout>
+
+
+    <Button
+        android:id="@+id/login_next_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24px"
+        android:layout_marginRight="24px"
+        android:layout_marginTop="60px"
+        android:background="@drawable/corners_orange_selected_style"
+        android:enabled="false"
+        android:gravity="center"
+        android:text="@string/login"
+        android:textColor="@drawable/font_selected_style_ffffff"
+        android:textSize="32px" />
+
+    <TextView
+        android:id="@+id/login_verification_code_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4px"
+        android:gravity="center"
+        android:text="@string/login_verification_code_login"
+        android:textColor="@color/background_register_text"
+        android:layout_gravity="center_horizontal"
+        android:padding="15px"
+        android:textSize="22px" />
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/protocol_specification_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4px"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/protocol_specification"
+            android:textColor="@color/text_color_9a9a9a"
+            android:textSize="22px" />
+
+        <TextView
+            android:id="@+id/protocol_specification_but"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="15px"
+            android:paddingBottom="15px"
+            android:text="@string/protocol_specification_but"
+            android:textColor="@color/background_register_text"
+
+            android:textSize="22px" />
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24px"
+        android:layout_marginRight="24px"
+        android:layout_marginTop="200px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_weight="1"
+
+            android:background="@color/text_color_d5d5d5" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24px"
+            android:layout_marginRight="24px"
+            android:text="@string/start_fast_login"
+            android:textSize="28px"
+            android:textColor="@color/text_color_b2b2b2" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_weight="1"
+            android:background="@color/text_color_d5d5d5" />
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80px"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/login_weibo_iv"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:background="@drawable/login_weibo"
+            app:layout_auto_baseheight="width"
+
+
+            />
+
+        <ImageView
+            android:id="@+id/login_wechat_iv"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:layout_marginLeft="78px"
+            android:layout_marginRight="78px"
+            android:background="@drawable/login_wechat"
+            app:layout_auto_baseheight="width"
+           />
+
+        <ImageView
+            android:id="@+id/login_qq_iv"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:background="@drawable/login_qq"
+            app:layout_auto_baseheight="width"
+             />
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+
+</com.zhy.autolayout.AutoLinearLayout>

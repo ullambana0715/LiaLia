@@ -1,0 +1,23 @@
+package cn.chono.yopper.Service.Http.DaillyFaceratingCandidates;
+
+import java.io.Serializable;
+import java.util.List;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/12/4.
+ */
+public class DaillyFaceratingCandidatesRespBean extends RespBean {
+
+
+    private List<DaillyFaceratingCandidatesDto> resp;
+
+    public List<DaillyFaceratingCandidatesDto> getResp() {
+        return resp;
+    }
+
+    public void setResp(List<DaillyFaceratingCandidatesDto> resp) {
+        this.resp = resp;
+    }
+}

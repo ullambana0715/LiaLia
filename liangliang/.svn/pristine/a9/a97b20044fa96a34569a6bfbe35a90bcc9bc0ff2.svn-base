@@ -1,0 +1,445 @@
+package cn.chono.yopper.activity.usercenter;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.LinearLayout;
+
+import com.lidroid.xutils.util.LogUtils;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.FaceratingList.FaceratingListBean;
+import cn.chono.yopper.Service.Http.FaceratingList.FaceratingListDate;
+import cn.chono.yopper.Service.Http.FaceratingList.FaceratingListDto;
+import cn.chono.yopper.Service.Http.FaceratingList.FaceratingListRespBean;
+import cn.chono.yopper.Service.Http.FaceratingList.FaceratingListService;
+import cn.chono.yopper.Service.Http.FaceratingListNext.FaceratingListNextBean;
+import cn.chono.yopper.Service.Http.FaceratingListNext.FaceratingListNextService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.adapter.ScoreHistorysAdapter;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.TimeUtil;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+
+/**
+ * Created by zxb on 2015/12/9.
+ */
+public class ScoreHistoryActivity extends MainFrameActivity implements ScoreHistorysAdapter.OnItemClickLitener {
+
+
+    private LinearLayout error_to_load_layout;
+    private View error_to_load_img;
+
+    private LinearLayout score_histoty_unfinished_layout;
+    private XRefreshView score_histoty_xRefreshView;
+    private RecyclerView score_histoty_recyclerView;
+
+    private ScoreHistorysAdapter score_history_adapter;
+
+    private FaceratingListService faceratingListService_refresh;
+    private FaceratingListNextService faceratingListService_loadMore;
+
+    private boolean isOnRefresh = true;
+    private boolean isOnLoadMore = true;
+
+    private int score_history_list_start;
+    private int score_history_list_total;
+
+
+    private Animation mRotateAnimation;
+
+
+    private int mTotalItemCount;
+
+    private String nextQuery;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.score_history_activity);
+        PushAgent.getInstance(this).onAppStart();
+        initView();
+        setxRefreshView();
+
+        isOnRefresh = false;
+        score_history_list_start = 0;
+        initRotateAnimation();
+        score_histoty_unfinished_layout.setVisibility(View.GONE);
+        score_histoty_xRefreshView.setVisibility(View.GONE);
+        error_to_load_layout.setVisibility(View.VISIBLE);
+        onRefreshData(score_history_list_start);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("打分历史"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("打分历史"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    private void initView() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("打分历史");
+
+        this.getGoBackLayout().setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+
+                finish();
+
+            }
+        });
+        this.gettvBack().setText("取消");
+        this.gettvBack().setVisibility(View.VISIBLE);
+        this.getBtnGoBack().setVisibility(View.GONE);
+
+        error_to_load_layout = (LinearLayout) findViewById(R.id.error_to_load_layout);
+        error_to_load_img = findViewById(R.id.error_to_load_img);
+
+        score_histoty_unfinished_layout = (LinearLayout) findViewById(R.id.score_histoty_unfinished_layout);
+        score_histoty_xRefreshView = (XRefreshView) findViewById(R.id.score_histoty_xRefreshView);
+        score_histoty_recyclerView = (RecyclerView) findViewById(R.id.score_histoty_recyclerView);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        score_histoty_recyclerView.setLayoutManager(layoutManager);
+
+        score_history_adapter = new ScoreHistorysAdapter(this);
+        score_history_adapter.setOnItemClickLitener(this);
+
+        score_histoty_recyclerView.setAdapter(score_history_adapter);
+
+        final StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(score_history_adapter);
+        score_histoty_recyclerView.addItemDecoration(headersDecor);
+
+        score_history_adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                headersDecor.invalidateHeaders();
+            }
+        });
+    }
+
+    private void setxRefreshView() {
+        score_histoty_xRefreshView.setAutoLoadMore(true);
+        score_histoty_xRefreshView.setPinnedTime(1000);
+        score_histoty_xRefreshView.setCustomHeaderView(new CustomHeaderAnim(this));
+        // 处理ViewPager冲突
+        score_histoty_xRefreshView.setMoveForHorizontal(true);
+
+        // 设置静默加载模式
+        score_histoty_xRefreshView.setSlienceLoadMore();
+        // 设置静默加载时提前加载的item个数
+        score_histoty_xRefreshView.setPreLoadCount(5);
+
+
+        score_histoty_xRefreshView.setXRefreshViewListener(new XRefreshView.SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (isOnRefresh) {
+                            isOnRefresh = false;
+                            score_history_list_start = 0;
+                            onRefreshData(score_history_list_start);
+                        }
+
+                        score_histoty_xRefreshView.stopRefresh();
+                    }
+                }, 1000);
+            }
+
+            @Override
+            public void onLoadMore(boolean isSlience) {
+                super.onLoadMore(isSlience);
+                LogUtils.e("--------------------上拉了");
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        LogUtils.e("--------------------run=" + isOnLoadMore);
+                        LogUtils.e("--------------------nextQuery=" + nextQuery);
+                        if (isOnLoadMore) {
+                            isOnLoadMore = false;
+                            onLoadMoreData(nextQuery);
+                        }
+
+                        // 刷新完成必须调用此方法停止加载
+                        score_histoty_xRefreshView.stopLoadMore();
+                    }
+                }, 1000);
+
+            }
+
+        });
+
+    }
+
+    private void onRefreshData(int start) {
+
+        FaceratingListBean listBean = new FaceratingListBean();
+        listBean.setRows(20);
+        listBean.setStart(start);
+        listBean.setToday(false);
+
+        faceratingListService_refresh = new FaceratingListService(this);
+        faceratingListService_refresh.parameter(listBean);
+        faceratingListService_refresh.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                isOnRefresh = true;
+                FaceratingListRespBean listRespBean = (FaceratingListRespBean) respBean;
+                List<FaceratingListDate> faceratingListDateList = new ArrayList<>();
+                if (null != listRespBean) {
+                    FaceratingListDto faceratingListDto = listRespBean.getResp();
+                    if (null != faceratingListDto) {
+                        nextQuery = faceratingListDto.getNextQuery();
+                        faceratingListDateList = groupingList(faceratingListDto.getList());
+                    }
+
+                }
+
+                if (null != faceratingListDateList && faceratingListDateList.size() > 0) {
+                    score_histoty_unfinished_layout.setVisibility(View.GONE);
+                    score_histoty_xRefreshView.setVisibility(View.VISIBLE);
+                    error_to_load_layout.setVisibility(View.GONE);
+                    // 动画回收
+                    removeRotateAnimation();
+                    score_history_adapter.setData(faceratingListDateList);
+                    score_history_adapter.notifyDataSetChanged();
+
+
+                } else {
+                    score_histoty_unfinished_layout.setVisibility(View.VISIBLE);
+                    score_histoty_xRefreshView.setVisibility(View.GONE);
+                    error_to_load_layout.setVisibility(View.GONE);
+                    // 动画回收
+                    removeRotateAnimation();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                isOnRefresh = true;
+                List<FaceratingListDate> faceratingListDateList = score_history_adapter.getData();
+                if (null != faceratingListDateList && faceratingListDateList.size() > 0) {
+                    String msg = respBean.getMsg();
+                    if (TextUtils.isEmpty(msg)) {
+                        DialogUtil.showDisCoverNetToast(ScoreHistoryActivity.this);
+                        return;
+                    }
+                    DialogUtil.showDisCoverNetToast(ScoreHistoryActivity.this, msg);
+
+
+                } else {//没有记录
+                    score_histoty_unfinished_layout.setVisibility(View.VISIBLE);
+                    score_histoty_xRefreshView.setVisibility(View.GONE);
+                    error_to_load_layout.setVisibility(View.GONE);
+                    // 动画回收
+                    removeRotateAnimation();
+                }
+
+            }
+        });
+        faceratingListService_refresh.enqueue();
+    }
+
+    private void onLoadMoreData(String nextstr) {
+
+        if (TextUtils.isEmpty(nextstr)) {
+            isOnLoadMore = true;
+            return;
+        }
+
+        FaceratingListNextBean nextBean = new FaceratingListNextBean();
+        nextBean.setNextQuery(nextstr);
+
+
+        faceratingListService_loadMore = new FaceratingListNextService(this);
+        faceratingListService_loadMore.parameter(nextBean);
+        faceratingListService_loadMore.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                isOnLoadMore = true;
+
+                FaceratingListRespBean listRespBean = (FaceratingListRespBean) respBean;
+                List<FaceratingListDate> faceratingListDateList = new ArrayList<>();
+
+
+                if (null != listRespBean) {
+
+                    FaceratingListDto faceratingListDto = listRespBean.getResp();
+                    if (null != faceratingListDto) {
+                        nextQuery = faceratingListDto.getNextQuery();
+                        faceratingListDateList = groupingList(faceratingListDto.getList());
+                    }
+
+                }
+                System.out.println(faceratingListDateList.toString());
+                if (null != faceratingListDateList && faceratingListDateList.size() > 0) {
+                    score_history_adapter.addData(faceratingListDateList);
+                    score_history_adapter.notifyDataSetChanged();
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                isOnLoadMore = true;
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(ScoreHistoryActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(ScoreHistoryActivity.this, msg);
+            }
+        });
+        faceratingListService_loadMore.enqueue();
+    }
+
+    private List<String> keyList = new ArrayList<>();
+
+    private List<FaceratingListDate> groupingList(List<FaceratingListDate> faceratingListDateList) {
+        List<FaceratingListDate> objList = new ArrayList<>();
+        List<FaceratingListDate> groupingList = new ArrayList<>();
+        //取key
+        if (null != faceratingListDateList && faceratingListDateList.size() > 0) {
+            for (int i = 0; i < faceratingListDateList.size(); i++) {
+                String rateTime = faceratingListDateList.get(i).getRateTime();
+                long teteTimelang = TimeUtil.getFormat(rateTime);
+
+
+                //是不是昨天
+                boolean oneDay = TimeUtil.oneDayDifference(new Date(teteTimelang), new Date(System.currentTimeMillis()));
+                boolean isyy = TimeUtil.isDateYY(teteTimelang, System.currentTimeMillis());
+
+
+                String groupingTing;
+
+                if (oneDay) {
+                    groupingTing = "昨天";
+
+                } else if (isyy) {
+                    groupingTing = TimeUtil.getTimeMMdd(teteTimelang);
+
+                } else {//不是今年
+                    groupingTing = TimeUtil.getDateFormatString(teteTimelang);
+
+                }
+
+                if (!keyList.contains(groupingTing)) {
+                    keyList.add(groupingTing);
+                }
+                faceratingListDateList.get(i).setGroupingTimedirectory(groupingTing);
+                objList.add(faceratingListDateList.get(i));
+
+
+            }
+
+        }
+
+
+        if (null != keyList && keyList.size() > 0) {
+            for (int i = 0; i < keyList.size(); i++) {
+                String keyListStr = keyList.get(i);
+
+                for (int j = 0; j < objList.size(); j++) {
+                    String objListStr = objList.get(j).getGroupingTimedirectory();
+                    if (TextUtils.equals(keyListStr, objListStr)) {
+                        objList.get(j).setGroupingId(i);
+                        groupingList.add(objList.get(j));
+                    }
+
+                }
+
+
+            }
+
+        }
+
+        return groupingList;
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (null != faceratingListService_loadMore) {
+            faceratingListService_loadMore.cancel();
+        }
+        if (null != faceratingListService_refresh) {
+            faceratingListService_refresh.cancel();
+        }
+
+        // 动画回收
+        removeRotateAnimation();
+    }
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        // mRotateAnimation.setDuration(ROTATION_ANIMATION_DURATION);
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        error_to_load_img.setAnimation(mRotateAnimation);
+    }
+
+    /**
+     * 正在加载动画回收
+     */
+    private void removeRotateAnimation() {
+        // 动画回收
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            error_to_load_img.clearAnimation();
+        }
+    }
+
+
+    @Override
+    public void onItemClick(View view, int position, int userID) {
+        Bundle userbundle = new Bundle();
+        userbundle.putInt(YpSettings.USERID, userID);
+        ActivityUtil.jump(ScoreHistoryActivity.this, UserInfoActivity.class, userbundle, 0, 100);
+    }
+}

@@ -1,0 +1,193 @@
+package cn.chono.yopper.Service.DaillyTask;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+
+import com.baidu.mapapi.model.LatLng;
+
+import java.util.List;
+
+import cn.chono.yopper.Service.DaillyTaskService.DaillyBean;
+import cn.chono.yopper.Service.DaillyTaskService.DaillyTaskService;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesBean;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesRespBean;
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.utils.JsonUtils;
+
+/**
+ * Created by zxb on 2015/12/4.
+ */
+public class DaillyFaceratingCandidatesTask {
+
+    private static DaillyFaceratingCandidatesTask daillyFaceratingCandidatesTask;
+
+
+    public static DaillyFaceratingCandidatesTask getInstance() {
+
+        if (null == daillyFaceratingCandidatesTask) {
+            synchronized (DaillyFaceratingCandidatesTask.class) {
+                if (null == daillyFaceratingCandidatesTask) {
+                    daillyFaceratingCandidatesTask = new DaillyFaceratingCandidatesTask();
+                }
+            }
+        }
+        return daillyFaceratingCandidatesTask;
+
+    }
+
+
+    private double lat = 0;
+    private double lng = 0;
+
+
+    private int userId;
+
+    private int rows;
+
+    private Context context;
+
+    private LocInfo myLoc;
+
+    private OnDaillTaskListener onDaillTaskListener;
+
+    public void enqueue(Context context, int rows, int userId,OnDaillTaskListener onDaillTaskListener) {
+        this.context = context;
+        this.rows = rows;
+        this.userId = userId;
+        this.onDaillTaskListener=onDaillTaskListener;
+
+        getLocinfo();
+
+    }
+
+    private  void getLocinfo() {
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int count = 0;
+                while (true) {
+                    boolean isExist = Loc.IsLocExist();
+                    if (isExist) {
+                        break;
+                    }
+                    count++;
+                    if (count > 9) {
+                        break;
+                    }
+                    SystemClock.sleep(1000);
+                }
+
+                myLoc = Loc.getLoc();
+                if (myLoc != null && myLoc.getLoc() != null) {
+                    LocHandler.sendEmptyMessage(1);
+
+                } else {
+                    LocHandler.sendEmptyMessage(0);
+                }
+            }
+        }).start();
+
+    }
+
+    private Handler LocHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            try {
+                System.out.println("--------------msg.what=" + msg.what);
+                if (msg.what == 1) {// 找到位置
+
+
+                    if (myLoc != null && myLoc.getLoc() != null) {
+                        lat = myLoc.getLoc().getLatitude();
+                        lng = myLoc.getLoc().getLongitude();
+                    }
+                    LatLng pt = new LatLng(lat, lng);
+                    pt = Loc.getBaiduGpsFromGcj(pt.latitude, pt.longitude);
+
+                    DaillyFaceratingCandidatesBean candidatesBean = new DaillyFaceratingCandidatesBean();
+
+                    candidatesBean.setLat(pt.latitude);
+                    candidatesBean.setLng(pt.longitude);
+                    candidatesBean.setUserId(userId);
+                    candidatesBean.setRows(rows);
+
+                    DaillyFaceratingCandidatesService candidatesService = new DaillyFaceratingCandidatesService(context);
+                    candidatesService.parameter(candidatesBean);
+                    candidatesService.callBack(new OnCallBackSuccessListener() {
+                        @Override
+                        public void onSuccess(RespBean respBean) {
+                            super.onSuccess(respBean);
+
+                            System.out.println("onCallSucceed---");
+                            DaillyFaceratingCandidatesRespBean candidatesRespBean = (DaillyFaceratingCandidatesRespBean) respBean;
+                            if (null != candidatesRespBean) {
+
+                                List<DaillyFaceratingCandidatesDto> daillyFaceratingCandidatesDtos = candidatesRespBean.getResp();
+
+                                String data = JsonUtils.toJson(daillyFaceratingCandidatesDtos);
+                                DaillyFaceratingCandidatesDBTask.getInstance().saveDataLocal(YPApplication.loginUser.getUserId(),data);
+
+                                if (null != daillyFaceratingCandidatesDtos && daillyFaceratingCandidatesDtos.size() > 0) {
+
+                                    DaillyFaceratingCandidatesDto candidatesDto=daillyFaceratingCandidatesDtos.get(0);
+
+                                    String  candidatesDtodata= JsonUtils.toJson(candidatesDto);
+
+                                    long time = System.currentTimeMillis();
+                                    DaillyBean daillyBean = new DaillyBean();
+                                    daillyBean.setUserID(YPApplication.loginUser.getUserId());
+                                    daillyBean.setTime(time);
+                                    daillyBean.setTag(YpSettings.DAILLY_TASK_SCORE);
+                                    daillyBean.setState(false);
+                                    daillyBean.setData(candidatesDtodata);
+                                    DaillyTaskService.getInstance().addTask(YPApplication.loginUser.getUserId(), daillyBean);
+                                }
+
+                            }
+
+                            if (null !=onDaillTaskListener){
+                                onDaillTaskListener.onSuccess();
+                            }
+
+
+                        }
+                    }, new OnCallBackFailListener() {
+
+                        @Override
+                        public void onFail(RespBean respBean) {
+                            super.onFail(respBean);
+
+                            if (null !=onDaillTaskListener){
+                                onDaillTaskListener.onSuccess();
+                            }
+                        }
+                    });
+
+                    candidatesService.enqueue();
+
+                }else if (msg.what==0){
+                    if (null !=onDaillTaskListener){
+                        onDaillTaskListener.onSuccess();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+}

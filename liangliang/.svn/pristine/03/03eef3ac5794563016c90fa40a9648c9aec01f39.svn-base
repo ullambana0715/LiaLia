@@ -1,0 +1,111 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+import java.util.List;
+
+import android.R.integer;
+
+public class BumpHistory implements Serializable {
+
+	private int total;
+	private int start;
+	private int rows;
+	private List<BumpHistotyInfo> list;
+
+	public class BumpHistotyInfo {
+
+		private String description;
+		private String displayAddress;
+		private String bumpTime;
+		private int bumpUserId;
+		private int userId;
+
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+		public String getDisplayAddress() {
+			return displayAddress;
+		}
+
+		public void setDisplayAddress(String displayAddress) {
+			this.displayAddress = displayAddress;
+		}
+
+		public String getBumpTime() {
+			return bumpTime;
+		}
+
+		public void setBumpTime(String bumpTime) {
+			this.bumpTime = bumpTime;
+		}
+
+		public int getBumpUserId() {
+			return bumpUserId;
+		}
+
+		public void setBumpUserId(int bumpUserId) {
+			this.bumpUserId = bumpUserId;
+		}
+
+		public int getUserId() {
+			return userId;
+		}
+
+		public void setUserId(int userId) {
+			this.userId = userId;
+		}
+
+		@Override
+		public String toString() {
+			return "BumpHistotyInfo [description=" + description
+					+ ", displayAddress=" + displayAddress + ", bumpTime="
+					+ bumpTime + ", bumpUserId=" + bumpUserId + ", userId="
+					+ userId + "]";
+		}
+
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+	public int getStart() {
+		return start;
+	}
+
+	public void setStart(int start) {
+		this.start = start;
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+
+	public List<BumpHistotyInfo> getList() {
+		return list;
+	}
+
+	public void setList(List<BumpHistotyInfo> list) {
+		this.list = list;
+	}
+
+	@Override
+	public String toString() {
+		return "BumpHistory [total=" + total + ", start=" + start + ", rows="
+				+ rows + ", list=" + list + "]";
+	}
+
+}

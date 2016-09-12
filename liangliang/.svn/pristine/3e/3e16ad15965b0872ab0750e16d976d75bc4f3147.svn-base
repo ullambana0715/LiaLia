@@ -1,0 +1,38 @@
+package cn.chono.yopper.Service.Http.AppointClose;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.OKHttpUtils;
+import cn.chono.yopper.utils.HttpURL;
+
+
+public class AppointMentsCloseService extends HttpService {
+
+    public AppointMentsCloseService(Context context) {
+        super(context);
+    }
+
+    private AppointMentsCloseBean joinBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = RespBean.class;
+
+        HashMap<String, Object> map = new HashMap<>();
+
+        String url = HttpURL.appointments_comment + joinBean.getId() + "/close";
+
+        callWrap = OKHttpUtils.put(context, url, map, okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        joinBean = (AppointMentsCloseBean) iBean;
+    }
+}

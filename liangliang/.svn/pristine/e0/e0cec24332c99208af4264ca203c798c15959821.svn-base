@@ -1,0 +1,544 @@
+package cn.chono.yopper.activity.base;
+
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.bubble.BubbleMessageActivity;
+import cn.chono.yopper.activity.bump.BumpActivity;
+import cn.chono.yopper.activity.chat.ChatActivity;
+import cn.chono.yopper.activity.chat.NotificationMessageActivity;
+import cn.chono.yopper.activity.chat.StrangeMessageActivity;
+import cn.chono.yopper.adapter.MessageAdapter;
+import cn.chono.yopper.data.MessageDto;
+import cn.chono.yopper.data.MessageType;
+import cn.chono.yopper.data.NotificationMsg;
+import cn.chono.yopper.data.UserDto;
+import cn.chono.yopper.smack.entity.ChatDto;
+import cn.chono.yopper.smack.service.IConnectionStatusCallback;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.ChatUtils;
+import cn.chono.yopper.utils.CommonObservable;
+import cn.chono.yopper.utils.CommonObserver;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.utils.ViewsUtils;
+import cn.chono.yopper.view.MyDialog;
+
+public class MessageFragment extends Fragment {
+
+    private LinearLayout message_root_layout;
+
+    private TextView message_title_tv;
+
+    private ListView message_listview;// 消息列表
+
+    private LinearLayout error_no_message_layout;//无消息提示布局
+
+    private List<MessageDto> curr_messagedtoList = new ArrayList<MessageDto>();
+
+    private List<MessageDto> strange_messagedtoList = new ArrayList<MessageDto>();
+
+    private MessageAdapter messageAdapter;
+
+    private ImageView message_bump_iv;
+
+    private String mid;
+
+    private Intent IndexMessageNumintent;
+
+    private MessageNewReceiver messageNewReceiver;
+
+    private ConnectStateReceiver connectStateReceiver;
+
+    // 删除
+    private Dialog deleteDialog;
+
+    private Runnable updateList = new Runnable() {
+
+        @Override
+        public void run() {
+
+            getMessageDto();
+
+        }
+    };
+    private CommonObserver.MessageDeleteObserver messageDeleteObserver = new CommonObserver.MessageDeleteObserver(updateList);
+
+
+    private Context mContext;
+
+    public MessageFragment() {
+
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View convertView = inflater.inflate(R.layout.message_activity, container, false);
+        initView(convertView);
+        return convertView;
+    }
+
+    private void initView(View view) {
+        message_root_layout= (LinearLayout) view.findViewById(R.id.message_root_layout);
+        message_root_layout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        message_title_tv = (TextView) view.findViewById(R.id.message_title_tv);
+        message_listview = (ListView) view.findViewById(R.id.message_listview);
+        error_no_message_layout = (LinearLayout) view.findViewById(R.id.error_no_message_layout);
+
+        message_bump_iv = (ImageView) view.findViewById(R.id.message_bump_iv);
+
+        message_bump_iv.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+                ActivityUtil.jump(getActivity(), BumpActivity.class, bundle, 0, 100);
+            }
+        });
+
+
+        messageAdapter = new MessageAdapter(getActivity());
+        message_listview.setAdapter(messageAdapter);
+
+
+        // 生成广播处理
+        messageNewReceiver = new MessageNewReceiver();
+        // 实例化过滤器并设置要过滤的广播
+        IntentFilter intentFilter = new IntentFilter("cn.yopper.chono.set.newmsg");
+        // 注册广播
+        getActivity().registerReceiver(messageNewReceiver, intentFilter);
+
+
+        connectStateReceiver = new ConnectStateReceiver();
+        // 实例化过滤器并设置要过滤的广播
+        IntentFilter connintentFilter = new IntentFilter("cn.yopper.chono.connect.state");
+        // 注册广播
+        getActivity().registerReceiver(connectStateReceiver, connintentFilter);
+
+
+        message_listview.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                MessageDto dto = curr_messagedtoList.get(position);
+                showDeleteDialog(dto);
+                return true;
+            }
+        });
+
+
+        message_listview.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                MessageDto dto = curr_messagedtoList.get(position);
+
+
+                if (dto.getIs_strange() == 0) {
+                    // 不是陌生人
+                    String type = ChatUtils.getMsgType(dto.getLastmessage());
+                    if (TextUtils.equals(type, MessageType.Notification)) {
+                        //邀请通知
+                        Bundle bundle = new Bundle();
+                        // 跳转到邀请通知列表界面
+                        NotificationMsg notificationMsg = JsonUtils.fromJson(dto.getLastmessage(), NotificationMsg.class);
+                        if (notificationMsg.getNotifytype() == 8) {
+                            //跳每日星运 跳转到web页面
+
+                            String jid = dto.getJid();
+
+                            try {
+                                ChatDto chatDto = YPApplication.getInstance().db.findFirst((Selector.from(ChatDto.class).where("jid", " =", jid).and("mid", " =", mid)));
+
+                                notificationMsg.setBadge(-1);
+                                String chatmsg_str = JsonUtils.toJson(notificationMsg);
+                                chatDto.setMessage(chatmsg_str);
+                                chatDto.setStatus(ChatDto.readed_status);
+                                YPApplication.getInstance().db.update(chatDto);
+                            } catch (DbException e1) {
+                                e1.printStackTrace();
+                            }
+
+                            UserDto mydto = DbHelperUtils.getDbUserInfo(YPApplication.getInstance().loginUser.getUserId());
+                            int myhor = mydto.getProfile().getHoroscope();
+
+                            bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Constellation/Luck?id=" + myhor + "&userid=" + YPApplication.getInstance().loginUser.getUserId() + "&AuthToken=" + YPApplication.getInstance().loginUser.getAuthToken());
+                            bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+                            bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "每日星运");
+                            ActivityUtil.jump(getActivity(), SimpleWebViewActivity.class, bundle, 0, 100);
+
+
+                        } else {
+                            String from = notificationMsg.getFrom();
+
+                            bundle.putString(YpSettings.NOTIFICATION_TITLE,from);
+                            bundle.putString(YpSettings.MESSAGE_OTHER_JID, dto.getJid());
+
+                            ActivityUtil.jump(getActivity(), NotificationMessageActivity.class, bundle, 0, 100);
+                        }
+
+
+                    } else {
+
+                        if (dto.getJid().equals("system_bubble@chono")) {
+                            Bundle bundle = new Bundle();
+                            // 跳转到冒泡消息列表界面
+                            ActivityUtil.jump(getActivity(), BubbleMessageActivity.class, bundle, 0, 100);
+                        } else {
+                            Bundle bundle = new Bundle();
+                            String jid = dto.getJid();
+                            String userid = jid.substring(0, jid.indexOf("@"));
+
+                            bundle.putInt(YpSettings.USERID, Integer.valueOf(userid));
+                            ActivityUtil.jump(getActivity(), ChatActivity.class, bundle, 0, 100);
+                        }
+
+                    }
+
+                } else if (dto.getIs_strange() == 1) {
+                    // 陌生人
+                    Bundle bundle = new Bundle();
+                    // 跳转到陌生人列表界面
+                    ActivityUtil.jump(getActivity(), StrangeMessageActivity.class, bundle, 0, 100);
+                }
+            }
+        });
+
+        mid = YPApplication.loginUser.getUserId() + "@chono";
+
+
+        CommonObservable.getInstance().addObserver(messageDeleteObserver);
+
+        IndexMessageNumintent = new Intent();
+        IndexMessageNumintent.setAction("cn.yopper.chono.set.msg.num");
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(messageNewReceiver);
+        getActivity().unregisterReceiver(connectStateReceiver);
+    }
+
+    /**
+     *
+     *
+     */
+
+    public void showDeleteDialog(final MessageDto dto) {
+
+        // 初始化一个自定义的Dialog
+        deleteDialog = new MyDialog(getActivity(), R.style.MyDialog, R.layout.select_operate_dialog_layout, new MyDialog.DialogEventListener() {
+
+            @Override
+            public void onInit(View contentView) {
+
+
+                TextView select_operate_dialog_title_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_title_tv);
+                LinearLayout select_operate_dialog_one_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_one_layout);
+                LinearLayout select_operate_dialog_two_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_two_layout);
+                LinearLayout select_operate_dialog_three_layout = (LinearLayout) contentView.findViewById(R.id.select_operate_dialog_three_layout);
+
+                TextView select_operate_dialog_one_tv = (TextView) contentView.findViewById(R.id.select_operate_dialog_one_tv);
+
+                select_operate_dialog_title_tv.setText("操作");
+                select_operate_dialog_one_tv.setText("删除对话");
+
+                select_operate_dialog_one_layout.setVisibility(View.VISIBLE);
+
+                select_operate_dialog_two_layout.setVisibility(View.GONE);
+
+                select_operate_dialog_three_layout.setVisibility(View.GONE);
+
+                select_operate_dialog_one_layout.setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ViewsUtils.preventViewMultipleClick(v, 3000);
+
+                        deleteDialog.dismiss();
+                        String jid = dto.getJid();
+                        String mid = YPApplication.loginUser.getUserId() + "@chono";
+
+                        if (dto.getIs_strange() == 0) {
+                            // 不是陌生人
+                            try {
+                                YPApplication.getInstance().db.delete(ChatDto.class, WhereBuilder.b("jid", " =", jid).and("mid", " =", mid));
+
+                                YPApplication.getInstance().db.delete(MessageDto.class, WhereBuilder.b("jid", " =", jid).and("mid", " =", mid));
+
+                                CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+                                CommonObservable.getInstance().notifyObservers(CommonObserver.MessageDeleteObserver.class);
+
+                            } catch (DbException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else if (dto.getIs_strange() == 1) {
+                            // 陌生人
+                            try {
+                                List<MessageDto> strange_messagedtoList = YPApplication.getInstance().db.findAll(Selector.from(MessageDto.class).where("mid", " =", mid).and("is_strange", " =", 1));
+
+                                if (strange_messagedtoList != null && strange_messagedtoList.size() > 0) {
+
+                                    for (int i = 0; i < strange_messagedtoList.size(); i++) {
+                                        String s_jid = strange_messagedtoList.get(i).getJid();
+                                        YPApplication.getInstance().db.delete(ChatDto.class, WhereBuilder.b("jid", " =", s_jid).and("mid", " =", mid));
+
+                                        YPApplication.getInstance().db.delete(MessageDto.class, WhereBuilder.b("jid", " =", s_jid).and("mid", " =", mid));
+                                    }
+                                }
+
+                                CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+                                CommonObservable.getInstance().notifyObservers(CommonObserver.MessageDeleteObserver.class);
+
+                            } catch (DbException e) {
+                                e.printStackTrace();
+
+                            }
+                        }
+
+                    }
+
+                });
+            }
+        });
+        deleteDialog.setCanceledOnTouchOutside(true);// 设置点击屏幕Dialog不消失
+        deleteDialog.show();
+
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        MobclickAgent.onPageEnd("消息列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(getActivity());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        MobclickAgent.onPageStart("消息列表"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(getActivity()); // 统计时长
+
+        getMessageDto();
+
+        CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+
+
+        if (getActivity() != null) {
+            getActivity().sendBroadcast(IndexMessageNumintent);
+        }
+
+    }
+
+
+    public class MessageNewReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getMessageDto();
+            CommonObservable.getInstance().notifyObservers(CommonObserver.SetMessageNumObserver.class);
+        }
+    }
+
+
+    public class ConnectStateReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(YpSettings.CONNECT_STATE)) {
+                    String str = bundle.getString(YpSettings.CONNECT_STATE);
+                    message_title_tv.setText(str);
+                } else {
+                    message_title_tv.setText("消息");
+                }
+            } else {
+                message_title_tv.setText("消息");
+            }
+
+
+        }
+    }
+
+
+
+
+    /**
+     * 根据消息发送时间插入到有序的消息list
+     *
+     * @param msgDto
+     * @param msgDtoList
+     * @return
+     */
+    private List<MessageDto> insertDto(MessageDto msgDto, List<MessageDto> msgDtoList) {
+
+        boolean haveInserted = false;
+
+        List<MessageDto> sortedAfter = new ArrayList<MessageDto>();
+        if (msgDtoList != null && msgDtoList.size() > 0) {
+
+            for (int i = 0, j = 0; i < msgDtoList.size(); ) {
+                if (haveInserted || msgDtoList.get(i).getLasttime() > msgDto.getLasttime()) {
+
+                    sortedAfter.add(j++, msgDtoList.get(i++));
+                } else {
+                    sortedAfter.add(j++, msgDto);
+                    haveInserted = true;
+                }
+            }
+            int preSize = msgDtoList.size();
+            int CurSize = sortedAfter.size();
+            if (preSize == CurSize) {
+                sortedAfter.add(msgDto);
+            }
+
+        } else {
+            sortedAfter.add(msgDto);
+        }
+
+        return sortedAfter;
+
+    }
+
+
+    private void getMessageDto() {
+        try {
+
+            curr_messagedtoList = YPApplication.getInstance().db.findAll(Selector.from(MessageDto.class).where("mid", " =", mid).and("is_strange", " =", 0).orderBy("lasttime", true));
+
+
+            strange_messagedtoList = YPApplication.getInstance().db.findAll(Selector.from(MessageDto.class).where("mid", " =", mid).and("is_strange", " =", 1).orderBy("lasttime"));
+
+
+            if (curr_messagedtoList != null && curr_messagedtoList.size() > 0) {
+
+                for (int i = 0; i < curr_messagedtoList.size(); i++) {
+                    MessageDto dto = curr_messagedtoList.get(i);
+                    String jid = dto.getJid();
+
+                    String message = dto.getLastmessage();
+                    String type = ChatUtils.getMsgType(message);
+                    long no_read_num = 0;
+                    if (TextUtils.equals(type, MessageType.Notification)) {
+                        List<ChatDto> chatdtolist = YPApplication.getInstance().db.findAll((Selector.from(ChatDto.class).where("jid", " =", jid).and("mid", " =", mid).and("status", " =", 0)));
+                        if (chatdtolist != null && chatdtolist.size() > 0) {
+                            for (int j = 0; j < chatdtolist.size(); j++) {
+                                ChatDto chatDto = chatdtolist.get(j);
+                                NotificationMsg notificationMsg = JsonUtils.fromJson(chatDto.getMessage(), NotificationMsg.class);
+                                int badge = notificationMsg.getBadge();
+                                if (badge >= 0) {
+                                    if (badge == 0) {
+                                        badge = 1;
+                                    }
+                                    no_read_num = no_read_num + badge;
+                                }
+                            }
+                        }
+
+                    } else {
+                        no_read_num = YPApplication.getInstance().db.count(Selector.from(ChatDto.class).where("mid", " =", mid).and("jid", " =", jid).and("status", "=", 0));
+                    }
+                    curr_messagedtoList.get(i).setNo_read_num((int) no_read_num);
+                }
+            }
+
+            if (strange_messagedtoList != null && strange_messagedtoList.size() > 0) {
+
+                MessageDto dto = strange_messagedtoList.get(strange_messagedtoList.size() - 1);
+                long no_read_strange_num = 0;
+                for (int i = 0; i < strange_messagedtoList.size(); i++) {
+
+                    String s_jid = strange_messagedtoList.get(i).getJid();
+                    long no_read_num = YPApplication.getInstance().db.count(Selector.from(ChatDto.class).where("mid", " =", mid).and("jid", " =", s_jid).and("status", "=", 0));
+                    no_read_strange_num = no_read_strange_num + no_read_num;
+                }
+                dto.setNo_read_num((int) no_read_strange_num);
+
+                curr_messagedtoList = insertDto(dto, curr_messagedtoList);
+
+            }
+
+
+            if (curr_messagedtoList != null && curr_messagedtoList.size() > 0) {
+
+                // 给其塞未读消息条数
+
+                message_listview.setVisibility(View.VISIBLE);
+                error_no_message_layout.setVisibility(View.GONE);
+
+
+                if (messageAdapter != null) {
+                    messageAdapter.setList(curr_messagedtoList);
+                    messageAdapter.notifyDataSetChanged();
+
+                } else {
+                    messageAdapter = new MessageAdapter(getActivity(), curr_messagedtoList);
+                    message_listview.setAdapter(messageAdapter);
+                    messageAdapter.setList(curr_messagedtoList);
+                    messageAdapter.notifyDataSetChanged();
+                }
+
+                if (strange_messagedtoList != null && strange_messagedtoList.size() > 0) {
+                    messageAdapter.setStrangeNum(strange_messagedtoList.size());
+                }
+
+
+            } else {
+                message_listview.setVisibility(View.GONE);
+                error_no_message_layout.setVisibility(View.VISIBLE);
+            }
+
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}

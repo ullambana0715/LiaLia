@@ -1,0 +1,184 @@
+package cn.chono.yopper.Service.DaillyTask;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.SystemClock;
+import android.text.TextUtils;
+
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.exception.DbException;
+
+import cn.chono.yopper.Service.DaillyTaskService.DaillyBean;
+import cn.chono.yopper.Service.DaillyTaskService.DaillyTaskService;
+import cn.chono.yopper.Service.Http.DaillyTouch.DaillyTouchBean;
+import cn.chono.yopper.Service.Http.DaillyTouch.DaillyTouchRespBean;
+import cn.chono.yopper.Service.Http.DaillyTouch.DaillyTouchService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.data.DailyTouchDto;
+import cn.chono.yopper.location.Loc;
+import cn.chono.yopper.location.LocInfo;
+import cn.chono.yopper.utils.TimeUtil;
+
+/**
+ * Created by zxb on 2015/11/24.
+ */
+public class DaillyTask {
+
+    private static DaillyTask daillyTask;
+
+
+    public static DaillyTask getInstance() {
+
+        if (null == daillyTask) {
+            synchronized (DaillyTask.class) {
+                if (null == daillyTask) {
+                    daillyTask = new DaillyTask();
+                }
+            }
+        }
+        return daillyTask;
+
+    }
+
+
+    private OnDaillTaskListener onDaillTaskListener;
+
+    public void enqueue(Context context, OnDaillTaskListener onDaillTaskListener) {
+
+
+        this.onDaillTaskListener = onDaillTaskListener;
+        //检测任务
+        String authToken = YPApplication.loginUser.getAuthToken();
+
+        if (TextUtils.isEmpty(authToken)) {//检测登陆状态 ---未登陆
+            return;
+
+        }
+        int userId = YPApplication.loginUser.getUserId();
+        try {
+
+
+            DailyTouchDto dailyTouchDto = YPApplication.getInstance().db.findFirst(Selector.from(DailyTouchDto.class).where("id", " =", userId));
+            if (null == dailyTouchDto) {//没有本地数据。应该去请求网络
+                getDaillyTouch(context, userId);
+            } else { //已经登陆，检测是不是当天
+                long time = dailyTouchDto.getTime();
+                if (TimeUtil.isToday(time)) {//是今天
+                    if (null != onDaillTaskListener) {
+                        onDaillTaskListener.onSuccess();
+                    }
+
+                } else {
+                    //不是今天的
+                    getDaillyTouch(context, userId);
+                }
+
+
+            }
+
+
+        } catch (DbException e) {
+            e.printStackTrace();
+            getDaillyTouch(context, userId);
+        }
+
+
+    }
+
+    private void getDaillyTouch(final Context context, final int userId) {
+
+        DaillyTouchBean daillyTouchBean = new DaillyTouchBean();
+        daillyTouchBean.setUserId(userId);
+
+        DaillyTouchService daillyTouchService = new DaillyTouchService(context);
+        daillyTouchService.parameter(daillyTouchBean);
+        daillyTouchService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                DaillyTouchRespBean daillyTouchRespBean = (DaillyTouchRespBean) respBean;
+                DaillyTouchRespBean.DaillyTouch daillyTouch = daillyTouchRespBean.getResp();
+
+                if (null != daillyTouch) {
+                    int daillyPointsGet = daillyTouch.getDaillyPointsGet();
+                    int daillyFaceRatedTotal = daillyTouch.getDaillyFaceRatedTotal();
+                    int daillyFaceRatingAllowed = daillyTouch.getDaillyFaceRatingAllowed();
+                    boolean hasPerfectMatch = daillyTouch.isHasPerfectMatch();
+
+                    long time = System.currentTimeMillis();
+
+                    int daillyFaceRatedValue = daillyFaceRatingAllowed - daillyFaceRatedTotal;
+
+                    if (daillyFaceRatedValue > 0) {
+
+                        DaillyFaceratingCandidatesTask.getInstance().enqueue(context, daillyFaceRatedValue, userId,onDaillTaskListener);
+                    }
+
+                    if (daillyPointsGet > 0) {//P果任务
+                        DaillyBean daillyBean = new DaillyBean();
+                        daillyBean.setUserID(userId);
+                        daillyBean.setTime(time);
+                        daillyBean.setTag(YpSettings.DAILLY_TASK_P);
+                        daillyBean.setState(false);
+                        daillyBean.setData(daillyPointsGet + "");
+                        DaillyTaskService.getInstance().addTask(userId, daillyBean);
+
+                    }
+
+
+                    saveDataDaily(userId, time);
+
+                }else{
+                    if (null != onDaillTaskListener) {
+                        onDaillTaskListener.onSuccess();
+                    }
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                if (null != onDaillTaskListener) {
+                    onDaillTaskListener.onSuccess();
+                }
+            }
+
+
+        });
+
+        daillyTouchService.enqueue();
+
+    }
+
+
+    private void saveDataDaily(final int userId, final long time) {
+        try {
+            DailyTouchDto dailyTouchDto = YPApplication.getInstance().db.findFirst(Selector.from(DailyTouchDto.class).where("id", " =", userId));
+            if (null != dailyTouchDto) {
+
+                dailyTouchDto.setTime(time);
+                dailyTouchDto.setId(userId);
+                YPApplication.getInstance().db.update(dailyTouchDto);
+            } else {
+                DailyTouchDto dto = new DailyTouchDto();
+                dto.setTime(time);
+                dto.setId(userId);
+                YPApplication.getInstance().db.save(dto);
+            }
+
+
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}

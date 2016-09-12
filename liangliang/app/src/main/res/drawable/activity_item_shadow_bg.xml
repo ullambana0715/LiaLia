@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >-->
+    <!--&lt;!&ndash; layout background &ndash;&gt;-->
+    <!--<item>-->
+        <!--&lt;!&ndash; show rectangle area &ndash;&gt;-->
+        <!--<shape android:shape="rectangle" >-->
+            <!--<corners android:radius="12px"/>-->
+            <!--<gradient-->
+                <!--android:startColor="#10000000"-->
+                <!--android:centerColor="#10000000"-->
+                <!--android:endColor="#10000000"/>-->
+        <!--</shape>-->
+    <!--</item>-->
+    <!--&lt;!&ndash; layout foreground &ndash;&gt;-->
+    <!--<item-->
+        <!--android:top="4px"-->
+        <!--android:bottom="4px"-->
+        <!--android:right="4px"-->
+        <!--android:left="4px">-->
+        <!--&lt;!&ndash; show rectangle area &ndash;&gt;-->
+        <!--<shape android:shape="rectangle" >-->
+            <!--<corners android:radius="12px"/>-->
+            <!--<solid android:color="#FFFFFF" />-->
+        <!--</shape>-->
+    <!--</item>-->
+<!--</layer-list>-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!--&lt;!&ndash; 阴影部分 &ndash;&gt;-->
+    <!--&lt;!&ndash; 个人觉得更形象的表达：top代表下边的阴影高度，left代表右边的阴影宽度。其实也就是相对应的offset，solid中的颜色是阴影的颜色，也可以设置角度等等 &ndash;&gt;-->
+    <!--<item-->
+        <!--android:left="1dp"-->
+        <!--android:top="1dp">-->
+        <!--<shape android:shape="rectangle" >-->
+            <!--<gradient-->
+                <!--android:angle="90"-->
+
+                <!--android:endColor="#10000000"-->
+                <!--android:startColor="#10000000" />-->
+
+            <!--<corners-->
+                <!--android:bottomLeftRadius="6dip"-->
+                <!--android:bottomRightRadius="6dip"-->
+                <!--android:topLeftRadius="6dip"-->
+                <!--android:topRightRadius="6dip" />-->
+        <!--</shape>-->
+    <!--</item>-->
+
+    <!--&lt;!&ndash; 背景部分 &ndash;&gt;-->
+    <!--&lt;!&ndash; 形象的表达：bottom代表背景部分在上边缘超出阴影的高度，right代表背景部分在左边超出阴影的宽度（相对应的offset） &ndash;&gt;-->
+    <!--<item-->
+        <!--android:bottom="2dp"-->
+        <!--android:right="2dp">-->
+        <!--<shape android:shape="rectangle" >-->
+
+            <!--<gradient-->
+                <!--android:angle="90"-->
+                <!--android:endColor="#FFFFFF"-->
+                <!--android:startColor="#FFFFFF" />-->
+
+            <!--<corners-->
+                <!--android:bottomLeftRadius="6dip"-->
+                <!--android:bottomRightRadius="6dip"-->
+                <!--android:topLeftRadius="6dip"-->
+                <!--android:topRightRadius="6dip" />-->
+        <!--</shape>-->
+    <!--</item>-->
+
+    <item
+
+        >
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#01000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#02000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#02000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#03000000"/>
+                    <padding
+                        android:bottom="2px"
+                        android:left="2px"
+                        android:right="2px"
+                        android:top="2px"
+                        />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#03000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+
+
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#04000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#05000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#06000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="5dp"/>
+                    <solid android:color="#08000000"/>
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px"
+                        />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="5dp"/>
+            <solid android:color="#ffffff"/>
+        </shape>
+    </item>
+</layer-list>

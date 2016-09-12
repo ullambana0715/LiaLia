@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/cn.chono.yopper"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/chat_bg"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ProgressBar
+                android:id="@+id/loading_bar"
+                android:layout_width="30dip"
+                android:layout_gravity="center"
+                android:layout_height="30dip"
+                android:visibility="visible" />
+
+        <cn.chono.yopper.view.cropper.ClipImageLayout
+            android:id="@+id/CropImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone" >
+        </cn.chono.yopper.view.cropper.ClipImageLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/but_linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_white_bg"
+            android:gravity="center"
+            android:text="取消"
+            android:textColor="@color/login_but_color"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/apply"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_white_bg"
+            android:gravity="center"
+            android:text="应用"
+            android:textColor="@color/login_but_color"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,131 @@
+package cn.chono.yopper.activity.usercenter;
+
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.GainPFruit.GainPFruitBean;
+import cn.chono.yopper.Service.Http.GainPFruit.GainPFruitRespBean;
+import cn.chono.yopper.Service.Http.GainPFruit.GainPFruitService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.utils.ViewsUtils;
+
+/**
+ * 用户P果界面
+ *
+ * @author sam.sun
+ */
+public class UserPFruitActivity extends MainFrameActivity {
+
+
+    // 本地缓存数据
+    private LayoutInflater mInflater;
+    private View contextView;
+
+    private TextView p_fruit_value_iv;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PushAgent.getInstance(this).onAppStart();
+
+        initComponent();
+        get_p_fruit_point();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("我的P果"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("我的P果"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 初始化
+     */
+    private void initComponent() {
+
+        // 设置标题栏
+        this.getTvTitle().setText("我的P果");
+        this.getBtnGoBack().setVisibility(View.VISIBLE);
+        this.getOptionLayout().setVisibility(View.INVISIBLE);
+//		this.getBtnGoBack().setBackgroundResource(R.drawable.off_icon);
+        this.getGoBackLayout().setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                ViewsUtils.preventViewMultipleClick(arg0, 500);
+                finish();
+                //YPApplication.getInstance().finishActivity();
+            }
+        });
+
+        // 内容部分
+        mInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+//		int WS=UnitUtil.getScreenWidthPixels();
+//		int dip=(int) UnitUtil.getScreenDIP();
+//		
+//		if(WS>=1080 && dip==2){
+//			contextView = mInflater.inflate(R.layout.bigscreen_ldip_user_p_fruit_activity, null);
+//		}else{
+        contextView = mInflater.inflate(R.layout.user_p_fruit_activity, null);
+//		}
+
+
+        p_fruit_value_iv = (TextView) contextView.findViewById(R.id.user_p_fruit_value_iv);
+
+        this.getMainLayout().addView(contextView, LayoutParams.FILL_PARENT,
+                LayoutParams.FILL_PARENT);
+
+    }
+
+
+    //获取P果数量
+    private void get_p_fruit_point() {
+
+        GainPFruitBean fruitBean = new GainPFruitBean();
+        fruitBean.setUserId(YPApplication.loginUser.getUserId());
+
+
+        GainPFruitService pFruitService = new GainPFruitService(this);
+
+        pFruitService.parameter(fruitBean);
+        pFruitService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                GainPFruitRespBean fruitRespBean = (GainPFruitRespBean) respBean;
+                GainPFruitRespBean.Available available = fruitRespBean.getResp();
+                int availableBalance = available.getAvailableBalance();
+                p_fruit_value_iv.setText(availableBalance + "");
+            }
+        }, new OnCallBackFailListener());
+
+        pFruitService.enqueue();
+    }
+
+}

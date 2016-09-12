@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <cn.chono.zxb.xrefreshview.XRefreshView
+        android:id="@+id/score_histoty_xRefreshView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:isHeightMatchParent="false"
+        app:isWidthMatchParent="false">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/score_histoty_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:saveEnabled="false"
+            android:clipToPadding="true"
+            />
+
+
+    </cn.chono.zxb.xrefreshview.XRefreshView>
+
+    <include layout="@layout/error_to_load_layout" />
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/text_color_white"
+        android:gravity="center_horizontal"
+        android:id="@+id/score_histoty_unfinished_layout"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/error_no_data_img"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="100dp"
+            android:src="@drawable/score_already_hini_icon" />
+
+        <TextView
+            android:id="@+id/error_no_data_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="您还没有给附近的男性打过分"
+            android:textColor="@color/text_color_999999"
+            android:textSize="18sp" />
+
+
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+</LinearLayout>

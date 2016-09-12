@@ -1,0 +1,39 @@
+package cn.chono.yopper.Service.Http.SendAttraction;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class SendAttractionBean extends ParameterBean {
+    private int targetUserId;
+
+    private boolean notify;
+
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getTargetUserId() {
+        return targetUserId;
+    }
+
+    public void setTargetUserId(int targetUserId) {
+        this.targetUserId = targetUserId;
+    }
+
+
+    public boolean isNotify() {
+        return notify;
+    }
+
+    public void setNotify(boolean notify) {
+        this.notify = notify;
+    }
+}

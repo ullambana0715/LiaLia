@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/D:/android_studio_1_5/yopper_as_2.3.0/Yopper/VideoTrimActivity/src/main/res/values-v19/qupai_common_themes.xml -->
+    <eat-comment/>
+    <style name="Theme.Dialog.Overlay.Fullscreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+</resources>

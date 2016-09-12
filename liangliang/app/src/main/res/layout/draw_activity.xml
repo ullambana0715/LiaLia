@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:background="@color/color_ffebeb">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_ffd9d3"
+                >
+
+                <TextView
+                    android:id="@+id/bonus_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:textColor="@color/color_ffffff"
+                    android:background="@color/color_333333"
+                    android:text="" />
+                <TextView
+                    android:id="@+id/apple_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:layout_below="@+id/bonus_info"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:textColor="@color/color_ffffff"
+                    android:text="每次抽奖需要99苹果,您当前有1000苹果" />
+
+                <RelativeLayout
+                    android:id="@+id/draw_circle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/apple_text"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="20dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/main_wheel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/bigwheel" />
+
+                    <ImageView
+                        android:id="@+id/point"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/point" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/draw_btn_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/draw_circle"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/draw_btn" />
+
+                <ImageView
+                    android:id="@+id/half_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/draw_btn_img"
+                    android:background="@drawable/draw_circle_bg" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/top">
+
+                <ImageView
+                    android:id="@+id/bonus_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/draw_bonus" />
+
+                <ImageView
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/bonus_img"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/divider_title" />
+
+                <LinearLayout
+                    android:id="@+id/linear0"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/divider"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:background="@color/color_ff7462"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/no0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        layout="@layout/item_draw_grid"
+                        />
+
+                    <include
+                        android:id="@+id/no1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        layout="@layout/item_draw_grid" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/linear0"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:background="@color/color_ff7462"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/no2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        layout="@layout/item_draw_grid" />
+
+                    <include
+                        android:id="@+id/no3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        layout="@layout/item_draw_grid" />
+                </LinearLayout>
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

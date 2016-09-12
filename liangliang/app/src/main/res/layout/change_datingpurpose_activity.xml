@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f1f1f1"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="我们会根据你的选择，为你找到最合适的朋友"
+            android:textColor="#999999"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/change_dating_purpose_friend"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:background="@color/color_ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+
+            android:id="@+id/change_dating_purpose_friend_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="18dp"
+            android:gravity="center_horizontal"
+            android:src="@drawable/change_dating_purpose_friend_icon" />
+
+        <TextView
+
+            android:id="@+id/change_dating_purpose_friend_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="交友·结交知己好友"
+            android:textColor="@color/color_000000"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/change_dating_purpose_love"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/color_ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/change_dating_purpose_love_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="18dp"
+            android:gravity="center_horizontal"
+            android:src="@drawable/change_dating_purpose_love_icon" />
+
+        <TextView
+
+            android:id="@+id/change_dating_purpose_love_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="恋爱·邂逅浪漫爱情"
+            android:textColor="@color/color_000000"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/change_dating_purpose_married"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/color_ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/change_dating_purpose_married_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="18dp"
+            android:gravity="center_horizontal"
+            android:src="@drawable/change_dating_purpose_married_icon" />
+
+        <TextView
+            android:id="@+id/change_dating_purpose_married_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="结婚·寻找结婚对象"
+            android:textColor="@color/color_000000"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

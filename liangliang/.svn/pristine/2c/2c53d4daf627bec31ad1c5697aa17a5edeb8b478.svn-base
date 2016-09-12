@@ -1,0 +1,196 @@
+package cn.chono.yopper.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.FaceratingList.FaceratingListDate;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.glide.CropCircleTransformation;
+import cn.chono.yopper.utils.ImgUtils;
+
+/**
+ * Created by zxb on 2015/12/8.
+ */
+public class ScoreHistorysAdapter extends RecyclerView.Adapter<ScoreHistorysAdapter.ScoreViewHolder> implements com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter<ScoreHistorysAdapter.ScoreHeadViewHolder> {
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position, int userID);
+
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
+    private Context context;
+    private LayoutInflater mInflater;
+
+    private CropCircleTransformation transformation;
+
+    private BitmapPool mPool;
+
+    private List<FaceratingListDate> listDtos;
+
+    public ScoreHistorysAdapter(Context context) {
+        setHasStableIds(true);
+        this.context = context;
+        mInflater = LayoutInflater.from(context);
+        mPool = Glide.get(context).getBitmapPool();
+        transformation = new CropCircleTransformation(mPool);
+    }
+
+
+    public void setData(List<FaceratingListDate> listDtos) {
+        this.listDtos = listDtos;
+    }
+
+    public List<FaceratingListDate> getData() {
+        return listDtos;
+    }
+
+    public void addData(List<FaceratingListDate> addListdata) {
+        if (null == listDtos) {
+            listDtos = new ArrayList<>();
+        }
+        listDtos.addAll(addListdata);
+
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+
+        return listDtos.get(position).getGroupingId();
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return listDtos == null ? 0 : listDtos.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public ScoreViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View convertView = mInflater.inflate(R.layout.score_histoty_layout, parent, false);
+        return new ScoreViewHolder(convertView);
+    }
+
+    @Override
+    public ScoreHeadViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        View headView = mInflater.inflate(R.layout.score_history_item_header_layout, parent, false);
+        return new ScoreHeadViewHolder(headView);
+    }
+
+
+    @Override
+    public void onBindViewHolder(final ScoreViewHolder viewHolder, final int position) {
+
+
+        String imageurl = ImgUtils.DealImageUrl(listDtos.get(position).getTargetUser().getHeadImg(), YpSettings.IMG_SIZE_150,
+                YpSettings.IMG_SIZE_150);
+        Glide.with(context).load(imageurl).error(R.drawable.error_default_icon).bitmapTransform(transformation).into(viewHolder.score_history_item_layout_usericon);
+
+        viewHolder.score_history_item_name_tv.setText(listDtos.get(position).getTargetUser().getName());
+
+        if (listDtos.get(position).getTargetUser().getSex() == 1) {
+            //男性
+            viewHolder.score_history_item_constellation_tv.setBackgroundResource(R.drawable.look_video_man_bg);
+
+        } else {
+            // 女性
+            viewHolder.score_history_item_constellation_tv.setBackgroundResource(R.drawable.look_video_women_bg);
+        }
+
+        int result = listDtos.get(position).getResult();
+
+        if (result == 0) {
+            viewHolder.score_history_item_lvevl_tv.setText("丑");
+            viewHolder.score_history_item_lvevl_iv.setImageResource(R.drawable.score_expression_clown_icon);
+        } else if (result == 1) {
+            viewHolder.score_history_item_lvevl_tv.setText("一般");
+            viewHolder.score_history_item_lvevl_iv.setImageResource(R.drawable.score_expression_general_icon);
+        } else if (result == 2) {
+            viewHolder.score_history_item_lvevl_tv.setText("帅");
+            viewHolder.score_history_item_lvevl_iv.setImageResource(R.drawable.score_expression_handsome_icon);
+
+        } else if (result == 3) {
+            viewHolder.score_history_item_lvevl_tv.setText("很帅");
+            viewHolder.score_history_item_lvevl_iv.setImageResource(R.drawable.score_expression_very_handsome_icon);
+
+        }
+
+        if (null != mOnItemClickLitener) {
+            viewHolder.score_history_item_layout_usericon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnItemClickLitener.onItemClick(viewHolder.score_history_item_layout_usericon, position, listDtos.get(position).getTargetUser().getId());
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public void onBindHeaderViewHolder(ScoreHeadViewHolder hearViewHolder, int position) {
+        hearViewHolder.score_history_item_header_tv.setText(listDtos.get(position).getGroupingTimedirectory());
+
+    }
+
+
+    public class ScoreViewHolder extends RecyclerView.ViewHolder {
+        public ImageView score_history_item_layout_usericon;
+        public ImageView score_history_item_lvevl_iv;
+
+        public TextView score_history_item_name_tv;
+        public TextView score_history_item_constellation_tv;
+        public TextView score_history_item_lvevl_tv;
+
+
+        public LinearLayout score_history_item_layout;
+
+
+        public ScoreViewHolder(View itemView) {
+            super(itemView);
+
+            score_history_item_layout_usericon = (ImageView) itemView.findViewById(R.id.score_history_item_layout_usericon);
+            score_history_item_lvevl_iv = (ImageView) itemView.findViewById(R.id.score_history_item_lvevl_iv);
+
+            score_history_item_name_tv = (TextView) itemView.findViewById(R.id.score_history_item_name_tv);
+            score_history_item_constellation_tv = (TextView) itemView.findViewById(R.id.score_history_item_constellation_tv);
+            score_history_item_lvevl_tv = (TextView) itemView.findViewById(R.id.score_history_item_lvevl_tv);
+
+
+            score_history_item_layout = (LinearLayout) itemView.findViewById(R.id.score_history_item_layout);
+        }
+    }
+
+    public class ScoreHeadViewHolder extends RecyclerView.ViewHolder {
+        public TextView score_history_item_header_tv;
+
+        public ScoreHeadViewHolder(View itemView) {
+            super(itemView);
+            score_history_item_header_tv = (TextView) itemView.findViewById(R.id.score_history_item_header_tv);
+        }
+    }
+
+
+}

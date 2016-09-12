@@ -1,0 +1,470 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class Nearest implements Serializable {
+
+	private int total;
+	private int start;
+	private int rows;
+
+	private List<NearestList> list;
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+	public int getStart() {
+		return start;
+	}
+
+	public void setStart(int start) {
+		this.start = start;
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+
+	public List<NearestList> getList() {
+		return list;
+	}
+
+	public void setList(List<NearestList> list) {
+		this.list = list;
+	}
+
+	@Override
+	public String toString() {
+		return "Nearest [total=" + total + ", start=" + start + ", rows="
+				+ rows + ", list=" + list + "]";
+	}
+
+	public class NearestInfo {
+
+		private int activityType;
+		
+		private String activityIcon;
+		private String activityName;
+
+		private String content;
+
+		private String headImg;
+
+		private int horoscope;
+
+		private int id;
+
+		private String name;
+
+		private int sex;
+
+		public int getActivityType() {
+			return activityType;
+		}
+
+		public void setActivityType(int activityType) {
+			this.activityType = activityType;
+		}
+		
+		
+
+		public String getActivityIcon() {
+			return activityIcon;
+		}
+
+		public void setActivityIcon(String activityIcon) {
+			this.activityIcon = activityIcon;
+		}
+
+		public String getActivityName() {
+			return activityName;
+		}
+
+		public void setActivityName(String activityName) {
+			this.activityName = activityName;
+		}
+
+		public String getContent() {
+			return content;
+		}
+
+		public void setContent(String content) {
+			this.content = content;
+		}
+
+		public String getHeadImg() {
+			return headImg;
+		}
+
+		public void setHeadImg(String headImg) {
+			this.headImg = headImg;
+		}
+
+		public int getHoroscope() {
+			return horoscope;
+		}
+
+		public void setHoroscope(int horoscope) {
+			this.horoscope = horoscope;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getSex() {
+			return sex;
+		}
+
+		public void setSex(int sex) {
+			this.sex = sex;
+		}
+
+		@Override
+		public String toString() {
+			return "NearestInfo [activityType=" + activityType
+					+ ", activityIcon=" + activityIcon + ", activityName="
+					+ activityName + ", content=" + content + ", headImg="
+					+ headImg + ", horoscope=" + horoscope + ", id=" + id
+					+ ", name=" + name + ", sex=" + sex + "]";
+		}
+
+	}
+
+	public class NearestList {
+
+		private NearestScore score;
+
+		private NearestInfo info;
+
+		private String lastRefreshTime;
+		private double lng;
+		private double distance;
+		private int type;
+		private double lat;
+
+		public NearestScore getScore() {
+			return score;
+		}
+
+		public void setScore(NearestScore score) {
+			this.score = score;
+		}
+
+		public String getLastRefreshTime() {
+			return lastRefreshTime;
+		}
+
+		public void setLastRefreshTime(String lastRefreshTime) {
+			this.lastRefreshTime = lastRefreshTime;
+		}
+
+		public double getLng() {
+			return lng;
+		}
+
+		public void setLng(double lng) {
+			this.lng = lng;
+		}
+
+		public double getDistance() {
+			return distance;
+		}
+
+		public void setDistance(double distance) {
+			this.distance = distance;
+		}
+
+		public int getType() {
+			return type;
+		}
+
+		public void setType(int type) {
+			this.type = type;
+		}
+
+		public double getLat() {
+			return lat;
+		}
+
+		public void setLat(double lat) {
+			this.lat = lat;
+		}
+
+		public NearestInfo getInfo() {
+			return info;
+		}
+
+		public void setInfo(NearestInfo info) {
+			this.info = info;
+		}
+
+		@Override
+		public String toString() {
+			return "NearestList [score=" + score + ", lastRefreshTime="
+					+ lastRefreshTime + ", lng=" + lng + ", distance="
+					+ distance + ", type=" + type + ", lat=" + lat + ", info="
+					+ info + "]";
+		}
+
+	}
+
+	public class NearestReson {
+
+		private int activity1;
+
+		private int activity2;
+
+		private double attractionScore;
+
+		private String desc;
+
+		private double distance;
+
+		private int horoscopeLevel;
+
+		private boolean isBumpFriend;
+
+		private boolean isSameSex;
+
+		private String lastRefreshTime;
+
+		private String regTime;
+
+		private double l;
+
+		private double t;
+
+		private double n;
+
+		private double s;
+
+		private double z;
+
+		private double f;
+
+		private double r;
+
+		private double m;
+
+		public int getActivity1() {
+			return activity1;
+		}
+
+		public void setActivity1(int activity1) {
+			this.activity1 = activity1;
+		}
+
+		public int getActivity2() {
+			return activity2;
+		}
+
+		public void setActivity2(int activity2) {
+			this.activity2 = activity2;
+		}
+
+		public double getAttractionScore() {
+			return attractionScore;
+		}
+
+		public void setAttractionScore(double attractionScore) {
+			this.attractionScore = attractionScore;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+
+		public double getDistance() {
+			return distance;
+		}
+
+		public void setDistance(double distance) {
+			this.distance = distance;
+		}
+
+		public int getHoroscopeLevel() {
+			return horoscopeLevel;
+		}
+
+		public void setHoroscopeLevel(int horoscopeLevel) {
+			this.horoscopeLevel = horoscopeLevel;
+		}
+
+		public boolean isBumpFriend() {
+			return isBumpFriend;
+		}
+
+		public void setBumpFriend(boolean isBumpFriend) {
+			this.isBumpFriend = isBumpFriend;
+		}
+
+		public boolean isSameSex() {
+			return isSameSex;
+		}
+
+		public void setSameSex(boolean isSameSex) {
+			this.isSameSex = isSameSex;
+		}
+
+		public String getLastRefreshTime() {
+			return lastRefreshTime;
+		}
+
+		public void setLastRefreshTime(String lastRefreshTime) {
+			this.lastRefreshTime = lastRefreshTime;
+		}
+
+		public String getRegTime() {
+			return regTime;
+		}
+
+		public void setRegTime(String regTime) {
+			this.regTime = regTime;
+		}
+
+		public double getL() {
+			return l;
+		}
+
+		public void setL(double l) {
+			this.l = l;
+		}
+
+		public double getT() {
+			return t;
+		}
+
+		public void setT(double t) {
+			this.t = t;
+		}
+
+		public double getN() {
+			return n;
+		}
+
+		public void setN(double n) {
+			this.n = n;
+		}
+
+		public double getS() {
+			return s;
+		}
+
+		public void setS(double s) {
+			this.s = s;
+		}
+
+		public double getZ() {
+			return z;
+		}
+
+		public void setZ(double z) {
+			this.z = z;
+		}
+
+		public double getF() {
+			return f;
+		}
+
+		public void setF(double f) {
+			this.f = f;
+		}
+
+		public double getR() {
+			return r;
+		}
+
+		public void setR(double r) {
+			this.r = r;
+		}
+
+		public double getM() {
+			return m;
+		}
+
+		public void setM(double m) {
+			this.m = m;
+		}
+
+		@Override
+		public String toString() {
+			return "NearestReson [activity1=" + activity1 + ", activity2="
+					+ activity2 + ", attractionScore=" + attractionScore
+					+ ", desc=" + desc + ", distance=" + distance
+					+ ", horoscopeLevel=" + horoscopeLevel + ", isBumpFriend="
+					+ isBumpFriend + ", isSameSex=" + isSameSex
+					+ ", lastRefreshTime=" + lastRefreshTime + ", regTime="
+					+ regTime + ", l=" + l + ", t=" + t + ", n=" + n + ", s="
+					+ s + ", z=" + z + ", f=" + f + ", r=" + r + ", m=" + m
+					+ "]";
+		}
+
+	}
+
+	public class NearestScore {
+
+		private NearestReson reason;
+
+		private int rank;
+		private double totalScore;
+
+		@Override
+		public String toString() {
+			return "NearestScore [rank=" + rank + ", reason=" + reason
+					+ ", totalScore=" + totalScore + "]";
+		}
+
+		public int getRank() {
+			return rank;
+		}
+
+		public void setRank(int rank) {
+			this.rank = rank;
+		}
+
+		public NearestReson getReason() {
+			return reason;
+		}
+
+		public void setReason(NearestReson reason) {
+			this.reason = reason;
+		}
+
+		public double getTotalScore() {
+			return totalScore;
+		}
+
+		public void setTotalScore(double totalScore) {
+			this.totalScore = totalScore;
+		}
+
+	}
+
+}

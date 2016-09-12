@@ -1,0 +1,91 @@
+package cn.chono.yopper.data;
+
+public class BubbleMsgDto {
+
+
+	//0是直接评论， 1是:评论回复, 2是点赞
+
+	private String type;
+
+	private String from;
+
+	private int bubbleType;
+
+	private String bubbleId;
+
+	private int fromUserId;
+
+	
+	private String content;
+
+	private String createTime;
+
+	
+	
+	
+	public int getFromUserId() {
+		return fromUserId;
+	}
+
+	public void setFromUserId(int fromUserId) {
+		this.fromUserId = fromUserId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public int getBubbleType() {
+		return bubbleType;
+	}
+
+	public void setBubbleType(int bubbleType) {
+		this.bubbleType = bubbleType;
+	}
+
+	public String getBubbleId() {
+		return bubbleId;
+	}
+
+	public void setBubbleId(String bubbleId) {
+		this.bubbleId = bubbleId;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
+	public BubbleMsgDto() {
+		super();
+	}
+
+
+
+
+
+
+}

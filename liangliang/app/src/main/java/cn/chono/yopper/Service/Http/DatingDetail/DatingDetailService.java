@@ -1,0 +1,40 @@
+package cn.chono.yopper.Service.Http.DatingDetail;
+
+import android.content.Context;
+
+import java.util.HashMap;
+
+import cn.chono.yopper.Service.Http.HttpService;
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.Service.OKHttpUtils;
+/**
+ * 获取约会详情
+ * Created by zxb on 2015/11/20.
+ */
+public class DatingDetailService extends HttpService {
+    public DatingDetailService(Context context) {
+        super(context);
+    }
+
+    private DatingDetailBean detailBean;
+
+    @Override
+    public void enqueue() {
+        OutDataClass = DatingDetailRespBean.class;
+
+        HashMap<String,Object> HashMap=new HashMap<>();
+        HashMap.put("Lng",detailBean.getLng());
+        HashMap.put("Lat",detailBean.getLat());
+        String url = HttpURL.get_v3_dating_detail + detailBean.getDatingId()+"?";
+
+        
+        callWrap = OKHttpUtils.get(context, url,HashMap ,okHttpListener);
+
+    }
+
+    @Override
+    public void parameter(ParameterBean iBean) {
+        detailBean = (DatingDetailBean) iBean;
+    }
+}

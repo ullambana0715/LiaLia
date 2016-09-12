@@ -1,0 +1,288 @@
+package cn.chono.yopper.activity.near;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.photo.ImageBucket;
+import cn.chono.yopper.photo.ImageItem;
+import cn.chono.yopper.photo.ImageSelectedDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.view.viewpager.HackyViewPager;
+import cn.chono.yopper.view.viewpager.PhotoView;
+
+public class GalleryActivity extends MainFrameActivity implements
+        OnClickListener {
+
+    private HackyViewPager viewPager;
+    private TextView _numberTv;
+
+    private final int _TAB_NUMBER = 0;
+    private final int _TAB_SELECE = 1;
+    private final int _TAB_SELECE_NO = 2;
+
+    private int _index = 0;
+
+    private LinearLayout frame_btnGoBack_container, frame_btnOption_containers;
+    private ImageView frame_btnOption;
+
+    private RelativeLayout layout;
+    private List<ImageItem> list = new ArrayList<ImageItem>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.gallery_activity);
+        PushAgent.getInstance(this).onAppStart();
+        initView();
+        Bundle bundle = getIntent().getExtras();
+
+        int tag = bundle.getInt(YpSettings.PHOTO_TAG_LIST);
+
+        if (tag == YpSettings.PHOTO_TAG_LIST_ONE) {
+            list = ImageSelectedDto.selectedList;
+        } else {
+            list = ImageSelectedDto.imageList;
+        }
+
+        judgeFromObject(bundle);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("发布冒泡（预览照片）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("发布冒泡（预览照片）"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    /**
+     * 组件初始化
+     */
+    private void initView() {
+        viewPager = (HackyViewPager) findViewById(R.id.constellation_viewPager);
+        _numberTv = (TextView) findViewById(R.id.numberTv);
+        frame_btnGoBack_container = (LinearLayout) findViewById(R.id.frame_btnGoBack_container);
+        frame_btnOption_containers = (LinearLayout) findViewById(R.id.frame_btnOption_containers);
+        frame_btnOption = (ImageView) findViewById(R.id.frame_btnOption);
+
+        layout = (RelativeLayout) findViewById(R.id.layout);
+        frame_btnGoBack_container.setOnClickListener(this);
+        frame_btnOption_containers.setOnClickListener(this);
+        layout.setOnClickListener(this);
+
+        this.getTitleLayout().setVisibility(View.GONE);
+
+    }
+
+    private void judgeFromObject(Bundle bundle) {
+        int position = bundle.getInt(YpSettings.PHOTO_GALLERY_TAG, -100);
+
+        if (position == -100) {
+            position = 0;
+        }
+        _index = position;
+
+        viewPager.setAdapter(new SamplePagerAdapter());
+        viewPager.setCurrentItem(position);
+        viewPager.addOnPageChangeListener(new PageChageListener());
+
+        if (ImageSelectedDto.selectedList.contains(list.get(position))) {
+            Message message = Message.obtain(_mHandler, _TAB_SELECE);
+            message.sendToTarget();
+        } else {
+
+            Message message = Message.obtain(_mHandler, _TAB_SELECE_NO);
+            message.sendToTarget();
+
+        }
+
+        if (ImageSelectedDto.selectedList.size() == 0) {
+            _numberTv.setText("");
+        } else {
+            _numberTv.setText(ImageSelectedDto.selectedList.size() + "");
+        }
+    }
+
+    Handler _mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case _TAB_NUMBER:
+                    DialogUtil.showDisCoverNetToast(GalleryActivity.this, "最多只能选择9张图片");
+                    break;
+                case _TAB_SELECE:
+                    frame_btnOption.setImageResource(R.drawable.album_icon_yes);
+                    break;
+                case _TAB_SELECE_NO:
+                    frame_btnOption.setImageResource(R.drawable.album_icon_no);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    };
+
+    private class PageChageListener implements OnPageChangeListener {
+
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+        }
+
+        @Override
+        public void onPageSelected(int arg0) {
+            _index = arg0;
+
+            if (ImageSelectedDto.selectedList.contains(list.get(arg0))) {
+                Message message = Message.obtain(_mHandler, _TAB_SELECE);
+                message.sendToTarget();
+            } else {
+
+                Message message = Message.obtain(_mHandler, _TAB_SELECE_NO);
+                message.sendToTarget();
+
+            }
+
+        }
+
+    }
+
+    class SamplePagerAdapter extends PagerAdapter {
+
+		/*
+         * private static int[] sDrawables = { R.drawable.wallpaper,
+		 * R.drawable.a1, R.drawable.a2, R.drawable.a3, R.drawable.wallpaper,
+		 * R.drawable.wallpaper };
+		 */
+
+        @Override
+        public int getCount() {
+            LogUtils.e("照片数组大小"+list.size());
+            return list == null ? 0 : list.size();
+        }
+
+        @Override
+        public View instantiateItem(ViewGroup container, int position) {
+            PhotoView photoView = new PhotoView(container.getContext());
+            container.addView(photoView, LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+
+            ImageItem imageItem = list.get(position);
+            String imgeUrl = imageItem.imagePath;
+
+            Glide.with(GalleryActivity.this).load(imgeUrl)
+                    .error(R.drawable.error_default_icon)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE).into(photoView);
+
+            LogUtils.e("instantiateItem-------");
+
+            return photoView;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+            LogUtils.e("destroyItem-------");
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            LogUtils.e("isViewFromObject-----");
+            return view == object;
+        }
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.frame_btnOption_containers:
+
+                if (ImageSelectedDto.selectedList.size() > ImageSelectedDto.maximum) {
+                    Message message = Message.obtain(_mHandler, _TAB_NUMBER);
+                    message.sendToTarget();
+                    return;
+                }
+                if (ImageSelectedDto.selectedList.contains(list.get(_index))) {
+
+                    ImageSelectedDto.selectedList.remove(list.get(_index));
+
+                    Message message = Message.obtain(_mHandler, _TAB_SELECE_NO);
+                    message.sendToTarget();
+
+                } else {
+
+                    if (ImageSelectedDto.selectedList.size() >= ImageSelectedDto.maximum) {
+                        Message message = Message.obtain(_mHandler, _TAB_NUMBER);
+                        message.sendToTarget();
+                        return;
+                    }
+                    ImageSelectedDto.selectedList.add(list.get(_index));
+                    Message message = Message.obtain(_mHandler, _TAB_SELECE);
+                    message.sendToTarget();
+                }
+                if (ImageSelectedDto.selectedList.size() == 0) {
+                    _numberTv.setText("");
+                } else {
+                    _numberTv.setText(ImageSelectedDto.selectedList.size() + "");
+                }
+
+                break;
+            case R.id.frame_btnGoBack_container:
+                finish();
+
+                break;
+            case R.id.layout:
+
+                ImageSelectedDto.okselectedList.addAll(ImageSelectedDto.selectedList);
+
+                ImageSelectedDto.dataList = new ArrayList<ImageBucket>();
+                ImageSelectedDto.imageList = new ArrayList<ImageItem>();
+                ImageSelectedDto.selectedList = new ArrayList<ImageItem>();
+
+                ActivityUtil.jump(GalleryActivity.this,PublishBubblingActivity.class, null, 1, 100);
+
+                break;
+
+            default:
+                break;
+        }
+
+    }
+}

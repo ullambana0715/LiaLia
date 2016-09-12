@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ListView的头部 -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <!-- 内容 -->
+
+    <RelativeLayout
+        android:id="@+id/headview_content_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <!-- 箭头图像、进度条 -->
+
+        <FrameLayout
+            android:id="@+id/head_contentLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="0dp" >
+
+            <!-- 箭头 -->
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/listview_fresh_bg" />
+
+            <ImageView
+                android:id="@+id/loading_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/listview_fresh_one" />
+        </FrameLayout>
+
+        <!-- 提示、最近更新 -->
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <!-- 提示 -->
+
+            <TextView
+                android:id="@+id/head_tipsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下拉可以刷新"
+                android:textColor="@color/color_000000"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/color_000000"
+            android:visibility="gone" >
+        </View>
+    </RelativeLayout>
+
+</LinearLayout>

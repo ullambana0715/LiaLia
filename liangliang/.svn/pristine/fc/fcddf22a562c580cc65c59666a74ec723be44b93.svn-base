@@ -1,0 +1,81 @@
+package cn.chono.yopper.data;
+
+public class DailyMatch {
+
+	//	"userId1": 1,
+	//	"userId2": 2,
+	//	"sex1": 0,
+	//	"sex2": 0,
+	//	"horoscope1": 0,
+	//	"horoscope2": 0,
+	//	"score": 3,
+	//	"isPerfect": true
+
+	private int userId1;
+	private int userId2;
+	private int sex1;
+	private int sex2;
+	private int horoscope1;
+
+	private int horoscope2;
+
+	private int score;
+	private boolean isPerfect;
+	
+	
+	
+	public int getUserId1() {
+		return userId1;
+	}
+	public void setUserId1(int userId1) {
+		this.userId1 = userId1;
+	}
+	public int getUserId2() {
+		return userId2;
+	}
+	public void setUserId2(int userId2) {
+		this.userId2 = userId2;
+	}
+	public int getSex1() {
+		return sex1;
+	}
+	public void setSex1(int sex1) {
+		this.sex1 = sex1;
+	}
+	public int getSex2() {
+		return sex2;
+	}
+	public void setSex2(int sex2) {
+		this.sex2 = sex2;
+	}
+	public int getHoroscope1() {
+		return horoscope1;
+	}
+	public void setHoroscope1(int horoscope1) {
+		this.horoscope1 = horoscope1;
+	}
+	public int getHoroscope2() {
+		return horoscope2;
+	}
+	public void setHoroscope2(int horoscope2) {
+		this.horoscope2 = horoscope2;
+	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public boolean isPerfect() {
+		return isPerfect;
+	}
+	public void setPerfect(boolean isPerfect) {
+		this.isPerfect = isPerfect;
+	}
+	
+	
+	
+	
+	
+	
+}

@@ -1,0 +1,17 @@
+package cn.chono.yopper.data;
+
+/**
+ * Created by SQ on 2015/12/9.
+ */
+public class NotificationExtraDto {
+
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+}

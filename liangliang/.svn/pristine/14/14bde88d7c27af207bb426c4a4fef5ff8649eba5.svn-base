@@ -1,0 +1,24 @@
+package cn.chono.yopper.view.ScoreCord;
+
+import android.widget.ImageView;
+
+/**
+ * Created by zxb on 2015/12/5.
+ */
+public interface OnScoreCordLayoutLevelListener {
+    void onLevelClownIvSelected(ImageView imageView);
+
+    void onLevelGeneralIvSelected(ImageView imageView);
+
+    void onLevelHandsomeIvSelected(ImageView imageView);
+
+    void onLevelVeryHandsomeIvSelected(ImageView imageView);
+
+    void onLevelClownIvLoosen(ImageView imageView);
+
+    void onLevelGeneralIvLoosen(ImageView imageView);
+
+    void onLevelHandsomeIvLoosen(ImageView imageView);
+
+    void onLevelVeryHandsomeIvLoosen(ImageView imageView);
+}

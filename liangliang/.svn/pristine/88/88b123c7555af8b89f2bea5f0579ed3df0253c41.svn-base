@@ -1,0 +1,856 @@
+package cn.chono.yopper.utils;
+
+import android.annotation.SuppressLint;
+import android.net.ParseException;
+import android.text.TextUtils;
+
+import com.ta.utdid2.android.utils.StringUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+/**
+ * 时间工具类
+ *
+ * @author way
+ *
+ */
+@SuppressLint("SimpleDateFormat")
+public class TimeUtil {
+
+	public static String getTime(long time) {
+		SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd HH:mm");
+		return format.format(new Date(time));
+	}
+	public static String getTimeMMdd(long time) {
+		SimpleDateFormat format = new SimpleDateFormat("MM-dd");
+		return format.format(new Date(time));
+	}
+
+	public static String getHourAndMin(long time) {
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		return format.format(new Date(time));
+	}
+
+	public static String getChatTime(long timesamp) {
+		String result = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("dd");
+		Date today = new Date(System.currentTimeMillis());
+		Date otherDay = new Date(timesamp);
+		int temp = Integer.parseInt(sdf.format(today))
+				- Integer.parseInt(sdf.format(otherDay));
+
+		switch (temp) {
+			case 0:
+				result = "今天 " + getHourAndMin(timesamp);
+				break;
+			case 1:
+				result = "昨天 " + getHourAndMin(timesamp);
+				break;
+			case 2:
+				result = "前天 " + getHourAndMin(timesamp);
+				break;
+
+			default:
+				// result = temp + "天前 ";
+				result = getTime(timesamp);
+				break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * 返回两日期之间相差的天数
+	 *
+	 * @param startDay
+	 * @param endDay
+	 * @return
+	 */
+	public static int getIntervalDays(Calendar startDay, Calendar endDay) {
+		/*
+		 * if (startDay.after(endDay)) { Calendar swap = startDay; startDay =
+		 * endDay; endDay = swap; }
+		 */
+		long start = startDay.getTimeInMillis();
+		long end = endDay.getTimeInMillis();
+		long interval = end - start;
+		return (int) (interval / (1000 * 60 * 60 * 24));
+	}
+
+	/**
+	 * 判断两个时间是不是同一天
+	 * @param fromTime
+	 * @param toTime
+	 * @return
+	 */
+	public static boolean isTimeSameday(long fromTime,long toTime){
+		Date frome_today = new Date(fromTime);
+		Date to_today = new Date(toTime);
+
+		Calendar cal1 = Calendar.getInstance();
+		cal1.setTime(frome_today);
+
+		Calendar cal2 = Calendar.getInstance();
+		cal2.setTime(to_today);
+
+		boolean isSameYear = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+		boolean isSameMonth = isSameYear&& cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
+		boolean isSameDate = isSameMonth&& cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH);
+
+		return isSameDate;
+
+	}
+
+	/**
+	 * 判断是不是昨天
+	 * @param oldDate
+	 * @param newDate
+	 * @return
+	 */
+
+	public static boolean oneDayDifference(Date oldDate, Date newDate) {
+		Calendar oldCal = Calendar.getInstance();
+		Calendar newCal = Calendar.getInstance();
+
+		oldCal.setTime(oldDate);
+		newCal.setTime(newDate);
+		return Math.abs(newCal.get(Calendar.DAY_OF_YEAR) - oldCal.get(Calendar.DAY_OF_YEAR)) == 1;
+	}
+
+	/**
+	 * 返回输入日期跟今天的相差天数
+	 *
+	 * @param endday
+	 * @return
+	 */
+	public static int getIntervalDays(Date endday) {
+
+		Date startday = new Date(System.currentTimeMillis());
+		if (startday.after(endday)) {
+			Date swap = startday;
+			startday = endday;
+			endday = swap;
+		}
+		long start = startday.getTime();
+		long end = endday.getTime();
+		long interval = end - start;
+		return (int) (interval / (1000 * 60 * 60 * 24));
+	}
+
+	/**
+	 * 判断两时间是否相差超过60秒 超过返回true
+	 *
+	 */
+	public static boolean getIntervalDays(long curr_timesamp, long pre_timesamp) {
+
+		Date curr_day = new Date(curr_timesamp);
+		Date pre_day = new Date(pre_timesamp);
+
+		if (curr_day.after(pre_day)) {
+			Date swap = curr_day;
+			curr_day = pre_day;
+			pre_day = swap;
+		}
+		long start = curr_day.getTime();
+		long end = pre_day.getTime();
+		long interval = end - start;
+		long ms = (long) (interval / 1000);
+		if (ms >= 60) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	/**
+	 *
+	 * @Title: getInterval
+	 * @Description: TODO(这里用一句话描述这个方法的作用)
+	 * @param: @param curr_timesamp
+	 * @param: @param pre_timesamp
+	 * @param: @param is_interval 间隔多少秒
+	 * @param: @return
+	 * @return: boolean
+	 * @throws
+	 */
+	public static boolean getInterval(long curr_timesamp, long pre_timesamp,
+									  int is_interval) {
+		boolean isInterval;
+		Date curr_day = new Date(curr_timesamp);
+		Date pre_day = new Date(pre_timesamp);
+
+		if (curr_day.after(pre_day)) {
+			Date swap = curr_day;
+			curr_day = pre_day;
+			pre_day = swap;
+		}
+		long start = curr_day.getTime();
+		long end = pre_day.getTime();
+		long interval = end - start;
+		long min = (long) (interval / 1000);
+		if (min >= is_interval) {
+			isInterval = true;
+
+		} else {
+			isInterval = false;
+		}
+		return true;
+	}
+
+	/**
+	 * 返回两日期之间相差的天数
+	 *
+	 * 两时间相差的分钟数
+	 *
+	 */
+	public static int getdifMin(long curr_timesamp, long pre_timesamp) {
+
+		Date curr_day = new Date(curr_timesamp);
+		Date pre_day = new Date(pre_timesamp);
+
+		if (curr_day.after(pre_day)) {
+			Date swap = curr_day;
+			curr_day = pre_day;
+			pre_day = swap;
+		}
+		long start = curr_day.getTime();
+		long end = pre_day.getTime();
+		long interval = end - start;
+		int min = (int) ((interval / 1000) / 60);
+		return min;
+
+	}
+
+	/**
+	 * 返回两日期之间相差的天数
+	 *
+	 * @param startday
+	 * @param endday
+	 * @return
+	 */
+	public static int getIntervalDays(Date startday, Date endday) {
+		if (startday.after(endday)) {
+			Date swap = startday;
+			startday = endday;
+			endday = swap;
+		}
+		long start = startday.getTime();
+		long end = endday.getTime();
+		long interval = end - start;
+		return (int) (interval / (1000 * 60 * 60 * 24));
+	}
+
+	/**
+	 * 判断毫秒数是不是在今天，只支持GMT+8时区
+	 *
+	 * @param value
+	 * @return
+	 */
+	public static boolean isToday(long value) {
+
+		long system_time = System.currentTimeMillis();
+
+		Date startday = new Date(value);
+		Date endday = new Date(system_time);
+
+		return isToday(startday,endday);
+	}
+
+
+	/**
+	 * 是否是今天
+	 *
+	 * @param date
+	 * @return
+	 */
+	public static boolean isToday(final Date date,final Date nowdate) {
+		return isTheDay(date, nowdate);
+	}
+	/**
+	 * 是否是指定日期
+	 *
+	 * @param date
+	 * @param day
+	 * @return
+	 */
+	public static boolean isTheDay(final Date date, final Date day) {
+		return date.getTime() >= dayBegin(day).getTime()
+				&& date.getTime() <= dayEnd(day).getTime();
+	}
+	/**
+	 * 获取指定时间的那天 00:00:00.000 的时间
+	 *
+	 * @param date
+	 * @return
+	 */
+	public static Date dayBegin(final Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		return c.getTime();
+	}
+	/**
+	 * 获取指定时间的那天 23:59:59.999 的时间
+	 *
+	 * @param date
+	 * @return
+	 */
+	public static Date dayEnd(final Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 23);
+		c.set(Calendar.MINUTE, 59);
+		c.set(Calendar.SECOND, 59);
+		c.set(Calendar.MILLISECOND, 999);
+		return c.getTime();
+	}
+
+
+	/**
+	 * 返回日期的字符串表示形式：yyyy年MM月dd日 HH:mm
+	 *
+	 */
+	// 实现日期固定格式表示
+	@SuppressWarnings("deprecation")
+	public static String getDateTimeString(long timesamp) {
+		Date date = new Date(timesamp);
+
+		int year = date.getYear() + 1900;
+		int month = date.getMonth() + 1;
+		int day = date.getDate();
+		int hour = date.getHours();
+		int minute = date.getMinutes();
+
+		String timeString = year + "年" + (month < 10 ? "0" + month : month)
+				+ "月" + (day < 10 ? "0" + day : day) + "日  "
+				+ (hour < 10 ? "0" + hour : hour) + ":"
+				+ (minute < 10 ? "0" + minute : minute);
+
+		return timeString;
+	}
+
+	/**
+	 * 返回日期的字符串表示形式,年
+	 *
+	 */
+	// 实现日期固定格式表示
+	@SuppressWarnings("deprecation")
+	public static int getDateTimeHString(long timesamp) {
+		Date date = new Date(timesamp);
+
+		int year = date.getYear() + 1900;
+		int month = date.getMonth() + 1;
+		int day = date.getDate();
+		int hour = date.getHours();
+		int minute = date.getMinutes();
+
+		return year;
+	}
+
+	/**
+	 * 是否是今年 如果不是今年 返回yy-MM-dd 是今年返回日期的字符串表示形式：hh-mm
+	 *
+	 */
+	public static String getDateString(long timesamp, long systime) {
+		Date date = new Date(timesamp);
+		Date system_date = new Date(systime);
+		int sys_year = system_date.getYear() + 1900;
+		int year = date.getYear() + 1900;
+
+		int month = date.getMonth() + 1;
+		int day = date.getDate();
+		int hour = date.getHours();
+		int minute = date.getMinutes();
+		String timeString = "";
+		if (sys_year != year) {
+
+			timeString = year + "-" + (month < 10 ? "0" + month : month) + "-"
+					+ (day < 10 ? "0" + day : day);
+		} else {
+
+			timeString = (month < 10 ? "0" + month : month) + "-"
+					+ (day < 10 ? "0" + day : day);
+		}
+
+		return timeString;
+	}
+
+
+	public static String getDatingDateString(long timesamp, long systime) {
+		Date date = new Date(timesamp);
+		Date system_date = new Date(systime);
+		int sys_year = system_date.getYear() + 1900;
+		system_date.getMonth();
+		int year = date.getYear() + 1900;
+
+		int month = date.getMonth() + 1;
+		int day = date.getDate();
+		int hour = date.getHours();
+		int minute = date.getMinutes();
+		String timeString = "";
+
+		if (sys_year != year) {
+			timeString = year + "年" + (month < 10 ? "0" + month : month) + "月" + (day < 10 ? "0" + day : day)+"日";
+		} else {
+			int dateTime = getIntervalDays(date, system_date);
+			if (dateTime==0) {
+				timeString = (month < 10 ? "0" + month : month) + "月" + (day < 10 ? "0" + day : day) + "日(今天)";
+			}else{
+				timeString = (month < 10 ? "0" + month : month) + "月" + (day < 10 ? "0" + day : day) + "日";
+			}
+		}
+
+		return timeString;
+	}
+
+	/**
+	 * 是否是今年
+	 * @param timesamp
+	 * @param systime
+	 * @return
+	 */
+	public static boolean isDateYY(long timesamp, long systime) {
+		Date date = new Date(timesamp);
+		Date system_date = new Date(systime);
+		int sys_year = system_date.getYear() + 1900;
+		int year = date.getYear() + 1900;
+
+		int month = date.getMonth() + 1;
+		int day = date.getDate();
+		int hour = date.getHours();
+		int minute = date.getMinutes();
+		String timeString = "";
+		if (sys_year != year) {
+
+			return  false;
+		} else {
+
+			return  true;
+		}
+
+
+	}
+
+	/**
+	 * 返回yy-MM-dd
+	 *
+	 */
+	public static String getDateFormatString(long systime) {
+
+		Date date = new Date(systime);
+		int year = date.getYear() + 1900;
+		int month = date.getMonth() + 1;
+		int day = date.getDate();
+		String timeString = "";
+
+		timeString = year + "-" + (month < 10 ? "0" + month : month) + "-"
+				+ (day < 10 ? "0" + day : day);
+
+		return timeString;
+	}
+
+	/**
+	 * 返回日期的字符串表示形式：HH:mm
+	 *
+	 */
+	// 实现日期固定格式表示
+	@SuppressWarnings("deprecation")
+	public static String gethour_minString(long timesamp) {
+		Date date = new Date(timesamp);
+
+		int hour = date.getHours();
+		int minute = date.getMinutes();
+
+		String timeString = (hour < 10 ? "0" + hour : hour) + ":"
+				+ (minute < 10 ? "0" + minute : minute);
+
+		return timeString;
+	}
+
+	public static String getSysTime() {
+		return String.valueOf(System.currentTimeMillis());
+	}
+
+	public static String getday_of_week(String year, String month, String day) {
+
+		String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
+
+		Calendar c = Calendar.getInstance();
+		c.set(Integer.parseInt(year), Integer.parseInt(month) - 1,
+				Integer.parseInt(day));
+
+		int w = c.get(Calendar.DAY_OF_WEEK) - 1;
+		if (w < 0)
+			w = 0;
+
+		return weekDays[w];
+
+	}
+
+	public static Long date2Mill(String dateTime, String pattern) {
+		if (StringUtils.isEmpty(dateTime))
+			return null;
+
+		Calendar c = Calendar.getInstance();
+		try {
+			try {
+				c.setTime(new SimpleDateFormat(pattern).parse(dateTime));
+			} catch (java.text.ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return c.getTimeInMillis();
+	}
+
+	public static String dateMIll(String str) {
+		String x = "";
+		String y = "";
+		String z = "";
+		if (!TextUtils.isEmpty(str)) {
+
+			String a[] = str.split("T");
+			if (a.length != 0) {
+				x = a[0];
+				y = a[1];
+				if (!TextUtils.isEmpty(y)) {
+					String b[] = y.split("\\.");
+					if (b.length != 0) {
+						z = b[0];
+
+					}
+				}
+			}
+
+		}
+
+		return x + " " + z;
+
+	}
+
+	public static String dateMIllH(String str) {
+		String x = "";
+		String y = "";
+		String z = "";
+		if (!TextUtils.isEmpty(str)) {
+
+			String a[] = str.split("T");
+			if (a.length != 0) {
+				x = a[0];
+				y = a[1];
+				if (!TextUtils.isEmpty(y)) {
+					String b[] = y.split("\\.");
+					if (b.length != 0) {
+						z = b[0];
+
+					}
+				}
+			}
+
+		}
+
+		return x;
+
+	}
+
+	public static String dateMIllHdate(String str) {
+		String x = "";
+
+		if (!TextUtils.isEmpty(str)) {
+
+			String a[] = str.split("T");
+			if (a.length != 0) {
+				x = a[0];
+
+			}
+
+		}
+		String b[] = null;
+		if (!TextUtils.isEmpty(x)) {
+			b = x.split("-");
+
+		}
+		String data = "";
+		String u = "", i = "", o = "";
+		if (b != null) {
+			if (b.length == 1) {
+				u = b[0];
+				data = u + "年";
+			}
+			if (b.length == 2) {
+				i = b[1];
+				data = b[0] + "年" + i + "月";
+			}
+			if (b.length == 3) {
+				o = b[2];
+				data = b[0] + "年" + b[1] + "月" + o + "日";
+			}
+
+		}
+
+		return data;
+
+	}
+
+	public static long getFormat(String time) {
+		long timeLong = 0;
+
+		SimpleDateFormat format = new SimpleDateFormat(
+				"yyy-MM-dd'T'HH:mm:ss.SSS");
+		try {
+			Date parse = format.parse(time);
+			timeLong = parse.getTime();
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return timeLong;
+
+	}
+
+	/**
+	 * yyyy-MM-dd 或yyyy-MM-dd HH:mm:ss 或 yyyy年MM月dd日
+	 *
+	 * @Title: getDateNoTime
+	 * @Description: TODO(这里用一句话描述这个方法的作用)
+	 * @param @param time
+	 * @param @param format
+	 * @param @return 设定文件
+	 * @return String 返回类型
+	 * @throws
+	 */
+	public static String getDateTime(long time, String format) {
+		String dateString;
+		Date date = new Date(time);
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
+		dateString = formatter.format(date);
+		return dateString;
+
+	}
+
+	public static String convertLongToDateString(long time, String pattern) {
+
+		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+		return sdf.format(new Date(time));
+	}
+
+	/**
+	 * 获取百纳秒
+	 *
+	 * @Title: getHundredNanosecond
+	 * @Description: TODO(这里用一句话描述这个方法的作用)
+	 * @param @return 设定文件
+	 * @return long 返回类型
+	 * @throws
+	 */
+	public static long getHundredNanosecond() {
+		return System.currentTimeMillis() * 1000 * 10;
+
+	}
+
+	/**
+	 * 获取当前系统时间，单位--秒
+	 *
+	 * @Title: getCurrentNanosecondTime
+	 * @Description: TODO(这里用一句话描述这个方法的作用)
+	 * @param @return 设定文件
+	 * @return long 返回类型
+	 * @throws
+	 */
+	public static long getCurrentTimeMillis() {
+		return System.currentTimeMillis();
+	}
+
+	/**
+	 * 获取当前系统时间，单位--秒
+	 *
+	 * @Title: getCurrentNanosecondTime
+	 * @Description: TODO(这里用一句话描述这个方法的作用)
+	 * @param @return 设定文件
+	 * @return long 返回类型
+	 * @throws
+	 */
+	public static long getCurrentNanosecondTime() {
+		return System.currentTimeMillis();
+
+	}
+
+	/**
+	 * 消息时间转换
+	 *
+	 * @param datetime
+	 * @return
+	 */
+
+	public static String msgTimeFormat(long datetime) {
+
+		String time = "";
+
+		long system_time = System.currentTimeMillis();
+		Date startday = new Date(datetime);
+		Date endday = new Date(system_time);
+		int dateTime = getIntervalDays(startday, endday);
+
+		if (dateTime==0) {
+			// 是当天
+
+			int min = TimeUtil.getdifMin(datetime, system_time);
+
+			if (min == 0) {
+				time = "刚刚";
+			} else if (1 <= min && min < 60) {
+				time = min + "分钟前";
+			} else {
+				time = TimeUtil.gethour_minString(datetime);
+			}
+
+		} else {
+			// 消息时间不是当天
+			time = TimeUtil.getDateString(datetime, system_time);
+		}
+
+		return time;
+	}
+
+
+
+	public static String getDatingTargetTimeStr(long datetime){
+
+		String time = "";
+
+		long system_time = System.currentTimeMillis();
+		Date startday = new Date(datetime);
+		Date endday = new Date(system_time);
+		int dateTime = getIntervalDays(startday, endday);
+
+		if (dateTime==0) {
+			// 是当天
+			time = TimeUtil.gethour_minString(datetime);
+		} else {
+			// 消息时间不是当天
+			time = TimeUtil.getDatingDateString(datetime, system_time);
+		}
+
+		return time;
+	}
+
+
+	/**
+	 * 常规时间转换
+	 *
+	 * @param datetime
+	 * @return
+	 */
+
+	public static String normalTimeFormat(long datetime) {
+
+		String time = "";
+
+		long system_time = System.currentTimeMillis();
+
+
+		Date startday = new Date(datetime);
+		Date endday = new Date(system_time);
+		int dateTime = getIntervalDays(startday, endday);
+
+		if (dateTime==0) {
+			// 是当天
+
+			int min = TimeUtil.getdifMin(datetime, system_time);
+
+			if (min == 0) {
+				time = "刚刚";
+			} else if (1 <= min && min < 60) {
+				time = min + "分钟前";
+			} else {
+				int h_main = 0;
+
+				h_main = Integer.valueOf((min / 60));// 转小时
+
+				time = h_main + "小时前";
+			}
+
+		} else {
+			// 消息时间不是当天
+			time = TimeUtil.getDateString(datetime, system_time);
+		}
+
+		return time;
+	}
+
+
+	/**
+	 * 活沃时间转换
+	 *
+	 * @param datetime
+	 * @return
+	 */
+
+	public static String LivelyTimeFormat(long datetime) {
+
+		String time = "";
+
+		long system_time = System.currentTimeMillis();
+
+		Date startday = new Date(datetime);
+		Date endday = new Date(system_time);
+		int dateTime = getIntervalDays(startday, endday);
+
+		if (dateTime==0) {
+			// 是当天
+
+			int min = TimeUtil.getdifMin(datetime, system_time);
+
+			if (min == 0) {
+				time = "刚刚";
+			} else if (1 <= min && min < 60) {
+				time = min + "分钟前";
+			} else {
+				int h_main = 0;
+
+				h_main = Integer.valueOf((min / 60));// 转小时
+
+				time = h_main + "小时前";
+			}
+
+		} else {
+
+			if (dateTime >= 3) {
+				time = "3天前";
+			} else {
+				time = dateTime + "天前";
+			}
+		}
+
+		return time;
+	}
+
+
+	/**
+	 * 返回几天后的时间 2016-1-07 23:59:59秒
+	 * @param day
+	 * @return
+     */
+	public static String timeWithSettingDay(int day){
+		String timeStr="";
+		long  time=System.currentTimeMillis()+day*24*60*60*1000;
+
+		Date date = new Date(time);
+
+		Calendar cal1 = Calendar.getInstance();
+		cal1.setTime(date);
+		cal1.set(cal1.get(Calendar.YEAR),cal1.get(Calendar.MONTH),cal1.get(Calendar.DATE),23,59,59);
+		timeStr=ISO8601.fromCalendar(cal1);
+		return timeStr;
+	}
+}

@@ -1,0 +1,21 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+
+public class VerifyCode implements Serializable {
+	private boolean available;
+
+	public boolean isAvailable() {
+		return available;
+	}
+
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
+
+	@Override
+	public String toString() {
+		return "VerifyCode [available=" + available + "]";
+	}
+
+}

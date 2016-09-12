@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!--结伴游玩-->
+    <!--随心随行-->
+    <!--休闲互动-->
+    <!--说走就走-->
+    <!--悠长假期-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="3px"
+            android:layout_height="match_parent"
+            android:background="@color/color_ff7462" />
+
+        <TextView
+            android:id="@+id/travel_destination_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:text="@string/text_travel_destination_together_play"
+            android:textColor="@color/color_b2b2b2"
+            android:textSize="13sp"
+
+            />
+
+
+    </LinearLayout>
+
+    <cn.chono.yopper.view.FlowLeftLayout
+        android:id="@+id/travel_destination_lable_flowlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
+
+    </cn.chono.yopper.view.FlowLeftLayout>
+
+</LinearLayout>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/part_bg_color_war"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/edit_income_tv"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:background="@color/text_color_white"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:textColor="@color/text_color_black" />
+
+    <cn.chono.yopper.view.wheel.WheelView
+        android:id="@+id/edit_income_wheel"
+        android:layout_width="match_parent"
+        android:layout_height="160dip"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_vertical" />
+
+</RelativeLayout>

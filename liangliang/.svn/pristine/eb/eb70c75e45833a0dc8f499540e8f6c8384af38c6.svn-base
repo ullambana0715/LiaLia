@@ -1,0 +1,19 @@
+package cn.chono.yopper.Service.Http.InviteType;
+
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.data.AttamptRespDto;
+
+/**
+ * Created by zxb on 2015/11/22.
+ */
+public class InviteTypeRespBean extends RespBean {
+    private AttamptRespDto resp;
+
+    public AttamptRespDto getResp() {
+        return resp;
+    }
+
+    public void setResp(AttamptRespDto resp) {
+        this.resp = resp;
+    }
+}

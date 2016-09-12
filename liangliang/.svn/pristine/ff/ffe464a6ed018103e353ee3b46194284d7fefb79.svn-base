@@ -1,0 +1,1053 @@
+package cn.chono.yopper.view.ScoreCord;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.graphics.Rect;
+import android.os.Build;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.Service.Http.DaillyFaceratingCandidates.DaillyFaceratingCandidatesDto;
+import cn.chono.yopper.utils.UnitUtil;
+
+/**
+ * Created by zxb on 2015/12/3.
+ */
+public class ScoreCordLayout extends RelativeLayout {
+    public ScoreCordLayout(Context context) {
+        super(context);
+
+    }
+
+    public ScoreCordLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public ScoreCordLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public ScoreCordLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+
+        if (null != score_cord_top_layout) {
+            score_cord_top_layout_rect.set(score_cord_top_layout.getLeft(), score_cord_top_layout.getTop(), score_cord_top_layout.getRight(), score_cord_top_layout.getBottom());
+            score_cord_top_layout_width = score_cord_top_layout.getWidth();
+            score_cord_top_layout_hight = score_cord_top_layout.getHeight();
+
+            score_cord_top_layout_line_value_lift = -(score_cord_top_layout_width / 3);
+            score_cord_top_layout_line_value_right = UnitUtil.getScreenWidthPixels(getContext()) + (score_cord_top_layout_width / 3);
+            score_cord_top_layout_line_value_top = -(score_cord_top_layout_hight / 3);
+            score_cord_top_layout_line_value_bottom = UnitUtil.getScreenHeightPixels(getContext()) + (score_cord_top_layout_hight / 3);
+        }
+    }
+
+    private OnScoreCordLayoutListener onScoreCordLayoutListener;
+
+    public void setOnScoreCordLayoutListener(OnScoreCordLayoutListener onScoreCordLayoutListener) {
+        this.onScoreCordLayoutListener = onScoreCordLayoutListener;
+    }
+
+    private OnScoreCordLayoutLevelListener onScoreCordLayoutLevelListener;
+
+    public void setOnScoreCordLayoutLevelListener(OnScoreCordLayoutLevelListener onScoreCordLayoutLevelListener) {
+        this.onScoreCordLayoutLevelListener = onScoreCordLayoutLevelListener;
+    }
+
+    private OnScordCordLayoutUpdateListener onScordCordLayoutUpdateListener;
+
+    public void setOnScordCordLayoutUpdateListener(OnScordCordLayoutUpdateListener onScordCordLayoutUpdateListener) {
+        this.onScordCordLayoutUpdateListener = onScordCordLayoutUpdateListener;
+    }
+
+    public RelativeLayout score_layout_top_layout;
+    /**
+     * 丑, 一般,帅,很帅--最外层layout
+     */
+    public LinearLayout score_layout_level_layout;
+
+
+    /**
+     * 相册外层布局
+     */
+    public LinearLayout score_layout_photo_album_layout;
+
+    /**
+     * 丑
+     */
+    public ImageView score_cord_top_layout_level_clown_iv;
+    /**
+     * 一般
+     */
+    public ImageView score_cord_top_layout_level_general_iv;
+    /**
+     * 帅
+     */
+    public ImageView score_cord_top_layout_level_handsome_iv;
+    /**
+     * 很帅
+     */
+    public ImageView score_cord_top_layout_level_very_handsome_iv;
+    /**
+     * 头像左
+     */
+    public ImageView score_cord_top_layout_photo_album_one_iv;
+    /**
+     * 头像中
+     */
+    public ImageView score_cord_top_layout_photo_album_two_iv;
+    /**
+     * 头像右
+     */
+    public ImageView score_cord_top_layout_photo_album_three_iv;
+
+    /**
+     * 滑动达到移出动画的临界点--左
+     */
+    private int score_cord_top_layout_line_value_lift;
+    /**
+     * 滑动达到移出动画的临界点--上
+     */
+    private int score_cord_top_layout_line_value_top;
+    /**
+     * 滑动达到移出动画的临界点--右
+     */
+    private int score_cord_top_layout_line_value_right;
+    /**
+     * 滑动达到移出动画的临界点--下
+     */
+    private int score_cord_top_layout_line_value_bottom;
+
+    /**
+     * 顶层Layout的宽度
+     */
+    private int score_cord_top_layout_width;
+    /**
+     * 顶层Layout的高度
+     */
+    private int score_cord_top_layout_hight;
+
+    /**
+     * 除了最顶层的Layout集合，用来做等待处理
+     */
+    public List<ScoreCordBean> score_cord_layout_list = new ArrayList<>();
+    /**
+     * 最顶层与屏幕上方的矩离
+     */
+    public int score_cord_layout_moment_from_top = 300;
+    /**
+     * 阶梯效果的间矩，默认为30
+     */
+    public int score_cord_layout_moment_from = 30;
+    /**
+     * 阶梯效果的间矩，默认为30
+     */
+    public float score_cord_layout_moment_from_album_size;
+    /**
+     * 除了最顶层的Layout的透明值 默认为0.33333f
+     */
+    public float score_cord_layout_alpha = 0.33f;
+    /**
+     * 卡片Layout入场时动画时间--间隔时间。默认 300ms
+     */
+    public int score_cord_layout_access_tiem = 300;
+
+    /**
+     * 最顶层的layout
+     */
+    public LinearLayout score_cord_top_layout;
+    /**
+     * 最顶层的layout的Rect。记录它的上下左右矩离与外层布局的矩离
+     */
+    private Rect score_cord_top_layout_rect = new Rect();
+
+    private DaillyFaceratingCandidatesDto daillyFaceratingCandidatesDto;
+
+    private boolean isWelocomeTouchEvent = true;
+
+    public void setWelocomeTouchEvent(boolean welocomeTouchEvent) {
+        isWelocomeTouchEvent = welocomeTouchEvent;
+    }
+
+
+    private int CordLayoutPhotoAlbumSize;
+
+    int size_10;
+    int size_15;
+
+    /**
+     * 卡片的集合。从最后一个开始加入，所以List下标为0是最顶层的Loayout
+     *
+     * @param scoreCordList
+     */
+    public void setScoreCordLayout(List<ScoreCordBean> scoreCordList) {
+
+
+        if (null == scoreCordList || scoreCordList.size() <= 0) {
+
+            return;
+        }
+         size_10 = UnitUtil.dip2px(10, getContext());
+         size_15 = UnitUtil.dip2px(15, getContext());
+        score_cord_layout_moment_from_album_size = score_cord_layout_moment_from / 3;
+        System.out.println("scoreCordList=" + scoreCordList.size());
+        int score_layout_list_size = scoreCordList.size();
+        for (int i = score_layout_list_size - 1; i >= 0; i--) {
+            final LinearLayout score_cord_layout = scoreCordList.get(i).CordLinearLayout;
+            int layoutTop = (score_cord_layout_moment_from * i);
+            int width = scoreCordList.get(i).CordLayoutWidth - layoutTop;
+            int height = scoreCordList.get(i).CordLayoutHight;
+            float alpha = 1 - (score_cord_layout_alpha * i);
+            int CordLayoutPhotoAlbumWH=(int) (scoreCordList.get(i).CordLayoutPhotoAlbumSize - i * score_cord_layout_moment_from_album_size);
+
+
+            LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            params.width = width;
+            params.height = height;
+            params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            params.setMargins(0, score_cord_layout_moment_from_top + score_cord_layout_moment_from * i, 0, 0);
+            score_cord_layout.setLayoutParams(params);
+            addView(score_cord_layout, params);
+
+
+
+
+            LinearLayout.LayoutParams photo_album_one_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+            photo_album_one_iv_params.width = CordLayoutPhotoAlbumWH;
+            photo_album_one_iv_params.height = CordLayoutPhotoAlbumWH;
+            photo_album_one_iv_params.setMargins(size_10, size_10, size_15, size_10);
+            scoreCordList.get(i).CordLayoutPhotoAlbumOneIV.setLayoutParams(photo_album_one_iv_params);
+
+
+            LinearLayout.LayoutParams photo_album_two_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+            photo_album_two_iv_params.width = CordLayoutPhotoAlbumWH;
+            photo_album_two_iv_params.height = CordLayoutPhotoAlbumWH;
+            photo_album_two_iv_params.setMargins(0, size_10, size_15, size_10);
+
+            scoreCordList.get(i).CordLayoutPhotoAlbumTwoIV.setLayoutParams(photo_album_two_iv_params);
+
+
+            LinearLayout.LayoutParams photo_album_threeiv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+            photo_album_threeiv_params.width =CordLayoutPhotoAlbumWH;
+            photo_album_threeiv_params.height =CordLayoutPhotoAlbumWH;
+            photo_album_threeiv_params.setMargins(0, size_10, size_10, size_10);
+            scoreCordList.get(i).CordLayoutPhotoAlbumThreeIV.setLayoutParams(photo_album_threeiv_params);
+
+
+            if (i == 0) {//获取最顶层的Layout
+                score_cord_top_layout = score_cord_layout;
+
+                score_cord_top_layout_level_clown_iv = scoreCordList.get(i).CordLayoutLevelClownIV;
+                score_cord_top_layout_level_general_iv = scoreCordList.get(i).CordLayoutLevelGeneralIV;
+                score_cord_top_layout_level_handsome_iv = scoreCordList.get(i).CordLayoutLevelHandsomeIV;
+                score_cord_top_layout_level_very_handsome_iv = scoreCordList.get(i).CordLayoutLevelVeryHandsomeIV;
+
+                score_cord_top_layout_photo_album_one_iv = scoreCordList.get(i).CordLayoutPhotoAlbumOneIV;
+                score_cord_top_layout_photo_album_two_iv = scoreCordList.get(i).CordLayoutPhotoAlbumTwoIV;
+                score_cord_top_layout_photo_album_three_iv = scoreCordList.get(i).CordLayoutPhotoAlbumThreeIV;
+
+                score_layout_top_layout = scoreCordList.get(i).CordLayoutTopLayout;
+
+                score_layout_level_layout = scoreCordList.get(i).CordLayoutLeveLLayout;
+
+
+                score_layout_photo_album_layout = scoreCordList.get(i).CordLayoutLevelPhotoAlbumLatout;
+                daillyFaceratingCandidatesDto = scoreCordList.get(i).CordLayoutDaillyFaceratingCandidatesDto;
+
+                CordLayoutPhotoAlbumSize = scoreCordList.get(i).CordLayoutPhotoAlbumSize;
+
+
+            } else {//不是最顶层的Layout，则加入到待定Layout的score_cord_layout_list中
+                ScoreCordBean score_cord_bean = new ScoreCordBean();
+                score_cord_bean.CordLinearLayout = score_cord_layout;
+                score_cord_bean.CordLayoutAlpha = alpha;
+                score_cord_bean.CordLayoutHight = height;
+                score_cord_bean.CordLayoutWidth = width;
+                score_cord_bean.CordLayoutTop = layoutTop;
+
+                score_cord_bean.CordLayoutLevelClownIV = scoreCordList.get(i).CordLayoutLevelClownIV;
+                score_cord_bean.CordLayoutLevelGeneralIV = scoreCordList.get(i).CordLayoutLevelGeneralIV;
+                score_cord_bean.CordLayoutLevelHandsomeIV = scoreCordList.get(i).CordLayoutLevelHandsomeIV;
+                score_cord_bean.CordLayoutLevelVeryHandsomeIV = scoreCordList.get(i).CordLayoutLevelVeryHandsomeIV;
+
+                score_cord_bean.CordLayoutPhotoAlbumOneIV = scoreCordList.get(i).CordLayoutPhotoAlbumOneIV;
+                score_cord_bean.CordLayoutPhotoAlbumTwoIV = scoreCordList.get(i).CordLayoutPhotoAlbumTwoIV;
+                score_cord_bean.CordLayoutPhotoAlbumThreeIV = scoreCordList.get(i).CordLayoutPhotoAlbumThreeIV;
+
+                score_cord_bean.CordLayoutTopLayout = scoreCordList.get(i).CordLayoutTopLayout;
+
+                score_cord_bean.CordLayoutLeveLLayout = scoreCordList.get(i).CordLayoutLeveLLayout;
+
+
+                score_cord_bean.CordLayoutLevelPhotoAlbumLatout = scoreCordList.get(i).CordLayoutLevelPhotoAlbumLatout;
+                score_cord_bean.CordLayoutDaillyFaceratingCandidatesDto = scoreCordList.get(i).CordLayoutDaillyFaceratingCandidatesDto;
+                score_cord_bean.CordLayoutPhotoAlbumWH=CordLayoutPhotoAlbumWH;
+                score_cord_bean.CordLayoutPhotoAlbumSize= scoreCordList.get(i).CordLayoutPhotoAlbumSize;
+
+
+                score_cord_layout_list.add(score_cord_bean);
+            }
+            int tiem = i * score_cord_layout_access_tiem;
+            System.out.println("----------------------alpha=" + alpha);
+            //执行动画
+            if (alpha<0){
+                alpha=0;
+            }
+            setAccessViewAnims(score_cord_layout, 0, 0, UnitUtil.getScreenHeightPixels(getContext()), 0, tiem, alpha);
+        }
+
+    }
+
+
+    /**
+     * Layout 入场 动画
+     *
+     * @param view
+     * @param fromXDelta
+     * @param toXDelta
+     * @param fromYDelta
+     * @param toYDelta
+     * @param time
+     * @param alpha
+     */
+    private void setAccessViewAnims(final LinearLayout view, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta, long time, final float alpha) {
+
+        TranslateAnimation animation = new TranslateAnimation(fromXDelta, toXDelta, fromYDelta, toYDelta);
+        animation.setInterpolator(new AccelerateInterpolator());
+        animation.setDuration(300);
+        animation.setStartOffset(time);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                view.setAlpha(alpha);
+                view.clearAnimation();
+                animation.cancel();
+
+
+            }
+        });
+        view.clearAnimation();
+        view.setAnimation(animation);
+        animation.start();
+
+
+    }
+
+    /**
+     * 设置最顶层的Layout
+     */
+    private void getScoreCordLayoutTop() {
+        if (null == score_cord_layout_list || score_cord_layout_list.size() <= 0) {
+            if (null != onScordCordLayoutUpdateListener) {
+                onScordCordLayoutUpdateListener.onComplete();
+            }
+            return;
+        }
+        int top_site = -1;//设置一个无任何意义的值。用于以下判断是否存在顶层Layout
+        System.out.println("score_cord_layout_list=" + score_cord_layout_list.size());
+        for (int i = 0; i < score_cord_layout_list.size(); i++) {
+            System.out.println("score_cord_layout_list=" + i);
+
+            //对待定的Layout进行数据操作。保证值 的正确性
+            score_cord_layout_list.get(i).CordLayoutWidth = score_cord_layout_list.get(i).CordLayoutWidth + score_cord_layout_moment_from;//Layout的宽度变大，变大一个 阶梯的大小
+            score_cord_layout_list.get(i).CordLayoutHight = score_cord_layout_list.get(i).CordLayoutHight;//Lyaout的高度大小 不变
+            score_cord_layout_list.get(i).CordLayoutTop = score_cord_layout_list.get(i).CordLayoutTop - score_cord_layout_moment_from;//与顶部的矩离变小。缩小一个阶梯的大小
+            score_cord_layout_list.get(i).CordLayoutAlpha = score_cord_layout_list.get(i).CordLayoutAlpha + score_cord_layout_alpha;//透明值变小。变小到一个阶梯的透明值
+            score_cord_layout_list.get(i).CordLayoutRect.set(score_cord_layout_list.get(i).CordLinearLayout.getLeft(), score_cord_layout_list.get(i).CordLinearLayout.getTop(), score_cord_layout_list.get(i).CordLinearLayout.getRight(), score_cord_layout_list.get(i).CordLinearLayout.getBottom());//记录它的上下左右的间矩大小
+
+            int CordLayoutPhotoAlbumWH= (int) (score_cord_layout_list.get(i).CordLayoutPhotoAlbumWH+score_cord_layout_moment_from_album_size);
+
+            score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize=score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize;
+
+            score_cord_layout_list.get(i).CordLayoutPhotoAlbumWH=CordLayoutPhotoAlbumWH;
+
+
+
+            System.out.println("score_cord_layout_list.get(i).CordLayoutAlpha=" + score_cord_layout_list.get(i).CordLayoutAlpha);
+            //设置布局位置
+            LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            params.width = score_cord_layout_list.get(i).CordLayoutWidth;
+            params.height = score_cord_layout_list.get(i).CordLayoutHight;
+            params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            params.setMargins(0, score_cord_layout_moment_from_top + score_cord_layout_list.get(i).CordLayoutTop, 0, 0);
+            score_cord_layout_list.get(i).CordLinearLayout.setLayoutParams(params);
+
+            if (score_cord_layout_list.get(i).CordLayoutAlpha<0){
+                score_cord_layout_list.get(i).CordLinearLayout.setAlpha(0);
+            }else{
+                score_cord_layout_list.get(i).CordLinearLayout.setAlpha(score_cord_layout_list.get(i).CordLayoutAlpha);
+            }
+
+
+            //判断最后一条。因为最后一条是最顶的那一条
+            if (i == score_cord_layout_list.size() - 1) {//是最顶一条时，给最顶条的 score_cord_top_layout
+                top_site = i;
+                removeView(score_cord_top_layout);
+
+                score_cord_top_layout = score_cord_layout_list.get(i).CordLinearLayout;
+
+                score_cord_top_layout_level_clown_iv = score_cord_layout_list.get(i).CordLayoutLevelClownIV;
+                score_cord_top_layout_level_general_iv = score_cord_layout_list.get(i).CordLayoutLevelGeneralIV;
+                score_cord_top_layout_level_handsome_iv = score_cord_layout_list.get(i).CordLayoutLevelHandsomeIV;
+                score_cord_top_layout_level_very_handsome_iv = score_cord_layout_list.get(i).CordLayoutLevelVeryHandsomeIV;
+
+
+                score_cord_top_layout_photo_album_one_iv = score_cord_layout_list.get(i).CordLayoutPhotoAlbumOneIV;
+                score_cord_top_layout_photo_album_two_iv = score_cord_layout_list.get(i).CordLayoutPhotoAlbumTwoIV;
+                score_cord_top_layout_photo_album_three_iv = score_cord_layout_list.get(i).CordLayoutPhotoAlbumThreeIV;
+
+                score_layout_top_layout = score_cord_layout_list.get(i).CordLayoutTopLayout;
+
+                score_layout_level_layout = score_cord_layout_list.get(i).CordLayoutLeveLLayout;
+
+
+                score_layout_photo_album_layout = score_cord_layout_list.get(i).CordLayoutLevelPhotoAlbumLatout;
+
+                daillyFaceratingCandidatesDto = score_cord_layout_list.get(i).CordLayoutDaillyFaceratingCandidatesDto;
+
+                LinearLayout.LayoutParams score_cord_top_layout_album_one_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                score_cord_top_layout_album_one_iv_params.width = score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize;
+                score_cord_top_layout_album_one_iv_params.height =  score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize;
+                score_cord_top_layout_album_one_iv_params.setMargins(size_10, size_10, size_15, size_10);
+                score_cord_top_layout_photo_album_one_iv.setLayoutParams(score_cord_top_layout_album_one_iv_params);
+
+
+                LinearLayout.LayoutParams score_cord_top_layout_album_two_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                score_cord_top_layout_album_two_iv_params.width =  score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize;
+                score_cord_top_layout_album_two_iv_params.height =  score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize;
+                score_cord_top_layout_album_two_iv_params.setMargins(0, size_10, size_15, size_10);
+
+                score_cord_top_layout_photo_album_two_iv.setLayoutParams(score_cord_top_layout_album_two_iv_params);
+
+
+                LinearLayout.LayoutParams score_cord_top_layout_album_threeiv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                score_cord_top_layout_album_threeiv_params.width =  score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize;
+                score_cord_top_layout_album_threeiv_params.height = score_cord_layout_list.get(i).CordLayoutPhotoAlbumSize;
+                score_cord_top_layout_album_threeiv_params.setMargins(0, size_10, size_10, size_10);
+                score_cord_top_layout_photo_album_three_iv.setLayoutParams(score_cord_top_layout_album_threeiv_params);
+
+
+
+                score_cord_top_layout_rect.set(score_cord_top_layout.getLeft(), score_cord_top_layout.getTop(), score_cord_top_layout.getRight(), score_cord_top_layout.getBottom());
+
+            }else{
+                LinearLayout.LayoutParams photo_album_one_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                photo_album_one_iv_params.width =CordLayoutPhotoAlbumWH;
+                photo_album_one_iv_params.height = CordLayoutPhotoAlbumWH;
+                photo_album_one_iv_params.setMargins(size_10, size_10, size_15, size_10);
+                score_cord_layout_list.get(i).CordLayoutPhotoAlbumOneIV.setLayoutParams(photo_album_one_iv_params);
+
+
+                LinearLayout.LayoutParams photo_album_two_iv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                photo_album_two_iv_params.width = CordLayoutPhotoAlbumWH;
+                photo_album_two_iv_params.height = CordLayoutPhotoAlbumWH;
+                photo_album_two_iv_params.setMargins(0, size_10, size_15, size_10);
+                score_cord_layout_list.get(i).CordLayoutPhotoAlbumTwoIV.setLayoutParams(photo_album_two_iv_params);
+
+
+                LinearLayout.LayoutParams photo_album_threeiv_params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                photo_album_threeiv_params.width = CordLayoutPhotoAlbumWH;
+                photo_album_threeiv_params.height =CordLayoutPhotoAlbumWH;
+                photo_album_threeiv_params.setMargins(0, size_10, size_10, size_10);
+                score_cord_layout_list.get(i).CordLayoutPhotoAlbumThreeIV.setLayoutParams(photo_album_threeiv_params);
+            }
+
+        }
+        //属性设置和获取最顶层Lyaout完后。在待定数据score_cord_layout_list中删除掉已经移到最顶层的数据
+        if (top_site > -1)
+            score_cord_layout_list.remove(top_site);
+    }
+
+
+    private void setScoreCordLayoutList(boolean isScoreCord) {
+        if (null == score_cord_layout_list || score_cord_layout_list.size() <= 0) {
+            return;
+        }
+        int list_size = score_cord_layout_list.size() - 1;
+        if (isScoreCord) {
+            score_cord_layout_list.get(list_size).CordLinearLayout.setAlpha(1);
+
+        } else {
+            score_cord_layout_list.get(list_size).CordLinearLayout.setAlpha(1 - 0.333333f);
+        }
+
+
+    }
+
+
+    /**
+     * 手势触摸的位置--x
+     */
+    private float score_cord_layout_actton_down_x;
+    /**
+     * 手势触摸的位置--y
+     */
+    private float score_cord_layout_actton_down_y;
+    /**
+     * 手势移动的矩离--x
+     */
+    public int score_cord_layout_actton_move_x;
+    /**
+     * 手势移动的矩离--y
+     */
+    public int score_cord_layout_actton_move_y;
+
+    /**
+     * layout手势移动的矩离--left
+     */
+    private int score_cord_layout_actton_move_left;
+    /**
+     * layout手势移动的矩离--right
+     */
+    private int score_cord_layout_actton_move_right;
+    /**
+     * layout手势移动的矩离--top
+     */
+    private int score_cord_layout_actton_move_top;
+    /**
+     * layout手势移动的矩离--bottom
+     */
+    private int score_cord_layout_actton_move_bottom;
+
+    private boolean isTouchEvent = true;
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (isWelocomeTouchEvent) {
+            return super.onTouchEvent(event);
+
+
+        } else {
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: // 表示用户开始触摸.
+
+                    // 记录按下时的 X值
+                    score_cord_layout_actton_down_x = event.getX();
+                    score_cord_layout_actton_down_y = event.getY();
+
+                    if (score_cord_layout_actton_down_x >= score_cord_top_layout_rect.left && score_cord_layout_actton_down_x <= score_cord_top_layout_rect.right && score_cord_layout_actton_down_y >= score_cord_top_layout_rect.top
+                            && score_cord_layout_actton_down_y <= score_cord_top_layout_rect.bottom) {
+
+
+                        System.out.println("触摸到卡片的范围");
+                        return true;
+                    } else {
+
+                        System.out.println("没有触摸到卡片的范围--没有消息");
+                        return false;
+                    }
+
+
+                case MotionEvent.ACTION_MOVE: // 表示用户在移动(手指或者其他)
+                    // 计算手指移动的距离
+                    float nowX = event.getX();
+                    float nowY = event.getY();
+                    score_cord_layout_actton_move_x = (int) (nowX - score_cord_layout_actton_down_x);
+                    score_cord_layout_actton_move_y = (int) (nowY - score_cord_layout_actton_down_y);
+
+                    score_cord_layout_actton_move_left = score_cord_top_layout_rect.left + score_cord_layout_actton_move_x;
+                    score_cord_layout_actton_move_right = score_cord_top_layout_rect.right + score_cord_layout_actton_move_x;
+                    score_cord_layout_actton_move_top = score_cord_top_layout_rect.top + score_cord_layout_actton_move_y;
+                    score_cord_layout_actton_move_bottom = score_cord_top_layout_rect.bottom + score_cord_layout_actton_move_y;
+
+                    // 随着手指的移动而移动布局
+                    if (null != score_cord_top_layout) {
+                        score_cord_top_layout.layout(score_cord_layout_actton_move_left, score_cord_layout_actton_move_top, score_cord_layout_actton_move_right, score_cord_layout_actton_move_bottom);
+
+                        if (score_cord_layout_actton_move_x < -30 || score_cord_layout_actton_move_x > 30 || score_cord_layout_actton_move_y < -30 || score_cord_layout_actton_move_y > 30) {//没有移动过，而
+                            setScoreCordLayoutList(true);
+                        }
+
+
+                    }
+                    break;
+
+                case MotionEvent.ACTION_UP: // 表示用户抬起了手指
+                case MotionEvent.ACTION_POINTER_UP:
+                case MotionEvent.ACTION_CANCEL: // 表示手势被取消了
+
+                    isTouchEvent = false;
+
+
+                    System.out.println(" onTouchEvent 表示手势被取消了");
+
+
+                    if (score_cord_layout_actton_move_x > -3 && score_cord_layout_actton_move_x < 3 && score_cord_layout_actton_move_y > -3 && score_cord_layout_actton_move_y < 3) {//没有移动过，而又点到了需要点击事件的挫件
+                        score_cord_layout_actton_move_x = 0;
+                        score_cord_layout_actton_move_y = 0;
+
+
+                        if (getScoreCordTopLayoutLevelClownIv()) {//丑
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onLevelClownImageView(score_cord_layout_list.size(), 0, score_cord_top_layout_level_clown_iv, score_cord_top_layout, 0, 0, 0, UnitUtil.getScreenHeightPixels(getContext()), daillyFaceratingCandidatesDto.getName());
+                            }
+                        }
+
+                        if (getScoreCordTopLayoutLevelGeneralIv()) {//一般
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onLevelGeneralImageView(score_cord_layout_list.size(), 1, score_cord_top_layout_level_general_iv, score_cord_top_layout, 0, -UnitUtil.getScreenWidthPixels(getContext()), 0, 0, daillyFaceratingCandidatesDto.getName());
+                            }
+                        }
+
+                        if (getScoreCordTopLayoutLevelHandsomeIv()) {//帅
+                            if (null != onScoreCordLayoutListener) {
+
+
+                                onScoreCordLayoutListener.onLevelHandsomeImageView(score_cord_layout_list.size(), 2, score_cord_top_layout_level_very_handsome_iv, score_cord_top_layout, 0, UnitUtil.getScreenWidthPixels(getContext()), 0, 0, daillyFaceratingCandidatesDto.getName());
+                            }
+                        }
+                        if (getScoreCordTopLayoutLevelVeryHandsomeIv()) {//很帅
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onLevelVeryHandsomeImageView(score_cord_layout_list.size(), 3, score_cord_top_layout_level_handsome_iv, score_cord_top_layout, 0, 0, 0, -UnitUtil.getScreenHeightPixels(getContext()), daillyFaceratingCandidatesDto.getName());
+                            }
+                        }
+
+                        //---------------------------------------相册------------------------------------------------------
+                        if (getScoreCordTopLayoutPhotoAlbumOneIV()) {//头像左
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onPhotoAlbumOne(score_cord_top_layout_photo_album_one_iv, daillyFaceratingCandidatesDto.getAlbum());
+                            }
+                        }
+                        if (getScoreCordTopLayoutPhotoAlbumTwoIV()) {//头像中
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onPhotoAlbumTwo(score_cord_top_layout_photo_album_two_iv, daillyFaceratingCandidatesDto.getAlbum());
+                            }
+                        }
+                        if (getScoreCordTopLayoutPhotoAlbumThreeIV()) {//头像右
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onPhotoAlbumThree(score_cord_top_layout_photo_album_three_iv, daillyFaceratingCandidatesDto.getAlbum());
+                            }
+                        }
+
+
+                        return true;
+                    } else {
+                        if (score_cord_layout_actton_move_top <= score_cord_top_layout_line_value_top) {//往 上移
+
+                            int move = score_cord_layout_actton_move_top - score_cord_top_layout_hight;
+
+
+                            System.out.println("1");
+
+
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onScoreCordTopEvent(score_cord_layout_list.size(), 3, score_cord_top_layout, 0, 0, 0, move, daillyFaceratingCandidatesDto.getName());
+                            } else {
+                                setSlideViewAnims(score_cord_layout_list.size(), 3, score_cord_top_layout, 0, 0, 0, move);
+                            }
+
+                        } else if (score_cord_layout_actton_move_right >= score_cord_top_layout_line_value_right) {//往 右移
+
+                            System.out.println("2");
+
+                            int move = score_cord_top_layout_width - (score_cord_layout_actton_move_right - UnitUtil.getScreenWidthPixels(getContext()));
+
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onScoreCordRightEvent(score_cord_layout_list.size(), 2, score_cord_top_layout, 0, move, 0, 0, daillyFaceratingCandidatesDto.getName());
+                            } else {
+                                setSlideViewAnims(score_cord_layout_list.size(), 2, score_cord_top_layout, 0, move, 0, 0);
+                            }
+
+                        } else if (score_cord_layout_actton_move_left <= score_cord_top_layout_line_value_lift) {//往 左移
+
+                            System.out.println("3");
+                            int move = score_cord_layout_actton_move_left - score_cord_top_layout_width;
+
+
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onScoreCordLeftEvent(score_cord_layout_list.size(), 1, score_cord_top_layout, 0, move, 0, 0, daillyFaceratingCandidatesDto.getName());
+                            } else {
+                                setSlideViewAnims(score_cord_layout_list.size(), 1, score_cord_top_layout, 0, move, 0, 0);
+                            }
+
+                        } else if (score_cord_layout_actton_move_bottom >= score_cord_top_layout_line_value_bottom) {//往 下移
+
+                            System.out.println("4");
+                            int move = score_cord_top_layout_hight - (score_cord_layout_actton_move_bottom - UnitUtil.getScreenHeightPixels(getContext()));
+
+                            if (null != onScoreCordLayoutListener) {
+                                onScoreCordLayoutListener.onScoreCordBottomEvent(score_cord_layout_list.size(), 0, score_cord_top_layout, 0, 0, 0, move, daillyFaceratingCandidatesDto.getName());
+                            } else {
+                                setSlideViewAnims(score_cord_layout_list.size(), 0, score_cord_top_layout, 0, 0, 0, move);
+                            }
+
+
+                        } else {//回到原点
+
+                            System.out.println("5");
+                            System.out.println(" onTouchEvent 回到原点");
+
+                            System.out.println(" score_cord_layout_actton_move_x =" + score_cord_layout_actton_move_x);
+                            System.out.println(" score_cord_layout_actton_move_y =" + score_cord_layout_actton_move_y);
+
+
+                            setOriginAnimation(score_cord_top_layout, 0, -score_cord_layout_actton_move_x, 0, -score_cord_layout_actton_move_y);
+
+
+                        }
+
+                        return true;
+
+                    }
+
+
+            }
+            return true;
+        }
+
+
+    }
+
+
+    private boolean getScoreCordTopLayoutLevelClownIv() {
+        if (null != score_cord_top_layout_level_clown_iv) {//丑
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + score_cord_top_layout_level_clown_iv.getLeft();
+            int right = left + score_cord_top_layout_level_clown_iv.getWidth();
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + +score_cord_top_layout_level_clown_iv.getTop();
+            int bottom = top + score_cord_top_layout_level_clown_iv.getHeight();
+            if (score_cord_layout_actton_down_x >= left && score_cord_layout_actton_down_x <= right && score_cord_layout_actton_down_y >= top
+                    && score_cord_layout_actton_down_y <= bottom) {
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+    }
+
+    public int getLeftLevelClownIv() {
+        if (null != score_cord_top_layout_level_clown_iv) {//丑
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + score_cord_top_layout_level_clown_iv.getLeft();
+            return left;
+        }
+        return 0;
+    }
+
+    public int getTopLevelClownIv() {
+        if (null != score_cord_top_layout_level_clown_iv) {//丑
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + score_cord_top_layout_level_clown_iv.getTop();
+            return top;
+        }
+        return 0;
+    }
+
+    public int getWidthLevelClownIv() {
+        if (null != score_cord_top_layout_level_clown_iv) {//丑
+            int width = score_cord_top_layout_level_clown_iv.getWidth();
+            return width;
+        }
+        return 0;
+    }
+
+    public int getHeightLevelClownIv() {
+        if (null != score_cord_top_layout_level_clown_iv) {//丑
+            int height = score_cord_top_layout_level_clown_iv.getHeight();
+            return height;
+        }
+        return 0;
+    }
+
+    public int getLeftLevelGeneralIv() {
+        if (null != score_cord_top_layout_level_general_iv) {//丑
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + score_cord_top_layout_level_general_iv.getLeft();
+            return left;
+        }
+        return 0;
+    }
+
+    public int getTopLevelGeneralIv() {
+        if (null != score_cord_top_layout_level_general_iv) {//丑
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + score_cord_top_layout_level_general_iv.getTop();
+            return top;
+        }
+        return 0;
+    }
+
+    public int getWidthLevelGeneralIv() {
+        if (null != score_cord_top_layout_level_general_iv) {//丑
+            int width = score_cord_top_layout_level_general_iv.getWidth();
+            return width;
+        }
+        return 0;
+    }
+
+    public int getHeightLevelGeneralIv() {
+        if (null != score_cord_top_layout_level_general_iv) {//丑
+            int height = score_cord_top_layout_level_general_iv.getHeight();
+            return height;
+        }
+        return 0;
+    }
+
+    public int getLeftLevelHandsomeIv() {
+        if (null != score_cord_top_layout_level_handsome_iv) {//丑
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + score_cord_top_layout_level_handsome_iv.getLeft();
+            return left;
+        }
+        return 0;
+    }
+
+    public int getTopLevelHandsomeIv() {
+        if (null != score_cord_top_layout_level_handsome_iv) {//丑
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + score_cord_top_layout_level_handsome_iv.getTop();
+            return top;
+        }
+        return 0;
+    }
+
+    public int getWidthLevelHandsomeIv() {
+        if (null != score_cord_top_layout_level_handsome_iv) {//丑
+            int width = score_cord_top_layout_level_general_iv.getWidth();
+            return width;
+        }
+        return 0;
+    }
+
+    public int getHeightLevelHandsomeIv() {
+        if (null != score_cord_top_layout_level_handsome_iv) {//丑
+            int height = score_cord_top_layout_level_handsome_iv.getHeight();
+            return height;
+        }
+        return 0;
+    }
+
+    public int getLeftLevelVeryHandsomeIv() {
+        if (null != score_cord_top_layout_level_very_handsome_iv) {//丑
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + score_cord_top_layout_level_very_handsome_iv.getLeft();
+            return left;
+        }
+        return 0;
+    }
+
+    public int getTopLevelVeryHandsomeIv() {
+        if (null != score_cord_top_layout_level_very_handsome_iv) {//丑
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + score_cord_top_layout_level_very_handsome_iv.getTop();
+            return top;
+        }
+        return 0;
+    }
+
+    public int getWidthLevelVeryHandsomeIv() {
+        if (null != score_cord_top_layout_level_very_handsome_iv) {//丑
+            int width = score_cord_top_layout_level_very_handsome_iv.getWidth();
+            return width;
+        }
+        return 0;
+    }
+
+    public int getHeightLevelVeryHandsomeIv() {
+        if (null != score_cord_top_layout_level_very_handsome_iv) {//丑
+            int height = score_cord_top_layout_level_very_handsome_iv.getHeight();
+            return height;
+        }
+        return 0;
+    }
+
+    private boolean getScoreCordTopLayoutLevelGeneralIv() {
+        if (null != score_cord_top_layout_level_general_iv) {//一般
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + +score_cord_top_layout_level_general_iv.getLeft();
+            int right = left + score_cord_top_layout_level_general_iv.getWidth();
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + +score_cord_top_layout_level_general_iv.getTop();
+            int bottom = top + score_cord_top_layout_level_general_iv.getHeight();
+            if (score_cord_layout_actton_down_x >= left && score_cord_layout_actton_down_x <= right && score_cord_layout_actton_down_y >= top
+                    && score_cord_layout_actton_down_y <= bottom) {
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+    }
+
+    private boolean getScoreCordTopLayoutLevelHandsomeIv() {
+        if (null != score_cord_top_layout_level_handsome_iv) {//帅
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + +score_cord_top_layout_level_handsome_iv.getLeft();
+            int right = left + score_cord_top_layout_level_handsome_iv.getWidth();
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + +score_cord_top_layout_level_handsome_iv.getTop();
+            int bottom = top + score_cord_top_layout_level_handsome_iv.getHeight();
+            if (score_cord_layout_actton_down_x >= left && score_cord_layout_actton_down_x <= right && score_cord_layout_actton_down_y >= top
+                    && score_cord_layout_actton_down_y <= bottom) {
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+    }
+
+    private boolean getScoreCordTopLayoutLevelVeryHandsomeIv() {
+        if (null != score_cord_top_layout_level_very_handsome_iv) {//很帅
+            int left = score_cord_top_layout_rect.left + score_layout_top_layout.getLeft() + score_layout_level_layout.getLeft() + score_cord_top_layout_level_very_handsome_iv.getLeft();
+            int right = left + score_cord_top_layout_level_very_handsome_iv.getWidth();
+            int top = score_cord_top_layout_rect.top + score_layout_top_layout.getTop() + score_layout_level_layout.getTop() + +score_cord_top_layout_level_very_handsome_iv.getTop();
+            int bottom = top + score_cord_top_layout_level_very_handsome_iv.getHeight();
+            if (score_cord_layout_actton_down_x >= left && score_cord_layout_actton_down_x <= right && score_cord_layout_actton_down_y >= top
+                    && score_cord_layout_actton_down_y <= bottom) {
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+    }
+
+    private boolean getScoreCordTopLayoutPhotoAlbumOneIV() {
+        if (null != score_cord_top_layout_photo_album_one_iv) {//相册左
+            int left = score_cord_top_layout_rect.left + score_layout_photo_album_layout.getLeft() + score_cord_top_layout_photo_album_one_iv.getLeft();
+            int right = left + score_cord_top_layout_photo_album_one_iv.getWidth();
+            int top = score_cord_top_layout_rect.top + score_layout_photo_album_layout.getTop() + score_cord_top_layout_photo_album_one_iv.getTop();
+            int bottom = top + score_cord_top_layout_photo_album_one_iv.getHeight();
+            if (score_cord_layout_actton_down_x >= left && score_cord_layout_actton_down_x <= right && score_cord_layout_actton_down_y >= top
+                    && score_cord_layout_actton_down_y <= bottom) {
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+    }
+
+    private boolean getScoreCordTopLayoutPhotoAlbumTwoIV() {
+        if (null != score_cord_top_layout_photo_album_two_iv) {//相册左
+            int left = score_cord_top_layout_rect.left + score_layout_photo_album_layout.getLeft() + score_cord_top_layout_photo_album_two_iv.getLeft();
+            int right = left + score_cord_top_layout_photo_album_two_iv.getWidth();
+            int top = score_cord_top_layout_rect.top + score_layout_photo_album_layout.getTop() + score_cord_top_layout_photo_album_two_iv.getTop();
+            int bottom = top + score_cord_top_layout_photo_album_two_iv.getHeight();
+            if (score_cord_layout_actton_down_x >= left && score_cord_layout_actton_down_x <= right && score_cord_layout_actton_down_y >= top
+                    && score_cord_layout_actton_down_y <= bottom) {
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+    }
+
+    private boolean getScoreCordTopLayoutPhotoAlbumThreeIV() {
+        if (null != score_cord_top_layout_photo_album_three_iv) {//相册左
+            int left = score_cord_top_layout_rect.left + score_layout_photo_album_layout.getLeft() + score_cord_top_layout_photo_album_three_iv.getLeft();
+            int right = left + score_cord_top_layout_photo_album_three_iv.getWidth();
+            int top = score_cord_top_layout_rect.top + score_layout_photo_album_layout.getTop() + score_cord_top_layout_photo_album_three_iv.getTop();
+            int bottom = top + score_cord_top_layout_photo_album_three_iv.getHeight();
+            if (score_cord_layout_actton_down_x >= left && score_cord_layout_actton_down_x <= right && score_cord_layout_actton_down_y >= top
+                    && score_cord_layout_actton_down_y <= bottom) {
+                return true;
+
+            }
+            return false;
+
+        }
+        return false;
+    }
+
+
+    public void setOriginAnimation(final LinearLayout view, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta) {
+        TranslateAnimation animation = new TranslateAnimation(fromXDelta, toXDelta, fromYDelta, toYDelta);
+        animation.setInterpolator(new AccelerateInterpolator());
+        animation.setDuration(300);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setScoreCordLayoutList(false);
+                view.layout(score_cord_top_layout_rect.left, score_cord_top_layout_rect.top, score_cord_top_layout_rect.right, score_cord_top_layout_rect.bottom);
+                score_cord_layout_actton_move_x = 0;
+                score_cord_layout_actton_move_y = 0;
+                view.clearAnimation();
+                animation.cancel();
+                isTouchEvent = true;
+
+            }
+        });
+        view.clearAnimation();
+        view.setAnimation(animation);
+        animation.start();
+    }
+
+    public void setSlideViewAnims(final int score_cord_layout_list_size, final int level, final LinearLayout view, final float fromXDelta, final float toXDelta, final float fromYDelta, final float toYDelta) {
+
+
+        TranslateAnimation animation = new TranslateAnimation(fromXDelta, toXDelta, fromYDelta, toYDelta);
+        animation.setInterpolator(new AccelerateInterpolator());
+        animation.setDuration(300);
+
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                score_cord_layout_actton_move_x = 0;
+                score_cord_layout_actton_move_y = 0;
+                animation.setFillAfter(true);
+                view.setVisibility(GONE);
+                view.clearAnimation();
+                if (null != onScordCordLayoutUpdateListener) {
+                    onScordCordLayoutUpdateListener.onUpdateData(score_cord_layout_list_size, daillyFaceratingCandidatesDto, level);
+                }
+                animation.cancel();
+                removeView(view);
+                getScoreCordLayoutTop();
+                isTouchEvent = true;
+
+
+            }
+        });
+        view.clearAnimation();
+        view.setAnimation(animation);
+        animation.start();
+    }
+}

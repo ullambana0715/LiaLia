@@ -1,0 +1,764 @@
+package cn.chono.yopper.activity.appointment;
+
+import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.ChatAttampt.ChatAttamptBean;
+import cn.chono.yopper.Service.Http.ChatAttampt.ChatAttamptRespBean;
+import cn.chono.yopper.Service.Http.ChatAttampt.ChatAttamptService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.Service.Http.SigUpTarget.SigUpTargetBean;
+import cn.chono.yopper.Service.Http.SigUpTarget.SigUpTargetService;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementBean;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementData;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementResp;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementRespBean;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementService;
+import cn.chono.yopper.Service.Http.SignUpManagement.SignUpManagementUser;
+import cn.chono.yopper.Service.Http.SignUpManagementMore.SignUpManagementMoreBean;
+import cn.chono.yopper.Service.Http.SignUpManagementMore.SignUpManagementMoreService;
+import cn.chono.yopper.YPApplication;
+import cn.chono.yopper.YpSettings;
+import cn.chono.yopper.activity.base.SimpleWebViewActivity;
+import cn.chono.yopper.activity.chat.ChatActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoActivity;
+import cn.chono.yopper.activity.usercenter.UserInfoEditActivity;
+import cn.chono.yopper.activity.video.VideoDetailGetActivity;
+import cn.chono.yopper.adapter.SignUpManagementAdapter;
+import cn.chono.yopper.data.AttamptRespDto;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.BackCall;
+import cn.chono.yopper.utils.BackCallListener;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.FaceTextUtils;
+import cn.chono.zxb.xrefreshview.CustomHeaderAnim;
+import cn.chono.zxb.xrefreshview.XRefreshView;
+
+/**
+ * Created by zxb on 2015/12/30.
+ */
+public class SignUpManagementActivity extends MainFrameActivity implements SignUpManagementAdapter.OnSignUpItemClickLitener {
+
+
+    private LinearLayout error_no_sign_up_layout;
+    private LinearLayout error_to_load_layout;
+
+    private ImageView error_to_load_img;
+    private LinearLayout sign_up_management_layout;
+
+    private XRefreshView sign_up_management_xrefreshview;
+    private RecyclerView sign_up_management_recyclerview;
+
+    private boolean isOnRefresh = false;
+    private boolean isOnLoadMore = false;
+
+    private boolean isOnRefreshData = false;
+
+    private String appointId;
+    private String nextQuery;
+
+    private SignUpManagementAdapter adapter;
+
+    private Dialog contextClickDialog;
+    private Dialog targetClickDialog;
+
+
+    private boolean isPostchating = false;
+
+    private Dialog loadingDiaog;
+    private Dialog helpdialog;
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        MobclickAgent.onPageStart("报名管理"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+
+        MobclickAgent.onResume(this); // 统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        MobclickAgent.onPageEnd("报名管理"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+
+        MobclickAgent.onPause(this); // 统计时长
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.sign_up_management_activity);
+        PushAgent.getInstance(this).onAppStart();
+
+        appointId = getIntent().getExtras().getString(YpSettings.APPOINT_ID_KEY);
+
+        initView();
+        setXrefreshListener();
+
+
+        error_no_sign_up_layout.setVisibility(View.GONE);
+        sign_up_management_layout.setVisibility(View.GONE);
+        initRotateAnimation();
+        error_to_load_layout.setVisibility(View.VISIBLE);
+        getOnRefresh(appointId, 0);
+
+
+    }
+
+    private void initView() {
+        error_no_sign_up_layout = (LinearLayout) findViewById(R.id.error_no_sign_up_layout);
+        error_to_load_layout = (LinearLayout) findViewById(R.id.error_to_load_layout);
+        error_to_load_img = (ImageView) findViewById(R.id.error_to_load_img);
+        sign_up_management_layout = (LinearLayout) findViewById(R.id.sign_up_management_layout);
+
+        sign_up_management_xrefreshview = (XRefreshView) findViewById(R.id.sign_up_management_xrefreshview);
+        sign_up_management_recyclerview = (RecyclerView) findViewById(R.id.sign_up_management_recyclerview);
+
+        sign_up_management_recyclerview.setLayoutManager(new LinearLayoutManager(this));
+        sign_up_management_recyclerview.setItemAnimator(new DefaultItemAnimator());
+        adapter = new SignUpManagementAdapter(this);
+        adapter.setOnItemClickLitener(this);
+        sign_up_management_recyclerview.setAdapter(adapter);
+
+
+        this.getTvTitle().setText("报名管理");
+        this.getGoBackLayout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
+    }
+
+
+    private void setXrefreshListener() {
+        // 设置静默加载模式
+        sign_up_management_xrefreshview.setSlienceLoadMore();
+        sign_up_management_xrefreshview.setAutoLoadMore(true);
+        sign_up_management_xrefreshview.setPinnedTime(1000);
+        sign_up_management_xrefreshview.setMoveForHorizontal(true);
+        sign_up_management_xrefreshview.setCustomHeaderView(new CustomHeaderAnim(this));
+        sign_up_management_xrefreshview.setXRefreshViewListener(new XRefreshView.SimpleXRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (!isOnRefresh) {
+                            isOnRefresh = true;
+
+                            getOnRefresh(appointId, 0);
+
+                        }
+
+                        sign_up_management_xrefreshview.stopRefresh();
+                    }
+                }, 1500);
+            }
+
+            @Override
+            public void onLoadMore(boolean isSlience) {
+                super.onLoadMore(isSlience);
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+
+                        if (!isOnLoadMore) {
+                            isOnLoadMore = true;
+                            getOnLoadMore(nextQuery);
+                        }
+
+                        //刷新完成必须调用此方法停止加载
+                        sign_up_management_xrefreshview.stopLoadMore();
+                    }
+                }, 1000);
+            }
+
+        });
+
+
+    }
+
+
+    private void getOnRefresh(String id, int start) {
+
+        final SignUpManagementBean managementBean = new SignUpManagementBean();
+        managementBean.setId(id);
+        managementBean.setStart(start);
+        SignUpManagementService managementService = new SignUpManagementService(this);
+        managementService.parameter(managementBean);
+        managementService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+
+                isOnRefresh = true;
+
+                List<SignUpManagementData> fromData = adapter.getDatas();
+                if (null != fromData && fromData.size() > 0) {
+                    isOnRefreshData = true;
+                } else {
+                    isOnRefreshData = false;
+                }
+
+
+                if (isOnRefreshData) {
+
+                    SignUpManagementRespBean signUpManagementRespBean = (SignUpManagementRespBean) respBean;
+
+                    if (null == signUpManagementRespBean) {
+                        return;
+                    }
+
+                    SignUpManagementResp managementResp = signUpManagementRespBean.getResp();
+                    if (null == managementResp) {
+                        return;
+                    }
+                    nextQuery = managementResp.getNextQuery();
+                    adapter.setData(managementResp);
+                    adapter.notifyDataSetChanged();
+
+
+                    return;
+                }
+
+                error_to_load_layout.setVisibility(View.GONE);
+                removeRotateAnimation();
+
+
+                SignUpManagementRespBean signUpManagementRespBean = (SignUpManagementRespBean) respBean;
+
+                if (null == signUpManagementRespBean) {
+
+                    error_no_sign_up_layout.setVisibility(View.VISIBLE);
+                    sign_up_management_layout.setVisibility(View.GONE);
+
+
+                    return;
+                }
+
+                SignUpManagementResp managementResp = signUpManagementRespBean.getResp();
+                if (null == managementResp) {
+
+                    error_no_sign_up_layout.setVisibility(View.VISIBLE);
+                    sign_up_management_layout.setVisibility(View.GONE);
+
+
+                    return;
+                }
+
+                nextQuery = managementResp.getNextQuery();
+                List<SignUpManagementData> listData = managementResp.getList();
+                if (null != listData && listData.size() > 0) {
+                    error_no_sign_up_layout.setVisibility(View.GONE);
+                    sign_up_management_layout.setVisibility(View.VISIBLE);
+
+                    adapter.setData(managementResp);
+                    adapter.notifyDataSetChanged();
+
+                } else {
+                    error_no_sign_up_layout.setVisibility(View.VISIBLE);
+                    sign_up_management_layout.setVisibility(View.GONE);
+
+                }
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                isOnRefresh = true;
+
+                List<SignUpManagementData> fromData = adapter.getDatas();
+                if (null != fromData && fromData.size() > 0) {
+                    isOnRefreshData = true;
+                } else {
+                    isOnRefreshData = false;
+                }
+
+                String msg = respBean.getMsg();
+
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this);
+
+                } else {
+                    DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this, msg);
+                }
+
+
+                error_to_load_layout.setVisibility(View.GONE);
+                removeRotateAnimation();
+
+                if (isOnRefreshData) {
+
+                    error_no_sign_up_layout.setVisibility(View.GONE);
+                    sign_up_management_layout.setVisibility(View.VISIBLE);
+
+                } else {
+                    error_no_sign_up_layout.setVisibility(View.VISIBLE);
+                    sign_up_management_layout.setVisibility(View.GONE);
+                }
+
+
+            }
+        });
+
+
+        managementService.enqueue();
+
+
+    }
+
+
+    private void getOnLoadMore(String url) {
+        if (TextUtils.isEmpty(url)) {
+            isOnLoadMore = true;
+            return;
+        }
+
+
+        SignUpManagementMoreBean managementMoreBean = new SignUpManagementMoreBean();
+        managementMoreBean.setNextQuery(url);
+
+        SignUpManagementMoreService managementMoreService = new SignUpManagementMoreService(this);
+
+        managementMoreService.parameter(managementMoreBean);
+        managementMoreService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                isOnLoadMore = true;
+
+
+                SignUpManagementRespBean signUpManagementRespBean = (SignUpManagementRespBean) respBean;
+
+                if (null == signUpManagementRespBean) {
+                    return;
+                }
+
+                SignUpManagementResp managementResp = signUpManagementRespBean.getResp();
+                if (null == managementResp) {
+                    return;
+                }
+                nextQuery = managementResp.getNextQuery();
+                adapter.addData(managementResp);
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+                isOnLoadMore = true;
+
+
+                String msg = respBean.getMsg();
+
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this);
+                    return;
+                }
+
+                DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this, msg);
+            }
+        });
+        managementMoreService.enqueue();
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // 动画回收
+        removeRotateAnimation();
+    }
+
+
+    private Animation mRotateAnimation;
+
+    private void initRotateAnimation() {
+        mRotateAnimation = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        // mRotateAnimation.setDuration(ROTATION_ANIMATION_DURATION);
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+        mRotateAnimation.setDuration(350);
+        mRotateAnimation.setRepeatMode(Animation.RESTART);
+        error_to_load_img.setAnimation(mRotateAnimation);
+    }
+
+    /**
+     * 正在加载动画回收
+     */
+    private void removeRotateAnimation() {
+        // 动画回收
+        if (mRotateAnimation != null) {
+            mRotateAnimation.cancel();
+            error_to_load_img.clearAnimation();
+        }
+    }
+
+    @Override
+    public void onItemTargetClick(View view, int position, SignUpManagementData targetUser) {
+
+
+        final String mobile = targetUser.getMobile();
+        final int userID = targetUser.getUser().getId();
+
+        if (CheckUtil.isEmpty(mobile)) {
+            return;
+        }
+
+        targetClickDialog = DialogUtil.createOperateDialog(SignUpManagementActivity.this, "操作", "先聊聊", mobile, "取消", false, false, false, new BackCall() {
+
+            @Override
+            public void deal(int which, Object... obj) {
+                super.deal(which, obj);
+
+                switch (which) {
+                    case R.id.select_operate_dialog_one_layout:
+
+                        targetClickDialog.dismiss();
+
+
+                        //跳转到聊天界面
+                        if (!isPostchating) {
+                            //
+                            isPostchating = true;
+                            loadingDiaog = DialogUtil.LoadingDialog(SignUpManagementActivity.this, null);
+                            if (!isFinishing()) {
+                                loadingDiaog.show();
+                            }
+                            postChatRequest(false, userID);
+                        }
+
+
+                        break;
+                    case R.id.select_operate_dialog_two_layout:
+
+                        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mobile));
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+
+                        targetClickDialog.dismiss();
+                        break;
+
+                    case R.id.select_operate_dialog_three_layout:
+                        targetClickDialog.dismiss();
+                        break;
+                }
+
+
+            }
+        });
+        targetClickDialog.show();
+
+    }
+
+    private void sigUpTarget(final String id, int targetUserId) {
+
+
+        SigUpTargetBean targetBean = new SigUpTargetBean();
+        targetBean.setId(id);
+        targetBean.setTargetUserId(targetUserId);
+
+        SigUpTargetService targetService = new SigUpTargetService(this);
+        targetService.parameter(targetBean);
+        targetService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                getOnRefresh(id, 0);
+
+            }
+        });
+        targetService.enqueue();
+
+    }
+
+    /**
+     * 聊天
+     */
+    private void postChatRequest(boolean isconfirm, final int targetUserId) {
+
+
+        ChatAttamptBean attamptBean = new ChatAttamptBean();
+        attamptBean.setTargetUserId(targetUserId);
+        attamptBean.setConfirm(isconfirm);
+
+
+        ChatAttamptService attamptService = new ChatAttamptService(this);
+        attamptService.parameter(attamptBean);
+        attamptService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+                loadingDiaog.dismiss();
+                isPostchating = false;
+
+                ChatAttamptRespBean attamptRespBean = (ChatAttamptRespBean) respBean;
+                AttamptRespDto dto = attamptRespBean.getResp();
+                chatPostResultHint(dto, targetUserId);
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                loadingDiaog.dismiss();
+
+                isPostchating = false;
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    // 没有网络的场合，去提示页
+                    DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this);
+                } else {
+                    DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this, msg);
+                }
+            }
+        });
+        attamptService.enqueue();
+    }
+
+    /**
+     * 聊天结果判断显示提示dialog
+     *
+     * @param dto
+     */
+    private void chatPostResultHint(AttamptRespDto dto, final int targetUserId) {
+
+        if (dto != null) {
+            if (dto.getViewStatus() == 0) {
+                if (!CheckUtil.isEmpty(dto.getMessage())) {
+                    DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this, dto.getMessage());
+                } else {
+                    DialogUtil.showDisCoverNetToast(SignUpManagementActivity.this, "无法发起聊天");
+                }
+            } else if (dto.getViewStatus() == 1) {
+                Bundle bundle = new Bundle();
+                bundle.putInt(YpSettings.USERID, targetUserId);
+                ActivityUtil.jump(SignUpManagementActivity.this, ChatActivity.class, bundle, 0, 100);
+
+            } else if (dto.getViewStatus() == 2) {
+                //头像不通过 帮助 取消
+                helpdialog = DialogUtil.createHintOperateDialog(SignUpManagementActivity.this, "", dto.getMessage(), "查看帮助", "立即上传", new BackCallListener() {
+                    @Override
+                    public void onEnsure(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+                        Bundle bundles = new Bundle();
+                        bundles.putInt(YpSettings.USERID, YPApplication.getInstance().loginUser.getUserId());
+                        ActivityUtil.jump(SignUpManagementActivity.this, UserInfoEditActivity.class, bundles, 0, 100);
+                    }
+
+                    @Override
+                    public void onCancel(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+                        //跳转到web 查看帮助
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString(YpSettings.BUNDLE_KEY_WEB_URL, "Standard/AvatarAudit");
+                        bundle.putString(YpSettings.BUNDLE_KEY_WEB_TITLE, "头像审核规范");
+                        bundle.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+
+                        ActivityUtil.jump(SignUpManagementActivity.this, SimpleWebViewActivity.class, bundle, 0, 100);
+
+                    }
+                });
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+            } else if (dto.getViewStatus() == 3) {
+                // 对方拒绝接收非视频认证用户消息
+                helpdialog = DialogUtil.createHintOperateDialog(SignUpManagementActivity.this, "", dto.getMessage(), "取消", "立即认证", new BackCallListener() {
+                    @Override
+                    public void onEnsure(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+                        LogUtils.e("视频认证 dialog回调laile000000000000000000000000000000000");
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+                        ActivityUtil.jump(SignUpManagementActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+                    }
+
+                    @Override
+                    public void onCancel(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+                    }
+                });
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+
+            } else if (dto.getViewStatus() == 4) {
+
+                helpdialog = DialogUtil.createHintOperateDialog(SignUpManagementActivity.this, "", dto.getMessage(), "使用P果", "立即认证", new BackCallListener() {
+                    @Override
+                    public void onEnsure(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+                        LogUtils.e("聊天使用p果和视频认证 dialog回调laile000000000000000000000000000000000");
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(YpSettings.USERID, YPApplication.loginUser.getUserId());
+                        ActivityUtil.jump(SignUpManagementActivity.this, VideoDetailGetActivity.class, bundle, 0, 100);
+                    }
+
+                    @Override
+                    public void onCancel(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+                        loadingDiaog = DialogUtil.LoadingDialog(SignUpManagementActivity.this, null);
+                        if (!isFinishing()) {
+                            loadingDiaog.show();
+                        }
+                        postChatRequest(true, targetUserId);
+
+                    }
+                });
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+
+            } else if (dto.getViewStatus() == 5) {
+                //消耗p果 取消
+                helpdialog = DialogUtil.createHintOperateDialog(SignUpManagementActivity.this, "", dto.getMessage(), "取消", "消耗P果", new BackCallListener() {
+                    @Override
+                    public void onEnsure(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+                        loadingDiaog = DialogUtil.LoadingDialog(SignUpManagementActivity.this, null);
+                        if (!isFinishing()) {
+                            loadingDiaog.show();
+                        }
+                        postChatRequest(true, targetUserId);
+                    }
+
+                    @Override
+                    public void onCancel(View view, Object... obj) {
+                        if (!isFinishing()) {
+                            helpdialog.dismiss();
+                        }
+
+                    }
+                });
+                if (!isFinishing()) {
+                    helpdialog.show();
+                }
+            }
+        }
+    }
+
+
+    @Override
+    public void onItemContextClick(View view, int position, final SignUpManagementData managementData) {
+
+        String username = managementData.getUser().getName();
+        final int userId = managementData.getUser().getId();
+        String dilogTitleStr = "确认约会对象";
+        String dilogContextStr = "是否决定和 " + username + "约会？ 确认后，你的手机号码将显示给对方";
+
+
+        contextClickDialog = DialogUtil.createHintOperateDialog(SignUpManagementActivity.this, dilogTitleStr, getSpannableStringBuilder(dilogContextStr, username), "取消", "确定", new BackCallListener() {
+
+            @Override
+            public void onEnsure(View view, Object... obj) {
+
+                sigUpTarget(appointId, userId);
+                contextClickDialog.dismiss();
+
+            }
+
+            @Override
+            public void onCancel(View view, Object... obj) {
+                contextClickDialog.dismiss();
+
+            }
+        });
+        contextClickDialog.show();
+
+
+    }
+
+    @Override
+    public void onItemUserIconClick(View view, int position, SignUpManagementUser user) {
+
+        int userID = user.getId();
+        Bundle userbundle = new Bundle();
+        userbundle.putInt(YpSettings.USERID, userID);
+        ActivityUtil.jump(SignUpManagementActivity.this, UserInfoActivity.class, userbundle, 0, 100);
+
+    }
+
+
+    private SpannableStringBuilder getSpannableStringBuilder(String dilogContextStr, String username) {
+        int toUserNameSize = 0;
+        int contentSize = 0;
+
+        contentSize = dilogContextStr.indexOf(username);
+        toUserNameSize = username.length();
+        String contentStr = CheckUtil.ToDBC(dilogContextStr);
+
+        SpannableString spannableString = FaceTextUtils.toSpannableString(
+                this, contentStr);
+
+        SpannableStringBuilder builder = new SpannableStringBuilder(
+                spannableString);
+
+        ForegroundColorSpan blackSpan = new ForegroundColorSpan(this
+                .getResources().getColor(R.color.text_color_ff7462));
+
+        builder.setSpan(blackSpan, contentSize, contentSize
+                + toUserNameSize, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        return builder;
+
+    }
+}

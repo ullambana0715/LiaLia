@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/user_appoint_no_evaluation_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:background="@color/text_color_eeeeee"
+
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:orientation="vertical">
+
+        <RadioGroup
+
+            android:id="@+id/user_appoint_no_evaluation_rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:orientation="horizontal"
+            android:padding="15dp">
+
+            <RadioButton
+                android:id="@+id/user_appoint_no_evaluation_rg_but_true"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:button="@null"
+                android:drawableLeft="@drawable/evaluation_style"
+                android:drawablePadding="10dp"
+
+                android:singleLine="true"
+                android:tag="true"
+                android:text="约会已成功完成"
+                android:textColor="@color/text_color_333333"
+
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/user_appoint_no_evaluation_rg_but_false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:button="@null"
+                android:drawableLeft="@drawable/evaluation_style"
+                android:drawablePadding="10dp"
+
+                android:tag="false"
+                android:text="由于某些原因，无法完成"
+                android:textColor="@color/text_color_333333"
+                android:textSize="12sp" />
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/text_color_eeeeee"></View>
+
+        <EditText
+
+            android:id="@+id/user_appoint_no_evaluation_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:gravity="top"
+            android:hint="这次约会的Ta，你还满意吗？"
+            android:maxLength="100"
+            android:minHeight="150dp"
+            android:padding="30px"
+            android:textColor="@color/text_color_9a9a9a"
+            android:textColorHint="@color/text_color_b2b2b2"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/user_appoint_no_evaluation_numbe_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:gravity="right"
+            android:padding="10dp"
+            android:text="0/100"
+            android:textColor="@color/text_color_c1cece"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/user_appoint_already_evaluation_hini_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="对方已评价，请提交后查看"
+            android:textColor="@color/text_color_b2b2b2"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/user_appoint_no_evaluation_but"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/text_color_white"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="提交评价"
+            android:textColor="@color/text_color_ff7462"
+            android:textSize="16sp" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

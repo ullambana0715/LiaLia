@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dating_detail_signup_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_ffffff"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/dating_detail_signup_userImg_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="12dp"
+            android:background="@drawable/message_head_default_icon" />
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/dating_name_distance_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/dating_detail_signup_name_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="left"
+                    android:singleLine="true"
+                    android:text="做醒不来的梦"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dating_name_distance_layout"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical">
+
+
+                <TextView
+                    android:id="@+id/dating_detail_signup_age_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="2dp"
+                    android:drawablePadding="3dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:text="21"
+                    android:textColor="@color/color_ffffff"
+                    android:textSize="12sp" />
+
+
+                <ImageView
+                    android:id="@+id/dating_detail_signup_hot_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:src="@drawable/hot_icon" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <cn.chono.yopper.view.ProgressBarView
+            android:id="@+id/dating_detail_signup_all_pbv"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="15dp"
+            app:inside_round_color="#ff735d"
+            app:inside_round_moment_from="4dp"
+            app:outside_round_color="#ffd3cc"
+            app:outside_round_progress_color="#ff735d"
+            app:outside_round_width="2dp"
+            app:promptTextColor="#ffffff"
+            app:promptTextSize="8sp"
+            app:prompt_text_moment_from="3dp"
+            app:textColor="#ffffff"
+            app:textSize="12sp">
+
+        </cn.chono.yopper.view.ProgressBarView>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/dating_detail_signup_bottom_view"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="72dp"
+        android:background="@color/color_eeeeee"
+        />
+
+</LinearLayout>
+
+
+
+

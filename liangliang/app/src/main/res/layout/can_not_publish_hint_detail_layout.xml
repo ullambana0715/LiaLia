@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp"
+    >
+
+    <ImageView
+        android:id="@+id/can_not_publish_dating_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/cannot_publish_dating_not_ready_icon" />
+
+    <TextView
+        android:id="@+id/can_not_publish_dating_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:singleLine="true"
+        android:layout_marginLeft="7dp"
+        android:text="完善交友资料"
+        android:textColor="#9a9a9a"
+        android:textSize="14sp" />
+
+</LinearLayout>

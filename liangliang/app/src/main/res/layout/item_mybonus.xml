@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bonus_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp">
+
+        <ImageView
+            android:id="@+id/bonus_img"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/image_default" />
+
+        <TextView
+            android:id="@+id/bonus_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/bonus_img"
+            android:layout_marginLeft="12dp"
+            android:layout_toRightOf="@+id/bonus_img"
+            android:text="小米手环 "
+            android:textColor="@color/color_333333"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/bonus_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/bonus_name"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/bonus_img"
+            android:text="1000rmb"
+            android:textColor="@color/color_9a9a9a"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/bonus_timeout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/bonus_img"
+            android:layout_marginLeft="12dp"
+            android:layout_toRightOf="@+id/bonus_img"
+            android:text="有效期：10天"
+            android:textColor="@color/color_ff7462"
+            android:textSize="10sp"
+
+            />
+
+        <TextView
+            android:id="@+id/get_bonus"
+            android:layout_width="60dp"
+            android:layout_height="24dp"
+            android:layout_alignBottom="@+id/bonus_img"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/shape_defalut_corner"
+            android:gravity="center"
+            android:text="领取"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/bonus_expired"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/bonus_img"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:src="@drawable/bonus_expired"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</FrameLayout>

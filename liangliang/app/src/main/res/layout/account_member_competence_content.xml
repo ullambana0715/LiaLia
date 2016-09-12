@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="12dp"
+
+              android:orientation="horizontal">
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="2dp"
+        android:layout_marginRight="8dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/eeeeee_360_corners"
+        ></View>
+
+    <TextView
+        android:id="@+id/account_member_competence_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/color_b2b2b2"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/account_member_competence_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="@string/view_satisfy"
+        android:textColor="@color/color_3170f0"
+        android:textSize="14sp"/>
+
+</LinearLayout>

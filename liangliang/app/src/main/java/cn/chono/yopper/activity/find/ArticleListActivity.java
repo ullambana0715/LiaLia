@@ -1,0 +1,642 @@
+package cn.chono.yopper.activity.find;
+
+import android.graphics.Bitmap;
+import android.net.http.SslError;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.View;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.lidroid.xutils.util.LogUtils;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.message.PushAgent;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cn.chono.yopper.MainFrameActivity;
+import cn.chono.yopper.R;
+import cn.chono.yopper.Service.Http.Banners.BannersBean;
+import cn.chono.yopper.Service.Http.Banners.BannersData;
+import cn.chono.yopper.Service.Http.Banners.BannersDto;
+import cn.chono.yopper.Service.Http.Banners.BannersRespBean;
+import cn.chono.yopper.Service.Http.Banners.GetSubBannersService;
+import cn.chono.yopper.Service.Http.OnCallBackFailListener;
+import cn.chono.yopper.Service.Http.OnCallBackSuccessListener;
+import cn.chono.yopper.Service.Http.RespBean;
+import cn.chono.yopper.data.LoginUser;
+import cn.chono.yopper.base.App;
+import cn.chono.yopper.common.YpSettings;
+import cn.chono.yopper.utils.ActivityUtil;
+import cn.chono.yopper.utils.CheckUtil;
+import cn.chono.yopper.utils.DbHelperUtils;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.utils.HttpURL;
+import cn.chono.yopper.utils.ISO8601;
+import cn.chono.yopper.utils.JsonUtils;
+import cn.chono.yopper.view.BannerOperatePopupwindow;
+import cn.chono.yopper.view.BannerView;
+
+/**
+ * Created by yangjinyu on 16/2/19.
+ */
+public class ArticleListActivity extends MainFrameActivity implements BannerOperatePopupwindow.OnSelectedListener {
+
+
+    private WebView article_list_webview;
+
+    private LinearLayout article_list_banner_layout;
+    private LinearLayout article_list_banner_hsv;
+    private ImageView article_list_banner_add_iv;
+
+    private String bannerId;
+    private String name;
+
+    private String weburl;
+
+    private boolean allowUserDefine = false;
+
+    private String bannerIdAddUserID;
+
+    private BannersDto userBannersDto;
+
+    private List<BannersData> userBannerlist = new ArrayList<BannersData>();
+
+    private List<BannersData> bannerlist = new ArrayList<BannersData>();
+
+    private List<BannersData> allbannerlistFormHttp = new ArrayList<BannersData>();
+
+
+    private BannerOperatePopupwindow bannerOperatePopupwindow;
+
+    private int selectPosition = 0;
+
+    private BannersData selectBannersData;
+
+
+    private String horStr;
+
+
+    private LinearLayout error_network_layout;
+
+    private TextView error_network_tv;
+
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+        MobclickAgent.onPageStart(name+""); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onResume(this); // 统计时长
+
+    }
+
+    @Override
+    public void onPause() {
+
+        super.onPause();
+        MobclickAgent.onPageEnd(name+""); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
+        MobclickAgent.onPause(this); // 统计时长
+
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.constellation_divine_activity);
+
+        PushAgent.getInstance(this).onAppStart();
+
+        Bundle bundle = this.getIntent().getExtras();
+        if (bundle != null) {
+            bannerId = bundle.getString(YpSettings.BannerId);
+            name = bundle.getString(YpSettings.BannerName);
+            allowUserDefine = bundle.getBoolean("allowUserDefine");
+            weburl = bundle.getString(YpSettings.BUNDLE_KEY_WEB_URL);
+        }
+
+        if (YpSettings.isTest) {
+            weburl = HttpURL.Test_webURL + weburl;
+        } else {
+            weburl = HttpURL.webURL + weburl;
+        }
+
+        LogUtils.e(weburl);
+
+        bannerIdAddUserID = bannerId + LoginUser.getInstance().getUserId();
+
+        getSubBannerFormDb(bannerIdAddUserID);
+
+        getSubBanners(bannerId);
+
+        initView();
+
+    }
+
+
+    private void initView() {
+        this.getTvTitle().setText(name);
+
+        this.getGoBackLayout().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        article_list_banner_layout = (LinearLayout) this.findViewById(R.id.article_list_banner_layout);
+
+
+        error_network_layout = (LinearLayout) findViewById(R.id.error_network_layout);
+
+        error_network_tv = (TextView) findViewById(R.id.error_network_tv);
+
+
+
+
+        article_list_banner_hsv = (LinearLayout) this.findViewById(R.id.article_list_banner_hsv);
+        article_list_banner_add_iv = (ImageView) this.findViewById(R.id.article_list_banner_add_iv);
+        article_list_banner_add_iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                MobclickAgent.onEvent(ArticleListActivity.this, "btn_find_banner_add");
+
+                bannerlist.clear();
+
+                if(allbannerlistFormHttp.size()==0){
+                    String bannerStr=DbHelperUtils.getBannersFromDb(bannerId);
+                    if(!CheckUtil.isEmpty(bannerStr)){
+                        BannersDto bannersDto=JsonUtils.fromJson(bannerStr,BannersDto.class);
+                        allbannerlistFormHttp=bannersDto.getList();
+                    }
+
+                }
+                bannerlist = allbannerlistFormHttp;
+
+
+                for (int i = 0; i < userBannerlist.size(); i++) {
+                    BannersData dto = userBannerlist.get(i);
+
+                    for (int j = 0; j < bannerlist.size(); j++) {
+
+                        if (dto.getName().equals(bannerlist.get(j).getName())) {
+
+                            bannerlist.remove(j);
+                        }
+                    }
+                }
+
+
+                bannerOperatePopupwindow = new BannerOperatePopupwindow(ArticleListActivity.this,bannerId, horStr,selectPosition, userBannerlist, bannerlist, allbannerlistFormHttp, ArticleListActivity.this);
+                bannerOperatePopupwindow.showAsDropDown(ArticleListActivity.this.getTitleLayout(), 0, 0);
+            }
+        });
+
+
+        article_list_webview = (WebView) this.findViewById(R.id.article_list_webview);
+
+
+        error_network_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                article_list_webview.loadUrl(weburl);
+                article_list_webview.setVisibility(View.VISIBLE);
+                error_network_layout.setVisibility(View.GONE);
+            }
+        });
+
+
+
+
+        article_list_webview.getSettings().setJavaScriptEnabled(true);// 允许使用js
+        article_list_webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);  //设置 缓存模式
+        article_list_webview.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                LogUtils.e("onPageFinished=" + url);
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+
+                super.onPageStarted(view, url, favicon);
+
+                LogUtils.e("onPageStarted=" + url);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                article_list_webview.setVisibility(View.GONE);
+                error_network_layout.setVisibility(View.VISIBLE);
+
+
+            }
+
+            @Override
+            public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
+                LogUtils.e("onReceivedError=");
+                return super.shouldOverrideKeyEvent(view, event);
+
+
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                super.onReceivedSslError(view, handler, error);
+
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                String valueUrl = ISO8601.decodeURIComponent(url);//decode URL 我们肉眼能看得清楚的URL
+                try {
+
+
+                    if (valueUrl.toLowerCase().startsWith("http://localhost/return?data=")) {
+                        valueUrl = valueUrl.replace("http://localhost/return?data=", "");
+
+                        JSONObject obj = new JSONObject(valueUrl);
+                        String type = obj.getString("type");
+                        if (!CheckUtil.isEmpty(type) && type.equals("link")) {
+                            String data = obj.getString("data");
+                            JSONObject dataobj = new JSONObject(data);
+                            String link = dataobj.getString("link");
+
+
+                            Bundle bd = new Bundle();
+
+                            bd.putString(YpSettings.BUNDLE_KEY_WEB_URL, link);
+
+                            bd.putBoolean(YpSettings.BUNDLE_KEY_WEB_HIDE_TITLE, false);
+
+                            ActivityUtil.jump(ArticleListActivity.this, ArticleContentDetailActivity.class, bd, 0, 100);
+
+                            return true;
+                        }
+
+                    }
+                } catch (JSONException e) {
+
+                }
+
+                return super.shouldOverrideUrlLoading(view, url);
+
+
+            }
+
+        });
+
+
+
+//        article_list_webview.loadUrl(weburl);
+
+    }
+
+
+    /**
+     * 获取子栏目
+     */
+
+    private void getSubBanners(final String bannerId) {
+
+        BannersBean bannersBean = new BannersBean();
+        bannersBean.setParentId(bannerId);
+
+
+        GetSubBannersService getSubBannersService = new GetSubBannersService(this);
+        getSubBannersService.parameter(bannersBean);
+        getSubBannersService.callBack(new OnCallBackSuccessListener() {
+            @Override
+            public void onSuccess(RespBean respBean) {
+                super.onSuccess(respBean);
+
+                BannersRespBean bannersRespBean = (BannersRespBean) respBean;
+                if (null == bannersRespBean && bannersRespBean.getResp() == null) {
+                    article_list_banner_layout.setVisibility(View.GONE);
+                    return;
+                }
+
+                BannersDto bannersDto = bannersRespBean.getResp();
+
+                List<BannersData> bannerListFromHttp = bannersDto.getList();
+                if (bannerListFromHttp != null && bannerListFromHttp.size() > 0) {
+
+                    String bannerStr = JsonUtils.toJson(bannersDto);
+                    DbHelperUtils.saveBannersToDb(bannerId, bannerStr);
+
+                    allbannerlistFormHttp = bannerListFromHttp;
+
+
+                    initDataToView(bannerListFromHttp);
+
+                } else {
+
+                    article_list_banner_layout.setVisibility(View.GONE);
+                }
+
+
+            }
+        }, new OnCallBackFailListener() {
+            @Override
+            public void onFail(RespBean respBean) {
+                super.onFail(respBean);
+
+                String msg = respBean.getMsg();
+                if (TextUtils.isEmpty(msg)) {
+                    DialogUtil.showDisCoverNetToast(ArticleListActivity.this);
+                    return;
+                }
+                DialogUtil.showDisCoverNetToast(ArticleListActivity.this, msg);
+
+            }
+        });
+
+        getSubBannersService.enqueue();
+
+
+    }
+
+
+    private void initDataToView(List<BannersData> list) {
+
+        article_list_banner_layout.setVisibility(View.VISIBLE);
+
+        if (!allowUserDefine) {
+            article_list_banner_add_iv.setVisibility(View.GONE);
+        } else {
+            article_list_banner_add_iv.setVisibility(View.VISIBLE);
+        }
+
+
+        if (!allowUserDefine) {
+            BannersData dto = userBannerlist.get(0);
+            list.add(0, dto);
+            userBannerlist = list;
+
+            if (article_list_banner_hsv.getChildCount() > 0) {
+                article_list_banner_hsv.removeAllViews();
+            }
+
+            if (tabArr != null && tabArr.size() > 0) {
+                tabArr.clear();
+            }
+
+            for (int i = 0; i < userBannerlist.size(); i++) {
+                addBannerView(userBannerlist.get(i), i);
+            }
+            selectBannersData=userBannerlist.get(selectPosition);
+            BannerView bannerView = (BannerView) article_list_banner_hsv.getChildAt(selectPosition);
+            bannerView.performClick();
+
+        } else {
+
+
+            int hor = DbHelperUtils.getDbUserHor(LoginUser.getInstance().getUserId());
+
+             horStr = CheckUtil.ConstellationMatching(hor);
+
+             boolean ishavHor = false;
+             for (int j = 0; j < userBannerlist.size(); j++) {
+                BannersData bandto = userBannerlist.get(j);
+                if (bandto.getName().equals(horStr)) {
+                    ishavHor=true;
+                    break;
+                }
+             }
+
+            for (int i = 0; i < list.size(); i++) {
+                BannersData dto = list.get(i);
+
+                for (int j = 0; j < userBannerlist.size(); j++) {
+                    BannersData userdto = userBannerlist.get(j);
+                    if (dto.getName().equals(horStr) && !userdto.getName().equals(horStr)) {
+                        if(!ishavHor) {
+                            userBannerlist.add(1, dto);
+                        }
+                        break;
+                    }
+                }
+
+            }
+
+
+            if (article_list_banner_hsv.getChildCount() > 0) {
+                article_list_banner_hsv.removeAllViews();
+            }
+
+            if (tabArr != null && tabArr.size() > 0) {
+                tabArr.clear();
+            }
+
+            for (int i = 0; i < userBannerlist.size(); i++) {
+                addBannerView(userBannerlist.get(i), i);
+            }
+            selectBannersData=userBannerlist.get(selectPosition);
+            BannerView bannerView = (BannerView) article_list_banner_hsv.getChildAt(selectPosition);
+            bannerView.performClick();
+
+        }
+
+    }
+
+
+    private List<BannerView> tabArr = new ArrayList<BannerView>();
+
+    private void addBannerView(final BannersData dto, final int position) {
+
+
+        BannerView bannerView = new BannerView(ArticleListActivity.this, dto, position);
+        bannerView.setIndex(position);
+
+        tabArr.add(bannerView);
+
+        bannerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                BannerView tab = (BannerView) v;
+                int index = tab.getIndex();
+                selectPosition = index;
+                selectBannersData=userBannerlist.get(selectPosition);
+                for (int j = 0; j < tabArr.size(); j++) {
+                    BannerView tabb = tabArr.get(j);
+                    if (j != index) {
+                        tabb.clearSelect(ArticleListActivity.this);
+                        tabb.setisSelect(false);
+                        tabArr.remove(j);
+                        tabArr.add(j, tabb);
+
+                    } else {
+                        boolean isSelect = tab.getisSelect();
+                        if (!isSelect) {
+                            tabb.setSelect(ArticleListActivity.this);
+                            tabb.setisSelect(true);
+                            tabArr.remove(j);
+                            tabArr.add(j, tabb);
+
+                            if (dto.getName().equals("全部")) {
+                                article_list_webview.loadUrl(weburl);
+                            } else {
+                                article_list_webview.loadUrl(weburl + "/" + dto.getBannerId());
+                            }
+                        }
+                    }
+                }
+
+
+            }
+        });
+
+
+        article_list_banner_hsv.addView(bannerView);
+
+    }
+
+
+    private void getSubBannerFormDb(String bannerIdAddUserID) {
+
+        String userBannerStr = DbHelperUtils.getUserBannersFromDb(bannerIdAddUserID);
+
+        if (!CheckUtil.isEmpty(userBannerStr)) {
+            userBannersDto = JsonUtils.fromJson(userBannerStr, BannersDto.class);
+        }
+
+
+        if (userBannersDto != null) {
+            List<BannersData> dblist = userBannersDto.getList();
+            if (dblist != null && dblist.size() > 0) {
+                boolean ishaveAll = false;
+
+                for (int i = 0; i < dblist.size(); i++) {
+                    BannersData bannersData = dblist.get(i);
+                    if (bannersData.getName().equals("全部")) {
+                        ishaveAll = true;
+                        break;
+                    }
+                }
+
+                if (!ishaveAll) {
+                    BannersData bannersData = new BannersData();
+                    bannersData.setBannerId("quanbu");
+                    bannersData.setName("全部");
+                    userBannerlist.add(0, bannersData);
+                    userBannersDto.setList(userBannerlist);
+                    DbHelperUtils.saveUserBannersToDb(bannerIdAddUserID, JsonUtils.toJson(userBannersDto));
+                } else {
+                    userBannerlist = dblist;
+                }
+
+
+            } else {
+
+                BannersData bannersData = new BannersData();
+                bannersData.setBannerId("quanbu");
+                bannersData.setName("全部");
+                userBannerlist.add(0, bannersData);
+                userBannersDto.setList(userBannerlist);
+                DbHelperUtils.saveUserBannersToDb(bannerIdAddUserID, JsonUtils.toJson(userBannersDto));
+            }
+
+        } else {
+
+            userBannersDto = new BannersDto();
+            BannersData bannersData = new BannersData();
+            bannersData.setBannerId("quanbu");
+            bannersData.setName("全部");
+            userBannerlist.add(0, bannersData);
+            userBannersDto.setList(userBannerlist);
+            DbHelperUtils.saveUserBannersToDb(bannerIdAddUserID, JsonUtils.toJson(userBannersDto));
+        }
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (null != article_list_webview) {
+//            mWebView.stopLoading();此方法有问题。在android 4.4.4上lenovo上，连续onDestroy()时app会异常停止
+
+            article_list_webview.clearFocus();
+            article_list_webview.clearCache(true);
+            article_list_webview.clearHistory();
+            article_list_webview.destroy();
+
+        }
+    }
+
+    @Override
+    public void onSelectedListener(int vid, List<BannersData> userList) {
+
+        switch (vid) {
+            case R.id.banner_operate_off_iv_layout:
+
+                bannerOperatePopupwindow.dismiss();
+                refreshView(userList);
+
+                break;
+
+            case R.id.banner_operate_finish_tv:
+                refreshView(userList);
+                break;
+
+            case R.id.banner_operate_detele_tv:
+
+                break;
+
+        }
+
+    }
+
+
+
+    private void refreshView(List<BannersData> userList){
+        userBannerlist = userList;
+
+
+
+        if (article_list_banner_hsv.getChildCount() > 0) {
+            article_list_banner_hsv.removeAllViews();
+        }
+
+        if (tabArr != null && tabArr.size() > 0) {
+            tabArr.clear();
+        }
+
+        selectPosition=0;
+
+        for (int i = 0; i < userBannerlist.size(); i++) {
+            BannersData dto=userBannerlist.get(i);
+            addBannerView(dto, i);
+            if(selectBannersData.getName().equals(dto.getName())){
+                selectPosition=i;
+            }
+        }
+
+        BannerView bannerView = (BannerView) article_list_banner_hsv.getChildAt(selectPosition);
+        bannerView.performClick();
+
+        selectBannersData=userBannerlist.get(selectPosition);
+
+        userBannersDto.setList(userBannerlist);
+        DbHelperUtils.saveUserBannersToDb(bannerIdAddUserID, JsonUtils.toJson(userBannersDto));
+    }
+}

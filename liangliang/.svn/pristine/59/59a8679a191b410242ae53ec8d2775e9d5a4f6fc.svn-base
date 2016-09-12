@@ -1,0 +1,141 @@
+package cn.chono.zxb.xrefreshview;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import cn.chono.zxb.xrefreshview.callback.IFooterCallBack;
+
+/**
+ * Created by zxb on 2015/11/11.
+ */
+public class CustomfooterTv extends LinearLayout implements IFooterCallBack {
+
+    private  TextView footerTv;
+
+    private String footerTvStr="点击加载更多";
+
+
+    public CustomfooterTv(Context context) {
+        super(context);
+        initView();
+    }
+    public CustomfooterTv(Context context,String footerTvStr) {
+        super(context);
+        this.footerTvStr=footerTvStr;
+        initView();
+    }
+
+    public CustomfooterTv(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView();
+    }
+
+    public CustomfooterTv(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initView();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public CustomfooterTv(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        initView();
+    }
+
+    private void initView(){
+        footerTv=new TextView(getContext());
+        footerTv.setGravity(Gravity.CENTER);
+        footerTv.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+
+        addView(footerTv);
+        setFooterTvStr(footerTvStr);
+    }
+
+
+
+    public void setFooterTvStr(String footerTvStr) {
+        this.footerTvStr = footerTvStr;
+        footerTv.setText(footerTvStr);
+    }
+
+    /**
+     * 当不是到达底部自动加载更多的时候，需要自己写点击事件
+     * @param xRefreshViewListener
+     */
+    @Override
+    public void callWhenNotAutoLoadMore(final  XRefreshView.XRefreshViewListener xRefreshViewListener) {
+
+        footerTv.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(xRefreshViewListener!=null){
+                    xRefreshViewListener.onLoadMore(false);
+                    onStateRefreshing();
+                }
+            }
+        });
+
+    }
+    /**
+     * 正常状态，例如需要点击footerview才能加载更多，主要是到达底部不自动加载更多时会被调用
+     */
+    @Override
+    public void onStateReady() {
+
+
+    }
+    /**
+     * 正在刷新
+     */
+    @Override
+    public void onStateRefreshing() {
+
+    }
+    /**
+     * 刷新结束
+     */
+    @Override
+    public void onStateFinish() {
+
+    }
+    /**
+     * 已无更多数据
+     */
+    @Override
+    public void onStateComplete() {
+
+    }
+    /**
+     * 隐藏footerview
+     */
+    @Override
+    public void hide() {
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) footerTv
+                .getLayoutParams();
+        lp.height = 0;
+        footerTv.setLayoutParams(lp);
+    }
+    /**
+     * 显示footerview
+     */
+    @Override
+    public void show() {
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) footerTv
+                .getLayoutParams();
+        lp.height = LayoutParams.MATCH_PARENT;
+        footerTv.setLayoutParams(lp);
+    }
+    /**
+     * 获得footerview的高度
+     * @return
+     */
+    @Override
+    public int getFooterHeight() {
+        return getMeasuredHeight();
+    }
+}

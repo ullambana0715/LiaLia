@@ -1,0 +1,21 @@
+package cn.chono.yopper.Service.Http.Campaigns;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by cc on 16/2/23.
+ */
+public class CampaignsRespBean extends RespBean {
+
+    private CampaignsDto resp;
+
+
+    public CampaignsDto getResp() {
+        return resp;
+    }
+
+    public void setResp(CampaignsDto resp) {
+        this.resp = resp;
+    }
+}

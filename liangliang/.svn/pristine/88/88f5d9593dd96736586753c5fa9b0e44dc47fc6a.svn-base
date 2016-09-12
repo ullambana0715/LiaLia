@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    >
+
+    <TextView
+        android:id="@+id/banner_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="全部"
+        android:layout_margin="5dp"
+        android:background="@drawable/banner_lable_select_bg"
+        />
+
+<RelativeLayout
+    android:id="@+id/banner_detele_layout"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:visibility="gone">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/find_banner_delete"
+        />
+
+</RelativeLayout>
+
+</RelativeLayout>

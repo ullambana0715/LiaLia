@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    android:background="@color/color_00000000"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/placeicon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:drawableTop="@drawable/no1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/color_000000" />
+
+    <RelativeLayout
+        android:id="@+id/portrait"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@+id/placeicon">
+
+        <ImageView
+            android:id="@+id/portraiticon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/message_head_default_icon" />
+
+        <ImageView
+            android:id="@+id/climbing_vip_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/ic_small_vip_diamond"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/bonus"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/share_weixin_image"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/portrait"
+        android:layout_toLeftOf="@+id/bonus"
+        android:layout_toRightOf="@+id/portrait"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="帅哥帅哥"
+        android:textColor="@color/color_333333"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/userconstellation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/username"
+        android:layout_toRightOf="@+id/portrait"
+        android:drawablePadding="3dp"
+        android:gravity="center_vertical"
+        android:paddingBottom="1dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="1dp"
+        android:text="狮子"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
+
+
+    <SeekBar
+        android:id="@+id/energy_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/portrait"
+        android:layout_marginLeft="-15dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/bonus"
+        android:layout_toRightOf="@+id/portrait"
+        android:indeterminate="false"
+        android:max="100"
+        android:maxHeight="3dp"
+        android:minHeight="3dp"
+        android:paddingRight="3dp"
+        android:progressDrawable="@drawable/bar_drawable"
+        android:thumb="@drawable/energy_thumb"
+        android:thumbOffset="3dp" />
+
+    <TextView
+        android:id="@+id/energy_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/energy_bar"
+        android:layout_alignRight="@+id/energy_bar"
+        android:text="100"
+        android:textColor="@color/color_ff7462"
+        android:textSize="8sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@color/color_eeeeee" />
+</RelativeLayout>

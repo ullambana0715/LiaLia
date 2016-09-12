@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/no_net_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="300px"
+        android:layout_height="300px"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="250px"
+        android:src="@drawable/ic_error_network"
+        app:layout_auto_baseheight="width" />
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20px"
+        android:text="@string/on_net_Loser"
+        android:textColor="@color/color_999999"
+        android:textSize="32px" />
+
+    <TextView
+        android:id="@+id/text_view_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_view"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20px"
+        android:text="@string/on_net_examine"
+        android:textColor="@color/color_999999"
+        android:textSize="32px" />
+
+    <TextView
+        android:id="@+id/data_reload_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_view_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20px"
+        android:background="@drawable/ff7462_border_corners_ffffff_selected_style"
+        android:paddingBottom="20px"
+        android:paddingLeft="20px"
+        android:paddingRight="20px"
+        android:paddingTop="20px"
+        android:text="@string/on_net_load"
+        android:textColor="@color/color_ff7462"
+        android:textSize="32px" />
+
+</com.zhy.autolayout.AutoRelativeLayout>

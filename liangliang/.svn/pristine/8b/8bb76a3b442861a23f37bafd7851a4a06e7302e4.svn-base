@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/text_color_e3e3e3"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/block_hint_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f1f1f1"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:singleLine="true"
+        android:text="长按解除黑名单"
+        android:textColor="#c6c6c6"
+        android:textSize="16sp" />
+
+    <cn.chono.zxb.xrefreshview.XRefreshView
+        android:id="@+id/block_xrefreshview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ListView
+            android:id="@+id/block_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/text_color_white"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent" />
+    </cn.chono.zxb.xrefreshview.XRefreshView>
+
+    <include layout="@layout/error_network_layout" />
+
+    <include layout="@layout/error_no_data_layout" />
+
+    <include layout="@layout/error_to_load_layout" />
+
+</LinearLayout>

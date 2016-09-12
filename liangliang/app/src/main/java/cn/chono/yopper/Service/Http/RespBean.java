@@ -1,0 +1,46 @@
+package cn.chono.yopper.Service.Http;
+
+import java.io.Serializable;
+
+/**
+ * Created by zxb on 2015/11/19.
+ */
+public class RespBean implements Serializable {
+
+    public String status;
+    public String msg;
+    public String errCode;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getErrCode() {
+        return errCode;
+    }
+
+    public void setErrCode(String errCode) {
+        this.errCode = errCode;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    @Override
+    public String toString() {
+        return "RespBean{" +
+                "status='" + status + '\'' +
+                ", msg='" + msg + '\'' +
+                ", errCode='" + errCode + '\'' +
+                '}';
+    }
+}

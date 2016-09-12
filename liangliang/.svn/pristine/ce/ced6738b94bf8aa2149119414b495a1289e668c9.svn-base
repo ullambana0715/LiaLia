@@ -1,0 +1,9 @@
+package cn.chono.yopper.Service.Http.BubbleLimit;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/11/20.
+ */
+public class BubbleLimitBean extends ParameterBean {
+}

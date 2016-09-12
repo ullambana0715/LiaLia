@@ -1,0 +1,491 @@
+package cn.chono.yopper.view;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import com.lidroid.xutils.util.LogUtils;
+
+import cn.chono.yopper.R;
+import cn.chono.yopper.utils.DialogUtil;
+import cn.chono.yopper.view.wheel.AbstractWheelTextAdapter;
+import cn.chono.yopper.view.wheel.OnWheelChangedListener;
+import cn.chono.yopper.view.wheel.OnWheelScrollListener;
+import cn.chono.yopper.view.wheel.WheelView;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+
+/**
+ * 日期选择对话框
+ * 
+ * @author ywl
+ *
+ */
+public class ChatAppointTimeDialog extends Dialog implements android.view.View.OnClickListener {
+
+	private Context context;
+	private WheelView wvDate;
+	private WheelView wvHour;
+	private WheelView wvMin;
+
+	private TextView btnSure;
+	private TextView btnCancel;
+
+	private ArrayList<String> arry_dates = new ArrayList<String>();
+	private ArrayList<String> arry_hours = new ArrayList<String>();
+	private ArrayList<String> arry_mins = new ArrayList<String>();
+
+	private CalendarTextAdapter mDateAdapter;
+	private CalendarTextAdapter mHourAdapter;
+	private CalendarTextAdapter mMindapter;
+
+
+	private String select_year;
+
+	private String select_month;
+
+	private String select_day;
+
+	private String select_hour;
+
+	private String select_min;
+
+	private int maxTextSize = 18;
+	private int minTextSize = 14;
+
+	private boolean issetdata = false;
+
+	private String selectDate;
+	private String selectHour;
+	private String selectMin;
+
+	private OnTimeListener onTimeListener;
+
+	public ChatAppointTimeDialog(Context context) {
+		super(context, R.style.ShareDialog);
+		this.context = context;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.appoint_time_wheel_diaog);
+		wvDate = (WheelView) findViewById(R.id.time_date_wheelview);
+		wvHour = (WheelView) findViewById(R.id.time_hour_wheelview);
+		wvMin = (WheelView) findViewById(R.id.time_min_wheelview);
+
+		btnSure = (TextView) findViewById(R.id.time_wheel_sure_btn);
+		btnCancel = (TextView) findViewById(R.id.time_wheel_cancel_btn);
+
+		btnSure.setOnClickListener(this);
+		btnCancel.setOnClickListener(this);
+
+
+		initYears();
+		mDateAdapter = new CalendarTextAdapter(context, arry_dates, getDateItem(selectDate), maxTextSize, minTextSize);
+		wvDate.setVisibleItems(3);
+		wvDate.setViewAdapter(mDateAdapter);
+		wvDate.setCurrentItem(getDateItem(selectDate));
+
+		initHours();
+		mHourAdapter = new CalendarTextAdapter(context, arry_hours, getHourItem(selectHour), maxTextSize, minTextSize);
+		wvHour.setVisibleItems(3);
+		wvHour.setViewAdapter(mHourAdapter);
+		wvHour.setCurrentItem(getHourItem(selectHour));
+
+		initMins();
+
+		mMindapter = new CalendarTextAdapter(context, arry_mins, getMinItem(selectMin), maxTextSize, minTextSize);
+		wvMin.setVisibleItems(3);
+		wvMin.setViewAdapter(mMindapter);
+		wvMin.setCurrentItem(getMinItem(selectMin));
+
+		wvDate.addChangingListener(new OnWheelChangedListener() {
+
+			@Override
+			public void onChanged(WheelView wheel, int oldValue, int newValue) {
+				String currentText = (String) mDateAdapter.getItemText(wheel.getCurrentItem());
+				selectDate = currentText;
+				setTextviewSize(currentText, mDateAdapter);
+				getDateItem(selectDate);
+			}
+		});
+
+		wvDate.addScrollingListener(new OnWheelScrollListener() {
+
+			@Override
+			public void onScrollingStarted(WheelView wheel) {
+
+			}
+
+			@Override
+			public void onScrollingFinished(WheelView wheel) {
+				String currentText = (String) mDateAdapter.getItemText(wheel.getCurrentItem());
+				setTextviewSize(currentText, mDateAdapter);
+			}
+		});
+
+
+
+		wvHour.addChangingListener(new OnWheelChangedListener() {
+
+			@Override
+			public void onChanged(WheelView wheel, int oldValue, int newValue) {
+				String currentText = (String) mHourAdapter.getItemText(wheel.getCurrentItem());
+				selectHour = currentText;
+				setTextviewSize(currentText, mHourAdapter);
+				getHourItem(selectHour);
+
+			}
+		});
+
+		wvHour.addScrollingListener(new OnWheelScrollListener() {
+
+			@Override
+			public void onScrollingStarted(WheelView wheel) {
+
+			}
+
+			@Override
+			public void onScrollingFinished(WheelView wheel) {
+				String currentText = (String) mHourAdapter.getItemText(wheel.getCurrentItem());
+				setTextviewSize(currentText, mHourAdapter);
+			}
+		});
+
+
+
+		wvMin.addChangingListener(new OnWheelChangedListener() {
+
+			@Override
+			public void onChanged(WheelView wheel, int oldValue, int newValue) {
+				String currentText = (String) mMindapter.getItemText(wheel.getCurrentItem());
+				setTextviewSize(currentText, mMindapter);
+				selectMin = currentText;
+				getMinItem(selectMin);
+			}
+		});
+
+		wvMin.addScrollingListener(new OnWheelScrollListener() {
+
+			@Override
+			public void onScrollingStarted(WheelView wheel) {
+
+			}
+
+			@Override
+			public void onScrollingFinished(WheelView wheel) {
+				String currentText = (String) mMindapter.getItemText(wheel.getCurrentItem());
+				setTextviewSize(currentText, mMindapter);
+
+			}
+		});
+
+	}
+
+	private String[] weekDays = { "星期日", "星期一", "星期二", "星期三","星期四", "星期五", "星期六" };
+
+
+	public void initYears() {
+
+		//前一个 本月 下个月等三个月
+		for (int i = 0; i < 3; i++) {
+
+			Date date = new Date();
+			int year = date.getYear() + 1900;
+			int month = date.getMonth() + i;
+			int day_num = 0;
+			Date new_date;
+
+			if (month == 13) {
+				//下一年
+				new_date = new Date(year + 1, 1, 0);
+				day_num = new_date.getDate();
+				year=year + 1;
+
+			} else {
+
+				if (month == 0) {
+					//去年
+					new_date = new Date(year - 1, 12, 0);
+
+					day_num = new_date.getDate();
+					year=year - 1;
+
+				} else {
+					new_date = new Date(year, month, 0);
+
+					day_num = new_date.getDate();
+				}
+
+			}
+
+			for (int j = 1; j <= day_num; j++) {
+
+				String s_month = "";
+				String s_day = "";
+				Calendar c = Calendar.getInstance();
+				c.set(year, new_date.getMonth(), j);
+
+				month = new_date.getMonth() + 1;
+				int w = c.get(Calendar.DAY_OF_WEEK) - 1;
+				if (w < 0)
+					w = 0;
+
+				if (month < 10) {
+					s_month = "0" + month;
+				} else {
+					s_month = month + "";
+				}
+
+				if (j < 10) {
+					s_day = "0" + j;
+
+				} else {
+					s_day = j + "";
+				}
+				arry_dates.add(s_month + "月" + s_day + "日  "+ weekDays[w]);
+
+			}
+		}
+
+	}
+
+	public void initHours() {
+		arry_hours.clear();
+
+		for (int i = 1; i < 25; i++) {
+			if (i < 10) {
+				arry_hours.add("0" + i);
+			} else {
+				if (i == 24) {
+					arry_hours.add("00");
+				} else {
+					arry_hours.add(i + "");
+				}
+			}
+		}
+
+	}
+
+
+	public void initMins() {
+		arry_mins.clear();
+		arry_mins.add("00");
+		arry_mins.add("30");
+	}
+
+
+
+	/**
+	 * 初始化约会时间
+	 * 
+	 * @param province
+	 * @param city
+	 */
+	public void setInitDate(String dateStr) {
+
+		if (dateStr != null && dateStr.length() > 0) {
+			this.selectDate = dateStr;
+		}
+	}
+
+	public void setInitHour(String hourStr) {
+
+
+		if (hourStr != null && hourStr.length() > 0) {
+			this.selectHour = hourStr;
+		}
+
+	}
+
+	public void setInitMin(String minStr) {
+
+		if (minStr != null && minStr.length() > 0) {
+			this.selectMin = minStr;
+		}
+	}
+
+
+	/**
+	 * 
+	 * 
+	 * @param province
+	 * @return
+	 */
+	public int getDateItem(String date_str) {
+		int size = arry_dates.size();
+		int dateIndex = 0;
+
+		for (int i = 0; i < size; i++) {
+
+			if (date_str.equals(arry_dates.get(i))) {
+				dateIndex=i;
+				selectDate = date_str;
+				break;
+			}
+		}
+		return dateIndex;
+	}
+
+
+	public int getHourItem(String hour_str) {
+		int size = arry_hours.size();
+		int hourIndex = 0;
+
+		for (int i = 0; i < size; i++) {
+
+			if (hour_str.equals(arry_hours.get(i))) {
+				hourIndex=i;
+				selectHour = hour_str;
+				break;
+			}
+		}
+		return hourIndex;
+	}
+
+	public int getMinItem(String min_str) {
+		int size = arry_mins.size();
+		int minIndex = 0;
+
+		for (int i = 0; i < size; i++) {
+
+			if (min_str.equals(arry_mins.get(i))) {
+				minIndex=i;
+				selectMin = min_str;
+				break;
+			}
+		}
+		return minIndex;
+	}
+
+	private class CalendarTextAdapter extends AbstractWheelTextAdapter {
+		ArrayList<String> list;
+
+		protected CalendarTextAdapter(Context context, ArrayList<String> list, int currentItem, int maxsize, int minsize) {
+			super(context, R.layout.item_birth_year, NO_RESOURCE, currentItem, maxsize, minsize);
+			this.list = list;
+			setItemTextResource(R.id.tempValue);
+		}
+
+		@Override
+		public View getItem(int index, View cachedView, ViewGroup parent) {
+			View view = super.getItem(index, cachedView, parent);
+			return view;
+		}
+
+		@Override
+		public int getItemsCount() {
+			return list.size();
+		}
+
+		@Override
+		protected CharSequence getItemText(int index) {
+			return list.get(index) + "";
+		}
+	}
+
+
+
+	public void setTimeListener(OnTimeListener onBirthListener) {
+		this.onTimeListener = onBirthListener;
+	}
+
+	@Override
+	public void onClick(View v) {
+
+		if (v == btnSure) {
+			if (onTimeListener != null) {
+				if(timeisFitness()){
+					onTimeListener.onClick(select_year, select_month, select_day,select_hour,select_min);
+					dismiss();
+				}
+			}
+			
+
+		}else {
+			dismiss();
+		}
+
+	}
+
+	public interface OnTimeListener {
+		public void onClick(String year, String month, String day,String hour,String min);
+	}
+
+	/**
+	 * 设置字体大小
+	 * 
+	 * @param curriteItemText
+	 * @param adapter
+	 */
+	public void setTextviewSize(String curriteItemText, CalendarTextAdapter adapter) {
+		ArrayList<View> arrayList = adapter.getTestViews();
+		int size = arrayList.size();
+		String currentText;
+		for (int i = 0; i < size; i++) {
+			TextView textvew = (TextView) arrayList.get(i);
+			currentText = textvew.getText().toString();
+			if (curriteItemText.equals(currentText)) {
+				textvew.setTextSize(maxTextSize);
+			} else {
+				textvew.setTextSize(minTextSize);
+			}
+		}
+	}
+
+
+	private boolean  timeisFitness(){
+
+		String hour = selectHour;
+
+		String min = selectMin;
+
+		String month = selectDate.substring(0, 2);
+		String day = selectDate.substring(3, 5);
+
+		Date cur_date = new Date();
+		int cur_year = cur_date.getYear() + 1900;
+
+		int cur_month = cur_date.getMonth() + 1;
+		if (cur_month == 12) {
+			if (month.equals("01")) {
+				cur_year = cur_year + 1;
+			}
+		} else {
+			if (cur_month == 1) {
+				if (month.equals("12")) {
+					cur_year = cur_year - 1;
+				}
+
+			}
+		}
+
+		select_year=cur_year+ "";
+
+		select_month = month+ "";
+		select_day = day+ "";
+		select_hour = hour+ "";
+		select_min = min+ "";
+
+		Calendar cal = Calendar.getInstance();
+		int d_mom =Integer.parseInt(month);
+		cal.set(cur_year,d_mom - 1, Integer.parseInt(day),Integer.parseInt(hour),Integer.parseInt(hour));
+
+		//与当前系统时间判断
+		if (cal.getTimeInMillis() <= cur_date.getTime()) {
+			DialogUtil.showTopToast(context,"请选择正确的约会时间");
+			return false;
+
+		}else{
+			return true;
+		}
+	}
+
+}

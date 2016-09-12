@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <include layout="@layout/commont_top_title" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/withdraw_record_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="15dp" />
+
+    <ViewStub
+        android:id="@+id/error_no_data_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_no_data_layout" />
+
+
+    <ViewStub
+        android:id="@+id/error_network_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/error_network_layout" />
+
+</LinearLayout>

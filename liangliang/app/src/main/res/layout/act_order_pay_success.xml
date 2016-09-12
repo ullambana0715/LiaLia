@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff"
+    android:orientation="vertical">
+
+    <ViewStub
+        android:id="@+id/order_pay_success_consult_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/act_order_pay_success_consult"/>
+
+
+    <ViewStub
+        android:id="@+id/order_pay_success_p_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/act_order_pay_success_game_p"/>
+
+    <ViewStub
+        android:id="@+id/order_pay_success_activity_vs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/act_order_pay_success_activity_p"/>
+
+</RelativeLayout>

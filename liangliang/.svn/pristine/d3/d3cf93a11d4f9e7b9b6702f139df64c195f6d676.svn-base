@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8px"
+    android:orientation="vertical">
+
+    <com.zhy.autolayout.AutoFrameLayout
+        android:id="@+id/banner_cycle_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:background="@color/text_color_white"
+        android:padding="12px"
+
+        >
+
+        <cn.chono.yopper.view.CycleViewPager.CycleLayout
+            android:id="@+id/banner_cycle_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+        </cn.chono.yopper.view.CycleViewPager.CycleLayout>
+
+
+        <ImageView
+            android:id="@+id/showIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/banner_cycle_bg"
+
+            android:visibility="visible" />
+    </com.zhy.autolayout.AutoFrameLayout>
+
+
+</com.zhy.autolayout.AutoLinearLayout>

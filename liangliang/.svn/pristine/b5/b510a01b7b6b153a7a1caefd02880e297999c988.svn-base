@@ -1,0 +1,32 @@
+package cn.chono.yopper.data;
+
+public class MatchDto {
+	//今日匹配的id
+	private int  matchedUserId;
+	//日期
+	private String date;
+	
+	
+	public int getMatchedUserId() {
+		return matchedUserId;
+	}
+	public void setMatchedUserId(int matchedUserId) {
+		this.matchedUserId = matchedUserId;
+	}
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
+	}
+	
+	
+	public MatchDto(int matchedUserId, String date) {
+		super();
+		this.matchedUserId = matchedUserId;
+		this.date = date;
+	}
+	
+	
+	
+}

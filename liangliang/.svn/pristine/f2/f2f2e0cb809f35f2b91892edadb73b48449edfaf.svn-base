@@ -1,0 +1,207 @@
+package cn.chono.yopper.data;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class UserDto implements Serializable {
+
+
+	private Profile profile;
+	private Wish latestWish;
+	private int horoscopeScore;
+	private Stats stats;
+	private List<String> album;
+
+	private Bubble bubble;
+	private Bump bump;
+
+	private double distance;
+
+	private String lastActiveTime;
+
+
+	private VideoVerification videoVerification;
+
+	//"#albumMask": "用户相册权限字符串\r\n            example: 1010101001 \r\n            从左边算，代表第一张，第二张，第四张，第六张，第九张照片有权限，其他没有权限",
+	private String  albumMask;
+	// "#albumMax": "相册最大数量",
+	private int albumMax;
+
+	private UserFaceRatingDto faceRating;
+
+	private List<UserInfoAppointment> appointments;
+	private boolean isProfileComplete;
+
+	//今日运势 0-100 满分五颗星星
+	private int todayLucky;
+	//星座匹配 0-100 满分五颗星星
+	private int horoscopeMatch;
+
+
+	public List<UserInfoAppointment> getAppointments() {
+		return appointments;
+	}
+
+	public void setAppointments(List<UserInfoAppointment> appointments) {
+		this.appointments = appointments;
+	}
+
+	public boolean isProfileComplete() {
+		return isProfileComplete;
+	}
+
+	public void setProfileComplete(boolean profileComplete) {
+		isProfileComplete = profileComplete;
+	}
+
+	public String getAlbumMask() {
+		return albumMask;
+	}
+
+	public void setAlbumMask(String albumMask) {
+		this.albumMask = albumMask;
+	}
+
+	public int getAlbumMax() {
+		return albumMax;
+	}
+
+	public void setAlbumMax(int albumMax) {
+		this.albumMax = albumMax;
+	}
+
+	public VideoVerification getVideoVerification() {
+		return videoVerification;
+	}
+
+	public void setVideoVerification(VideoVerification videoVerification) {
+		this.videoVerification = videoVerification;
+	}
+
+	public double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
+	}
+
+	public String getLastActiveTime() {
+		return lastActiveTime;
+	}
+
+	public void setLastActiveTime(String lastActiveTime) {
+		this.lastActiveTime = lastActiveTime;
+	}
+
+	public Bubble getBubble() {
+		return bubble;
+	}
+
+	public void setBubble(Bubble bubble) {
+		this.bubble = bubble;
+	}
+
+	public Bump getBump() {
+		return bump;
+	}
+
+	public void setBump(Bump bump) {
+		this.bump = bump;
+	}
+
+	public Profile getProfile() {
+		return profile;
+	}
+
+	public void setProfile(Profile profile) {
+		this.profile = profile;
+	}
+
+	public Wish getLatestWish() {
+		return latestWish;
+	}
+
+	public void setLatestWish(Wish latestWish) {
+		this.latestWish = latestWish;
+	}
+
+	public int getHoroscopeScore() {
+		return horoscopeScore;
+	}
+
+	public void setHoroscopeScore(int horoscopeScore) {
+		this.horoscopeScore = horoscopeScore;
+	}
+
+	public Stats getStats() {
+		return stats;
+	}
+
+	public void setStats(Stats stats) {
+		this.stats = stats;
+	}
+
+	public List<String> getAlbum() {
+		return album;
+	}
+
+	public void setAlbum(List<String> album) {
+		this.album = album;
+	}
+
+	public UserFaceRatingDto getFaceRating() {
+		return faceRating;
+	}
+
+	public void setFaceRating(UserFaceRatingDto faceRating) {
+		this.faceRating = faceRating;
+	}
+
+	public int getTodayLucky() {
+		return todayLucky;
+	}
+
+	public void setTodayLucky(int todayLucky) {
+		this.todayLucky = todayLucky;
+	}
+
+	public int getHoroscopeMatch() {
+		return horoscopeMatch;
+	}
+
+	public void setHoroscopeMatch(int horoscopeMatch) {
+		this.horoscopeMatch = horoscopeMatch;
+	}
+
+	@Override
+	public String toString() {
+		return "UserInfo [profile=" + profile + ", latestWish=" + latestWish
+				+ ", horoscopeScore=" + horoscopeScore + ", stats=" + stats
+				+ ", album=" + album + ", bubble=" + bubble + ", bump=" + bump
+				+ "]";
+	}
+
+
+	public class VideoVerification{
+		//"#status": "视频认证状态 NotSubmited = 0,InAuditing = 1, Success = 2, Fail = 3",
+		private int  status;
+		// "#purpose": "交友目的\r\n            MakeFriends = 1,交朋友;\r\n            FindLover = 2,找恋人;\r\n            ForMarriage = 3,找结婚对象",
+		private int  purpose;
+
+		public int getStatus() {
+			return status;
+		}
+		public void setStatus(int status) {
+			this.status = status;
+		}
+		public int getPurpose() {
+			return purpose;
+		}
+		public void setPurpose(int purpose) {
+			this.purpose = purpose;
+		}
+
+	}
+
+}

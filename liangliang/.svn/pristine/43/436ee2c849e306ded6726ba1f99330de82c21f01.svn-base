@@ -1,0 +1,70 @@
+package cn.chono.yopper.Service.Http.BumpPoll;
+
+import java.io.Serializable;
+
+import cn.chono.yopper.Service.Http.ParameterBean;
+
+/**
+ * Created by zxb on 2015/11/21.
+ */
+public class BumpPollBean extends ParameterBean {
+
+    private String sceneId;
+
+    private BumpEvent bumpEvent;
+
+    public BumpEvent getBumpEvent() {
+        return bumpEvent;
+    }
+
+    public void setBumpEvent(BumpEvent bumpEvent) {
+        this.bumpEvent = bumpEvent;
+    }
+
+    public String getSceneId() {
+        return sceneId;
+    }
+
+    public void setSceneId(String sceneId) {
+        this.sceneId = sceneId;
+    }
+
+    public static class BumpEvent implements Serializable{
+        private Long timestamp;
+        private double _latitude;
+        private double _longtitude;
+        private String _Address;
+
+        public Long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(Long timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public double get_latitude() {
+            return _latitude;
+        }
+
+        public void set_latitude(double _latitude) {
+            this._latitude = _latitude;
+        }
+
+        public double get_longtitude() {
+            return _longtitude;
+        }
+
+        public void set_longtitude(double _longtitude) {
+            this._longtitude = _longtitude;
+        }
+
+        public String get_Address() {
+            return _Address;
+        }
+
+        public void set_Address(String _Address) {
+            this._Address = _Address;
+        }
+    }
+}

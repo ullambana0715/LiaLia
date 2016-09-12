@@ -1,0 +1,336 @@
+package cn.chono.yopper.extractmpegframes;
+
+import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.media.MediaCodec;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
+import android.os.Build;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+import cn.chono.yopper.extractmpegframes.outputsurface.CodecOutputSurface;
+import cn.chono.yopper.extractmpegframes.util.Utils;
+
+/**
+ * @version 0.1 king 2015-10
+ */
+
+
+
+public class ExtractMpegFrames {
+
+    public interface OnExtractMpegFramesListener{
+
+        public void onExtractMpegFramesData();
+        public int onExtractMpegFramesBitmap(byte [] bitmaps);
+        public void onExtractMpegFramesEnd();
+        public void onExtractMpegFramesStrat();
+    }
+    private static OnExtractMpegFramesListener onExtractMpegFramesListener;
+    public  void setOnExtractMpegFramesListener(OnExtractMpegFramesListener onExtractMpegFramesListener){
+        ExtractMpegFrames.onExtractMpegFramesListener=onExtractMpegFramesListener;
+    }
+
+
+
+    private  final String TAG = ExtractMpegFrames.class.getSimpleName();
+    private  final boolean VERBOSE = false; // lots of logging
+    private   boolean DATATAG = true; //
+
+
+
+        /**
+         * Tests extraction from an MP4 to a series of PNG files.
+         * <p>
+         * We scale the video to 640x480 for the PNG just to demonstrate that we can
+         * scale the video with the GPU. If the input video has a different aspect
+         * ratio, we could preserve it by adjusting the GL viewport to get
+         * letterboxing or pillarboxing, but generally if you're extracting frames
+         * you don't want black bars.
+         */
+
+    public  void extractMpegFrames(File inputFile, int width, int height, int number) throws Exception {
+        if (onExtractMpegFramesListener !=null){
+            onExtractMpegFramesListener.onExtractMpegFramesStrat();
+        }
+        Map<Integer, Bitmap> bitmaps = new HashMap<>();
+        Map<Integer, ByteBuffer> byteBuffer = new HashMap<>();
+        MediaCodec decoder = null;
+        CodecOutputSurface outputSurface = null;
+        MediaExtractor extractor = null;
+
+        try {
+            // absolute path
+            // The MediaExtractor error messages aren't very useful. Check to
+            // see if the input
+            // file exists so we can throw a better one if it's not there.
+            if (!inputFile.exists()) {
+                Log.d(TAG, " sorry, input file not exist !");
+
+            }
+            if (!inputFile.canRead()) {
+                throw new FileNotFoundException("Unable to read " + inputFile);
+            }
+
+            extractor = new MediaExtractor();
+            extractor.setDataSource(inputFile.toString());
+
+            int trackIndex = selectTrack(extractor);
+            if (trackIndex < 0) {
+                throw new RuntimeException("No video track found in "
+                        + inputFile);
+            }
+            extractor.selectTrack(trackIndex);
+
+            MediaFormat format = extractor.getTrackFormat(trackIndex);
+            Log.d(TAG, "Video= " + format.getInteger(MediaFormat.KEY_WIDTH) + "x" + format.getInteger(MediaFormat.KEY_HEIGHT));
+
+            // Could use width/height from the MediaFormat to get full-size
+            // frames.
+            outputSurface = new CodecOutputSurface(width, height);
+
+            // Create a MediaCodec decoder, and configure it with the
+            // MediaFormat from the
+            // extractor. It's very important to use the format from the
+            // extractor because
+            // it contains a copy of the CSD-0/CSD-1 codec-specific data chunks.
+            String mime = format.getString(MediaFormat.KEY_MIME);
+            decoder = MediaCodec.createDecoderByType(mime);
+            decoder.configure(format, outputSurface.getSurface(), null, 0);
+            decoder.start();
+            long times = format.getLong(MediaFormat.KEY_DURATION);
+            long atime=System.currentTimeMillis();
+
+            Log.d(TAG, "---------------------------atime--------------- " + atime);
+
+            Map<Integer, Long> frams = Utils.getFrameSize(extractor, decoder, outputSurface);
+            long btime=System.currentTimeMillis();
+            Log.d(TAG, "---------------------------btime--------------- " + ((btime - atime) / 1000));
+            HashSet<Integer> redundant=  redundantSize(frams.size(),number);
+
+            long ee=System.currentTimeMillis();
+//
+            extractor = new MediaExtractor();
+            extractor.setDataSource(inputFile.toString());
+            trackIndex = selectTrack(extractor);
+            if (trackIndex < 0) {
+                throw new RuntimeException("No video track found in "
+                        + inputFile);
+            }
+            extractor.selectTrack(trackIndex);
+            format = extractor.getTrackFormat(trackIndex);
+            outputSurface = new CodecOutputSurface(width, height);
+            decoder = MediaCodec.createDecoderByType(mime);
+            decoder.configure(format, outputSurface.getSurface(), null, 0);
+            decoder.start();
+
+//            List<Integer>  itemList=Utils.getItems(frams.size(),number);
+//            doExtract4(extractor, decoder, outputSurface, itemList);
+
+
+            doExtract(extractor, decoder, outputSurface, redundant);
+
+            long cc=System.currentTimeMillis();
+
+            Log.d(TAG, "-----------------ee----------btime--------------- " +((cc-ee)/1000) );
+        } finally {
+            // release everything we grabbed
+            if (outputSurface != null) {
+                outputSurface.release();
+                outputSurface = null;
+            }
+            if (decoder != null) {
+                decoder.stop();
+                decoder.release();
+                decoder = null;
+            }
+            if (extractor != null) {
+                extractor.release();
+                extractor = null;
+            }
+
+            if (onExtractMpegFramesListener !=null){
+                onExtractMpegFramesListener.onExtractMpegFramesEnd();
+            }
+        }
+
+    }
+
+    /**
+     * Selects the video track, if any.
+     *
+     * @return the track index, or -1 if no video track is found.
+     */
+    private  int selectTrack(MediaExtractor extractor) {
+        // Select the first video track we find, ignore the rest.
+        int numTracks = extractor.getTrackCount();
+        for (int i = 0; i < numTracks; i++) {
+            MediaFormat format = extractor.getTrackFormat(i);
+            String mime = format.getString(MediaFormat.KEY_MIME);
+            if (mime.startsWith("video/")) {
+                Log.d(TAG, " Extractor selected track " + i + " ("
+                        + mime + "): " + format);
+                if (VERBOSE) {
+                    Log.d(TAG, "Extractor selected track " + i + " (" + mime
+                            + "): " + format);
+                }
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+
+/**
+     * Work loop.
+     */
+    private  void doExtract(MediaExtractor extractor,
+                           MediaCodec decoder, CodecOutputSurface outputSurface,  HashSet<Integer> redundant)
+            throws IOException {
+        final int TIMEOUT_USEC = 1 * 1000;
+
+        ByteBuffer[] decoderInputBuffers = decoder.getInputBuffers();
+        MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+        int inputChunk = 0;
+        boolean isIndex=false;
+
+        boolean outputDone = false;
+        boolean inputDone = false;
+        while (!outputDone) {
+            // Feed more data to the decoder.
+            if (!inputDone) {
+                int inputBufIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC);
+//               Log.d(TAG,"inputBufIndex=" + inputBufIndex);
+
+                if (inputBufIndex >= 0) {
+                    ByteBuffer inputBuf = decoderInputBuffers[inputBufIndex];
+
+                    // Read the sample data into the ByteBuffer. This neither
+                    // respects nor
+                    // updates inputBuf's position, limit, etc.
+                    int chunkSize = extractor.readSampleData(inputBuf, 0);
+                    if (chunkSize < 0) {
+                        // End of stream -- send empty frame with EOS flag set.
+                        decoder.queueInputBuffer(inputBufIndex, 0, 0, 0L,
+                                MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                        inputDone = true;
+                    } else {
+                        long presentationTimeUs = extractor.getSampleTime();
+                        decoder.queueInputBuffer(inputBufIndex, 0, chunkSize,
+                                presentationTimeUs, 0 /* flags */);
+                        Log.d(TAG, "submitted frame " + inputChunk + ", size=" + chunkSize + ", time=" + presentationTimeUs);
+                        inputChunk++;
+                        extractor.advance();
+                    }
+                }
+            }
+
+
+
+
+
+            if (!outputDone) {
+
+                Log.d(TAG,new SimpleDateFormat("15-hh:mm:ss:SSS").format(new Date(System.currentTimeMillis())));
+
+                int decoderStatus = decoder.dequeueOutputBuffer(info,
+                        TIMEOUT_USEC);
+//               Log.d(TAG,"decoderStatus＝" + decoderStatus);
+
+//               Log.d(TAG,new SimpleDateFormat("16-hh:mm:ss:SSS").format(new Date(System.currentTimeMillis())));
+
+                if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                    // no output available yet
+                } else if (decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                    // not important for us, since we're using Surface
+                } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                    MediaFormat newFormat = decoder.getOutputFormat();
+                } else if (decoderStatus < 0) {
+                } else { // decoderStatus >= 0
+                    if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        outputDone = true;
+                    }
+
+                    boolean doRender = (info.size != 0);
+
+                    // As soon as we call releaseOutputBuffer, the buffer will
+                    // be forwarded
+                    // to SurfaceTexture to convert to a texture. The API
+                    // doesn't guarantee
+                    // that the texture will be available before the call
+                    // returns, so we
+                    // need to wait for the onFrameAvailable callback to fire.
+
+//                 Log.d(TAG,new SimpleDateFormat("17-hh:mm:ss:SSS").format(new Date(System.currentTimeMillis())));
+
+                    decoder.releaseOutputBuffer(decoderStatus, doRender);
+
+//                   Log.d(TAG,new SimpleDateFormat("18-hh:mm:ss:SSS").format(new Date(System.currentTimeMillis())));
+
+                    if (doRender) {
+                        outputSurface.awaitNewImage();
+
+//                      Log.d(TAG,new SimpleDateFormat("19-hh:mm:ss:SSS").format(new Date(System.currentTimeMillis())));
+
+                        outputSurface.drawImage(true);
+                        if (! redundant.contains(inputChunk)){
+                        if (onExtractMpegFramesListener !=null && isIndex){
+
+
+                            byte [] bitmaps = outputSurface.saveFrameBitmap();
+                            if (bitmaps !=null){
+                               onExtractMpegFramesListener.onExtractMpegFramesBitmap(bitmaps);
+                                if (DATATAG) {
+                                    DATATAG=false;
+                                    onExtractMpegFramesListener.onExtractMpegFramesData();
+                                }
+                            }
+
+                        }
+                            isIndex=true;
+                    }
+                }
+            }
+            }
+        }
+
+    }
+
+
+    private  HashSet<Integer>  redundantSize(int framsSize,int limitSize){
+
+         Log.d(TAG, "frams =" + framsSize +"--limitSize ="+limitSize );
+
+         int redundantSize=framsSize-limitSize;
+         if (redundantSize<=0){
+             redundantSize=0;
+         }
+
+
+        HashSet<Integer> set = new java.util.HashSet<Integer>();
+        int ran ;
+        while (set.size()<redundantSize){
+            ran = (int)Math.round(Math.random()*(framsSize-1))+1;
+            set.add(ran);
+            Log.d(TAG, "-------ran =" + ran );
+        }
+
+        return set;
+    }
+
+}

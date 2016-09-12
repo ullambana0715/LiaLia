@@ -1,0 +1,32 @@
+package cn.chono.yopper.Service.Http.GainPFruit;
+
+import java.io.Serializable;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by zxb on 2015/11/23.
+ */
+public class GainPFruitRespBean extends RespBean {
+    private Available resp;
+
+    public Available getResp() {
+        return resp;
+    }
+
+    public void setResp(Available resp) {
+        this.resp = resp;
+    }
+
+    public class Available implements Serializable{
+        private int availableBalance;
+
+        public int getAvailableBalance() {
+            return availableBalance;
+        }
+
+        public void setAvailableBalance(int availableBalance) {
+            this.availableBalance = availableBalance;
+        }
+    }
+}

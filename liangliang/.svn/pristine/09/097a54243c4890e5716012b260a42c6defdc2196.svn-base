@@ -1,0 +1,29 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+    compile fileTree(include: '*.jar', dir: 'libs')
+    compile files('libs/mediaservice-4.0.4.jar')
+    compile files('libs/alisdk-hotpatch-3.jar')
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+    }
+    lintOptions {
+        abortOnError false
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    productFlavors {
+    }
+}

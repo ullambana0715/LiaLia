@@ -1,0 +1,9 @@
+package cn.chono.yopper.Service.Http.ArticleCommentOtherComment;
+
+import cn.chono.yopper.Service.Http.RespBean;
+
+/**
+ * Created by cc on 16/2/25.
+ */
+public class ArticleCommentOtherCommentRespBean extends RespBean {
+}
